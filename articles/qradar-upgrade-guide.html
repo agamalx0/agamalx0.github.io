@@ -78,18 +78,50 @@
 <li>For older QRadar Event Collector deployments, confirm whether a GlusterFS-to-DRBD migration or other prerequisite is required by the selected version path.</li>
 <li>For HA, validate active/standby health, synchronization, required filesystem mount states, and the documented HA upgrade procedure.</li>
 <li>For major OS upgrades, check unsupported device drivers, encryption limitations, and any OS migration pretests called out by IBM.</li>
+<li>Confirm long-running scans and reports have completed or are handled according to the target release's upgrade notes.</li>
 <li>Close active QRadar UI sessions if the target release notes require it, to avoid installer/log access issues.</li>
 </ul>
+<h3>Deployment inventory and housekeeping</h3>
+<p>Capture an appliance inventory and confirm that all hosts are at the expected source version before beginning:</p>
+<pre class="code"><code># Inventory appliance names and IP addresses
+/opt/qradar/support/deployment_info.sh
+
+# Compare software versions across appliances
+/opt/qradar/support/all_servers.sh -C -k /opt/qradar/bin/myver > myver_output.txt
+cat myver_output.txt</code></pre>
+<ul class="checklist">
+<li>Check <code>/root</code> and approved operational directories for local scripts, personal utilities, exports, support-provided JAR files or interim fixes, and other files that are not part of the standard QRadar installation.</li>
+<li>Preserve custom network configuration. On systems that use the legacy RHEL network-scripts layout, static routes may be stored in <code>/etc/sysconfig/network-scripts/route-&lt;interface&gt;</code>; other OS versions may use a different NetworkManager configuration. Record the actual configuration for the installed OS instead of assuming one path applies everywhere.</li>
+<li>On physical appliances, verify firmware and hardware health against IBM's appliance-specific guidance: <a href="https://www.ibm.com/support/pages/qradar-firmware-list-xseries-appliances-updated" target="_blank" rel="noopener noreferrer">QRadar firmware list for supported xSeries appliances</a>.</li>
+<li>Review mounted storage with <code>mount | column -t</code> and <code>df -Th</code>. Follow the target upgrade guide for external-storage requirements; IBM's checklist generally instructs administrators to unmount external storage other than <code>/store</code> or <code>/store/ariel</code>. Do not unmount required QRadar filesystems or storage used by an active process.</li>
+<li>Confirm previous update media is not still mounted. Only when no installer or upgrade is active and after confirming the mount targets are stale, use the documented per-deployment cleanup commands where appropriate.</li>
+</ul>
+<pre class="code"><code>/opt/qradar/support/all_servers.sh -k "umount /media/cdrom"
+/opt/qradar/support/all_servers.sh -k "umount /media/updates"</code></pre>
+<div class="callout"><strong>Fleet-wide command caution</strong><p style="margin:6px 0 0"><code>all_servers.sh</code> executes commands across appliances. Review the target list, ensure no upgrade is running, and confirm the mounts are stale before issuing fleet-wide unmount commands. Do not run these commands blindly.</p></div>
 <p>IBM's pre-upgrade checklist is authoritative for the chosen target. See <a href="https://www.ibm.com/docs/en/qsip/7.6.0?topic=upgrading-preparation-checklist-qradar-upgrades" target="_blank" rel="noopener noreferrer">Preparation checklist for QRadar upgrades</a> and <a href="https://www.ibm.com/support/pages/qradar-software-update-checklist-administrators" target="_blank" rel="noopener noreferrer">QRadar software update checklist for administrators</a>.</p>
 <h2 id="backup">5. Backup and recovery planning</h2>
 <p>Do not begin an upgrade until the latest configuration backup has completed successfully and its file is copied to a safe location outside the system being upgraded. Verify that the backup is readable, that retention and access controls are appropriate, and that the team understands how recovery would work.</p>
 <ul>
 <li>Take a QRadar configuration backup using the supported Backup and Recovery workflow. Download the completed backup file rather than relying solely on a file left on the appliance.</li>
-<li>Follow IBM guidance for any additional data, application, or deployment-specific backup needs.</li>
-<li>Preserve custom content and configuration artifacts that might be needed to compare behavior after the update, including custom DSMs, rules, reference data configurations, scripts, certificates, routing changes, and integration settings—using supported export or backup methods.</li>
+<li>Follow IBM's documented data backup/recovery procedure for your product version and environment. Configuration backups do not automatically include every app's persistent data.</li>
+<li>Back up app data on the Console and/or App Host where the apps actually reside. IBM documents <code>app-volume-backup.py</code> for this purpose. Take a fresh manual backup after any important app changes and list the resulting archives:</li>
+</ul>
+<pre class="code"><code>cd /opt/qradar/bin
+./app-volume-backup.py backup
+./app-volume-backup.py ls</code></pre>
+<p>The supported listing subcommand is <code>ls</code> (not <code>lsc</code>). IBM notes that a configuration backup does not back up apps' data; consult <a href="https://www.ibm.com/docs/en/qsip/7.5.0?topic=applications-backing-up-restoring-app-data" target="_blank" rel="noopener noreferrer">Backing up and restoring app data</a> for the exact release. Keep the backup archive outside the system being upgraded.</p>
+<ul>
+<li>Export QRadar custom content before the upgrade. IBM documents the following Content Management Tool command, which may take a long time in larger environments:</li>
+</ul>
+<pre class="code"><code>/opt/qradar/bin/contentManagement.pl --action export --content-type all</code></pre>
+<p>Store the export in a safe location and allow enough time for completion. For large deployments, an export can take many hours or longer. Keep a record of the export path and completion status.</p>
+<ul>
+<li>Preserve third-party and locally managed artifacts such as custom DSMs, rules, reference data configurations, scripts, certificates, integration settings, support-provided JAR files/interim fixes, personal utilities, exports, and any custom network configuration.</li>
 <li>Know where upgrade logs, precheck output, and existing deployment documentation will be stored.</li>
 <li>Confirm the recovery plan, recovery time objective, decision owner, and support contacts before the window begins.</li>
 </ul>
+<div class="callout"><strong>Do not treat a live copy of <code>/store/ariel</code> as a universal backup method.</strong><p style="margin:6px 0 0">The original notes include generic <code>cp</code>, <code>rsync</code>, and <code>scp</code> examples for event data. Do not copy active Ariel storage ad hoc as a substitute for a supported QRadar backup or migration procedure: it can be large, change while being copied, and may not provide a consistent, restorable backup. Use a specifically documented IBM data-migration procedure only when it applies to your scenario.</p></div>
 <div class="callout"><strong>A configuration backup is not automatically a downgrade/rollback mechanism.</strong><p style="margin:6px 0 0">QRadar configuration backups can have version compatibility limits. Do not assume a backup created on one version can be restored to an older or different version. Confirm restoration constraints in the specific migration/recovery guide, and arrange a supported recovery strategy for the source and target versions.</p></div>
 <h2 id="deployment">6. Managed hosts, deployment order, and HA</h2>
 <p>IBM's QRadar upgrade instructions require the Console to be upgraded first, followed by managed hosts, and require all QRadar products in the deployment to reach the same supported version and fix level. Follow the target release's exact order and patch-installer options rather than inventing a host order.</p>
@@ -102,11 +134,13 @@
 </ul>
 <h3>High availability</h3>
 <ul>
-<li>Validate HA active/standby status and synchronization before starting.</li>
-<li>Check the target release's requirements for /store and /transient mounts on primary/secondary hosts.</li>
-<li>Follow the HA upgrade process documented for the exact release. IBM's normal upgrade instructions note that upgrading an HA primary can automatically upgrade the HA secondary.</li>
+<li>Verify the primary appliance is Active and the secondary is Standby, and confirm synchronization before starting.</li>
+<li>Before the change, verify that <code>/store</code> is mounted on the primary but not on the secondary, and that <code>/transient</code> is mounted on both hosts, as required by the applicable HA upgrade checklist.</li>
+<li>Capture the relevant mount state using <code>mount</code>, <code>df -Th</code>, and the HA status tools prescribed for the release. Do not manually change mount state to make it match a checklist.</li>
+<li>Follow the HA upgrade process documented for the exact release. IBM's instructions note that upgrading an HA primary can automatically upgrade the HA secondary for supported paths.</li>
 <li>Do not manually force HA failover during patching or a software upgrade unless the applicable IBM procedure explicitly directs it.</li>
-<li>Afterward, verify cluster roles, synchronization, shared storage/VIP behavior, and event processing before closing the change.</li>
+<li>Keep any version-specific file-copy procedure—such as a workaround involving <code>map_localhost_interfaces.txt</code>—out of the general runbook. Perform it only when the exact IBM procedure for the selected upgrade path requires it.</li>
+<li>Afterward, verify cluster roles, synchronization, storage/VIP behavior, and event processing before closing the change.</li>
 </ul>
 <p>References: <a href="https://www.ibm.com/docs/en/qsip/7.5.0?topic=upgrading-qradar-siem" target="_blank" rel="noopener noreferrer">Upgrading QRadar SIEM</a>, <a href="https://www.ibm.com/docs/en/qsip/7.5.0?topic=siem-upgrading-qradar-by-using-parallel-patching" target="_blank" rel="noopener noreferrer">Parallel patching</a>, and <a href="https://www.ibm.com/docs/en/qsip/7.5.0?topic=failovers-manual" target="_blank" rel="noopener noreferrer">Manual HA failovers</a>.</p>
 <h2 id="download">7. Download and validate the software</h2>
@@ -122,13 +156,23 @@
 <p>This check is an example for that release's procedure, not a replacement for verifying required filesystems and free-space requirements on every host.</p>
 <h2 id="execute">8. Execute the upgrade</h2>
 <p>The exact command sequence depends on the selected SFS/ISO package. For SFS-based QRadar software updates, IBM's release instructions commonly use a mounted SFS file and the included installer, but always use the exact filename, mount point, and sequence in the target release notes.</p>
+<p>First stage the exact SFS file in the directory required by the release notes (commonly <code>/storetmp</code> for the documented releases), check filesystem capacity, and verify the package digest:</p>
+<pre class="code"><code># Replace the filename with the exact file downloaded from Fix Central
+df -h /tmp /storetmp /store/transient | tee diskchecks.txt
+sha256sum /storetmp/&lt;exact-target-file&gt;.sfs</code></pre>
+<p>Compare the SHA-256 output with the digest published by IBM for that exact package. Do not rely only on the MD5 checksum mentioned in older notes when IBM publishes SHA-256. Do not proceed if the digest differs.</p>
 <p>An example for the documented QRadar 7.6.0 Fix Pack 5 SFS workflow is:</p>
 <pre class="code"><code># Example only: replace the filename with the exact downloaded SFS.
 # Run only if it matches the target package's official instructions.
 mkdir -p /media/updates
 mount -o loop /storetmp/760-QRADAR-QRSIEM-2026.4.0.20261002130537.sfs /media/updates
+
+# Optional pretest, only when supported by this release/package
+/media/updates/installer -t
+
+# Start the installer only after all pretests pass
 /media/updates/installer</code></pre>
-<div class="callout"><strong>Do not copy this example as-is for a different release.</strong><p style="margin:6px 0 0">The SFS filename above is specific to QRadar 7.6.0 Fix Pack 5. Other versions use different filenames and may have different prerequisites, supported source levels, installer options, and pretests. Confirm the package and checksum before running anything.</p></div>
+<div class="callout"><strong>Do not copy this example as-is for a different release.</strong><p style="margin:6px 0 0">The SFS filename above is specific to QRadar 7.6.0 Fix Pack 5. Other versions use different filenames and may have different prerequisites, supported source levels, installer options, and pretests. The <code>-t</code> option is the installer pretest mode documented for supported packages; follow the target release notes. During pretesting, certain services such as the web server and HostContext may be stopped and restarted automatically. If a pretest fails, resolve the reported issue and rerun the test; do not continue to patch with a failed pretest.</p></div>
 <p>When the installer opens, read all pre-installation checks and prompts. Choose the sequential/legacy or parallel method only if it is offered and supported for the selected package and deployment. Follow the installer’s guidance about patching the Console first and updating eligible managed hosts afterward.</p>
 <h3>Sequential versus parallel patching</h3>
 <ul>
@@ -146,6 +190,13 @@ mount -o loop /storetmp/760-QRADAR-QRSIEM-2026.4.0.20261002130537.sfs /media/upd
 </ul>
 <h2 id="post">10. Post-upgrade validation</h2>
 <p>Do not close the maintenance window when the installer exits. Validate the QRadar product, data pipeline, integrations, and operational behavior against the baseline recorded before the change.</p>
+<h3>Release-specific finalization</h3>
+<ul class="checklist">
+<li>Run the documented post-upgrade health check for the release. Where supported, <code>drq -v</code> provides verbose local-host health-check output; run the appropriate checks on the relevant hosts and address reported failures.</li>
+<li>For SFS update procedures that call for it, unmount the update media after the installer has finished and the system is stable. Do not unmount media while the installer is active:</li>
+</ul>
+<pre class="code"><code>umount /media/updates</code></pre>
+<p>Delete the staged SFS only after successful completion and after confirming it is not needed for diagnostics or a supported retry. Clear the browser cache when the target release notes instruct you to. If the release workflow calls for checking Auto Update from the Console Dashboard/Admin UI after the upgrade, verify update status there; this is a release-specific finalization step, not a replacement for the software upgrade itself.</p>
 <h3>Platform and deployment</h3>
 <ul class="checklist">
 <li>Confirm the expected QRadar version and fix level on the Console and each managed host (for example, using <code>/opt/qradar/bin/myver -v</code>).</li>
@@ -185,6 +236,9 @@ mount -o loop /storetmp/760-QRADAR-QRSIEM-2026.4.0.20261002130537.sfs /media/upd
 <li>Health checks passed; critical warnings fixed; deployment changes applied.</li>
 <li>Capacity, disk space, network/time sync, backup and replication status verified.</li>
 <li>Configuration backup completed, downloaded, and recovery plan confirmed.</li>
+<li>App data backed up separately where required; custom content export completed and copied off-host.</li>
+<li>Deployment inventory/version output saved; custom scripts, static routes, firmware, external storage, and previous update mounts reviewed.</li>
+<li>SFS SHA-256 verified against IBM's published digest; pretest passed where supported.</li>
 <li>Apps and integrations reviewed for target compatibility.</li>
 <li>Correct SFS/ISO downloaded, checksum/signature verified, and free space checked.</li>
 <li>Change window approved; SOC, IT, application, and recovery contacts available.</li>
@@ -203,6 +257,11 @@ mount -o loop /storetmp/760-QRADAR-QRSIEM-2026.4.0.20261002130537.sfs /media/upd
 <li><a href="https://www.ibm.com/community/101/qradar/installs/" target="_blank" rel="noopener noreferrer">QRadar 101 — Installs and Upgrades</a></li>
 <li><a href="https://www.ibm.com/support/pages/qradar-software-update-checklist-administrators" target="_blank" rel="noopener noreferrer">QRadar software update checklist for administrators</a></li>
 <li><a href="https://www.ibm.com/docs/en/qsip/7.5.0?topic=siem-upgrading-qradar-by-using-parallel-patching" target="_blank" rel="noopener noreferrer">Upgrading QRadar SIEM by using parallel patching</a></li>
+<li><a href="https://www.ibm.com/docs/en/qsip/7.5.0?topic=applications-backing-up-restoring-app-data" target="_blank" rel="noopener noreferrer">IBM: Backing up and restoring app data</a></li>
+<li><a href="https://www.ibm.com/docs/en/qsip/7.6.0?topic=upgrading-preparation-checklist-qradar-upgrades" target="_blank" rel="noopener noreferrer">IBM: Upgrade preparation checklist — version inventory, custom content, external storage, HA mount checks</a></li>
+<li><a href="https://www.ibm.com/support/pages/qradar-firmware-list-xseries-appliances-updated" target="_blank" rel="noopener noreferrer">IBM Support: QRadar firmware list for supported xSeries appliances</a></li>
+<li><a href="https://www.ibm.com/docs/en/qsip/7.5.0?topic=applications-backing-up-restoring-app-data" target="_blank" rel="noopener noreferrer">IBM: app-volume-backup.py command reference</a></li>
+
 <li><a href="https://www.ibm.com/docs/en/qsip/7.5.0?topic=failovers-manual" target="_blank" rel="noopener noreferrer">QRadar HA — Manual failovers</a></li>
 <li><a href="https://www.ibm.com/support/pages/what-should-i-consider-during-and-after-qradar-siem-upgrade" target="_blank" rel="noopener noreferrer">IBM Support — Before, during, and after a QRadar upgrade</a></li>
 </ul>
