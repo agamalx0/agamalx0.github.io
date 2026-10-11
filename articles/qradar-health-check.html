@@ -40,14 +40,14 @@
 <p>For automated collection, the JSON or quiet output may be useful, but review the output format and exit behavior on the QRadar release you operate before integrating it into a script.</p>
 <div class="callout"><strong>Interpret results, don't just collect them.</strong><p style="margin:6px 0 0">A failure or warning is a starting point for investigation. Read the test name, evidence, suggested action, and applicable release notes. Do not change system files or apply a workaround solely because a health-check line looks unusual.</p></div>
 <h2 id="recon">3. Inspect application workloads with Recon</h2>
-<p>Recon is particularly useful when troubleshooting QRadar applications. Run:</p>
+<p>Recon is particularly useful when troubleshooting QRadar applications. IBM documents it for QRadar 7.4.0 and later, on the Console or App Host where the applications run. The latest auto-update bundle is required, and Recon is not available for QRadar on Cloud. Confirm those prerequisites before using it.</p>
 <pre class="code"><code>/opt/qradar/support/recon ps</code></pre>
 <p>The output lists application identifiers and workload/service/container checks. IBM's documentation describes status symbols for checks such as whether a service is defined and started, whether the container exists and is running, and whether its port is responsive.</p>
 <p>Use this command when the problem involves an app that will not start, an app UI that is unavailable, or an application workload that appears unhealthy. It is not a replacement for DrQ, a full deployment check, or a log-source ingestion test.</p>
 <h2 id="cliniq">4. Use Cliniq where applicable</h2>
-<p>Cliniq is listed in IBM's QRadar support-tools reference as a health-check tool for routine checks and pre-upgrade reviews. Begin by checking the tool's help on the system:</p>
-<pre class="code"><code>/opt/qradar/support/cliniq -h</code></pre>
-<p>Follow the invocation and remediation steps documented for your installed release. Tool availability and behavior can vary by version or patch level; a missing Cliniq binary or symbolic link has been documented as an upgrade failure condition by IBM Support.</p>
+<p>Cliniq is listed in IBM's QRadar support-tools reference as a health-check tool for routine checks and pre-upgrade reviews. The original note uses this command:</p>
+<pre class="code"><code>/opt/qradar/support/cliniq</code></pre>
+<p>Use only the invocation and remediation steps documented for your installed release. Do not assume a generic help switch is supported. Tool availability and behavior can vary by version or patch level; a missing Cliniq binary or symbolic link has been documented as an upgrade failure condition by IBM Support.</p>
 <div class="info"><strong>Do not repair the utility by guesswork.</strong><p style="margin:6px 0 0">If Cliniq is missing or fails, collect the exact error and QRadar version, then consult the matching IBM Support article or open a support case. Avoid replacing symbolic links or selecting a different binary version unless IBM's instructions for that specific issue tell you to do so.</p></div>
 <h2 id="workflow">5. A repeatable health-check workflow</h2>
 <ol>
