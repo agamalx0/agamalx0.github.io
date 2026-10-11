@@ -1,0 +1,309 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Ashraf Gamal's cybersecurity portfolio covering SIEM engineering, detection engineering, incident response and security automation.">
+  <title>Ashraf Gamal | SOC Engineering Portfolio</title>
+  <style>
+    :root {
+      --bg: #0b1120;
+      --panel: #111b2d;
+      --text: #e8eef8;
+      --muted: #a0aec2;
+      --accent: #53b7ff;
+      --border: #25344b;
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Inter, system-ui, -apple-system, sans-serif;
+      line-height: 1.7;
+    }
+
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .container {
+      width: min(1080px, 90%);
+      margin: auto;
+    }
+
+    header {
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      background: rgba(11, 17, 32, .95);
+      backdrop-filter: blur(12px);
+    }
+
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+      padding: 18px 0;
+    }
+
+    .brand { font-weight: 800; color: var(--text); }
+    .nav-links { display: flex; gap: 22px; flex-wrap: wrap; }
+    .nav-links a { color: var(--muted); font-size: .92rem; }
+
+    .hero { padding: 100px 0 80px; }
+
+    .eyebrow {
+      color: var(--accent);
+      font-weight: 700;
+      letter-spacing: .13em;
+      text-transform: uppercase;
+      font-size: .8rem;
+    }
+
+    h1 {
+      font-size: clamp(2.5rem, 6vw, 4.6rem);
+      line-height: 1.12;
+      letter-spacing: -.04em;
+      margin: 18px 0;
+    }
+
+    h1 span { color: var(--accent); }
+
+    .intro {
+      max-width: 720px;
+      color: var(--muted);
+      font-size: 1.1rem;
+    }
+
+    .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
+
+    .button {
+      display: inline-block;
+      padding: 11px 18px;
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      font-weight: 650;
+    }
+
+    .button.primary { background: var(--accent); color: #06111e; }
+
+    section { padding: 55px 0; scroll-margin-top: 80px; }
+
+    h2 { font-size: 1.8rem; margin-bottom: 8px; }
+    .section-intro { color: var(--muted); margin-top: 0; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+      margin-top: 26px;
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 23px;
+    }
+
+    .card h3 { margin-top: 0; }
+    .card p { color: var(--muted); font-size: .95rem; }
+
+    .tag {
+      display: inline-block;
+      color: var(--accent);
+      background: #16283c;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: .8rem;
+      margin: 5px 5px 0 0;
+    }
+
+    .skills { margin-top: 22px; }
+
+    footer {
+      margin-top: 40px;
+      padding: 28px 0;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: .9rem;
+    }
+
+    @media (max-width: 700px) {
+      nav { align-items: flex-start; flex-direction: column; }
+      .grid { grid-template-columns: 1fr; }
+      .hero { padding: 65px 0 45px; }
+      .nav-links { gap: 14px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <nav class="container">
+      <a class="brand" href="#">AG / SOC ENGINEERING</a>
+      <div class="nav-links">
+        <a href="#about">About</a>
+        <a href="#expertise">Expertise</a>
+        <a href="#projects">Projects</a>
+        <a href="#articles">Articles</a>
+        <a href="#contact">Contact</a>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero container">
+      <div class="eyebrow">Cybersecurity · Blue Team · Engineering</div>
+      <h1>Ashraf Gamal<br><span>SOC Engineering Portfolio</span></h1>
+      <p class="intro">
+        SOC Analyst L2 / Senior SOC Engineer focused on SIEM engineering,
+        detection development, incident response, threat hunting and
+        security automation. This portfolio documents practical
+        implementations, configurations and troubleshooting workflows.
+      </p>
+      <div class="actions">
+        <a class="button primary" href="#projects">Explore My Work</a>
+        <a class="button" href="#articles">Technical Articles</a>
+        <a class="button" href="https://github.com/agamalx0">GitHub Profile</a>
+      </div>
+    </section>
+
+    <section id="about" class="container">
+      <h2>About Me</h2>
+      <p class="section-intro">
+        Practical security engineering, from detection logic to
+        production-oriented SIEM operations.
+      </p>
+      <p>
+        I work across security monitoring and engineering, with an interest
+        in building reliable detection pipelines, integrating security
+        platforms, optimizing SIEM performance and automating repetitive
+        SOC operations. This site is a technical knowledge base for
+        documented experiments, reusable examples and lessons learned.
+      </p>
+    </section>
+
+    <section id="expertise" class="container">
+      <h2>Technical Expertise</h2>
+      <p class="section-intro">
+        Core security domains and technologies.
+      </p>
+      <div class="skills">
+        <span class="tag">Wazuh</span>
+        <span class="tag">IBM QRadar</span>
+        <span class="tag">QRadar SOAR</span>
+        <span class="tag">Splunk</span>
+        <span class="tag">SIEM Engineering</span>
+        <span class="tag">Detection Engineering</span>
+        <span class="tag">MITRE ATT&CK</span>
+        <span class="tag">Threat Hunting</span>
+        <span class="tag">Incident Response</span>
+        <span class="tag">DFIR-IRIS</span>
+        <span class="tag">OpenCTI</span>
+        <span class="tag">MISP</span>
+        <span class="tag">n8n Automation</span>
+        <span class="tag">Linux</span>
+        <span class="tag">Docker</span>
+      </div>
+    </section>
+
+    <section id="projects" class="container">
+      <h2>Engineering Focus</h2>
+      <p class="section-intro">
+        Practical work I plan to document with configurations,
+        validation steps and technical explanations.
+      </p>
+      <div class="grid">
+        <article class="card">
+          <h3>01 / SIEM Engineering</h3>
+          <p>
+            Custom detection rules, log parsing, false-positive tuning,
+            cluster health, retention policies and performance troubleshooting.
+          </p>
+        </article>
+        <article class="card">
+          <h3>02 / Security Integrations</h3>
+          <p>
+            Alert forwarding, case management, threat intelligence enrichment,
+            API integrations and troubleshooting data pipelines.
+          </p>
+        </article>
+        <article class="card">
+          <h3>03 / SOC Automation</h3>
+          <p>
+            Workflow automation, alert enrichment, incident handling,
+            reporting and repeatable operational processes.
+          </p>
+        </article>
+      </div>
+    </section>
+
+    <section id="articles" class="container">
+      <h2>Technical Articles</h2>
+      <p class="section-intro">
+        Step-by-step technical write-ups will be published here.
+      </p>
+      <div class="grid">
+        <article class="card">
+          <h3>Wazuh Detection Engineering</h3>
+          <p>
+            Rule logic, decoders, event validation and practical
+            false-positive reduction.
+          </p>
+          <span class="tag">Wazuh</span>
+          <span class="tag">Detection</span>
+        </article>
+        <article class="card">
+          <h3>SIEM Troubleshooting</h3>
+          <p>
+            A structured approach to investigating ingestion failures,
+            storage pressure and cluster health.
+          </p>
+          <span class="tag">Operations</span>
+          <span class="tag">Troubleshooting</span>
+        </article>
+        <article class="card">
+          <h3>Security Platform Integration</h3>
+          <p>
+            Documenting API integrations, alert normalization,
+            error handling and automation.
+          </p>
+          <span class="tag">Integration</span>
+          <span class="tag">Automation</span>
+        </article>
+      </div>
+    </section>
+
+    <section id="contact" class="container">
+      <h2>Connect</h2>
+      <p class="section-intro">
+        Explore my code and follow my technical work.
+      </p>
+      <div class="actions">
+        <a class="button primary" href="https://github.com/agamalx0">
+          GitHub
+        </a>
+        <!-- Replace the URL below with your actual LinkedIn profile. -->
+        <a class="button"
+           href="https://www.linkedin.com/"
+           target="_blank" rel="noopener noreferrer">
+          LinkedIn
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container">
+      © 2026 Ashraf Gamal · SOC Engineering Portfolio
+      <br>Technical examples should use sanitized data and authorized lab environments.
+    </div>
+  </footer>
+</body>
+</html>
