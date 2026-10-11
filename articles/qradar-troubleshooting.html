@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#080a12">
+<meta name="description" content="A practical IBM QRadar troubleshooting checklist covering SSH connectivity, deployment inventory, service status, disk space, deployment validation, logs, applications, and safe evidence collection.">
+<title>QRadar Troubleshooting: Practical Checklist | Ashraf Gamal</title>
+<style>
+:root{color-scheme:dark;--bg:#080a12;--text:#f4f6ff;--muted:#a3abc4;--line:rgba(177,190,255,.15);--cyan:#39e7ff;--purple:#9a66ff;--pink:#ff4fd8;--amber:#ffc879}
+*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:90px}body{margin:0;min-width:320px;color:var(--text);background:radial-gradient(ellipse at 7% 0,rgba(57,231,255,.09),transparent 32rem),radial-gradient(ellipse at 94% 9%,rgba(255,79,216,.08),transparent 28rem),var(--bg);font:16px/1.78 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}a{color:var(--cyan);text-decoration:none}a:hover{text-decoration:underline}.wrap{width:min(920px,calc(100% - 34px));margin:auto}.topbar{position:sticky;top:0;z-index:10;background:rgba(8,10,18,.86);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}.nav{height:68px;display:flex;align-items:center;justify-content:space-between;gap:18px}.brand{color:var(--text);font-weight:750}.back{font-size:13px;color:var(--muted)}.hero{padding:67px 0 35px}.eyebrow,.kicker{font-size:11px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:var(--cyan)}h1{font-size:clamp(36px,6vw,60px);line-height:1.08;letter-spacing:-.06em;margin:15px 0}.gradient{color:transparent;background:linear-gradient(100deg,var(--cyan),#9a8bff 55%,var(--pink));-webkit-background-clip:text;background-clip:text}.lede{font-size:18px;line-height:1.7;color:#c0c8df;max-width:770px}.meta{display:flex;flex-wrap:wrap;gap:10px 18px;font-size:12px;color:var(--muted);margin-top:24px}.pill{border:1px solid rgba(57,231,255,.24);background:rgba(57,231,255,.06);padding:4px 9px;border-radius:99px;color:#d9fbff}.layout{display:grid;grid-template-columns:220px minmax(0,1fr);gap:35px;padding:20px 0 85px}.toc{align-self:start;position:sticky;top:90px;padding:18px;border:1px solid var(--line);border-radius:16px;background:rgba(17,21,40,.6)}.toc strong{font-size:12px}.toc a{display:block;color:var(--muted);font-size:12px;padding:7px 0;line-height:1.4}.content{min-width:0}.content h2{font-size:27px;line-height:1.25;letter-spacing:-.04em;margin:42px 0 13px}.content h3{font-size:18px;margin:26px 0 8px}.content p,.content li{color:#c0c8df}.content li{padding-left:3px;margin:7px 0}.content ul,.content ol{padding-left:22px}.callout{padding:18px 20px;border:1px solid rgba(255,200,121,.28);border-left:3px solid var(--amber);border-radius:13px;background:rgba(255,200,121,.055);margin:22px 0}.callout strong{color:#ffe2b3}.info{padding:17px 20px;border:1px solid rgba(57,231,255,.22);border-radius:13px;background:rgba(57,231,255,.045);margin:20px 0}.info strong{color:#c9faff}code,pre{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}code{font-size:.92em;color:#d7e9ff}.code{overflow:auto;margin:15px 0;padding:17px;border-radius:12px;border:1px solid var(--line);background:#070a12;color:#dbe6ff;font-size:13px;line-height:1.7}.table-wrap{overflow-x:auto;margin:20px 0;border:1px solid var(--line);border-radius:12px}table{width:100%;border-collapse:collapse;min-width:470px;font-size:13px}th,td{text-align:left;vertical-align:top;padding:12px 14px;border-bottom:1px solid var(--line)}th{color:#e9edff;background:rgba(154,102,255,.08)}td{color:#c0c8df}tr:last-child td{border-bottom:0}.related{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:36px}.related a{border:1px solid var(--line);border-radius:13px;padding:15px;color:var(--text);background:rgba(255,255,255,.025)}.related small{display:block;color:var(--muted);font-size:11px}.related strong{display:block;margin-top:5px;font-size:13px}.footer{border-top:1px solid var(--line);padding:23px 0;color:var(--muted);font-size:12px}.footerinner{display:flex;justify-content:space-between;gap:15px;flex-wrap:wrap}
+@media(max-width:760px){.layout{grid-template-columns:1fr;gap:10px}.toc{position:static;display:grid;grid-template-columns:1fr 1fr;gap:0 14px}.toc strong{grid-column:1/-1}.hero{padding-top:45px}.content h2{margin-top:32px}.related{grid-template-columns:1fr}}@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<header class="topbar"><nav class="nav wrap"><a class="brand" href="/">AG <span class="gradient">/ Notes</span></a><a class="back" href="/#articles">← Back to all articles</a></nav></header>
+<header class="hero wrap">
+<div class="eyebrow">Part 4 · Operations · IBM QRadar</div>
+<h1>QRadar troubleshooting:<br><span class="gradient">a practical checklist</span></h1>
+<p class="lede">A repeatable way to collect the right evidence when a QRadar host, managed-host connection, deployment, application, or event pipeline is not behaving as expected.</p>
+<div class="meta"><span>By Ashraf Gamal</span><span>Updated 11 October 2026</span><span class="pill">Refreshed from field notes</span><span>Approx. 8 min read</span></div>
+</header>
+<div class="wrap layout">
+<aside class="toc"><strong>In this guide</strong><a href="#before">Before you troubleshoot</a><a href="#baseline">1. Capture the baseline</a><a href="#ssh">2. Connectivity and services</a><a href="#disk">3. Disk space</a><a href="#deployment">4. Deployment consistency</a><a href="#logs">5. Logs and evidence</a><a href="#applications">6. Apps and WinCollect</a><a href="#pipeline">7. Event pipeline</a><a href="#avoid">Commands to treat carefully</a><a href="#references">References</a></aside>
+<article class="content">
+<div class="callout"><strong>Operational safety first</strong><p style="margin:6px 0 0">These are diagnostic starting points, not a substitute for the procedure that matches your QRadar release. Use an approved account, record the time and host where each command runs, and avoid restarting services, deleting files, editing deployment data, or running database updates just to see whether the issue clears.</p></div>
+<h2 id="before">1. Start with the symptom and scope</h2>
+<p>Before using a support script, define what is failing: SSH access, managed-host communication, a failed deploy, an application, missing events, high event rates, or a patch/upgrade. Note when it began, which hosts are affected, recent changes, and the exact error from the UI or logs.</p>
+<p>In a distributed deployment, distinguish the Console from the affected managed host. A local check on the Console will not necessarily validate every Event Collector, Event Processor, App Host, or other host.</p>
+<h2 id="baseline">2. Capture a basic system baseline</h2>
+<p>Record the installed QRadar version and patch information on the host being investigated. IBM's QRadar support-tool reference documents the following:</p>
+<pre class="code"><code>/opt/qradar/bin/myver -v</code></pre>
+<p>For a deployment inventory, IBM documents <code>deployment_info.sh</code> with the <code>-OS</code> option. The original note used <code>-OH</code>; use the option documented for your installed version and check the script's help if the output differs.</p>
+<pre class="code"><code>/opt/qradar/support/deployment_info.sh -OS</code></pre>
+<p>The <code>all_servers.sh</code> tool can issue commands across multiple QRadar appliances. Review its usage before running it, and avoid broad commands unless you understand the impact and target set.</p>
+<pre class="code"><code>/opt/qradar/support/all_servers.sh -h</code></pre>
+<h2 id="ssh">3. Check connectivity and service status</h2>
+<h3>SSH connectivity</h3>
+<p>If the symptom is an SSH connection issue, run a verbose connection attempt from the system initiating the SSH session and replace the placeholders with the actual account and host:</p>
+<pre class="code"><code>ssh -vv user@managed-host.example</code></pre>
+<p>The verbose output can help distinguish DNS, routing, host-key, authentication, and connection failures. Do not paste private keys, passwords, tokens, or unredacted host details into public logs or issue reports.</p>
+<h3>HostContext status</h3>
+<p>On the affected QRadar host, check whether HostContext is active:</p>
+<pre class="code"><code>systemctl status hostcontext</code></pre>
+<p>For service logs, the standard system journal can help identify a start failure or repeated errors:</p>
+<pre class="code"><code>journalctl -u hostcontext</code></pre>
+<p>Use a bounded time range if the journal is large, and compare the timestamps with the incident. A running service does not guarantee the entire QRadar deployment or data pipeline is healthy.</p>
+<h2 id="disk">4. Verify filesystem capacity</h2>
+<p>Low disk space can interrupt updates, deployment tasks, log processing, and other operations. Start by reviewing filesystem type, capacity, and usage:</p>
+<pre class="code"><code>df -hT
+df -h /storetmp /var/log</code></pre>
+<p>Look closely at the partitions relevant to the symptom, and compare the result to the sizing and support guidance for your QRadar version. Do not delete logs, data, or backup files without identifying their purpose and following a safe cleanup procedure.</p>
+<h2 id="deployment">5. Validate deployment consistency</h2>
+<p>If deploy changes time out, managed hosts disagree with the Console, or deployment status is inconsistent, IBM documents <code>validate_deployment.sh</code> as a tool for finding discrepancies between deployment configuration and database entries.</p>
+<pre class="code"><code>/opt/qradar/support/validate_deployment.sh -h</code></pre>
+<p>Review the supported usage for your version, then run the validation procedure as documented. Record the output and investigate reported inconsistencies rather than editing <code>/opt/qradar/conf/deployment.xml</code> or database records manually.</p>
+<p>The file below is worth checking when investigating certain deploy-timeout cases, but its presence alone is not permission to remove it:</p>
+<pre class="code"><code>ls -l /opt/qradar/conf/hostcontext.NODOWNLOAD</code></pre>
+<div class="callout"><strong>Important: do not remove hostcontext.NODOWNLOAD during an update or patch.</strong><p style="margin:6px 0 0">IBM documents specific historical and version-dependent scenarios where a stale file can block deploy changes. First confirm no patch is in progress and follow the applicable IBM Support procedure. Do not use file deletion as a generic troubleshooting step.</p></div>
+<h2 id="logs">6. Review logs and collect evidence</h2>
+<p>Start with the timestamp of the failure and the logs relevant to the operation. Common locations from the original checklist include:</p>
+<ul>
+<li><code>/var/log/qradar.log</code> — QRadar application and system messages.</li>
+<li><code>/var/log/qradar.error</code> — error messages, when present on the installed release.</li>
+<li><code>/var/log/setup/&lt;build-id&gt;/patches.log</code> — setup/patch output for the matching build identifier, if applicable.</li>
+</ul>
+<p>For a quick, bounded view of recent QRadar messages:</p>
+<pre class="code"><code>tail -n 200 /var/log/qradar.log</code></pre>
+<p>For log collection, check the currently supported options first:</p>
+<pre class="code"><code>/opt/qradar/support/get_logs.sh -h</code></pre>
+<p>Use IBM's supported log-collection process for the installed release and the scope of the case. Sanitize collected logs before sharing them externally; they can contain usernames, IP addresses, hostnames, domains, or other sensitive operational data.</p>
+<h2 id="applications">7. Applications and WinCollect</h2>
+<h3>QRadar applications</h3>
+<p>If an app preview, install, uninstall, or runtime task is failing, use the UI and the diagnostic tools supported by the installed QRadar version. Recon can help inspect application containers on supported Console/App Host deployments; on QRadar 7.5.x, consult the relevant IBM guidance for checking application state. Avoid direct SQL updates to application tables unless IBM Support has provided a version-specific procedure.</p>
+<p>Related: <a href="/articles/qradar-health-check.html">QRadar health checks with DrQ, Recon, and Cliniq</a>.</p>
+<h3>WinCollect</h3>
+<p>If the issue is limited to managed WinCollect agents, start with agent status and log-source communication, then use the supported WinCollect health-check utility where available:</p>
+<pre class="code"><code>/opt/qradar/support/WinCollectHealthCheck.sh -h</code></pre>
+<p>Utility availability and options vary by release and deployment model. Use the help output and current IBM instructions before running the check.</p>
+<h2 id="pipeline">8. Event pipeline and EPS symptoms</h2>
+<p>When events appear delayed or missing, separate three questions: are sources sending data, is QRadar receiving it, and is the expected data searchable? Check the affected log source's status in the UI, the source/network path, relevant QRadar messages around the symptom, and the event pipeline metrics that IBM documents for your release.</p>
+<p>Some older troubleshooting notes use direct JMX commands, hard-coded ports, or service-specific query strings to inspect EPS and event ingress. Those commands can be version- and service-dependent; the one-line command in the original note also combined two commands incorrectly. Do not paste it into production unchanged. Use the IBM support-tool reference or a version-specific support procedure to identify the correct diagnostic for the host and service under investigation.</p>
+<p>For network-related managed-host problems, use supported interface and connection checks and follow the appropriate IBM networking guidance rather than assuming every symptom is an EPS issue.</p>
+<h2 id="avoid">9. Commands from older notes that need special handling</h2>
+<ul>
+<li><strong>Database exports:</strong> the original log-source export query contained a malformed <code>left join</code> and relies on internal schema details. Prefer a supported QRadar UI/API export or validate the exact query against the deployed version before use.</li>
+<li><strong>Token hashes:</strong> hashing or locating a file named <code>host.token</code> is not a generic first-line deployment test. Treat tokens as sensitive and use only the specific IBM procedure that requires them.</li>
+<li><strong>Version and fleet scripts:</strong> option flags for support scripts can vary. Check the installed script's help and avoid a fleet-wide command until its targets and behavior are understood.</li>
+<li><strong>Updates or AQL validation:</strong> do not run tools under the support directory merely because their name sounds relevant. Confirm the issue, supported syntax, and release applicability first.</li>
+</ul>
+<h2 id="references">10. Official references</h2>
+<ul>
+<li><a href="https://www.ibm.com/community/101/qradar/tools/" target="_blank" rel="noopener noreferrer">IBM QRadar Support Tools 101</a></li>
+<li><a href="https://www.ibm.com/support/pages/use-validatedeploymentsh-qradar-console-detect-deploymentxml-and-database-inconsistencies-and-bad-lines" target="_blank" rel="noopener noreferrer">IBM Support: validate_deployment.sh</a></li>
+<li><a href="https://www.ibm.com/support/pages/qradar-deploy-changes-does-not-complete-apar-ij15811" target="_blank" rel="noopener noreferrer">IBM Support: deploy changes that do not complete</a></li>
+<li><a href="https://www.ibm.com/support/pages/cli-commands-ip-ethtool-netstat-traceroute-arping-troubleshooting-qradar-network-interface-and-connection-issues" target="_blank" rel="noopener noreferrer">IBM Support: QRadar network troubleshooting commands</a></li>
+<li><a href="https://www.ibm.com/docs/en/qsip/7.5.0?topic=upgrading-preparation-checklist-qradar-upgrades" target="_blank" rel="noopener noreferrer">IBM QRadar: upgrade preparation checklist</a></li>
+</ul>
+<p class="note">This is a practical checklist, not a guarantee that all commands or paths apply to every QRadar release. Confirm compatibility and procedures for your exact version. In a production outage or during patching, preserve evidence and use your approved change process or IBM Support guidance.</p>
+<div class="related"><a href="/articles/qradar-health-check.html"><small>PART 3</small><strong>← QRadar health check</strong></a><a href="/#articles"><small>ARTICLE LIBRARY</small><strong>Back to all articles →</strong></a></div>
+</article>
+</div>
+<footer><div class="wrap" style="display:flex;justify-content:space-between;gap:15px;flex-wrap:wrap"><span>© <span id="year">2026</span> Ashraf Gamal</span><a href="/">Home</a></div></footer>
+<script>document.getElementById('year').textContent=new Date().getFullYear();</script>
+</body>
+</html>
