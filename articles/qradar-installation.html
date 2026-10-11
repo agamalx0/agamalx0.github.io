@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#080a12">
+<meta name="description" content="A refreshed, version-aware IBM QRadar installation guide covering appliance installation, software installation on RHEL, deployment roles, and post-install validation.">
+<title>IBM QRadar Installation Guide | Ashraf Gamal</title>
+<style>
+:root{color-scheme:dark;--bg:#080a12;--panel:#111528;--text:#f4f6ff;--muted:#a3abc4;--line:rgba(177,190,255,.15);--cyan:#39e7ff;--purple:#9a66ff;--pink:#ff4fd8;--amber:#ffc879}
+*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:90px}body{margin:0;min-width:320px;color:var(--text);background:radial-gradient(ellipse at 6% 0,rgba(57,231,255,.09),transparent 32rem),radial-gradient(ellipse at 96% 12%,rgba(255,79,216,.08),transparent 28rem),var(--bg);font:16px/1.78 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}a{color:var(--cyan);text-decoration:none}a:hover{text-decoration:underline}.wrap{width:min(920px,calc(100% - 34px));margin:auto}.topbar{position:sticky;top:0;z-index:10;background:rgba(8,10,18,.86);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}.nav{height:68px;display:flex;align-items:center;justify-content:space-between;gap:18px}.brand{color:var(--text);font-weight:750;letter-spacing:-.02em}.back{font-size:13px;color:var(--muted)}.hero{padding:67px 0 35px}.eyebrow,.kicker{font-size:11px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:var(--cyan)}h1{font-size:clamp(36px,6vw,60px);line-height:1.08;letter-spacing:-.06em;margin:15px 0}.gradient{color:transparent;background:linear-gradient(100deg,var(--cyan),#9a8bff 55%,var(--pink));-webkit-background-clip:text;background-clip:text}.lede{font-size:18px;line-height:1.7;color:#c0c8df;max-width:770px}.meta{display:flex;flex-wrap:wrap;gap:10px 18px;font-size:12px;color:var(--muted);margin-top:24px}.pill{border:1px solid rgba(57,231,255,.24);background:rgba(57,231,255,.06);padding:4px 9px;border-radius:99px;color:#d9fbff}.layout{display:grid;grid-template-columns:220px minmax(0,1fr);gap:35px;padding:20px 0 85px}.toc{align-self:start;position:sticky;top:90px;padding:18px;border:1px solid var(--line);border-radius:16px;background:rgba(17,21,40,.6)}.toc strong{font-size:12px}.toc a{display:block;color:var(--muted);font-size:12px;padding:7px 0;line-height:1.4}.content{min-width:0}.content h2{font-size:27px;line-height:1.25;letter-spacing:-.04em;margin:42px 0 13px}.content h3{font-size:18px;margin:26px 0 8px}.content p,.content li{color:#c0c8df}.content li{padding-left:3px;margin:7px 0}.content ul,.content ol{padding-left:22px}.callout{padding:18px 20px;border:1px solid rgba(255,200,121,.28);border-left:3px solid var(--amber);border-radius:13px;background:rgba(255,200,121,.055);margin:22px 0}.callout strong{color:#ffe2b3}.info{padding:17px 20px;border:1px solid rgba(57,231,255,.22);border-radius:13px;background:rgba(57,231,255,.045);margin:20px 0}.info strong{color:#c9faff}code,pre{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}code{font-size:.92em;color:#d7e9ff}.code{position:relative;overflow:auto;margin:15px 0;padding:17px;border-radius:12px;border:1px solid var(--line);background:#070a12;color:#dbe6ff;font-size:13px;line-height:1.7}.table-wrap{overflow-x:auto;margin:20px 0;border:1px solid var(--line);border-radius:12px}table{width:100%;border-collapse:collapse;min-width:480px;font-size:13px}th,td{text-align:left;vertical-align:top;padding:12px 14px;border-bottom:1px solid var(--line)}th{color:#e9edff;background:rgba(154,102,255,.08)}td{color:#c0c8df}tr:last-child td{border-bottom:0}.related{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:36px}.related a{border:1px solid var(--line);border-radius:13px;padding:15px;color:var(--text);background:rgba(255,255,255,.025)}.related small{display:block;color:var(--muted);font-size:11px}.related strong{display:block;margin-top:5px;font-size:13px}.footer{border-top:1px solid var(--line);padding:23px 0;color:var(--muted);font-size:12px}.footerinner{display:flex;justify-content:space-between;gap:15px;flex-wrap:wrap}
+@media(max-width:760px){.layout{grid-template-columns:1fr;gap:10px}.toc{position:static;display:grid;grid-template-columns:1fr 1fr;gap:0 14px}.toc strong{grid-column:1/-1}.hero{padding-top:45px}.content h2{margin-top:32px}.related{grid-template-columns:1fr}}@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<header class="topbar"><nav class="nav wrap"><a class="brand" href="/">AG <span class="gradient">/ Notes</span></a><a class="back" href="/#articles">← Back to all articles</a></nav></header>
+<header class="hero wrap">
+<div class="eyebrow">Deployment guide · IBM QRadar SIEM</div>
+<h1>QRadar installation:<br><span class="gradient">a version-aware guide</span></h1>
+<p class="lede">A practical walkthrough of the installation paths, appliance roles, and validation steps to understand before deploying IBM QRadar. The goal is to keep the workflow clear and avoid mixing procedures that belong to different installation types.</p>
+<div class="meta"><span>By Ashraf Gamal</span><span>Updated 11 October 2026</span><span class="pill">Updated from 2024 notes</span><span>Approx. 7 min read</span></div>
+</header>
+<div class="wrap layout">
+<aside class="toc"><strong>In this guide</strong><a href="#before-starting">Before you start</a><a href="#choose-path">Choose an installation path</a><a href="#appliance">Appliance installation</a><a href="#software">Software installation</a><a href="#roles">Appliance roles</a><a href="#validation">Post-install checks</a><a href="#references">References</a></aside>
+<article class="content">
+<div class="callout"><strong>Important version note</strong><p style="margin:6px 0 0">The original 2024 notes mapped RHEL 7.6/7.7/7.9 to QRadar 7.3/7.4/7.5. That table is historical, not a safe baseline for a new deployment. Select the QRadar release and update package first, then follow the exact IBM compatibility matrix and hardware requirements for that target.</p></div>
+<h2 id="before-starting">1. Before you start</h2>
+<p>QRadar deployment planning begins with the target release, supported operating system, intended appliance role, and license entitlement. Do not start from a generic RHEL version recommendation or a hardware size copied from an unrelated deployment.</p>
+<ul>
+<li>Confirm the supported QRadar release and fix/update package, its RHEL requirements, and the official installation or upgrade path.</li>
+<li>Validate CPU, memory, storage, network interfaces, and any workload-specific requirements against IBM's appliance specification or sizing guidance.</li>
+<li>Confirm that the required QRadar license or software-node entitlement is available for the installation type.</li>
+<li>Prepare a supported hostname, time zone, management IP configuration, DNS, and required network connectivity.</li>
+<li>For a reinstallation or software installation, protect required data first. IBM warns that a fresh software install can erase data in <code>/store</code>.</li>
+</ul>
+<p>Official prerequisites: <a href="https://www.ibm.com/docs/en/qsip/7.5.0?topic=installations-prerequisites-installing-qradar-your-hardware" target="_blank" rel="noopener noreferrer">IBM QRadar hardware and software prerequisites</a>.</p>
+<h2 id="choose-path">2. Choose the correct installation path</h2>
+<p>Do not treat an appliance installation and a software installation as interchangeable procedures.</p>
+<div class="table-wrap"><table><thead><tr><th>Path</th><th>When it applies</th><th>Key point</th></tr></thead><tbody><tr><td><strong>Appliance installation</strong></td><td>Using QRadar installation media that includes the supported operating-system image.</td><td>Boot from the correct QRadar media and follow the appliance installation workflow.</td></tr><tr><td><strong>Software installation</strong></td><td>Installing QRadar on hardware or a VM where you provide and prepare supported RHEL.</td><td>RHEL preparation, partitions, entitlement, and the QRadar software installer must match the target release.</td></tr></tbody></table></div>
+<p>IBM's documentation distinguishes these paths. A software installation requires supported RHEL preparation; an appliance installation uses the RHEL version included with the QRadar ISO. Review the guide for your exact version before proceeding: <a href="https://www.ibm.com/docs/en/qsip/7.5.0?topic=installations-qradar-software" target="_blank" rel="noopener noreferrer">QRadar software installations</a> and <a href="https://www.ibm.com/docs/en/qsip/7.5.0?topic=installations-virtual-appliance" target="_blank" rel="noopener noreferrer">virtual appliance installations</a>.</p>
+<h2 id="appliance">3. Appliance installation: high-level workflow</h2>
+<ol>
+<li>Download the approved QRadar installation ISO for the target release and verify its integrity as directed by IBM.</li>
+<li>Create supported boot media or attach the ISO through the server's remote-management console.</li>
+<li>Boot the target system from the QRadar media and select the appliance-installation path.</li>
+<li>Select the appliance function that matches the planned design. The available options depend on the release, entitlement, and role being installed.</li>
+<li>Configure the system identity and network settings, including the management interface, fully qualified hostname, IP address, time zone, and administrator credentials as prompted.</li>
+<li>Complete installation, allow required restarts, then apply and allocate the appropriate license where required.</li>
+</ol>
+<p>Use the version-specific procedure rather than combining screens or commands from older releases. IBM's starting point is <a href="https://www.ibm.com/docs/en/qsip/7.5.0?topic=installations-virtual-appliance" target="_blank" rel="noopener noreferrer">Virtual appliance installations</a>.</p>
+<h2 id="software">4. Software installation on prepared RHEL</h2>
+<p>This path is for a system that has already been prepared with an operating system supported by the target QRadar release. Partition layout and OS preparation must follow IBM's guidance; do not improvise partition sizes or update the operating system packages independently of the approved procedure.</p>
+<ol>
+<li>Copy the QRadar ISO to a location specified by IBM for the installation procedure (the current 7.5.0 guide identifies <code>/root</code> or <code>/storetmp</code>).</li>
+<li>Create the mount directory and mount the ISO file. Replace the example filename with the real file name.</li>
+</ol>
+<pre class="code"><code>mkdir -p /media/cdrom
+mount -o loop /root/qradar.iso /media/cdrom</code></pre>
+<p>For a fresh software installation, the documented setup launch command is:</p>
+<pre class="code"><code>/media/cdrom/setup</code></pre>
+<p>Follow the installer wizard for the software-install or supported HA workflow, appliance assignment, network interface, hostname, IP addressing, and other requested settings. If the chosen release's instructions specify a pretest or a different sequence, follow those instructions instead.</p>
+<div class="info"><strong>Do not mount a USB block device as though it were an ISO file.</strong><p style="margin:6px 0 0">The command above uses an ISO file path. Bootable USB media follows a different workflow; avoid copying the older <code>mount -o loop /dev/sdb</code> example without confirming what the device actually represents.</p></div>
+<p>Reference: <a href="https://www.ibm.com/docs/en/qsip/7.5.0?topic=qsi-installing-qradar-after-rhel-installation" target="_blank" rel="noopener noreferrer">Installing QRadar after the RHEL installation</a>.</p>
+<h2 id="roles">5. Select the right appliance role</h2>
+<p>QRadar deployments can include a Console, Event Collector, Event Processor, App Host, and other specialized roles or managed hosts. High availability (HA) is an architecture decision, not just a checkbox: determine which host is the Console, document the intended active/standby roles, and follow the matching HA requirements.</p>
+<ul>
+<li><strong>Console / all-in-one:</strong> commonly used for a lab or smaller deployment when supported sizing and licensing permit it.</li>
+<li><strong>Event Collector / Event Processor:</strong> distributed roles used when log ingestion and event processing need to be separated from the Console.</li>
+<li><strong>App Host:</strong> provides application workload capacity where the deployment design and application requirements call for it.</li>
+<li><strong>HA:</strong> requires the supported pairing, networking, storage, and configuration steps for the selected release.</li>
+</ul>
+<p>Do not assume every role is available for every license or release. Check the deployment guide and entitlement before selecting it.</p>
+<h2 id="validation">6. Post-install validation</h2>
+<ol>
+<li>Confirm that the installed release and update package match the planned version on each host.</li>
+<li>Log in to the QRadar UI, confirm licensing, verify system and network configuration, and complete the required deployment actions.</li>
+<li>On a Console deployment, open System and License Management and verify the expected systems and license allocations.</li>
+<li>Run the supported health checks on each applicable host. A console-only check does not automatically validate every managed host in a distributed deployment.</li>
+<li>Verify real data flow: confirm that expected log sources are communicating, recent events are visible, and searches return data. A successful installation command alone does not prove ingestion is healthy.</li>
+</ol>
+<p>The companion <a href="/articles/qradar-health-check.html">QRadar health-check guide</a> covers DrQ, Recon, and Cliniq and explains what each one can—and cannot—tell you.</p>
+<h2 id="references">7. Official references</h2>
+<ul>
+<li><a href="https://www.ibm.com/docs/en/qsip/7.5.0?topic=installations-prerequisites-installing-qradar-your-hardware" target="_blank" rel="noopener noreferrer">Prerequisites for installing QRadar on your hardware</a></li>
+<li><a href="https://www.ibm.com/docs/en/qsip/7.5.0?topic=qsi-installing-qradar-after-rhel-installation" target="_blank" rel="noopener noreferrer">Installing QRadar after the RHEL installation</a></li>
+<li><a href="https://www.ibm.com/docs/en/qsip/7.5.0?topic=installations-qradar-software" target="_blank" rel="noopener noreferrer">QRadar software installations</a></li>
+<li><a href="https://www.ibm.com/docs/en/qsip/7.5.0?topic=installations-virtual-appliance" target="_blank" rel="noopener noreferrer">Virtual appliance installations</a></li>
+</ul>
+<p class="note">Technical note: IBM's supported release matrix can change. This guide is an educational summary, not a substitute for the installation guide and release notes for the exact QRadar version you plan to deploy. Never apply these steps to a production system without an approved change plan and backup.</p>
+<div class="related"><a href="/#articles"><small>PORTFOLIO</small><strong>← Back to the article library</strong></a><a href="/articles/qradar-health-check.html"><small>NEXT GUIDE</small><strong>QRadar health checks →</strong></a></div>
+</article>
+</div>
+<footer><div class="wrap footerinner"><span>© <span id="year">2026</span> Ashraf Gamal</span><a href="/">Home</a></div></footer>
+<script>document.getElementById('year').textContent=new Date().getFullYear();</script>
+</body>
+</html>
