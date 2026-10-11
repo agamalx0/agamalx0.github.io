@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#080a12">
+<meta name="description" content="IBM QRadar High Availability guide covering HA architecture, virtual IP addressing, prerequisites, setup, controlled failover, failback, validation, and troubleshooting.">
+<title>IBM QRadar High Availability: Setup, Failover &amp; Recovery | Ashraf Gamal</title>
+<style>
+:root{color-scheme:dark;--bg:#080a12;--text:#f4f6ff;--muted:#a3abc4;--line:rgba(177,190,255,.15);--cyan:#39e7ff;--purple:#9a66ff;--pink:#ff4fd8;--amber:#ffc879;--green:#8affc1}
+*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:90px}body{margin:0;min-width:320px;color:var(--text);background:radial-gradient(ellipse at 7% 0,rgba(57,231,255,.09),transparent 32rem),radial-gradient(ellipse at 94% 9%,rgba(255,79,216,.08),transparent 28rem),var(--bg);font:16px/1.78 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}a{color:var(--cyan);text-decoration:none}a:hover{text-decoration:underline}.wrap{width:min(960px,calc(100% - 34px));margin:auto}.topbar{position:sticky;top:0;z-index:10;background:rgba(8,10,18,.86);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}.nav{height:68px;display:flex;align-items:center;justify-content:space-between;gap:18px}.brand{color:var(--text);font-weight:750}.back{font-size:13px;color:var(--muted)}.hero{padding:67px 0 35px}.eyebrow,.kicker{font-size:11px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:var(--cyan)}h1{font-size:clamp(36px,6vw,60px);line-height:1.08;letter-spacing:-.06em;margin:15px 0}.gradient{color:transparent;background:linear-gradient(100deg,var(--cyan),#9a8bff 55%,var(--pink));-webkit-background-clip:text;background-clip:text}.lede{font-size:18px;line-height:1.7;color:#c0c8df;max-width:820px}.meta{display:flex;flex-wrap:wrap;gap:10px 18px;font-size:12px;color:var(--muted);margin-top:24px}.pill{border:1px solid rgba(57,231,255,.24);background:rgba(57,231,255,.06);padding:4px 9px;border-radius:99px;color:#d9fbff}.layout{display:grid;grid-template-columns:235px minmax(0,1fr);gap:35px;padding:20px 0 85px}.toc{align-self:start;position:sticky;top:90px;padding:18px;border:1px solid var(--line);border-radius:16px;background:rgba(17,21,40,.6);max-height:calc(100vh - 110px);overflow:auto}.toc strong{font-size:12px}.toc a{display:block;color:var(--muted);font-size:12px;padding:6px 0;line-height:1.4}.content{min-width:0}.content h2{font-size:27px;line-height:1.25;letter-spacing:-.04em;margin:42px 0 13px}.content h3{font-size:18px;margin:26px 0 8px}.content p,.content li{color:#c0c8df}.content li{padding-left:3px;margin:7px 0}.content ul,.content ol{padding-left:22px}.callout{padding:18px 20px;border:1px solid rgba(255,200,121,.28);border-left:3px solid var(--amber);border-radius:13px;background:rgba(255,200,121,.055);margin:22px 0}.callout strong{color:#ffe2b3}.info{padding:17px 20px;border:1px solid rgba(57,231,255,.22);border-radius:13px;background:rgba(57,231,255,.045);margin:20px 0}.info strong{color:#c9faff}.success{padding:17px 20px;border:1px solid rgba(138,255,193,.22);border-radius:13px;background:rgba(138,255,193,.04);margin:20px 0}.success strong{color:#b8ffda}code,pre{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}code{font-size:.92em;color:#d7e9ff}.code{overflow:auto;margin:15px 0;padding:17px;border-radius:12px;border:1px solid var(--line);background:#070a12;color:#dbe6ff;font-size:13px;line-height:1.7}.table-wrap{overflow-x:auto;margin:20px 0;border:1px solid var(--line);border-radius:12px}table{width:100%;border-collapse:collapse;min-width:470px;font-size:13px}th,td{text-align:left;vertical-align:top;padding:12px 14px;border-bottom:1px solid var(--line)}th{color:#e9edff;background:rgba(154,102,255,.08)}td{color:#c0c8df}tr:last-child td{border-bottom:0}.checklist{list-style:none;padding:0!important}.checklist li{padding-left:27px!important;position:relative}.checklist li::before{content:"□";position:absolute;left:0;color:var(--cyan);font-size:18px;line-height:1.45}.related{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:36px}.related a{border:1px solid var(--line);border-radius:13px;padding:15px;color:var(--text);background:rgba(255,255,255,.025)}.related small{display:block;color:var(--muted);font-size:11px}.related strong{display:block;margin-top:5px;font-size:13px}.footer{border-top:1px solid var(--line);padding:23px 0;color:var(--muted);font-size:12px}.footerinner{display:flex;justify-content:space-between;gap:15px;flex-wrap:wrap}
+@media(max-width:800px){.layout{grid-template-columns:1fr;gap:10px}.toc{position:static;display:grid;grid-template-columns:1fr 1fr;gap:0 14px;max-height:none}.toc strong{grid-column:1/-1}.hero{padding-top:45px}.content h2{margin-top:32px}.related{grid-template-columns:1fr}}@media(max-width:480px){.toc{grid-template-columns:1fr}.toc strong{grid-column:auto}}@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<header class="topbar"><nav class="nav wrap"><a class="brand" href="/">AG <span class="gradient">/ Notes</span></a><a class="back" href="/#articles">← Back to all articles</a></nav></header>
+<header class="hero wrap">
+<div class="eyebrow">Part 7 · Availability engineering · IBM QRadar</div>
+<h1>IBM QRadar high availability:<br><span class="gradient">setup, failover &amp; recovery</span></h1>
+<p class="lede">A practical guide to understanding QRadar HA pairs, planning primary/secondary and virtual IP addressing, preparing a supported deployment, testing failover safely, and restoring the intended active/standby roles.</p>
+<div class="meta"><span>By Ashraf Gamal</span><span>Updated 11 October 2026</span><span class="pill">Version-aware operations guide</span><span>Approx. 10 min read</span></div>
+</header>
+<div class="wrap layout">
+<aside class="toc"><strong>On this page</strong><a href="#overview">1. HA overview</a><a href="#addressing">2. IP addressing</a><a href="#prereq">3. Prerequisites</a><a href="#setup">4. Setup workflow</a><a href="#vm">5. VM preparation</a><a href="#state">6. Check HA state</a><a href="#failover">7. Planned failover</a><a href="#failback">8. Return to primary</a><a href="#troubleshoot">9. Troubleshooting</a><a href="#test">10. Safe validation</a><a href="#references">Official references</a></aside>
+<article class="content">
+<div class="callout"><strong>HA changes can interrupt the QRadar UI and data processing.</strong><p style="margin:6px 0 0">Use the supported workflow for your exact QRadar release. Before any manual failover, verify primary/secondary synchronization, confirm the current active host, check that the secondary is Standby, and obtain approval for a maintenance window. Never test failover by simply shutting down an IP address or powering off production infrastructure.</p></div>
+<h2 id="overview">1. What QRadar HA provides</h2>
+<p>IBM QRadar High Availability (HA) pairs a primary HA host with a secondary HA host and a cluster virtual IP address (VIP). If a qualifying hardware, network, operating-system, or storage failure affects the active host, the secondary can take over the protected host's role. Depending on the architecture, access to data is maintained through QRadar data synchronization or supported shared external storage.</p>
+<p>HA protects specific QRadar hosts; it does not automatically protect every server, log source, integration, network path, or external dependency in the SOC. Plan the HA pair for each host role that requires protection, and test end-to-end log ingestion after a failover.</p>
+<p>IBM supports HA on hardware and virtual appliances and with appliance or software installations when the requirements are met. Do not assume HA is supported for every QRadar deployment model; for example, IBM documents that native QRadar HA is not supported in cloud environments. Verify the supported architecture for your product and hosting model.</p>
+<h2 id="addressing">2. Understand primary, secondary, and virtual IP addressing</h2>
+<p>A common source of confusion is the relationship between the primary's original management IP and the HA cluster VIP. When the HA cluster is created, the primary host's existing IP becomes the cluster VIP. The primary host itself must therefore receive a different unused IP address.</p>
+<div class="table-wrap"><table><thead><tr><th>Address / system</th><th>Purpose</th><th>Planning rule</th></tr></thead><tbody>
+<tr><td><strong>Cluster VIP</strong></td><td>Stable address clients and deployment components use to reach the protected QRadar host.</td><td>Typically uses the primary host's original IP when the HA pair is created; preserve it in network records and DNS as appropriate.</td></tr>
+<tr><td><strong>Primary host IP</strong></td><td>Direct address of the primary appliance when it is not owning the VIP.</td><td>Choose a new, unused address in the correct subnet before configuring the cluster.</td></tr>
+<tr><td><strong>Secondary host IP</strong></td><td>Direct address for administration and synchronization with the secondary appliance.</td><td>Choose another unique, reachable address according to the deployment plan.</td></tr>
+</tbody></table></div>
+<p>Do not assign the same address to the primary, secondary, and VIP simultaneously. Validate subnet, gateway, VLAN, routing, DNS, interface/hostname rules, and required connectivity before running the HA wizard.</p>
+<h2 id="prereq">3. Prerequisites before configuring HA</h2>
+<ul class="checklist">
+<li>Confirm the primary host is healthy and the existing deployment has no unresolved deployment, storage, database, or event-pipeline issues.</li>
+<li>Confirm both hosts use the same supported QRadar software version and fix level.</li>
+<li>Confirm the secondary has a valid HA activation key, is not already in another HA cluster, and has sufficient supported resources.</li>
+<li>Verify that both hosts support the same required DSM, scanner, protocol, and related RPMs.</li>
+<li>If the primary uses supported external storage, configure the secondary to access the same storage according to the IBM storage/HA guide.</li>
+<li>Prepare unique host addresses and a reserved cluster VIP; validate routes, network reachability, DNS, time synchronization, and firewall rules for the required QRadar ports.</li>
+<li>Ensure adequate capacity and storage; confirm the target design's supported disks, RAID, storage performance, and HA replication requirements.</li>
+<li>Back up the QRadar configuration and critical app data, and document how to recover if the HA setup fails.</li>
+<li>Read the release-specific High Availability Guide and review HA notifications/health status before making changes.</li>
+</ul>
+<p>IBM notes that the HA wizard checks factors including the secondary activation key, whether the secondary is already clustered, matching software versions, access to external storage, and compatible support packages.</p>
+<h2 id="setup">4. HA setup workflow</h2>
+<p>Use IBM's documented HA wizard/workflow for the installed release. The names of some menu items and install steps vary across QRadar versions and installation types.</p>
+<ol>
+<li>Prepare the secondary appliance/VM using the matching installation guide and select the supported HA role when required by that workflow. For a Console, select the corresponding Console/all-in-one role as instructed; non-Console managed-host roles must match the protected system.</li>
+<li>Assign unique host addressing and reserve the cluster VIP as described above. Do not finalize addressing by guesswork during the wizard.</li>
+<li>From QRadar, open <strong>Admin → System and License Management</strong> and use the supported High Availability workflow to create the pair.</li>
+<li>Provide the primary/secondary and VIP information and allow QRadar to validate the hosts, software versions, HA entitlement, storage access, and related prerequisites.</li>
+<li>Monitor the setup until the cluster reports the expected Active/Standby state. If a validation fails, capture the exact error and resolve the underlying issue before retrying.</li>
+<li>Verify the protected host's services, data synchronization, VIP reachability, log-source communication, and event/flow processing before treating the cluster as ready.</li>
+</ol>
+<div class="info"><strong>Do not apply a generic installation-menu sequence to every deployment.</strong><p style="margin:6px 0 0">The installation path differs for a new virtual appliance, a software installation, or adding HA protection to an existing Console/managed host. Follow the exact installation and HA guide for your QRadar release and topology.</p></div>
+<h2 id="vm">5. Notes for virtual-machine deployments</h2>
+<p>For a VM-based HA pair, confirm that the hypervisor, virtual NICs, datastore/storage design, CPU/memory reservations, and network configuration meet IBM's requirements. Where the documented installation media for that release instructs you to prepare a VM using a helper script such as <code>/media/cdrom/post/prepare_ha.sh</code>, run it only as part of that exact procedure.</p>
+<pre class="code"><code># Example only: use only when required by the release-specific VM HA guide
+bash /media/cdrom/post/prepare_ha.sh</code></pre>
+<p>This command is not a generic HA repair command or a routine post-install step. Validate that the correct ISO is mounted, read the installer documentation, and confirm the VM is at the intended preparation stage before running it.</p>
+<h3>SSH access</h3>
+<p>Use SSH to manage the appliance according to your security policy. The original note used <code>StrictHostKeyChecking=no</code>; that disables host-key validation and can expose the connection to machine-in-the-middle risk. Prefer preloading/verifying the SSH host key and connecting normally:</p>
+<pre class="code"><code>ssh root@&lt;secondary-host-ip&gt;</code></pre>
+<p>Use an approved credential mechanism, verify the host identity, and avoid putting passwords directly in shell commands, scripts, or support tickets.</p>
+<h2 id="state">6. Identify the active host and current HA state</h2>
+<p>Check the status in <strong>Admin → System and License Management</strong>. For CLI diagnostics, IBM documents the HA state command:</p>
+<pre class="code"><code>/opt/qradar/ha/bin/ha cstate</code></pre>
+<p>Review the <code>Local</code> and <code>Remote</code> role/state lines to determine which node is Primary/Secondary and Active/Standby/Online. Save this output before a planned role transition and again afterward.</p>
+<div class="table-wrap"><table><thead><tr><th>Observed state</th><th>Initial interpretation / next step</th></tr></thead><tbody>
+<tr><td>Primary Active, Secondary Standby</td><td>Expected state for a healthy, synchronized pair; confirm both are online and synchronization is healthy.</td></tr>
+<tr><td>Primary Active, Secondary Failed/Unknown</td><td>Check that the secondary is powered on and reachable over SSH; inspect network/hardware and follow IBM's secondary-recovery guide.</td></tr>
+<tr><td>Primary Failed/Unknown, Secondary Active</td><td>Confirm primary hardware/network state and follow IBM's primary-recovery/failback guide; do not force a switch until the actual state is known.</td></tr>
+<tr><td>Both Unknown</td><td>Check basic network, hardware, and SSH reachability; escalate if the HA state cannot be safely established.</td></tr>
+</tbody></table></div>
+<h2 id="failover">7. Planned failover to the secondary</h2>
+<p>A planned manual failover can be useful when maintaining the primary host. IBM's prerequisite is that the HA hosts are synchronized and the secondary is in Standby. Follow the supported UI sequence:</p>
+<ol>
+<li>Verify the primary is currently Active, the secondary is Standby/Online, and synchronization has completed.</li>
+<li>Open <strong>Admin → System Configuration → System and License Management</strong>.</li>
+<li>Select the primary HA host and use <strong>High Availability → Set System Offline</strong> as specified in IBM's manual-failover procedure. QRadar should transition the secondary to Active.</li>
+<li>Expect that the QRadar UI might be unavailable during the transition. Do not click repeatedly or issue commands concurrently while the role change is in progress.</li>
+<li>Verify the secondary is Active, the VIP is reachable, log sources can reconnect, new events are searchable, and the health status is acceptable before maintenance begins.</li>
+</ol>
+<div class="callout"><strong>Do not simulate failure by shutting down a production IP or powering off a host without a test plan.</strong><p style="margin:6px 0 0">First use a controlled maintenance procedure. If you need to test automatic failover, schedule a dedicated test, define the failure being simulated, verify data synchronization, confirm access to the recovery path, notify SOC stakeholders, and agree on stop/rollback criteria.</p></div>
+<h2 id="failback">8. Restore the intended primary/secondary roles</h2>
+<p>When a primary recovers after a failure, QRadar may return it as Standby. If the intended design requires the primary to become Active again, use the supported role-switch procedure for your release.</p>
+<p>IBM documents the following commands for the role transition; they are alternatives to be run from the specified current role, not a pair of commands to execute one after another blindly:</p>
+<pre class="code"><code># Run on the currently ACTIVE host:
+ /opt/qradar/ha/bin/ha giveback
+
+# OR, run on the currently STANDBY host when the documented
+# procedure calls for the standby host to take over:
+ /opt/qradar/ha/bin/ha takeover</code></pre>
+<p>Before running either command, confirm the current active/standby role and follow IBM's procedure for the desired direction of transition. Do not invoke <code>giveback</code> and <code>takeover</code> sequentially without checking state and the procedure.</p>
+<p>When the UI is accessible again, select the secondary HA host in <strong>System and License Management</strong> and use <strong>High Availability → Set System Online</strong> where the documented procedure requires it. Confirm that the primary is Active and the secondary is Standby, both are Online, and synchronization is healthy.</p>
+<h2 id="troubleshoot">9. Troubleshooting common HA issues</h2>
+<h3>Secondary host is Failed or Unknown</h3>
+<ul>
+<li>Check power/hypervisor state, virtual NIC connectivity, VLAN/subnet, routing, and whether SSH to the secondary works.</li>
+<li>Confirm both appliances have the expected software/fix level and compatible DSM/scanner/protocol components.</li>
+<li>Verify required shared storage access and the HA storage/mount state.</li>
+<li>Review System Notifications and the HA state using the UI and <code>ha cstate</code>; follow IBM's host-recovery guide before rebuilding or removing the HA pair.</li>
+</ul>
+<h3>Both hosts report Unknown</h3>
+<p>Prioritize basic network and hardware checks. Verify the intended management and virtual IPs, the network path between the hosts, time synchronization, and root SSH reachability. Avoid changing IPs or forcing a role switch until the actual active host and data state are known.</p>
+<h3>Failover occurred but log ingestion appears unhealthy</h3>
+<p>Check the cluster VIP, routes, log-source connection status, event/flow pipeline state, and managed-host connectivity. Some external sources or downstream integrations may need time to reconnect. Confirm actual new events are arriving rather than relying on a successful ping alone.</p>
+<h3>UI unavailable during a role transition</h3>
+<p>IBM warns that the UI may be inaccessible during the manual transition. Check cluster state through SSH and wait for the transition to settle according to the supported procedure; do not launch several conflicting HA commands in parallel.</p>
+<p>Community discussions, such as <a href="https://www.reddit.com/r/QRadar/comments/g11vf9/error_while_adding_ha_host/" target="_blank" rel="noopener noreferrer">this QRadar HA host-add discussion</a>, can provide additional troubleshooting context, but treat them as anecdotal and verify the remedy against IBM documentation for your version.</p>
+<h2 id="test">10. Safe acceptance test</h2>
+<ul class="checklist">
+<li>HA status reports the expected Primary Active / Secondary Standby state before any test.</li>
+<li>Both hosts are Online, synchronized, and free of unresolved critical HA notifications.</li>
+<li>Primary, secondary, and cluster VIP addressing is documented and conflict-free.</li>
+<li>A controlled failover is planned, approved, and performed according to the version-specific IBM procedure.</li>
+<li>After failover, the expected node is Active and the VIP is reachable from required clients.</li>
+<li>New events and flows are confirmed in QRadar, not just basic IP connectivity.</li>
+<li>Critical apps, reports, integrations, and log sources are checked for reconnection.</li>
+<li>If tested, failback completes and the final primary/secondary roles match the intended design.</li>
+<li>Evidence, timings, outages, warnings, and the test outcome are recorded.</li>
+</ul>
+<h2 id="references">Official IBM references</h2>
+<ul>
+<li><a href="https://www.ibm.com/docs/en/qsip/7.5.0?topic=deployments-ha-overview" target="_blank" rel="noopener noreferrer">IBM QRadar 7.5 — HA overview</a></li>
+<li><a href="https://www.ibm.com/docs/en/qsip/7.5.0?topic=overview-high-availability-clusters" target="_blank" rel="noopener noreferrer">IBM QRadar 7.5 — High-availability clusters</a></li>
+<li><a href="https://www.ibm.com/docs/en/qsip/7.5.0?topic=failovers-manual" target="_blank" rel="noopener noreferrer">IBM QRadar 7.5 — Manual failovers</a></li>
+<li><a href="https://www.ibm.com/docs/en/qsip/7.5.0?topic=deployments-troubleshooting-qradar-ha" target="_blank" rel="noopener noreferrer">IBM QRadar 7.5 — Troubleshooting HA deployments</a></li>
+<li><a href="https://www.ibm.com/docs/en/qsip/7.6.0?topic=management-switching-primary-ha-host-active" target="_blank" rel="noopener noreferrer">IBM QRadar 7.6 — Switching the primary HA host to Active</a></li>
+<li><a href="https://www.ibm.com/docs/en/qsip/7.5.0?topic=installations-qradar-deployment-overview" target="_blank" rel="noopener noreferrer">IBM QRadar 7.5 — Deployment overview and HA roles</a></li>
+<li><a href="https://www.ibm.com/docs/en/qsip/7.5.0?topic=upgrading-preparation-checklist-qradar-upgrades" target="_blank" rel="noopener noreferrer">IBM QRadar — HA mount and upgrade preparation checklist</a></li>
+<li><a href="https://www.securitylearningacademy.com/course/view.php?id=4684" target="_blank" rel="noopener noreferrer">Security Learning Academy course provided in the original notes</a></li>
+</ul>
+<p class="subtle">This article is operational guidance, not an emergency failover script. UI paths, installer helpers, HA prerequisites, and supported architectures can vary by release. Confirm the exact IBM High Availability Guide and open a support case for unclear states or data-synchronization risks.</p>
+<div class="related"><a href="/articles/qradar-upgrade-guide.html"><small>PART 6 · PREVIOUS</small><strong>← QRadar upgrade guide</strong></a><a href="/#articles"><small>ARTICLE LIBRARY</small><strong>Back to all articles →</strong></a></div>
+</article>
+</div>
+<footer><div class="wrap footerinner"><span>© <span id="year">2026</span> Ashraf Gamal</span><a href="/">Home</a></div></footer>
+<script>document.getElementById('year').textContent=new Date().getFullYear();</script>
+</body>
+</html>
