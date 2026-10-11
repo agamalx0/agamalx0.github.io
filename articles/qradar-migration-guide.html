@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#080a12">
+<meta name="description" content="A version-aware IBM QRadar Console migration guide for replacing an appliance with the same or a new IP address, restoring configuration, transferring Ariel data, and validating the migration.">
+<title>IBM QRadar Migration Guide: Same or New IP Address | Ashraf Gamal</title>
+<style>
+:root{color-scheme:dark;--bg:#080a12;--text:#f4f6ff;--muted:#a3abc4;--line:rgba(177,190,255,.15);--cyan:#39e7ff;--purple:#9a66ff;--pink:#ff4fd8;--amber:#ffc879;--green:#8affc1}
+*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:90px}body{margin:0;min-width:320px;color:var(--text);background:radial-gradient(ellipse at 7% 0,rgba(57,231,255,.09),transparent 32rem),radial-gradient(ellipse at 94% 9%,rgba(255,79,216,.08),transparent 28rem),var(--bg);font:16px/1.78 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}a{color:var(--cyan);text-decoration:none}a:hover{text-decoration:underline}.wrap{width:min(960px,calc(100% - 34px));margin:auto}.topbar{position:sticky;top:0;z-index:10;background:rgba(8,10,18,.86);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}.nav{height:68px;display:flex;align-items:center;justify-content:space-between;gap:18px}.brand{color:var(--text);font-weight:750}.back{font-size:13px;color:var(--muted)}.hero{padding:67px 0 35px}.eyebrow,.kicker{font-size:11px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:var(--cyan)}h1{font-size:clamp(36px,6vw,60px);line-height:1.08;letter-spacing:-.06em;margin:15px 0}.gradient{color:transparent;background:linear-gradient(100deg,var(--cyan),#9a8bff 55%,var(--pink));-webkit-background-clip:text;background-clip:text}.lede{font-size:18px;line-height:1.7;color:#c0c8df;max-width:820px}.meta{display:flex;flex-wrap:wrap;gap:10px 18px;font-size:12px;color:var(--muted);margin-top:24px}.pill{border:1px solid rgba(57,231,255,.24);background:rgba(57,231,255,.06);padding:4px 9px;border-radius:99px;color:#d9fbff}.layout{display:grid;grid-template-columns:235px minmax(0,1fr);gap:35px;padding:20px 0 85px}.toc{align-self:start;position:sticky;top:90px;padding:18px;border:1px solid var(--line);border-radius:16px;background:rgba(17,21,40,.6);max-height:calc(100vh - 110px);overflow:auto}.toc strong{font-size:12px}.toc a{display:block;color:var(--muted);font-size:12px;padding:6px 0;line-height:1.4}.content{min-width:0}.content h2{font-size:27px;line-height:1.25;letter-spacing:-.04em;margin:42px 0 13px}.content h3{font-size:18px;margin:26px 0 8px}.content p,.content li{color:#c0c8df}.content li{padding-left:3px;margin:7px 0}.content ul,.content ol{padding-left:22px}.callout{padding:18px 20px;border:1px solid rgba(255,200,121,.28);border-left:3px solid var(--amber);border-radius:13px;background:rgba(255,200,121,.055);margin:22px 0}.callout strong{color:#ffe2b3}.info{padding:17px 20px;border:1px solid rgba(57,231,255,.22);border-radius:13px;background:rgba(57,231,255,.045);margin:20px 0}.info strong{color:#c9faff}.success{padding:17px 20px;border:1px solid rgba(138,255,193,.22);border-radius:13px;background:rgba(138,255,193,.04);margin:20px 0}.success strong{color:#b8ffda}code,pre{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}code{font-size:.92em;color:#d7e9ff}.code{overflow:auto;margin:15px 0;padding:17px;border-radius:12px;border:1px solid var(--line);background:#070a12;color:#dbe6ff;font-size:13px;line-height:1.7}.table-wrap{overflow-x:auto;margin:20px 0;border:1px solid var(--line);border-radius:12px}table{width:100%;border-collapse:collapse;min-width:470px;font-size:13px}th,td{text-align:left;vertical-align:top;padding:12px 14px;border-bottom:1px solid var(--line)}th{color:#e9edff;background:rgba(154,102,255,.08)}td{color:#c0c8df}tr:last-child td{border-bottom:0}.checklist{list-style:none;padding:0!important}.checklist li{padding-left:27px!important;position:relative}.checklist li::before{content:"□";position:absolute;left:0;color:var(--cyan);font-size:18px;line-height:1.45}.related{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:36px}.related a{border:1px solid var(--line);border-radius:13px;padding:15px;color:var(--text);background:rgba(255,255,255,.025)}.related small{display:block;color:var(--muted);font-size:11px}.related strong{display:block;margin-top:5px;font-size:13px}.footer{border-top:1px solid var(--line);padding:23px 0;color:var(--muted);font-size:12px}.footerinner{display:flex;justify-content:space-between;gap:15px;flex-wrap:wrap}
+@media(max-width:800px){.layout{grid-template-columns:1fr;gap:10px}.toc{position:static;display:grid;grid-template-columns:1fr 1fr;gap:0 14px;max-height:none}.toc strong{grid-column:1/-1}.hero{padding-top:45px}.content h2{margin-top:32px}.related{grid-template-columns:1fr}}@media(max-width:480px){.toc{grid-template-columns:1fr}.toc strong{grid-column:auto}}@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<header class="topbar"><nav class="nav wrap"><a class="brand" href="/">AG <span class="gradient">/ Notes</span></a><a class="back" href="/#articles">← Back to all articles</a></nav></header>
+<header class="hero wrap">
+<div class="eyebrow">Part 8 · Platform operations · IBM QRadar</div>
+<h1>IBM QRadar migration guide:<br><span class="gradient">same or new IP address</span></h1>
+<p class="lede">A practical, version-aware walkthrough for replacing a QRadar Console appliance, preserving configuration and certificates, transferring Ariel data, and validating the new Console—whether it retains the existing IP address or moves to a new one.</p>
+<div class="meta"><span>By Ashraf Gamal</span><span>Updated 11 October 2026</span><span class="pill">Version-aware migration guide</span><span>Approx. 12 min read</span></div>
+</header>
+<div class="wrap layout">
+<aside class="toc"><strong>On this page</strong><a href="#scope">1. Scope and decision</a><a href="#prep">2. Pre-migration checklist</a><a href="#same-ip">3. Same IP migration</a><a href="#new-ip">4. New IP migration</a><a href="#data">5. Data transfer notes</a><a href="#validate">6. Validation and rollback</a><a href="#references">Official references</a></aside>
+<article class="content">
+<div class="callout"><strong>Important: this is a planned Console replacement workflow for non-HA deployments.</strong><p style="margin:6px 0 0">Do not use these steps as a substitute for a supported HA migration, disaster-recovery procedure, managed-host migration, or upgrade. Confirm the procedure for the exact QRadar version and appliance type before making changes. A migration can interrupt Console administration, event/flow visibility, and integrations. Schedule a maintenance window and establish a tested rollback plan.</p></div>
+<h2 id="scope">1. Choose the correct migration path</h2>
+<p>IBM provides separate procedures for replacing a Console while keeping the existing IP address and replacing one with a new IP address. Both flows assume the managed hosts remain in the deployment and that the new Console is installed at a matching QRadar software version/fix level before the configuration is restored.</p>
+<div class="table-wrap"><table><thead><tr><th>Scenario</th><th>What changes</th><th>Primary network consideration</th></tr></thead><tbody>
+<tr><td><strong>Same IP address</strong></td><td>The new Console takes over the old Console's management IP.</td><td>Move the old appliance to a temporary unused/decommissioned address first; only then assign the original IP to the new Console.</td></tr>
+<tr><td><strong>New IP address</strong></td><td>The replacement Console retains a different management IP.</td><td>Update DNS, routing, firewall allowlists, source integrations, API clients, and monitoring that refer to the old address or hostname.</td></tr>
+</tbody></table></div>
+<p>These procedures do not automatically migrate all QRadar app data, custom integrations, third-party application state, or every external dependency. Plan app data backup/restore separately, and inventory custom certificates, SSH keys, license state, WinCollect compatibility, managed hosts, and connections to external systems.</p>
+<h2 id="prep">2. Pre-migration checklist</h2>
+<ul class="checklist">
+<li>Record the old Console's appliance type, version, fix pack/patch level, hostname, IP/subnet, gateway, DNS, management interface, license details, and connected managed hosts.</li>
+<li>On the old and new systems, confirm the QRadar software version with <code>/opt/qradar/bin/myver</code>. Match the version and fix level before restoring a configuration backup; the backup must be restored to a compatible matching QRadar version.</li>
+<li>Install and configure the new appliance with a temporary or planned IP address, as appropriate for the chosen path. Do not put the same IP on both appliances at once.</li>
+<li>Run an On Demand Backup from <strong>Admin → Backup and Recovery → On Demand Backup</strong>. Wait for completion, download the backup, and store a second protected copy outside both appliances.</li>
+<li>Back up app data separately according to the specific app/extension's supported backup method. QRadar configuration backup/restore does not by itself guarantee app data is backed up or restored.</li>
+<li>Document custom certificates and trust stores, custom-generated key pairs, <code>/etc/ssh</code> and <code>/root/.ssh</code> material where required, DNS records, integrations, API consumers, and any local Event Collector data in <code>/store/ec</code>.</li>
+<li>Confirm sufficient capacity and storage on the destination; estimate Ariel data transfer duration and validate connectivity between the old and new appliances over SSH.</li>
+<li>Have console/OOB access (such as IMM or a local keyboard) available for network changes. Confirm change approval, communication plan, rollback IP/network details, and migration acceptance criteria.</li>
+</ul>
+<div class="info"><strong>Version compatibility is not optional.</strong><p style="margin:6px 0 0">Use <code>/opt/qradar/bin/myver</code> on both appliances. If versions differ, do not assume the backup will restore cleanly. Follow IBM's version-specific install/patch guidance and create a fresh backup after any planned software change that affects the source deployment.</p></div>
+<h2 id="same-ip">3. Migrating to a new Console with the same IP address</h2>
+<h3>Step 1 — Prepare the replacement Console</h3>
+<ol>
+<li>Install the new Console using the same supported QRadar version and fix level as production. Give it a temporary IP address and verify basic connectivity.</li>
+<li>Check the software version:</li>
+</ol>
+<pre class="code"><code>/opt/qradar/bin/myver</code></pre>
+<p>If WinCollect is in use, confirm the WinCollect version on the new Console matches the old Console before migration. Keep the old appliance available until the migration is accepted.</p>
+<h3>Step 2 — Back up the old Console and stop its Console services</h3>
+<p>Create and download an On Demand Backup, then preserve the backup file securely. During the approved cutover, stop the services listed in IBM's same-IP replacement procedure on the old Console:</p>
+<pre class="code"><code>systemctl stop hostcontext
+systemctl stop tomcat
+systemctl stop hostservices
+systemctl stop tunnel_manager</code></pre>
+<p>These are service-impacting commands. Confirm the exact sequence in the documentation for the installed QRadar release and do not run them on the destination Console by mistake.</p>
+<h3>Step 3 — Move the old Console to a temporary address</h3>
+<p>Identify the management interface and its NetworkManager connection profile:</p>
+<pre class="code"><code>cat /etc/management_interface
+cat /etc/management_interface_cp</code></pre>
+<p>Use the documented network-change procedure for your release. IBM's current same-IP guide demonstrates using the connection-profile UUID with <code>nmcli</code> to move the old appliance to an unused/decommissioned IP and update any required gateway/DNS values. Verify the new settings before applying them.</p>
+<pre class="code"><code># Illustrative IPv4 pattern only — replace every placeholder
+# with values confirmed for this host and release.
+nmcli connection modify &lt;UUID&gt; ipv4.addresses &lt;temporary_ip&gt;/&lt;prefix&gt;
+nmcli connection modify &lt;UUID&gt; ipv4.gateway &lt;gateway_ip&gt;
+nmcli connection modify &lt;UUID&gt; ipv4.dns &lt;dns_server_ip&gt;
+nmcli connection show &lt;UUID&gt;
+nmcli connection up &lt;UUID&gt;</code></pre>
+<p>Use IMM or local console access where possible so you can recover safely if management connectivity is lost. Verify that the old appliance no longer owns the production IP before proceeding.</p>
+<h3>Step 4 — Assign the original IP to the new Console</h3>
+<p>On the new appliance, run the supported network setup wizard and configure the original IP and its associated network settings:</p>
+<pre class="code"><code>/opt/qradar/bin/qchange_netsetup</code></pre>
+<p>Save the configuration, exit the wizard, and verify reachability. Do not have both old and new appliances using the same address at the same time.</p>
+<h3>Step 5 — Transfer certificates and custom SSH material</h3>
+<p>From the old appliance, copy the trusted certificates and any required SSH/key material to the new Console. Treat private keys as sensitive credentials and restrict access to the transfer. IBM's examples include the following commands:</p>
+<pre class="code"><code>rsync -avz /opt/qradar/conf/trusted_certificates/ root@new_appliance:/opt/qradar/conf/trusted_certificates/
+rsync -avz /etc/ssh/ root@new_appliance:/etc/ssh
+rsync -avz /root/.ssh/ root@new_appliance:/root/.ssh</code></pre>
+<p>Replace <code>new_appliance</code> with the destination's reachable address. Do not blindly overwrite destination key material without checking the migration procedure and local security policy. If custom Console SSL certificates are used, follow IBM's certificate-installation workflow; copy certificate material to a staging location and use <code>/opt/qradar/bin/install-ssl-cert.sh -i</code> where the IBM procedure directs. Do not simply overwrite the new Console's HTTP certificate directory with files from the old appliance.</p>
+<h3>Step 6 — Restore configuration and deploy</h3>
+<ol>
+<li>Copy the saved backup to <code>/store/backupHost/inbound/</code> on the new Console.</li>
+<li>In the QRadar UI, open <strong>Admin → Backup and Recovery</strong>, select the backup, and restore the applicable configuration and data items as directed by the version-specific migration guide.</li>
+<li>Review restore results and resolve reported errors. Some restored license information may require new licenses to be installed on the replacement appliance.</li>
+<li>Run <strong>Admin → Advanced → Deploy Full Configuration</strong> and allow deployment to finish. Check host access and connectivity if the UI reports issues.</li>
+</ol>
+<p>App data is handled separately from the configuration backup. Confirm the required apps/extensions are installed and restore their data using their own supported processes.</p>
+<h3>Step 7 — Transfer Ariel event and flow data</h3>
+<p>After the destination Console is configured, use IBM's <code>syncAriel.sh</code> process to transfer data under <code>/store/ariel/</code>. The utility transfers Ariel data; it does not move configuration or certificates. Obtain the script from IBM's linked migration/support documentation, validate that it is appropriate for the QRadar release, and use a persistent session such as <code>tmux</code> for a long transfer.</p>
+<pre class="code"><code># On the old Console, in the directory containing the IBM-provided utility:
+chmod +x syncAriel.sh
+tmux
+sh syncAriel.sh -i &lt;new_Console_IP_address&gt;</code></pre>
+<p>Monitor the transfer and review output/errors. IBM notes that this operation can be lengthy and transfers data in month-sized intervals to limit performance impact. If a transfer is interrupted, follow the script's documented rerun behavior rather than deleting files or improvising a manual sync.</p>
+<h3>Step 8 — If local Event Collector data exists</h3>
+<p>This is a separate, optional step for deployments where relevant data exists under <code>/store/ec</code>. It is not the same operation as <code>syncAriel.sh</code>. Follow IBM's procedure for stopping <code>ecs-ec-ingress</code> on the source and destination, creating the manual-stop marker on the destination, copying the relevant data, removing the marker, and restarting the service.</p>
+<pre class="code"><code># Destination Console: prevent automatic restart, then stop ingress
+touch /storetmp/ecs-ec-ingress.ecs-ec-ingress.manually_stopped
+systemctl stop ecs-ec-ingress
+
+# Copy the required /store/ec data from source to destination
+# using the supported transfer method for your environment.
+
+# Destination Console: remove marker and restart ingress
+rm -f /storetmp/ecs-ec-ingress.ecs-ec-ingress.manually_stopped
+systemctl start ecs-ec-ingress</code></pre>
+<div class="callout"><strong>Do not run the optional /store/ec procedure blindly.</strong><p style="margin:6px 0 0">Confirm the source contains the expected data, the exact copy path and ownership requirements, and that the IBM procedure for your QRadar release applies. The commands above show the control sequence, not a complete file-copy command.</p></div>
+<h2 id="new-ip">4. Migrating to a new Console with a new IP address</h2>
+<h3>Step 1 — Install the replacement Console at the planned new address</h3>
+<p>Install the new Console at a different IP address using a QRadar version/fix level that matches the existing deployment. Confirm the destination's role, hostname, network settings, software level, and reachability before starting the restore.</p>
+<pre class="code"><code>/opt/qradar/bin/myver</code></pre>
+<h3>Step 2 — Create and stage the configuration backup</h3>
+<ol>
+<li>On the old Console, create an On Demand Backup and wait for completion.</li>
+<li>Download the backup and keep a protected copy.</li>
+<li>Copy the backup to the new Console's <code>/store/backupHost/inbound/</code> directory.</li>
+<li>Copy required certificates and custom-generated key material when the applicable IBM procedure calls for it. Include <code>/root/.ssh</code> as well as <code>/etc/ssh</code> where needed; do not expose private keys unnecessarily.</li>
+</ol>
+<h3>Step 3 — Restore the configuration and check managed-host access</h3>
+<p>Open <strong>Admin → Backup and Recovery</strong> on the new Console, select the backup, and follow the version-specific restore workflow. IBM's documented new-IP procedure includes a managed-host access check during restoration; it also instructs administrators to stop the host firewall service on managed hosts temporarily when required so that the Console can test access and restore the deployment.</p>
+<div class="callout"><strong>Firewall-impact warning.</strong><p style="margin:6px 0 0">Stopping <code>iptables</code> affects the host's local firewall protections. Do not execute this across a production deployment without the IBM procedure open, change approval, an out-of-band access plan, and a clear step to restore the expected firewall/monitoring state. App Hosts have additional <code>docker_iptables_monitor.timer</code> considerations documented by IBM. Verify access is reported as OK before continuing.</p></div>
+<p>Complete the restore, review the results, and run <strong>Admin → Advanced → Deploy Full Configuration</strong>. Pay attention to installed applications versus deployment/extension configuration: those restore selections are not interchangeable, and app data still requires a separate plan.</p>
+<h3>Step 4 — Copy Ariel data to the new IP</h3>
+<p>Once configuration restore and deployment are complete, run the IBM-provided <code>syncAriel.sh</code> procedure from the old Console toward the new Console's IP address. Use the supported transfer workflow and a persistent shell session for long-running migrations:</p>
+<pre class="code"><code>chmod +x syncAriel.sh
+tmux
+sh syncAriel.sh -i &lt;new_Console_IP_address&gt;</code></pre>
+<p>Allow the transfer to finish, review errors, and confirm the expected historical event/flow data is available. Copying <code>/store/ariel/</code> does not transfer configuration or certificates, and the basic QRadar configuration backup does not guarantee that app data is migrated.</p>
+<h3>Step 5 — Update integrations and network dependencies</h3>
+<p>Because the management IP is changing, review and update references to the old Console address or hostname, including DNS records, firewall rules, API clients, syslog destinations, monitoring, automation, certificates/SANs, external apps, and documentation. Some managed-host and integration settings are regenerated during deployment, but do not assume every third-party integration updates itself.</p>
+<h2 id="data">5. Important data-transfer distinctions</h2>
+<div class="table-wrap"><table><thead><tr><th>Item</th><th>How it is handled</th><th>Common mistake</th></tr></thead><tbody>
+<tr><td>Configuration backup</td><td>Restore through QRadar Backup and Recovery on a compatible matching version.</td><td>Assuming a backup can be restored across arbitrary versions or fix levels.</td></tr>
+<tr><td>Ariel event/flow data</td><td>Transfer using IBM's documented <code>syncAriel.sh</code> process.</td><td>Assuming config restore brings all historical Ariel data or that syncAriel copies configuration.</td></tr>
+<tr><td>Application data</td><td>Back up/restore using the instructions for each app or extension.</td><td>Assuming apps and their databases are included completely in the QRadar configuration backup.</td></tr>
+<tr><td>Certificates and key material</td><td>Transfer only the required material and re-install custom SSL certificates using the documented workflow.</td><td>Blindly copying private keys into certificate directories or skipping trust validation.</td></tr>
+<tr><td>Local <code>/store/ec</code> data</td><td>Optional separate operation when applicable; follow the release-specific Event Collector procedure.</td><td>Confusing it with Ariel data, or stopping ingress without completing the marker/copy/restart workflow.</td></tr>
+</tbody></table></div>
+<h2 id="validate">6. Post-migration validation and rollback</h2>
+<ul class="checklist">
+<li>Confirm the replacement Console has the expected QRadar version, hostname, IP configuration, and license state.</li>
+<li>Review Backup and Recovery restore results and complete a full configuration deployment without unresolved errors.</li>
+<li>In <strong>Log Activity</strong>, run a recent-time search and verify new events are arriving and searchable.</li>
+<li>In <strong>Network Activity</strong>, verify flows are being received and processed where flow collection is configured.</li>
+<li>Check managed-host status, log source health, event pipeline, deployment health, time synchronization, and relevant System Notifications.</li>
+<li>Verify certificates, custom trust, WinCollect, scanners, apps/extensions, API clients, and external integrations.</li>
+<li>Confirm the historical Ariel data expected by stakeholders is present, and verify any relevant <code>/store/ec</code> data was migrated when applicable.</li>
+<li>For a new-IP migration, validate DNS, routes, firewall allowlists, monitoring, and consumers of the old address.</li>
+<li>Record transfer duration, skipped/failed items, final checks, and any service interruption. Keep the old Console powered down or isolated but available for the agreed rollback period.</li>
+</ul>
+<p>If validation fails, do not bring the old and new appliances online with the same IP address at once. Follow the rollback plan to isolate the replacement, restore the old appliance's network settings if required, and bring it back only after confirming address ownership and the risk of configuration/data divergence.</p>
+<h2 id="references">Official references and learning resources</h2>
+<ul>
+<li><a href="https://www.ibm.com/docs/en/qsip/7.6.0?topic=qshms-replacing-qradar-console-appliance-that-uses-same-ip-address" target="_blank" rel="noopener noreferrer">IBM QRadar 7.6 — Replacing a Console with the same IP address</a></li>
+<li><a href="https://www.ibm.com/docs/en/qsip/7.5.0?topic=qshms-replacing-qradar-console-appliance-that-uses-new-ip-address" target="_blank" rel="noopener noreferrer">IBM QRadar 7.5 — Replacing a Console with a new IP address</a></li>
+<li><a href="https://www.ibm.com/docs/en/qsip/7.6.0?topic=hardware-qradar-siem-migration-scenarios" target="_blank" rel="noopener noreferrer">IBM QRadar 7.6 — QRadar SIEM hardware migration scenarios</a></li>
+<li><a href="https://www.ibm.com/support/pages/qradar-console-migration-replace-non-ha-console-appliance-using-same-ip-address-or-hostname-minimal-downtime" target="_blank" rel="noopener noreferrer">IBM Support — Non-HA Console replacement using the same IP/hostname</a></li>
+<li><a href="https://www.securitylearningacademy.com/course/view.php?id=5097" target="_blank" rel="noopener noreferrer">IBM Security Learning Academy — Migrating a QRadar Console (same IP path)</a></li>
+<li><a href="https://www.securitylearningacademy.com/course/view.php?id=5241" target="_blank" rel="noopener noreferrer">IBM Security Learning Academy — Migrating a QRadar Console (new IP path)</a></li>
+</ul>
+<p class="subtle">This guide is a practical checklist, not a substitute for the complete IBM procedure. The new-IP documentation link above is for QRadar 7.5, while the same-IP link is for 7.6; use the corresponding documentation version for the system being migrated. Menu names, network tooling, host firewall steps, data transfer tooling, and supported restore options may differ by release. Validate every command and each step against IBM documentation before executing in production.</p>
+<div class="related"><a href="/articles/qradar-high-availability.html"><small>PART 7 · PREVIOUS</small><strong>← QRadar high availability</strong></a><a href="/#articles"><small>ARTICLE LIBRARY</small><strong>Back to all articles →</strong></a></div>
+</article>
+</div>
+<footer><div class="wrap footerinner"><span>© <span id="year">2026</span> Ashraf Gamal</span><a href="/">Home</a></div></footer>
+<script>document.getElementById('year').textContent=new Date().getFullYear();</script>
+</body>
+</html>
