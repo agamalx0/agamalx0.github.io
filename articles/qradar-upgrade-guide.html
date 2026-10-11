@@ -9,6 +9,14 @@
 :root{color-scheme:dark;--bg:#080a12;--text:#f4f6ff;--muted:#a3abc4;--line:rgba(177,190,255,.15);--cyan:#39e7ff;--purple:#9a66ff;--pink:#ff4fd8;--amber:#ffc879;--green:#8affc1}
 *{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:90px}body{margin:0;min-width:320px;color:var(--text);background:radial-gradient(ellipse at 7% 0,rgba(57,231,255,.09),transparent 32rem),radial-gradient(ellipse at 94% 9%,rgba(255,79,216,.08),transparent 28rem),var(--bg);font:16px/1.78 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}a{color:var(--cyan);text-decoration:none}a:hover{text-decoration:underline}.wrap{width:min(960px,calc(100% - 34px));margin:auto}.topbar{position:sticky;top:0;z-index:10;background:rgba(8,10,18,.86);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}.nav{height:68px;display:flex;align-items:center;justify-content:space-between;gap:18px}.brand{color:var(--text);font-weight:750}.back{font-size:13px;color:var(--muted)}.hero{padding:67px 0 35px}.eyebrow,.kicker{font-size:11px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:var(--cyan)}h1{font-size:clamp(36px,6vw,60px);line-height:1.08;letter-spacing:-.06em;margin:15px 0}.gradient{color:transparent;background:linear-gradient(100deg,var(--cyan),#9a8bff 55%,var(--pink));-webkit-background-clip:text;background-clip:text}.lede{font-size:18px;line-height:1.7;color:#c0c8df;max-width:820px}.meta{display:flex;flex-wrap:wrap;gap:10px 18px;font-size:12px;color:var(--muted);margin-top:24px}.pill{border:1px solid rgba(57,231,255,.24);background:rgba(57,231,255,.06);padding:4px 9px;border-radius:99px;color:#d9fbff}.layout{display:grid;grid-template-columns:235px minmax(0,1fr);gap:35px;padding:20px 0 85px}.toc{align-self:start;position:sticky;top:90px;padding:18px;border:1px solid var(--line);border-radius:16px;background:rgba(17,21,40,.6);max-height:calc(100vh - 110px);overflow:auto}.toc strong{font-size:12px}.toc a{display:block;color:var(--muted);font-size:12px;padding:6px 0;line-height:1.4}.content{min-width:0}.content h2{font-size:27px;line-height:1.25;letter-spacing:-.04em;margin:42px 0 13px}.content h3{font-size:18px;margin:26px 0 8px}.content p,.content li{color:#c0c8df}.content li{padding-left:3px;margin:7px 0}.content ul,.content ol{padding-left:22px}.callout{padding:18px 20px;border:1px solid rgba(255,200,121,.28);border-left:3px solid var(--amber);border-radius:13px;background:rgba(255,200,121,.055);margin:22px 0}.callout strong{color:#ffe2b3}.info{padding:17px 20px;border:1px solid rgba(57,231,255,.22);border-radius:13px;background:rgba(57,231,255,.045);margin:20px 0}.info strong{color:#c9faff}.success{padding:17px 20px;border:1px solid rgba(138,255,193,.22);border-radius:13px;background:rgba(138,255,193,.04);margin:20px 0}.success strong{color:#b8ffda}code,pre{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}code{font-size:.92em;color:#d7e9ff}.code{overflow:auto;margin:15px 0;padding:17px;border-radius:12px;border:1px solid var(--line);background:#070a12;color:#dbe6ff;font-size:13px;line-height:1.7}.table-wrap{overflow-x:auto;margin:20px 0;border:1px solid var(--line);border-radius:12px}table{width:100%;border-collapse:collapse;min-width:510px;font-size:13px}th,td{text-align:left;vertical-align:top;padding:12px 14px;border-bottom:1px solid var(--line)}th{color:#e9edff;background:rgba(154,102,255,.08)}td{color:#c0c8df}tr:last-child td{border-bottom:0}.checklist{list-style:none;padding:0!important}.checklist li{padding-left:27px!important;position:relative}.checklist li::before{content:"□";position:absolute;left:0;color:var(--cyan);font-size:18px;line-height:1.45}.related{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:36px}.related a{border:1px solid var(--line);border-radius:13px;padding:15px;color:var(--text);background:rgba(255,255,255,.025)}.related small{display:block;color:var(--muted);font-size:11px}.related strong{display:block;margin-top:5px;font-size:13px}.footer{border-top:1px solid var(--line);padding:23px 0;color:var(--muted);font-size:12px}.footerinner{display:flex;justify-content:space-between;gap:15px;flex-wrap:wrap}.subtle{font-size:12px;color:var(--muted)}
 @media(max-width:800px){.layout{grid-template-columns:1fr;gap:10px}.toc{position:static;display:grid;grid-template-columns:1fr 1fr;gap:0 14px;max-height:none}.toc strong{grid-column:1/-1}.hero{padding-top:45px}.content h2{margin-top:32px}.related{grid-template-columns:1fr}}@media(max-width:480px){.toc{grid-template-columns:1fr}.toc strong{grid-column:auto}}@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+.contact-hook{margin:30px 0 0;padding:22px 24px;border:1px solid rgba(57,231,255,.23);border-radius:15px;background:linear-gradient(120deg,rgba(57,231,255,.055),rgba(154,102,255,.065),rgba(255,79,216,.04))}
+.contact-hook .hook-kicker{display:block;color:var(--cyan);font-size:10px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;margin-bottom:8px}
+.contact-hook .hook-title{color:var(--text);font-size:19px;line-height:1.45;letter-spacing:-.025em;margin:0}
+.contact-hook p{color:#c0c8df;margin:8px 0 0}
+.contact-links{display:flex;flex-wrap:wrap;gap:9px;margin-top:15px}
+.contact-links a{display:inline-flex;align-items:center;justify-content:center;padding:8px 12px;border:1px solid rgba(177,190,255,.18);border-radius:9px;background:rgba(255,255,255,.025);color:#e4edff;font-size:12px;font-weight:700}
+.contact-links a:hover{border-color:rgba(57,231,255,.5);background:rgba(57,231,255,.07);color:var(--cyan);text-decoration:none}
+@media(max-width:480px){.contact-hook{padding:18px}.contact-hook .hook-title{font-size:17px}}
 </style>
 </head>
 <body>
@@ -54,95 +62,24 @@
 </ul>
 <p>Do not estimate downtime only from installer progress. Some upgrades include database migrations or OS changes and can take many hours depending on database size, I/O performance, network performance, and hardware. Allocate a window with enough margin for validation and escalation.</p>
 <h2 id="prechecks">4. Complete the pre-upgrade checklist</h2>
-<h3>Version, release notes, and compatibility</h3>
-<ul class="checklist">
-<li>Confirm the exact source version on the Console and managed hosts.</li>
-<li>Verify the target package's supported source versions and every required intermediate step.</li>
-<li>Read target release notes, known issues, product notices, hardware/memory requirements, browser requirements, and any OS migration notes.</li>
-<li>Confirm all QRadar products and appliance roles in the deployment are supported for the target release.</li>
-<li>Inventory App Host and application framework dependencies; update apps and confirm they are not in an error state.</li>
-<li>Review integrations and dependencies such as WinCollect, custom DSMs, custom rules, scripts, certificates, routing, external authentication, and API clients.</li>
-</ul>
-<h3>Health and deployment state</h3>
-<ul class="checklist">
-<li>Run the version-appropriate QRadar health checks and remediate blockers first.</li>
-<li>Review System Notifications for event-pipeline/performance degradation, memory issues, TX sentry/process stopped events, HA active/standby failures, disk or unavailable partition issues, time synchronization, backup failures, replication problems, and RAID/controller warnings.</li>
-<li>Verify time synchronization and basic network connectivity between the Console and managed hosts.</li>
-<li>Ensure pending configuration changes have been deployed successfully.</li>
-<li>Confirm there are no unresolved deployment or managed-host synchronization problems.</li>
-<li>Confirm storage/filesystems have adequate free space according to the exact package notes. Avoid filling /storetmp, /tmp, /store/transient, or other required partitions with upload files or logs.</li>
-<li>Check hardware health, RAID, CPU, memory, filesystem capacity, and underlying hypervisor/storage alerts where applicable.</li>
-</ul>
-<h3>Deployment-specific checks</h3>
-<ul class="checklist">
-<li>For older QRadar Event Collector deployments, confirm whether a GlusterFS-to-DRBD migration or other prerequisite is required by the selected version path.</li>
-<li>For HA, validate active/standby health, synchronization, required filesystem mount states, and the documented HA upgrade procedure.</li>
-<li>For major OS upgrades, check unsupported device drivers, encryption limitations, and any OS migration pretests called out by IBM.</li>
-<li>Confirm long-running scans and reports have completed or are handled according to the target release's upgrade notes.</li>
-<li>Close active QRadar UI sessions if the target release notes require it, to avoid installer/log access issues.</li>
-</ul>
-<h3>Deployment inventory and housekeeping</h3>
-<p>Capture an appliance inventory and confirm that all hosts are at the expected source version before beginning:</p>
-<pre class="code"><code># Inventory appliance names and IP addresses
-/opt/qradar/support/deployment_info.sh
-
-# Compare software versions across appliances
-/opt/qradar/support/all_servers.sh -C -k /opt/qradar/bin/myver > myver_output.txt
-cat myver_output.txt</code></pre>
-<ul class="checklist">
-<li>Check <code>/root</code> and approved operational directories for local scripts, personal utilities, exports, support-provided JAR files or interim fixes, and other files that are not part of the standard QRadar installation.</li>
-<li>Preserve custom network configuration. On systems that use the legacy RHEL network-scripts layout, static routes may be stored in <code>/etc/sysconfig/network-scripts/route-&lt;interface&gt;</code>; other OS versions may use a different NetworkManager configuration. Record the actual configuration for the installed OS instead of assuming one path applies everywhere.</li>
-<li>On physical appliances, verify firmware and hardware health against IBM's appliance-specific guidance: <a href="https://www.ibm.com/support/pages/qradar-firmware-list-xseries-appliances-updated" target="_blank" rel="noopener noreferrer">QRadar firmware list for supported xSeries appliances</a>.</li>
-<li>Review mounted storage with <code>mount | column -t</code> and <code>df -Th</code>. Follow the target upgrade guide for external-storage requirements; IBM's checklist generally instructs administrators to unmount external storage other than <code>/store</code> or <code>/store/ariel</code>. Do not unmount required QRadar filesystems or storage used by an active process.</li>
-<li>Confirm previous update media is not still mounted. Only when no installer or upgrade is active and after confirming the mount targets are stale, use the documented per-deployment cleanup commands where appropriate.</li>
-</ul>
-<pre class="code"><code>/opt/qradar/support/all_servers.sh -k "umount /media/cdrom"
-/opt/qradar/support/all_servers.sh -k "umount /media/updates"</code></pre>
-<div class="callout"><strong>Fleet-wide command caution</strong><p style="margin:6px 0 0"><code>all_servers.sh</code> executes commands across appliances. Review the target list, ensure no upgrade is running, and confirm the mounts are stale before issuing fleet-wide unmount commands. Do not run these commands blindly.</p></div>
-<p>IBM's pre-upgrade checklist is authoritative for the chosen target. See <a href="https://www.ibm.com/docs/en/qsip/7.6.0?topic=upgrading-preparation-checklist-qradar-upgrades" target="_blank" rel="noopener noreferrer">Preparation checklist for QRadar upgrades</a> and <a href="https://www.ibm.com/support/pages/qradar-software-update-checklist-administrators" target="_blank" rel="noopener noreferrer">QRadar software update checklist for administrators</a>.</p>
+<p>Before the change window, confirm the exact source version and fix level on the Console and managed hosts, then verify the supported path to the target release. Read the target package’s release notes, known issues, hardware/storage requirements, OS migration notes, and any intermediate-update requirements. Check application, DSM, WinCollect, authentication, and integration compatibility.</p>
+<h3>Health and deployment</h3><ul><li>Run release-appropriate health checks and resolve critical failures before upgrading.</li><li>Confirm the deployment is consistent, pending changes are deployed, managed hosts are reachable, and time synchronization is working.</li><li>Review System Notifications, HA state/synchronization, disk space, storage/RAID or hypervisor health, and recent backup status.</li></ul>
+<h3>Inventory and environment-specific requirements</h3><ul><li>Record each host role and version. Check output from <code>/opt/qradar/bin/myver -v</code> and <code>/opt/qradar/support/deployment_info.sh</code>; use additional fleet-wide tools only with the options supported by the installed release.</li><li>Preserve custom scripts, custom DSMs/rules, routes, certificates, support-provided fixes, and other local changes. Identify any nonstandard storage or mounts.</li><li>Follow the target release checklist for HA mount state, external storage, older Event Collector prerequisites, physical-appliance firmware, and required OS migration pretests. Do not run fleet-wide unmount or cleanup commands unless the target procedure calls for them and the mount is confirmed stale.</li></ul>
+<p>IBM’s preparation checklist for the exact target release is the authority for final prechecks; this short list is a planning aid, not a replacement for it.</p>
 <h2 id="backup">5. Backup and recovery planning</h2>
-<p>Do not begin an upgrade until the latest configuration backup has completed successfully and its file is copied to a safe location outside the system being upgraded. Verify that the backup is readable, that retention and access controls are appropriate, and that the team understands how recovery would work.</p>
-<ul>
-<li>Take a QRadar configuration backup using the supported Backup and Recovery workflow. Download the completed backup file rather than relying solely on a file left on the appliance.</li>
-<li>Follow IBM's documented data backup/recovery procedure for your product version and environment. Configuration backups do not automatically include every app's persistent data.</li>
-<li>Back up app data on the Console and/or App Host where the apps actually reside. IBM documents <code>app-volume-backup.py</code> for this purpose. Take a fresh manual backup after any important app changes and list the resulting archives:</li>
-</ul>
+<p>Do not start until a configuration backup has completed, the backup file is copied off the appliance, and the team has a workable recovery plan. Record the backup location, recovery owner, decision points, and support contacts.</p>
+<ul><li><strong>Configuration:</strong> use the supported QRadar Backup and Recovery workflow and confirm the backup is available outside the system being upgraded.</li><li><strong>Application data:</strong> back up persistent app data separately where required. IBM documents <code>app-volume-backup.py</code> for applicable deployments:</li></ul>
 <pre class="code"><code>cd /opt/qradar/bin
 ./app-volume-backup.py backup
 ./app-volume-backup.py ls</code></pre>
-<p>The supported listing subcommand is <code>ls</code> (not <code>lsc</code>). IBM notes that a configuration backup does not back up apps' data; consult <a href="https://www.ibm.com/docs/en/qsip/7.5.0?topic=applications-backing-up-restoring-app-data" target="_blank" rel="noopener noreferrer">Backing up and restoring app data</a> for the exact release. Keep the backup archive outside the system being upgraded.</p>
-<ul>
-<li>Export QRadar custom content before the upgrade. IBM documents the following Content Management Tool command, which may take a long time in larger environments:</li>
-</ul>
+<p>The listing subcommand is <code>ls</code>. Follow IBM’s app-specific restore instructions; a QRadar configuration backup does not guarantee app databases are included.</p>
+<ul><li><strong>Custom content:</strong> export supported custom content and store the export off-host:</li></ul>
 <pre class="code"><code>/opt/qradar/bin/contentManagement.pl --action export --content-type all</code></pre>
-<p>Store the export in a safe location and allow enough time for completion. For large deployments, an export can take many hours or longer. Keep a record of the export path and completion status.</p>
-<ul>
-<li>Preserve third-party and locally managed artifacts such as custom DSMs, rules, reference data configurations, scripts, certificates, integration settings, support-provided JAR files/interim fixes, personal utilities, exports, and any custom network configuration.</li>
-<li>Know where upgrade logs, precheck output, and existing deployment documentation will be stored.</li>
-<li>Confirm the recovery plan, recovery time objective, decision owner, and support contacts before the window begins.</li>
-</ul>
-<div class="callout"><strong>Do not treat a live copy of <code>/store/ariel</code> as a universal backup method.</strong><p style="margin:6px 0 0">The original notes include generic <code>cp</code>, <code>rsync</code>, and <code>scp</code> examples for event data. Do not copy active Ariel storage ad hoc as a substitute for a supported QRadar backup or migration procedure: it can be large, change while being copied, and may not provide a consistent, restorable backup. Use a specifically documented IBM data-migration procedure only when it applies to your scenario.</p></div>
-<div class="callout"><strong>A configuration backup is not automatically a downgrade/rollback mechanism.</strong><p style="margin:6px 0 0">QRadar configuration backups can have version compatibility limits. Do not assume a backup created on one version can be restored to an older or different version. Confirm restoration constraints in the specific migration/recovery guide, and arrange a supported recovery strategy for the source and target versions.</p></div>
+<p>Preserve certificates, scripts, integration settings, routes, and support-provided artifacts as relevant. Do not treat a live copy of <code>/store/ariel</code> as a universal backup or rollback method; use an IBM-documented data migration procedure only when it applies. Backup restore compatibility is version-dependent, so confirm recovery constraints for the source and target releases.</p>
 <h2 id="deployment">6. Managed hosts, deployment order, and HA</h2>
-<p>IBM's QRadar upgrade instructions require the Console to be upgraded first, followed by managed hosts, and require all QRadar products in the deployment to reach the same supported version and fix level. Follow the target release's exact order and patch-installer options rather than inventing a host order.</p>
-<h3>Distributed deployments</h3>
-<ul>
-<li>Inventory all host roles: Console, Event Collectors, Event Processors, Flow Processors, QFlow Collectors, Data Nodes, App Hosts, QRadar Network Insights, Incident Forensics, and any other attached QRadar products.</li>
-<li>Upgrade the Console first, then the hosts selected by the supported installer workflow. Some host roles can be updated concurrently; that does not mean every appliance should be upgraded in arbitrary order.</li>
-<li>If a host is unreachable or incompatible, stop and resolve it according to the installer and target release instructions. Do not knowingly leave a mixed-version deployment.</li>
-<li>After the upgrade, use supported tools such as <code>validate_ecs_services.sh</code> and deployment inventory checks where appropriate to confirm service versions and managed-host communication.</li>
-</ul>
-<h3>High availability</h3>
-<ul>
-<li>Verify the primary appliance is Active and the secondary is Standby, and confirm synchronization before starting.</li>
-<li>Before the change, verify that <code>/store</code> is mounted on the primary but not on the secondary, and that <code>/transient</code> is mounted on both hosts, as required by the applicable HA upgrade checklist.</li>
-<li>Capture the relevant mount state using <code>mount</code>, <code>df -Th</code>, and the HA status tools prescribed for the release. Do not manually change mount state to make it match a checklist.</li>
-<li>Follow the HA upgrade process documented for the exact release. IBM's instructions note that upgrading an HA primary can automatically upgrade the HA secondary for supported paths.</li>
-<li>Do not manually force HA failover during patching or a software upgrade unless the applicable IBM procedure explicitly directs it.</li>
-<li>Keep any version-specific file-copy procedure—such as a workaround involving <code>map_localhost_interfaces.txt</code>—out of the general runbook. Perform it only when the exact IBM procedure for the selected upgrade path requires it.</li>
-<li>Afterward, verify cluster roles, synchronization, storage/VIP behavior, and event processing before closing the change.</li>
-</ul>
-<p>References: <a href="https://www.ibm.com/docs/en/qsip/7.5.0?topic=upgrading-qradar-siem" target="_blank" rel="noopener noreferrer">Upgrading QRadar SIEM</a>, <a href="https://www.ibm.com/docs/en/qsip/7.5.0?topic=siem-upgrading-qradar-by-using-parallel-patching" target="_blank" rel="noopener noreferrer">Parallel patching</a>, and <a href="https://www.ibm.com/docs/en/qsip/7.5.0?topic=failovers-manual" target="_blank" rel="noopener noreferrer">Manual HA failovers</a>.</p>
+<p>Follow the upgrade order defined by the target release. IBM’s standard workflow upgrades the Console first, then managed hosts, and requires the deployment to finish on a supported, consistent version/fix level. Do not leave a known mixed-version deployment running without following IBM’s recovery instructions.</p>
+<ul><li>Inventory the roles present—such as Event Collectors, Event Processors, Data Nodes, App Hosts, QRadar Network Insights, and Incident Forensics—and check their compatibility with the target.</li><li>Upgrade hosts only in the order and concurrency pattern permitted by the package. Resolve unreachable or incompatible hosts rather than guessing or skipping them.</li><li>For HA, confirm the intended Primary Active / Secondary Standby state and healthy synchronization before the window. Follow the release-specific HA upgrade process and check the documented <code>/store</code> and <code>/transient</code> mount state. Do not force a manual failover during patching unless IBM explicitly directs it.</li><li>Afterward, verify host versions, HA roles, synchronization, storage/network behavior, and event processing.</li></ul>
+<p>Use the official IBM upgrade and HA references linked below for the exact release.</p>
 <h2 id="download">7. Download and validate the software</h2>
 <ol>
 <li>Download the exact SFS or ISO specified by IBM for the approved target path from <a href="https://www.ibm.com/support/fixcentral/" target="_blank" rel="noopener noreferrer">IBM Fix Central</a>.</li>
@@ -155,35 +92,18 @@ cat myver_output.txt</code></pre>
 <pre class="code"><code>df -h /tmp /storetmp /store/transient | tee diskchecks.txt</code></pre>
 <p>This check is an example for that release's procedure, not a replacement for verifying required filesystems and free-space requirements on every host.</p>
 <h2 id="execute">8. Execute the upgrade</h2>
-<p>The exact command sequence depends on the selected SFS/ISO package. For SFS-based QRadar software updates, IBM's release instructions commonly use a mounted SFS file and the included installer, but always use the exact filename, mount point, and sequence in the target release notes.</p>
-<p>First stage the exact SFS file in the directory required by the release notes (commonly <code>/storetmp</code> for the documented releases), check filesystem capacity, and verify the package digest:</p>
-<pre class="code"><code># Replace the filename with the exact file downloaded from Fix Central
-df -h /tmp /storetmp /store/transient | tee diskchecks.txt
+<p>Use the exact installation sequence for the approved SFS or ISO package. The following illustrates the checks—not a universal upgrade script. Replace placeholders with the actual target package and use the filenames, paths, and options documented for that release.</p>
+<pre class="code"><code># Confirm free space and verify the exact target package
+df -h /tmp /storetmp /store/transient
 sha256sum /storetmp/&lt;exact-target-file&gt;.sfs</code></pre>
-<p>Compare the SHA-256 output with the digest published by IBM for that exact package. Do not rely only on the MD5 checksum mentioned in older notes when IBM publishes SHA-256. Do not proceed if the digest differs.</p>
-<p>An example for the documented QRadar 7.6.0 Fix Pack 5 SFS workflow is:</p>
-<pre class="code"><code># Example only: replace the filename with the exact downloaded SFS.
-# Run only if it matches the target package's official instructions.
+<p>Compare the checksum with IBM’s published value. Do not continue if it differs. For an SFS path, mount and run the installer only as specified in the release notes. Where the package supports an installer pretest, run it and resolve any failure before upgrading:</p>
+<pre class="code"><code># Only when supported and directed by the target release notes
 mkdir -p /media/updates
-mount -o loop /storetmp/760-QRADAR-QRSIEM-2026.4.0.20261002130537.sfs /media/updates
-
-# Optional pretest, only when supported by this release/package
+mount -o loop /storetmp/&lt;exact-target-file&gt;.sfs /media/updates
 /media/updates/installer -t
-
-# Start the installer only after all pretests pass
 /media/updates/installer</code></pre>
-<div class="callout"><strong>Do not copy this example as-is for a different release.</strong><p style="margin:6px 0 0">The SFS filename above is specific to QRadar 7.6.0 Fix Pack 5. Other versions use different filenames and may have different prerequisites, supported source levels, installer options, and pretests. The <code>-t</code> option is the installer pretest mode documented for supported packages; follow the target release notes. During pretesting, certain services such as the web server and HostContext may be stopped and restarted automatically. If a pretest fails, resolve the reported issue and rerun the test; do not continue to patch with a failed pretest.</p></div>
-<p>When the installer opens, read all pre-installation checks and prompts. Choose the sequential/legacy or parallel method only if it is offered and supported for the selected package and deployment. Follow the installer’s guidance about patching the Console first and updating eligible managed hosts afterward.</p>
-<h3>Sequential versus parallel patching</h3>
-<ul>
-<li><strong>Sequential:</strong> patches hosts in a controlled sequence. It can be easier to follow for deployments where staged troubleshooting is preferred, though the maintenance window may be longer.</li>
-<li><strong>Parallel:</strong> where supported, stages the package and upgrades eligible hosts concurrently after the Console step. Review the target release’s rules, unreachable-host behavior, and progress/status reporting before choosing it.</li>
-</ul>
-<p>Parallel patching is not a way to bypass compatibility or host-order restrictions. Follow the current IBM parallel-patching guide and do not rename the SFS file where the procedure says its original name is required.</p>
-<h3 id="forensics-note">Special case: an Incident Forensics compatibility pretest</h3>
-<p>If the installer stops with an error such as <code>This patch is incompatible with Forensics deployments</code>, stop and investigate the product combination. Do not bypass the pretest or repeatedly rerun the same generic SFS. The older QRadar 7.5.x workflow can require a separate QRadar Incident Forensics update package and its own documented sequence; use the exact IBM instruction for that target version and the QIF appliances in the deployment.</p>
-<div class="callout"><strong>Do not apply the older Forensics workaround to QRadar 7.6.x.</strong><p style="margin:6px 0 0">IBM states that QRadar Incident Forensics is not available in the 7.6.x release stream. If the deployment uses QIF, resolve the supported product/version strategy before selecting a 7.6.x target. A separate QIF SFS is not a general-purpose bypass for a failed pretest.</p></div>
-<p>Version-specific reference: <a href="https://www.ibm.com/docs/en/qsip/7.5?topic=upgrading-qradar-incident-forensics" target="_blank" rel="noopener noreferrer">Upgrading QRadar Incident Forensics</a>.</p>
+<p>Do not reuse a filename or command from another release. Read the installer prompts, use the supported host order, and keep a way to reconnect if SSH drops. Choose sequential or parallel patching only when it is offered and permitted for the target package; parallel mode does not bypass compatibility requirements. Do not interrupt the installer simply because a phase appears idle—check the documented logs and status first.</p>
+<h3>Special compatibility failures</h3><p>If the installer reports an Incident Forensics compatibility error, stop and follow the procedure for the exact QRadar and Forensics versions. Do not bypass pretests or apply a workaround from another release. IBM states that Incident Forensics is not available in the QRadar 7.6.x release stream, so deployments using it need an explicitly supported product/version plan before choosing a target.</p>
 <h2 id="monitor">9. Monitor the upgrade; do not interrupt it casually</h2>
 <ul>
 <li>Keep an active administrative session and a separate method to reconnect if the SSH client drops. If the installer uses a persistent session such as tmux, follow the package instructions for reconnecting.</li>
@@ -193,35 +113,9 @@ mount -o loop /storetmp/760-QRADAR-QRSIEM-2026.4.0.20261002130537.sfs /media/upd
 <li>Review the final summary for managed hosts that were skipped or not updated. Investigate each result; a success message from the Console alone does not prove every managed host is patched.</li>
 </ul>
 <h2 id="post">10. Post-upgrade validation</h2>
-<p>Do not close the maintenance window when the installer exits. Validate the QRadar product, data pipeline, integrations, and operational behavior against the baseline recorded before the change.</p>
-<h3>Release-specific finalization</h3>
-<ul class="checklist">
-<li>Run the documented post-upgrade health check for the release. Where supported, <code>drq -v</code> provides verbose local-host health-check output; run the appropriate checks on the relevant hosts and address reported failures.</li>
-<li>For SFS update procedures that call for it, unmount the update media after the installer has finished and the system is stable. Do not unmount media while the installer is active:</li>
-</ul>
-<pre class="code"><code>umount /media/updates</code></pre>
-<p>Delete the staged SFS only after successful completion and after confirming it is not needed for diagnostics or a supported retry. Clear the browser cache when the target release notes instruct you to. If the release workflow calls for checking Auto Update from the Console Dashboard/Admin UI after the upgrade, verify update status there; this is a release-specific finalization step, not a replacement for the software upgrade itself.</p>
-<h3>Platform and deployment</h3>
-<ul class="checklist">
-<li>Confirm the expected QRadar version and fix level on the Console and each managed host (for example, using <code>/opt/qradar/bin/myver -v</code>).</li>
-<li>Review the installer result and list of hosts updated, skipped, or failed.</li>
-<li>Run the release-appropriate health checks and review new System Notifications.</li>
-<li>Verify managed-host connectivity and ECS/ECS-Ingress service versions with supported diagnostic tools where applicable.</li>
-<li>Check HA roles, synchronization, filesystem mount state, VIP/shared network behavior, and replication health if the deployment uses HA.</li>
-<li>Clear the browser cache before logging in if the target update instructions require it.</li>
-</ul>
-<h3>SOC functionality and data</h3>
-<ul class="checklist">
-<li>Verify log sources are communicating and new events are searchable with current timestamps.</li>
-<li>Verify network flows are arriving if flow data is part of the deployment.</li>
-<li>Confirm offenses are being generated as expected, and run a known-good test/search aligned to your local detection validation process.</li>
-<li>Check custom DSMs, rules, reference data, saved searches, reports, dashboards, and scheduled tasks most important to SOC operations.</li>
-<li>Verify apps are running, compatible, and no longer reporting error states. Test App Host applications when present.</li>
-<li>Test integrations such as SOAR/case management, threat intelligence, ticketing, authentication, email, API clients, and external data sources.</li>
-<li>Confirm scheduled configuration backups and any other critical operational jobs are functioning.</li>
-<li>Record before/after EPS/FPM, event pipeline health, storage usage, search latency, and other workload-specific baselines.</li>
-</ul>
-<div class="success"><strong>Close the change only when acceptance criteria pass.</strong><p style="margin:6px 0 0">At minimum, all intended hosts should be on the supported version, health checks should be acceptable, core log and flow ingestion should be confirmed, critical applications and integrations should work, and any remaining warnings should have documented owners and plans.</p></div>
+<p>Do not close the change just because the installer exits. Compare the upgraded deployment with the baseline recorded before maintenance.</p>
+<ul><li>Confirm the Console and every intended managed host report the supported target version/fix level, with no failed or skipped hosts left unexplained.</li><li>Run the release-appropriate health checks (for example, <code>drq -v</code> where supported), review System Notifications, deployment status, managed-host connectivity, and HA state if applicable.</li><li>Verify new events are arriving and searchable; check flows if used, then validate a known-good search or detection test.</li><li>Check the critical apps, custom rules/DSM content, reference data, reports, authentication, and SOAR/threat-intelligence/API integrations used by your SOC.</li><li>Complete only the release-specific finalization steps, such as unmounting update media after the installer has finished, and retain logs and backup artifacts until acceptance is confirmed.</li></ul>
+<p>Record any outstanding warnings with an owner and resolution plan. Keep the change open until core ingestion, critical applications, and key integrations have passed the agreed acceptance checks.</p>
 <h2 id="failure">11. If an upgrade fails or a host is left behind</h2>
 <ol>
 <li>Pause additional manual changes. Do not attempt an improvised downgrade or rerun a different installer over the failed state.</li>
@@ -269,6 +163,12 @@ mount -o loop /storetmp/760-QRADAR-QRSIEM-2026.4.0.20261002130537.sfs /media/upd
 <li><a href="https://www.ibm.com/support/pages/what-should-i-consider-during-and-after-qradar-siem-upgrade" target="_blank" rel="noopener noreferrer">IBM Support — Before, during, and after a QRadar upgrade</a></li>
 </ul>
 <p class="subtle">This guide was reviewed on 11 October 2026. IBM can add, replace, or withdraw release packages and upgrade paths. Re-check the currently published release notes and Fix Central package prerequisites immediately before performing an upgrade.</p>
+<div class="contact-hook">
+<span class="hook-kicker">Need help with your environment?</span>
+<p class="hook-title">Planning a QRadar upgrade and want a safer path from pre-checks to post-upgrade validation? Contact me to discuss upgrade readiness and planning.</p>
+<p>For a technical inquiry or service request, reach out through the channel that works best for you.</p>
+<div class="contact-links"><a href="mailto:as.ga2019@gmail.com?subject=QRadar%20upgrade%20planning&amp;body=Hi%20Ashraf%2C%0A%0AI%20read%20your%20QRadar%20upgrade%20guide%20and%20would%20like%20to%20discuss%20upgrade%20readiness%20or%20planning%20support.%0A%0ABest%20regards%2C">Email me ↗</a><a href="https://wa.me/966598243358?text=Hi%20Ashraf%2C%20I%20read%20your%20QRadar%20upgrade%20guide%20and%20would%20like%20to%20discuss%20upgrade%20readiness%20or%20planning%20support." target="_blank" rel="noopener noreferrer">WhatsApp ↗</a><a href="https://www.linkedin.com/in/1elrawy/" target="_blank" rel="noopener noreferrer">LinkedIn ↗</a></div>
+</div>
 <div class="related"><a href="/articles/qradar-operations-essentials.html"><small>PART 5 · PREVIOUS</small><strong>← QRadar operations essentials</strong></a><a href="/articles/qradar-high-availability.html"><small>PART 7 · NEXT</small><strong>QRadar high availability →</strong></a></div>
 </article>
 </div>
