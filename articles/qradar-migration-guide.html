@@ -122,6 +122,13 @@ systemctl start ecs-ec-ingress</code></pre>
 <h3>Step 3 — Restore the configuration and check managed-host access</h3>
 <p>Open <strong>Admin → Backup and Recovery</strong> on the new Console, select the backup, and follow the version-specific restore workflow. IBM's documented new-IP procedure includes a managed-host access check during restoration; it also instructs administrators to stop the host firewall service on managed hosts temporarily when required so that the Console can test access and restore the deployment.</p>
 <div class="callout"><strong>Firewall-impact warning.</strong><p style="margin:6px 0 0">Stopping <code>iptables</code> affects the host's local firewall protections. Do not execute this across a production deployment without the IBM procedure open, change approval, an out-of-band access plan, and a clear step to restore the expected firewall/monitoring state. App Hosts have additional <code>docker_iptables_monitor.timer</code> considerations documented by IBM. Verify access is reported as OK before continuing.</p></div>
+<pre class="code"><code># On an App Host, stop its firewall monitor timer first:
+systemctl stop docker_iptables_monitor.timer
+systemctl stop iptables
+
+# On each other managed host:
+systemctl stop iptables</code></pre>
+<p>In the restore workflow, use <strong>Test Hosts Access</strong> and confirm every managed host reports <code>OK</code> before continuing. If a host fails the access test, follow IBM's troubleshooting sequence for that host rather than proceeding with an incomplete deployment. At the end of the documented process, restore firewall and monitoring behavior for each host type; IBM specifically calls out restarting <code>docker_iptables_monitor.timer</code> on the App Host.</p>
 <p>Complete the restore, review the results, and run <strong>Admin → Advanced → Deploy Full Configuration</strong>. Pay attention to installed applications versus deployment/extension configuration: those restore selections are not interchangeable, and app data still requires a separate plan.</p>
 <h3>Step 4 — Copy Ariel data to the new IP</h3>
 <p>Once configuration restore and deployment are complete, run the IBM-provided <code>syncAriel.sh</code> procedure from the old Console toward the new Console's IP address. Use the supported transfer workflow and a persistent shell session for long-running migrations:</p>
