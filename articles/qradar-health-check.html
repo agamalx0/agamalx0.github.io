@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#080a12">
+<meta name="description" content="A practical IBM QRadar health-check workflow that distinguishes DrQ, Recon, and Cliniq, with limitations and pre-upgrade recommendations.">
+<title>QRadar Health Check | Ashraf Gamal</title>
+<style>
+:root{color-scheme:dark;--bg:#080a12;--text:#f4f6ff;--muted:#a3abc4;--line:rgba(177,190,255,.15);--cyan:#39e7ff;--purple:#9a66ff;--pink:#ff4fd8;--amber:#ffc879}
+*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:90px}body{margin:0;min-width:320px;color:var(--text);background:radial-gradient(ellipse at 7% 0,rgba(57,231,255,.09),transparent 32rem),radial-gradient(ellipse at 94% 9%,rgba(255,79,216,.08),transparent 28rem),var(--bg);font:16px/1.78 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}a{color:var(--cyan);text-decoration:none}a:hover{text-decoration:underline}.wrap{width:min(920px,calc(100% - 34px));margin:auto}.topbar{position:sticky;top:0;z-index:10;background:rgba(8,10,18,.86);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}.nav{height:68px;display:flex;align-items:center;justify-content:space-between;gap:18px}.brand{color:var(--text);font-weight:750}.back{font-size:13px;color:var(--muted)}.hero{padding:67px 0 35px}.eyebrow,.kicker{font-size:11px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:var(--cyan)}h1{font-size:clamp(36px,6vw,60px);line-height:1.08;letter-spacing:-.06em;margin:15px 0}.gradient{color:transparent;background:linear-gradient(100deg,var(--cyan),#9a8bff 55%,var(--pink));-webkit-background-clip:text;background-clip:text}.lede{font-size:18px;line-height:1.7;color:#c0c8df;max-width:770px}.meta{display:flex;flex-wrap:wrap;gap:10px 18px;font-size:12px;color:var(--muted);margin-top:24px}.pill{border:1px solid rgba(57,231,255,.24);background:rgba(57,231,255,.06);padding:4px 9px;border-radius:99px;color:#d9fbff}.layout{display:grid;grid-template-columns:220px minmax(0,1fr);gap:35px;padding:20px 0 85px}.toc{align-self:start;position:sticky;top:90px;padding:18px;border:1px solid var(--line);border-radius:16px;background:rgba(17,21,40,.6)}.toc strong{font-size:12px}.toc a{display:block;color:var(--muted);font-size:12px;padding:7px 0;line-height:1.4}.content{min-width:0}.content h2{font-size:27px;line-height:1.25;letter-spacing:-.04em;margin:42px 0 13px}.content h3{font-size:18px;margin:26px 0 8px}.content p,.content li{color:#c0c8df}.content li{padding-left:3px;margin:7px 0}.content ul,.content ol{padding-left:22px}.callout{padding:18px 20px;border:1px solid rgba(255,200,121,.28);border-left:3px solid var(--amber);border-radius:13px;background:rgba(255,200,121,.055);margin:22px 0}.callout strong{color:#ffe2b3}.info{padding:17px 20px;border:1px solid rgba(57,231,255,.22);border-radius:13px;background:rgba(57,231,255,.045);margin:20px 0}.info strong{color:#c9faff}code,pre{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}code{font-size:.92em;color:#d7e9ff}.code{overflow:auto;margin:15px 0;padding:17px;border-radius:12px;border:1px solid var(--line);background:#070a12;color:#dbe6ff;font-size:13px;line-height:1.7}.table-wrap{overflow-x:auto;margin:20px 0;border:1px solid var(--line);border-radius:12px}table{width:100%;border-collapse:collapse;min-width:480px;font-size:13px}th,td{text-align:left;vertical-align:top;padding:12px 14px;border-bottom:1px solid var(--line)}th{color:#e9edff;background:rgba(154,102,255,.08)}td{color:#c0c8df}tr:last-child td{border-bottom:0}.related{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:36px}.related a{border:1px solid var(--line);border-radius:13px;padding:15px;color:var(--text);background:rgba(255,255,255,.025)}.related small{display:block;color:var(--muted);font-size:11px}.related strong{display:block;margin-top:5px;font-size:13px}.footer{border-top:1px solid var(--line);padding:23px 0;color:var(--muted);font-size:12px}.footerinner{display:flex;justify-content:space-between;gap:15px;flex-wrap:wrap}
+@media(max-width:760px){.layout{grid-template-columns:1fr;gap:10px}.toc{position:static;display:grid;grid-template-columns:1fr 1fr;gap:0 14px}.toc strong{grid-column:1/-1}.hero{padding-top:45px}.content h2{margin-top:32px}.related{grid-template-columns:1fr}}@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<header class="topbar"><nav class="nav wrap"><a class="brand" href="/">AG <span class="gradient">/ Notes</span></a><a class="back" href="/#articles">← Back to all articles</a></nav></header>
+<header class="hero wrap">
+<div class="eyebrow">Operations guide · IBM QRadar SIEM</div>
+<h1>QRadar health check:<br><span class="gradient">DrQ, Recon &amp; Cliniq</span></h1>
+<p class="lede">A practical baseline for checking QRadar health before maintenance or upgrades. These commands are useful, but they are not interchangeable: each tool covers a different part of the platform.</p>
+<div class="meta"><span>By Ashraf Gamal</span><span>Updated 11 October 2026</span><span class="pill">Updated from 2024 notes</span><span>Approx. 6 min read</span></div>
+</header>
+<div class="wrap layout">
+<aside class="toc"><strong>In this guide</strong><a href="#scope">Scope and preparation</a><a href="#drq">1. DrQ checks</a><a href="#recon">2. Recon status</a><a href="#cliniq">3. Cliniq</a><a href="#workflow">Suggested workflow</a><a href="#limitations">What a health check misses</a><a href="#references">References</a></aside>
+<article class="content">
+<div class="info"><strong>Quick distinction</strong><p style="margin:6px 0 0"><code>drq</code> runs QRadar health checks for the current host. <code>recon ps</code> is primarily used to inspect QRadar application workloads and their status. <code>cliniq</code> is another QRadar health-check utility. None of these commands alone proves the full deployment is healthy.</p></div>
+<h2 id="scope">1. Define the scope before running checks</h2>
+<p>A health check is most useful when it is tied to a purpose: routine operations, investigation of a known issue, a planned change, or a pre-upgrade review. Record the QRadar release/update package, host role (Console, Event Collector, Event Processor, App Host, or other managed host), and the reason for the check.</p>
+<p>Run checks with the permissions required by IBM's instructions, usually as <code>root</code> for DrQ. In distributed deployments, remember that a command run on one host generally does not validate every other host.</p>
+<h2 id="drq">2. Run DrQ health checks</h2>
+<p>DrQ is IBM's extensible health-check framework. IBM documents it for routine monitoring and for pre-change activities such as upgrades. It runs the checks available and applicable on the local host; it does not communicate with every other system in the deployment.</p>
+<pre class="code"><code>drq</code></pre>
+<p>Useful documented options include:</p>
+<div class="table-wrap"><table><thead><tr><th>Command</th><th>Purpose</th></tr></thead><tbody>
+<tr><td><code>drq -h</code></td><td>Display help and supported options.</td></tr>
+<tr><td><code>drq -l</code></td><td>List available tests and whether they apply to this host.</td></tr>
+<tr><td><code>drq -v</code></td><td>Show verbose check results.</td></tr>
+<tr><td><code>drq -j</code></td><td>Output check results in JSON format.</td></tr>
+<tr><td><code>drq -q</code></td><td>Use quiet mode and return an exit code: 0 for success, 1 for check failures, and 2 for invalid Lua files (per IBM's documented behavior).</td></tr>
+</tbody></table></div>
+<p>For automated collection, the JSON or quiet output may be useful, but review the output format and exit behavior on the QRadar release you operate before integrating it into a script.</p>
+<div class="callout"><strong>Interpret results, don't just collect them.</strong><p style="margin:6px 0 0">A failure or warning is a starting point for investigation. Read the test name, evidence, suggested action, and applicable release notes. Do not change system files or apply a workaround solely because a health-check line looks unusual.</p></div>
+<h2 id="recon">3. Inspect application workloads with Recon</h2>
+<p>Recon is particularly useful when troubleshooting QRadar applications. Run:</p>
+<pre class="code"><code>/opt/qradar/support/recon ps</code></pre>
+<p>The output lists application identifiers and workload/service/container checks. IBM's documentation describes status symbols for checks such as whether a service is defined and started, whether the container exists and is running, and whether its port is responsive.</p>
+<p>Use this command when the problem involves an app that will not start, an app UI that is unavailable, or an application workload that appears unhealthy. It is not a replacement for DrQ, a full deployment check, or a log-source ingestion test.</p>
+<h2 id="cliniq">4. Use Cliniq where applicable</h2>
+<p>Cliniq is listed in IBM's QRadar support-tools reference as a health-check tool for routine checks and pre-upgrade reviews. Begin by checking the tool's help on the system:</p>
+<pre class="code"><code>/opt/qradar/support/cliniq -h</code></pre>
+<p>Follow the invocation and remediation steps documented for your installed release. Tool availability and behavior can vary by version or patch level; a missing Cliniq binary or symbolic link has been documented as an upgrade failure condition by IBM Support.</p>
+<div class="info"><strong>Do not repair the utility by guesswork.</strong><p style="margin:6px 0 0">If Cliniq is missing or fails, collect the exact error and QRadar version, then consult the matching IBM Support article or open a support case. Avoid replacing symbolic links or selecting a different binary version unless IBM's instructions for that specific issue tell you to do so.</p></div>
+<h2 id="workflow">5. A repeatable health-check workflow</h2>
+<ol>
+<li><strong>Capture the baseline:</strong> record date/time, host name, QRadar version/update package, host role, and the change or symptom under review.</li>
+<li><strong>Check each relevant host:</strong> run DrQ where applicable rather than assuming a Console result covers all managed hosts.</li>
+<li><strong>Review application status:</strong> if the issue involves the App Host or applications, collect the Recon output from the relevant host.</li>
+<li><strong>Run Cliniq as appropriate:</strong> use the help and procedure documented for the exact QRadar release; preserve any error output.</li>
+<li><strong>Validate user-visible service:</strong> log in to the UI, check relevant system notifications, confirm the intended log sources are communicating, and verify that new events can be searched.</li>
+<li><strong>Document before-and-after results:</strong> capture the symptom, output, action taken, and outcome. For upgrades, address blockers and follow IBM's upgrade checklist before proceeding.</li>
+</ol>
+<h2 id="limitations">6. What these checks don't prove</h2>
+<p>A successful command does not, by itself, demonstrate that every aspect of QRadar is healthy. These checks may not validate end-to-end log delivery from every source, EPS/FPM against expected load, search accuracy, HA synchronization, connectivity between all managed hosts, license coverage, or the correctness of a detection use case.</p>
+<p>Pair local diagnostic output with deployment-specific checks, UI verification, log-source status, system notifications, network evidence, and the official pre-upgrade checklist. In a distributed deployment, check each host involved in the symptom or change.</p>
+<h2 id="references">7. Official references</h2>
+<ul>
+<li><a href="https://www.ibm.com/docs/en/qradar-on-cloud?topic=support-running-health-checks" target="_blank" rel="noopener noreferrer">IBM: Running health checks with DrQ</a></li>
+<li><a href="https://www.ibm.com/community/101/qradar/tools/" target="_blank" rel="noopener noreferrer">IBM QRadar 101: Support tools (including Cliniq)</a></li>
+<li><a href="https://www.ibm.com/docs/en/qradar-common?topic=troubleshooting-running-recon-tool" target="_blank" rel="noopener noreferrer">IBM: Running the Recon tool</a></li>
+<li><a href="https://www.ibm.com/docs/en/qsip/7.5.0?topic=upgrading-preparation-checklist-qradar-upgrades" target="_blank" rel="noopener noreferrer">IBM: Preparation checklist for QRadar upgrades</a></li>
+<li><a href="https://www.ibm.com/support/pages/qradar-upgrade-75-fails-%E2%80%9Cunable-find-cliniq-binary-optqradarsupportcliniq%E2%80%9D-error-%E2%80%93-resolve-missing-cliniq-symlink" target="_blank" rel="noopener noreferrer">IBM Support: Missing Cliniq binary during upgrade</a></li>
+</ul>
+<p class="note">These procedures are operational guidance, not permission to modify a production QRadar appliance. Check the release-specific IBM documentation and follow your organization's change-management process.</p>
+<div class="related"><a href="/articles/qradar-installation.html"><small>PREVIOUS GUIDE</small><strong>← QRadar installation</strong></a><a href="/#articles"><small>PORTFOLIO</small><strong>Back to the article library →</strong></a></div>
+</article>
+</div>
+<footer><div class="wrap" style="display:flex;justify-content:space-between;gap:15px;flex-wrap:wrap"><span>© <span id="year">2026</span> Ashraf Gamal</span><a href="/">Home</a></div></footer>
+<script>document.getElementById('year').textContent=new Date().getFullYear();</script>
+</body>
+</html>
