@@ -17,6 +17,8 @@
 .contact-links a{display:inline-flex;align-items:center;justify-content:center;padding:8px 12px;border:1px solid rgba(177,190,255,.18);border-radius:9px;background:rgba(255,255,255,.025);color:#e4edff;font-size:12px;font-weight:700}
 .contact-links a:hover{border-color:rgba(57,231,255,.5);background:rgba(57,231,255,.07);color:var(--cyan);text-decoration:none}
 @media(max-width:480px){.contact-hook{padding:18px}.contact-hook .hook-title{font-size:17px}}
+.personal-note{margin:0 0 22px;padding:11px 14px;border:1px solid rgba(177,190,255,.13);border-radius:10px;background:rgba(255,255,255,.025);color:#a3abc4;font-size:12px;line-height:1.65}
+.personal-note strong{color:#dce5ff;font-weight:700}
 </style>
 </head>
 <body>
@@ -30,6 +32,7 @@
 <div class="wrap layout">
 <aside class="toc"><strong>In this article</strong><a href="#overview">What is QRadar?</a><a href="#how-it-works">How it works</a><a href="#capabilities">Core capabilities</a><a href="#benefits">Operational benefits</a><a href="#compliance">Compliance considerations</a><a href="#limitations">Important considerations</a><a href="#references">References</a></aside>
 <article class="content">
+<p class="personal-note"><strong>Personal note:</strong> This article reflects my experience and is for educational purposes only—not official vendor guidance. Always verify procedures against current vendor documentation.</p>
 <h2 id="overview">1. What is QRadar SIEM?</h2>
 <p>Security Information and Event Management (SIEM) platforms help security teams collect security-relevant telemetry, investigate activity across multiple systems, and identify patterns that may indicate an attack or policy violation. IBM QRadar SIEM is one platform in this category.</p>
 <p>QRadar collects and processes event data from log sources and can also analyze network flow data. It normalizes supported data into fields that analysts can search and correlate, then applies rules and other configured analytics to help surface activity that deserves investigation.</p>
