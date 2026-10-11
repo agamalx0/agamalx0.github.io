@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#080a12">
+<meta name="description" content="IBM QRadar operational essentials: standard and full deployments, CLI deployment cautions, EPS/FPM license capacity, and safe systemctl service management.">
+<title>QRadar Operations Essentials: Deployment, Capacity &amp; Services | Ashraf Gamal</title>
+<style>
+:root{color-scheme:dark;--bg:#080a12;--text:#f4f6ff;--muted:#a3abc4;--line:rgba(177,190,255,.15);--cyan:#39e7ff;--purple:#9a66ff;--pink:#ff4fd8;--amber:#ffc879}
+*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:90px}body{margin:0;min-width:320px;color:var(--text);background:radial-gradient(ellipse at 7% 0,rgba(57,231,255,.09),transparent 32rem),radial-gradient(ellipse at 94% 9%,rgba(255,79,216,.08),transparent 28rem),var(--bg);font:16px/1.78 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}a{color:var(--cyan);text-decoration:none}a:hover{text-decoration:underline}.wrap{width:min(920px,calc(100% - 34px));margin:auto}.topbar{position:sticky;top:0;z-index:10;background:rgba(8,10,18,.86);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}.nav{height:68px;display:flex;align-items:center;justify-content:space-between;gap:18px}.brand{color:var(--text);font-weight:750}.back{font-size:13px;color:var(--muted)}.hero{padding:67px 0 35px}.eyebrow,.kicker{font-size:11px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:var(--cyan)}h1{font-size:clamp(36px,6vw,60px);line-height:1.08;letter-spacing:-.06em;margin:15px 0}.gradient{color:transparent;background:linear-gradient(100deg,var(--cyan),#9a8bff 55%,var(--pink));-webkit-background-clip:text;background-clip:text}.lede{font-size:18px;line-height:1.7;color:#c0c8df;max-width:770px}.meta{display:flex;flex-wrap:wrap;gap:10px 18px;font-size:12px;color:var(--muted);margin-top:24px}.pill{border:1px solid rgba(57,231,255,.24);background:rgba(57,231,255,.06);padding:4px 9px;border-radius:99px;color:#d9fbff}.layout{display:grid;grid-template-columns:220px minmax(0,1fr);gap:35px;padding:20px 0 85px}.toc{align-self:start;position:sticky;top:90px;padding:18px;border:1px solid var(--line);border-radius:16px;background:rgba(17,21,40,.6)}.toc strong{font-size:12px}.toc a{display:block;color:var(--muted);font-size:12px;padding:7px 0;line-height:1.4}.content{min-width:0}.content h2{font-size:27px;line-height:1.25;letter-spacing:-.04em;margin:42px 0 13px}.content h3{font-size:18px;margin:26px 0 8px}.content p,.content li{color:#c0c8df}.content li{padding-left:3px;margin:7px 0}.content ul,.content ol{padding-left:22px}.callout{padding:18px 20px;border:1px solid rgba(255,200,121,.28);border-left:3px solid var(--amber);border-radius:13px;background:rgba(255,200,121,.055);margin:22px 0}.callout strong{color:#ffe2b3}.info{padding:17px 20px;border:1px solid rgba(57,231,255,.22);border-radius:13px;background:rgba(57,231,255,.045);margin:20px 0}.info strong{color:#c9faff}code,pre{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}code{font-size:.92em;color:#d7e9ff}.code{overflow:auto;margin:15px 0;padding:17px;border-radius:12px;border:1px solid var(--line);background:#070a12;color:#dbe6ff;font-size:13px;line-height:1.7}.table-wrap{overflow-x:auto;margin:20px 0;border:1px solid var(--line);border-radius:12px}table{width:100%;border-collapse:collapse;min-width:450px;font-size:13px}th,td{text-align:left;vertical-align:top;padding:12px 14px;border-bottom:1px solid var(--line)}th{color:#e9edff;background:rgba(154,102,255,.08)}td{color:#c0c8df}tr:last-child td{border-bottom:0}.related{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:36px}.related a{border:1px solid var(--line);border-radius:13px;padding:15px;color:var(--text);background:rgba(255,255,255,.025)}.related small{display:block;color:var(--muted);font-size:11px}.related strong{display:block;margin-top:5px;font-size:13px}.footer{border-top:1px solid var(--line);padding:23px 0;color:var(--muted);font-size:12px}.footerinner{display:flex;justify-content:space-between;gap:15px;flex-wrap:wrap}
+@media(max-width:760px){.layout{grid-template-columns:1fr;gap:10px}.toc{position:static;display:grid;grid-template-columns:1fr 1fr;gap:0 14px}.toc strong{grid-column:1/-1}.hero{padding-top:45px}.content h2{margin-top:32px}.related{grid-template-columns:1fr}}@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<header class="topbar"><nav class="nav wrap"><a class="brand" href="/">AG <span class="gradient">/ Notes</span></a><a class="back" href="/#articles">← Back to all articles</a></nav></header>
+<header class="hero wrap">
+<div class="eyebrow">Part 5 · Operations · IBM QRadar</div>
+<h1>QRadar operations essentials:<br><span class="gradient">deployment, capacity &amp; services</span></h1>
+<p class="lede">A practical operations guide that brings together configuration deployment, EPS/FPM licensing, and Linux service management—with cautions for commands that can affect a production QRadar deployment.</p>
+<div class="meta"><span>By Ashraf Gamal</span><span>Updated 11 October 2026</span><span class="pill">Operations reference</span><span>Approx. 8 min read</span></div>
+</header>
+<div class="wrap layout">
+<aside class="toc"><strong>In this guide</strong><a href="#deployment">1. Deployment types</a><a href="#cli">2. CLI deployment cautions</a><a href="#capacity">3. EPS and FPM capacity</a><a href="#license">4. Reviewing licenses</a><a href="#systemctl">5. systemctl basics</a><a href="#workflow">6. Safe operational workflow</a><a href="#references">References</a></aside>
+<article class="content">
+<div class="callout"><strong>Production safety</strong><p style="margin:6px 0 0">Deployment operations and service restarts can affect log processing or service availability. Prefer the QRadar UI and the procedure documented for your exact release. Do not run internal deployment scripts or restart QRadar services just because a generic Linux command is available.</p></div>
+<h2 id="deployment">1. Understand QRadar deployment types</h2>
+<p>QRadar saves configuration changes in a staging area. Changes must be deployed before they become active in the production configuration. The deployment method depends on the type of change; a “normal deploy” is commonly used informally to mean the standard <em>Deploy Changes</em> action in the UI.</p>
+<div class="table-wrap"><table><thead><tr><th>Method</th><th>Typical use</th><th>Operational impact</th></tr></thead><tbody>
+<tr><td><strong>Standard deployment</strong></td><td>Changes that affect only particular services—for example, certain user, role, or security-profile changes.</td><td>Restarts the services directly affected by the changes.</td></tr>
+<tr><td><strong>Full configuration deployment</strong></td><td>Changes that affect the deployment as a whole, such as adding or changing a managed host or restoring a configuration backup.</td><td>Rebuilds configuration files across managed hosts and restarts services as required. The impact depends on the change and QRadar release.</td></tr>
+</tbody></table></div>
+<p>For the supported workflow, open <strong>Admin</strong>, review the deployment banner and <strong>View Details</strong>, then choose <strong>Deploy Changes</strong> or <strong>Advanced → Deploy Full Configuration</strong> as QRadar recommends. Do not choose a full deployment simply because it sounds more thorough; it can increase service impact and needs a suitable maintenance/change plan.</p>
+<p>IBM's documentation notes that deployment behavior and event-collection handling can vary by release and operation. Confirm the expected impact in the documentation that matches the deployed version and monitor the system after the deploy.</p>
+<h2 id="cli">2. Be cautious with manual CLI deployments</h2>
+<p>The original notes mention these commands:</p>
+<pre class="code"><code>/opt/qradar/bin/local_transformation.sh -l -f
+/opt/qradar/upgrade/util/setup/upgrades/do_deploy</code></pre>
+<p>These are not recommended here as routine deployment commands. IBM Support documents <code>local_transformation.sh</code> for a specific manual configuration-set deployment scenario affecting a malfunctioning managed host, and the note is limited to particular QRadar releases. Internal scripts such as <code>do_deploy</code> can also be version- and context-dependent.</p>
+<div class="info"><strong>Recommended practice</strong><p style="margin:6px 0 0">Use the documented UI workflow for ordinary configuration changes. Use a CLI recovery procedure only when the corresponding IBM technote or IBM Support instructs you to, after verifying the exact QRadar version, target host, expected impact, and rollback plan. Avoid copying an internal command from an old article into production without validation.</p></div>
+<h2 id="capacity">3. Understand license capacity: EPS and FPM</h2>
+<p>QRadar's event and flow processing capacity is measured separately:</p>
+<ul>
+<li><strong>Events per second (EPS):</strong> the event rate QRadar is licensed and allocated to process.</li>
+<li><strong>Flows per minute (FPM):</strong> the flow rate QRadar is licensed and allocated to process.</li>
+</ul>
+<p>Events are records produced by systems, applications, security devices, and other log sources. Flows represent network communications aggregated according to flow attributes. They are different telemetry types and consume different capacity allocations.</p>
+<p>Both the license pool and hardware limits matter. A license entitlement is not a guarantee that a given appliance can process an unlimited rate; capacity allocations need to align with the appliance role and hardware capability.</p>
+<h3>What happens when the rate is too high?</h3>
+<p>It is not accurate to say that every EPS/FPM overage immediately drops all excess telemetry. Depending on the type of data and the condition, QRadar may queue data for later processing, which delays event processing and offense generation. Sustained overload can create a growing backlog; flow capacity limits can also produce overflow records that omit some flow detail. Therefore, capacity alerts should be investigated rather than ignored.</p>
+<div class="callout"><strong>Size for peaks, not only averages.</strong><p style="margin:6px 0 0">A host operating close to its allocated EPS/FPM capacity has less room to absorb bursts. Persistent overload is not solved by increasing queue size alone. Review rates, queue behavior, hardware limits, license allocations, parsing quality, and rules/custom properties that may have changed data volume.</p></div>
+<h2 id="license">4. Review and allocate licenses</h2>
+<p>On QRadar SIEM versions with the corresponding interface, use <strong>Admin → System and License Management → Licenses → License Pool Management</strong>. The exact menu labels can vary by release or deployment model.</p>
+<ol>
+<li>Review the total EPS and FPM available in the shared license pool and the capacity assigned to each host.</li>
+<li>Compare assigned capacity with average and peak rates—not only a single current reading. IBM's documented views include average rates over the past 30 days and host peak rates.</li>
+<li>Check system notifications for events or flows exceeding the allocated limits.</li>
+<li>If capacity is insufficient, review whether the issue is sustained workload, a data spike, a parsing or rule change, hardware capability, allocation imbalance, or a license entitlement gap.</li>
+<li>Change allocations or license keys only through the documented license-management workflow and within hardware and entitlement limits.</li>
+</ol>
+<p>To add or update entitlements, follow IBM's steps for uploading the license, allocating it to the appropriate system, and deploying the license change. License expiry can cause capacity-pool deficits and affect access to Log Activity or Network Activity features; do not wait until expiry to validate renewal arrangements.</p>
+<h2 id="systemctl">5. Linux service management with systemctl</h2>
+<p><code>systemctl</code> is a systemd utility for checking and managing services. The following commands are useful for general service visibility on a Linux system, including diagnostics on QRadar appliances when supported by the installed environment.</p>
+<pre class="code"><code># Check the status of a specific service
+systemctl status hostcontext
+
+# List active service units
+systemctl list-units --type=service
+
+# List unit files configured to start at boot
+systemctl list-unit-files --type=service | grep enabled
+
+# Review recent HostContext service messages
+journalctl -u hostcontext --since "1 hour ago"
+
+# Check the current state of all services (legacy service command)
+service --status-all</code></pre>
+<p>Replace <code>hostcontext</code> with a service name only after confirming it is the intended unit. An enabled service is configured to start at boot; it is not necessarily running at this moment. Similarly, <code>list-units</code> shows units currently loaded/active according to the options provided, whereas <code>list-unit-files</code> shows installed unit-file enablement states.</p>
+<div class="callout"><strong>Do not blindly start, stop, enable, or restart QRadar services.</strong><p style="margin:6px 0 0">Although generic commands such as <code>systemctl restart &lt;service_name&gt;</code> exist on Linux, QRadar-managed processes may have product-specific dependencies and approved operational procedures. Use a restart only when IBM's version-specific instructions or an approved change plan calls for it.</p></div>
+<h2 id="workflow">6. A safe operational workflow</h2>
+<ol>
+<li><strong>Record context:</strong> QRadar version and fix pack, host role, time of change, and the symptom or reason for maintenance.</li>
+<li><strong>Choose the right deployment:</strong> review the deployment banner and QRadar guidance, then use standard or full configuration deployment as appropriate.</li>
+<li><strong>Check service and system state:</strong> gather status and time-bounded logs before changing anything.</li>
+<li><strong>Verify capacity:</strong> compare actual EPS/FPM trends, allocated capacity, host limits, and system notifications.</li>
+<li><strong>Validate after the change:</strong> confirm services are healthy, expected log sources are communicating, new events are searchable, and no new capacity/deployment warnings appeared.</li>
+<li><strong>Document the outcome:</strong> record the command or UI workflow used, the evidence collected, the change made, and the verification result.</li>
+</ol>
+<h2 id="references">7. Official references</h2>
+<ul>
+<li><a href="https://www.ibm.com/docs/en/qradar-on-cloud?topic=management-configuration-changes-in-your-qradar-environment" target="_blank" rel="noopener noreferrer">IBM: Configuration changes in QRadar</a></li>
+<li><a href="https://www.ibm.com/docs/en/qradar-on-cloud?topic=environment-deploying-changes" target="_blank" rel="noopener noreferrer">IBM: Deploying changes</a></li>
+<li><a href="https://www.ibm.com/support/pages/force-manual-configurationset-deploy-single-qradar-managed-host-using-localtransformationsh" target="_blank" rel="noopener noreferrer">IBM Support: Specific manual Configurationset deploy scenario using local_transformation.sh</a></li>
+<li><a href="https://www.ibm.com/docs/en/qsip/7.5.0?topic=license-options" target="_blank" rel="noopener noreferrer">IBM: QRadar license options and entitlements</a></li>
+<li><a href="https://www.ibm.com/docs/en/qsip/7.5.0?topic=management-event-flow-processing-capacity" target="_blank" rel="noopener noreferrer">IBM: Event and flow processing capacity</a></li>
+<li><a href="https://www.ibm.com/docs/en/qsip/7.5.0?topic=capacity-sizing" target="_blank" rel="noopener noreferrer">IBM: Capacity sizing and burst handling</a></li>
+<li><a href="https://www.ibm.com/community/101/qradar/tools/" target="_blank" rel="noopener noreferrer">IBM QRadar Support Tools 101</a></li>
+<li><a href="https://www.ibm.com/support/pages/qradar-general-health-checklist" target="_blank" rel="noopener noreferrer">IBM Support: QRadar General Health Checklist</a></li>
+</ul>
+<p class="note">This guide is an operational overview, not a substitute for the procedure documented for the QRadar version you operate. QRadar UI paths, service handling, licensing details, and CLI tools can differ by release and entitlement. Use a maintenance window and approved change process for operations that may affect ingestion or availability.</p>
+<div class="related"><a href="/articles/qradar-troubleshooting.html"><small>PART 4 · PREVIOUS</small><strong>← QRadar troubleshooting</strong></a><a href="/#articles"><small>ARTICLE LIBRARY</small><strong>Back to all articles →</strong></a></div>
+</article>
+</div>
+<footer><div class="wrap" style="display:flex;justify-content:space-between;gap:15px;flex-wrap:wrap"><span>© <span id="year">2026</span> Ashraf Gamal</span><a href="/">Home</a></div></footer>
+<script>document.getElementById('year').textContent=new Date().getFullYear();</script>
+</body>
+</html>
