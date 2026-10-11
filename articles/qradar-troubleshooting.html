@@ -9,6 +9,14 @@
 :root{color-scheme:dark;--bg:#080a12;--text:#f4f6ff;--muted:#a3abc4;--line:rgba(177,190,255,.15);--cyan:#39e7ff;--purple:#9a66ff;--pink:#ff4fd8;--amber:#ffc879}
 *{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:90px}body{margin:0;min-width:320px;color:var(--text);background:radial-gradient(ellipse at 7% 0,rgba(57,231,255,.09),transparent 32rem),radial-gradient(ellipse at 94% 9%,rgba(255,79,216,.08),transparent 28rem),var(--bg);font:16px/1.78 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}a{color:var(--cyan);text-decoration:none}a:hover{text-decoration:underline}.wrap{width:min(920px,calc(100% - 34px));margin:auto}.topbar{position:sticky;top:0;z-index:10;background:rgba(8,10,18,.86);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}.nav{height:68px;display:flex;align-items:center;justify-content:space-between;gap:18px}.brand{color:var(--text);font-weight:750}.back{font-size:13px;color:var(--muted)}.hero{padding:67px 0 35px}.eyebrow,.kicker{font-size:11px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:var(--cyan)}h1{font-size:clamp(36px,6vw,60px);line-height:1.08;letter-spacing:-.06em;margin:15px 0}.gradient{color:transparent;background:linear-gradient(100deg,var(--cyan),#9a8bff 55%,var(--pink));-webkit-background-clip:text;background-clip:text}.lede{font-size:18px;line-height:1.7;color:#c0c8df;max-width:770px}.meta{display:flex;flex-wrap:wrap;gap:10px 18px;font-size:12px;color:var(--muted);margin-top:24px}.pill{border:1px solid rgba(57,231,255,.24);background:rgba(57,231,255,.06);padding:4px 9px;border-radius:99px;color:#d9fbff}.layout{display:grid;grid-template-columns:220px minmax(0,1fr);gap:35px;padding:20px 0 85px}.toc{align-self:start;position:sticky;top:90px;padding:18px;border:1px solid var(--line);border-radius:16px;background:rgba(17,21,40,.6)}.toc strong{font-size:12px}.toc a{display:block;color:var(--muted);font-size:12px;padding:7px 0;line-height:1.4}.content{min-width:0}.content h2{font-size:27px;line-height:1.25;letter-spacing:-.04em;margin:42px 0 13px}.content h3{font-size:18px;margin:26px 0 8px}.content p,.content li{color:#c0c8df}.content li{padding-left:3px;margin:7px 0}.content ul,.content ol{padding-left:22px}.callout{padding:18px 20px;border:1px solid rgba(255,200,121,.28);border-left:3px solid var(--amber);border-radius:13px;background:rgba(255,200,121,.055);margin:22px 0}.callout strong{color:#ffe2b3}.info{padding:17px 20px;border:1px solid rgba(57,231,255,.22);border-radius:13px;background:rgba(57,231,255,.045);margin:20px 0}.info strong{color:#c9faff}code,pre{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}code{font-size:.92em;color:#d7e9ff}.code{overflow:auto;margin:15px 0;padding:17px;border-radius:12px;border:1px solid var(--line);background:#070a12;color:#dbe6ff;font-size:13px;line-height:1.7}.table-wrap{overflow-x:auto;margin:20px 0;border:1px solid var(--line);border-radius:12px}table{width:100%;border-collapse:collapse;min-width:470px;font-size:13px}th,td{text-align:left;vertical-align:top;padding:12px 14px;border-bottom:1px solid var(--line)}th{color:#e9edff;background:rgba(154,102,255,.08)}td{color:#c0c8df}tr:last-child td{border-bottom:0}.related{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:36px}.related a{border:1px solid var(--line);border-radius:13px;padding:15px;color:var(--text);background:rgba(255,255,255,.025)}.related small{display:block;color:var(--muted);font-size:11px}.related strong{display:block;margin-top:5px;font-size:13px}.footer{border-top:1px solid var(--line);padding:23px 0;color:var(--muted);font-size:12px}.footerinner{display:flex;justify-content:space-between;gap:15px;flex-wrap:wrap}
 @media(max-width:760px){.layout{grid-template-columns:1fr;gap:10px}.toc{position:static;display:grid;grid-template-columns:1fr 1fr;gap:0 14px}.toc strong{grid-column:1/-1}.hero{padding-top:45px}.content h2{margin-top:32px}.related{grid-template-columns:1fr}}@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+.contact-hook{margin:30px 0 0;padding:22px 24px;border:1px solid rgba(57,231,255,.23);border-radius:15px;background:linear-gradient(120deg,rgba(57,231,255,.055),rgba(154,102,255,.065),rgba(255,79,216,.04))}
+.contact-hook .hook-kicker{display:block;color:var(--cyan);font-size:10px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;margin-bottom:8px}
+.contact-hook .hook-title{color:var(--text);font-size:19px;line-height:1.45;letter-spacing:-.025em;margin:0}
+.contact-hook p{color:#c0c8df;margin:8px 0 0}
+.contact-links{display:flex;flex-wrap:wrap;gap:9px;margin-top:15px}
+.contact-links a{display:inline-flex;align-items:center;justify-content:center;padding:8px 12px;border:1px solid rgba(177,190,255,.18);border-radius:9px;background:rgba(255,255,255,.025);color:#e4edff;font-size:12px;font-weight:700}
+.contact-links a:hover{border-color:rgba(57,231,255,.5);background:rgba(57,231,255,.07);color:var(--cyan);text-decoration:none}
+@media(max-width:480px){.contact-hook{padding:18px}.contact-hook .hook-title{font-size:17px}}
 </style>
 </head>
 <body>
@@ -34,31 +42,22 @@
 <p>The <code>all_servers.sh</code> tool can issue commands across multiple QRadar appliances. Review its usage before running it, and avoid broad commands unless you understand the impact and target set.</p>
 <pre class="code"><code>/opt/qradar/support/all_servers.sh -h</code></pre>
 <h2 id="toolbox">3. QRadar support-tool quick reference</h2>
-<p>The following tools can help collect evidence before you escalate an issue or make a change. Their availability and options can vary by QRadar release and Supportability Tools updates; use the tool's help output and IBM's current <a href="https://www.ibm.com/community/101/qradar/tools/" target="_blank" rel="noopener noreferrer">QRadar Support Tools 101</a> reference before running unfamiliar commands.</p>
-<div class="table-wrap"><table><thead><tr><th>Purpose</th><th>Command</th><th>Use it for</th></tr></thead><tbody>
-<tr><td>Version / patch</td><td><code>/opt/qradar/bin/myver -v</code></td><td>Record the installed version and patch level.</td></tr>
-<tr><td>Deployment inventory</td><td><code>/opt/qradar/support/deployment_info.sh -OS</code></td><td>Collect a CSV overview of deployment hosts and basic system details.</td></tr>
-<tr><td>Fleet-wide command syntax</td><td><code>/opt/qradar/support/all_servers.sh -h</code></td><td>Read usage first. This tool can issue commands across multiple QRadar appliances; verify scope before executing anything.</td></tr>
-<tr><td>Pre-upgrade health</td><td><code>/opt/qradar/support/cliniq -h</code></td><td>Review supported options, then run the documented health-check procedure.</td></tr>
-<tr><td>HostContext startup</td><td><code>/opt/qradar/upgrade/util/setup/upgrades/wait_for_start.sh</code></td><td>Observe HostContext startup state after a supported operation.</td></tr>
-<tr><td>ECS connectivity / version</td><td><code>/opt/qradar/support/validate_ecs_services.sh</code></td><td>Check managed-host connectivity and ECS/ECS-Ingress versions, particularly after an upgrade.</td></tr>
-<tr><td>Configuration replication</td><td><code>/opt/qradar/support/replicationVerify.pl -h</code></td><td>Review how to validate configuration database synchronization across managed hosts.</td></tr>
-<tr><td>Disk space</td><td><code>df -hT</code></td><td>Check mounted filesystems and available capacity.</td></tr>
-<tr><td>Partition diagnostics</td><td><code>/opt/qradar/support/partitionDiagnostic -n</code></td><td>Gather partition diagnostics if this utility is present on the installed release.</td></tr>
-<tr><td>Collect logs</td><td><code>/opt/qradar/support/get_logs.sh -h</code></td><td>Review log collection options before creating a support bundle.</td></tr>
-<tr><td>Sanitize logs</td><td><code>/opt/qradar/support/log_scrubber.py -h</code></td><td>Review options to sanitize logs before sharing them with support.</td></tr>
-<tr><td>Application containers</td><td><code>/opt/qradar/support/recon ps</code></td><td>Inspect QRadar application workload status on supported Console/App Host deployments.</td></tr>
-<tr><td>Known defect fingerprints</td><td><code>/opt/qradar/support/defect-inspector -h</code></td><td>Check logs for patterns matching known QRadar defects.</td></tr>
-<tr><td>Expensive custom rules</td><td><code>/opt/qradar/support/findExpensiveCustomRules.sh -d /root</code></td><td>Investigate whether custom rules may be contributing to performance degradation; use the documented output directory and syntax.</td></tr>
-<tr><td>Process / thread activity</td><td><code>/opt/qradar/support/threadTop.sh</code></td><td>Collect process/thread resource clues for a performance investigation.</td></tr>
-<tr><td>Accumulator / reports</td><td><code>/opt/qradar/support/collectGvStats.sh -s</code></td><td>Investigate accumulator issues affecting time-series graphs or scheduled reports.</td></tr>
-<tr><td>Service logs</td><td><code>journalctl -u hostcontext</code></td><td>Review HostContext service messages around the incident time.</td></tr>
+<p>These commands are useful starting points for common checks. Tool availability and options vary by QRadar release; confirm the syntax in the installed tool's help and IBM's <a href="https://www.ibm.com/community/101/qradar/tools/" target="_blank" rel="noopener noreferrer">QRadar Support Tools 101</a> reference.</p>
+<div class="table-wrap"><table><thead><tr><th>Purpose</th><th>Command</th></tr></thead><tbody>
+<tr><td>Version and patch level</td><td><code>/opt/qradar/bin/myver -v</code></td></tr>
+<tr><td>Deployment inventory</td><td><code>/opt/qradar/support/deployment_info.sh -OS</code></td></tr>
+<tr><td>Managed-host ECS connectivity/version</td><td><code>/opt/qradar/support/validate_ecs_services.sh</code></td></tr>
+<tr><td>Disk capacity</td><td><code>df -hT</code></td></tr>
+<tr><td>Log collection options</td><td><code>/opt/qradar/support/get_logs.sh -h</code></td></tr>
+<tr><td>Log sanitization options</td><td><code>/opt/qradar/support/log_scrubber.py -h</code></td></tr>
+<tr><td>Application workload status</td><td><code>/opt/qradar/support/recon ps</code></td></tr>
+<tr><td>HostContext messages</td><td><code>journalctl -u hostcontext</code></td></tr>
 </tbody></table></div>
-<div class="callout"><strong>Use the current log scrubber, not the deprecated one.</strong><p style="margin:6px 0 0">IBM marks <code>/opt/qradar/bin/scrub.pl</code> as deprecated and recommends <code>/opt/qradar/support/log_scrubber.py</code> for sanitizing logs. Check the installed help output and preserve an unmodified evidence copy according to your incident-handling policy before creating a sanitized copy.</p></div>
+<div class="callout"><strong>Use the current log scrubber, not the deprecated one.</strong><p style="margin:6px 0 0">IBM marks <code>/opt/qradar/bin/scrub.pl</code> as deprecated and recommends <code>/opt/qradar/support/log_scrubber.py</code>. Preserve original evidence according to your incident-handling policy before creating a sanitized copy.</p></div>
 <h3>Network capture: narrow the filter and limit the capture</h3>
-<p>If you suspect a syslog path issue, confirm the actual interface name first and capture only the relevant endpoint/port with a packet limit. Example:</p>
+<p>If you suspect a syslog path issue, confirm the actual interface and capture only the relevant endpoint/port with a packet limit:</p>
 <pre class="code"><code>tcpdump -nn -i any host 192.0.2.10 and port 514 -c 10</code></pre>
-<p>Replace the documentation-only address <code>192.0.2.10</code> with the actual source or destination under investigation. Add a transport filter such as <code>udp</code> or <code>tcp</code> when it matches the log-source configuration. Avoid broad, unbounded captures. Options such as <code>-A</code> print packet payloads and can expose usernames, URLs, event contents, or other sensitive data; use them only when necessary and handle any capture as sensitive evidence.</p>
+<p>Replace <code>192.0.2.10</code> with the actual endpoint and add <code>udp</code> or <code>tcp</code> only when appropriate. Avoid broad, unbounded captures; packet payloads may contain sensitive event content.</p>
 <h2 id="ssh">4. Check connectivity and service status</h2>
 <h3>SSH connectivity</h3>
 <p>If the symptom is an SSH connection issue, run a verbose connection attempt from the system initiating the SSH session and replace the placeholders with the actual account and host:</p>
@@ -107,12 +106,7 @@ df -h /storetmp /var/log</code></pre>
 <p>Some older troubleshooting notes use direct JMX commands, hard-coded ports, or service-specific query strings to inspect EPS and event ingress. Those commands can be version- and service-dependent; the one-line command in the original note also combined two commands incorrectly. Do not paste it into production unchanged. Use the IBM support-tool reference or a version-specific support procedure to identify the correct diagnostic for the host and service under investigation.</p>
 <p>For network-related managed-host problems, use supported interface and connection checks and follow the appropriate IBM networking guidance rather than assuming every symptom is an EPS issue.</p>
 <h2 id="avoid">10. Commands from older notes that need special handling</h2>
-<ul>
-<li><strong>Database exports:</strong> the original log-source export query contained a malformed <code>left join</code> and relies on internal schema details. Prefer a supported QRadar UI/API export or validate the exact query against the deployed version before use.</li>
-<li><strong>Token hashes:</strong> hashing or locating a file named <code>host.token</code> is not a generic first-line deployment test. Treat tokens as sensitive and use only the specific IBM procedure that requires them.</li>
-<li><strong>Version and fleet scripts:</strong> option flags for support scripts can vary. Check the installed script's help and avoid a fleet-wide command until its targets and behavior are understood.</li>
-<li><strong>Updates or AQL validation:</strong> do not run tools under the support directory merely because their name sounds relevant. Confirm the issue, supported syntax, and release applicability first.</li>
-</ul>
+<p>Older notes included internal database queries, direct JMX calls, hard-coded ports, or token-file checks. These are not reliable generic first-line tests: schemas and service interfaces change, and tokens are sensitive. Prefer the supported UI/API or the IBM diagnostic procedure for the specific symptom and release. Never edit QRadar database records or deployment files manually unless IBM Support provides a version-specific instruction.</p>
 <h2 id="references">11. Official references</h2>
 <ul>
 <li><a href="https://www.ibm.com/community/101/qradar/tools/" target="_blank" rel="noopener noreferrer">IBM QRadar Support Tools 101</a></li>
@@ -122,6 +116,12 @@ df -h /storetmp /var/log</code></pre>
 <li><a href="https://www.ibm.com/docs/en/qsip/7.5.0?topic=upgrading-preparation-checklist-qradar-upgrades" target="_blank" rel="noopener noreferrer">IBM QRadar: upgrade preparation checklist</a></li>
 </ul>
 <p class="note">This is a practical checklist, not a guarantee that all commands or paths apply to every QRadar release. Confirm compatibility and procedures for your exact version. In a production outage or during patching, preserve evidence and use your approved change process or IBM Support guidance.</p>
+<div class="contact-hook">
+<span class="hook-kicker">Need help with your environment?</span>
+<p class="hook-title">Stuck with missing events, a failed deployment, or a QRadar performance issue? Share the symptom and let’s discuss the safest next steps.</p>
+<p>For a technical inquiry or service request, reach out through the channel that works best for you.</p>
+<div class="contact-links"><a href="mailto:as.ga2019@gmail.com?subject=QRadar%20troubleshooting%20inquiry&amp;body=Hi%20Ashraf%2C%0A%0AI%20read%20your%20QRadar%20troubleshooting%20guide%20and%20would%20like%20to%20discuss%20an%20issue%20in%20my%20environment.%0A%0ABest%20regards%2C">Email me ↗</a><a href="https://wa.me/966598243358?text=Hi%20Ashraf%2C%20I%20read%20your%20QRadar%20troubleshooting%20guide%20and%20would%20like%20to%20discuss%20an%20issue%20in%20my%20environment." target="_blank" rel="noopener noreferrer">WhatsApp ↗</a><a href="https://www.linkedin.com/in/1elrawy/" target="_blank" rel="noopener noreferrer">LinkedIn ↗</a></div>
+</div>
 <div class="related"><a href="/articles/qradar-health-check.html"><small>PART 3</small><strong>← QRadar health check</strong></a><a href="/articles/qradar-operations-essentials.html"><small>PART 5 · NEXT</small><strong>Operations essentials →</strong></a></div>
 </article>
 </div>
