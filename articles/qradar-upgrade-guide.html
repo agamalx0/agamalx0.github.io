@@ -180,6 +180,10 @@ mount -o loop /storetmp/760-QRADAR-QRSIEM-2026.4.0.20261002130537.sfs /media/upd
 <li><strong>Parallel:</strong> where supported, stages the package and upgrades eligible hosts concurrently after the Console step. Review the target release’s rules, unreachable-host behavior, and progress/status reporting before choosing it.</li>
 </ul>
 <p>Parallel patching is not a way to bypass compatibility or host-order restrictions. Follow the current IBM parallel-patching guide and do not rename the SFS file where the procedure says its original name is required.</p>
+<h3 id="forensics-note">Special case: an Incident Forensics compatibility pretest</h3>
+<p>If the installer stops with an error such as <code>This patch is incompatible with Forensics deployments</code>, stop and investigate the product combination. Do not bypass the pretest or repeatedly rerun the same generic SFS. The older QRadar 7.5.x workflow can require a separate QRadar Incident Forensics update package and its own documented sequence; use the exact IBM instruction for that target version and the QIF appliances in the deployment.</p>
+<div class="callout"><strong>Do not apply the older Forensics workaround to QRadar 7.6.x.</strong><p style="margin:6px 0 0">IBM states that QRadar Incident Forensics is not available in the 7.6.x release stream. If the deployment uses QIF, resolve the supported product/version strategy before selecting a 7.6.x target. A separate QIF SFS is not a general-purpose bypass for a failed pretest.</p></div>
+<p>Version-specific reference: <a href="https://www.ibm.com/docs/en/qsip/7.5?topic=upgrading-qradar-incident-forensics" target="_blank" rel="noopener noreferrer">Upgrading QRadar Incident Forensics</a>.</p>
 <h2 id="monitor">9. Monitor the upgrade; do not interrupt it casually</h2>
 <ul>
 <li>Keep an active administrative session and a separate method to reconnect if the SSH client drops. If the installer uses a persistent session such as tmux, follow the package instructions for reconnecting.</li>
@@ -251,7 +255,7 @@ mount -o loop /storetmp/760-QRADAR-QRSIEM-2026.4.0.20261002130537.sfs /media/upd
 <ul>
 <li><a href="https://www.ibm.com/docs/en/qsip/7.6.0?topic=upgrading-preparation-checklist-qradar-upgrades" target="_blank" rel="noopener noreferrer">QRadar 7.6.0 — Preparation checklist for upgrades</a></li>
 <li><a href="https://www.ibm.com/docs/en/qsip/7.5.0?topic=upgrading-qradar-siem" target="_blank" rel="noopener noreferrer">QRadar 7.5 — Upgrading QRadar SIEM</a></li>
-<li><a href="https://www.ibm.com/support/pages/node/7288897" target="_blank" rel="noopener noreferrer">QRadar 7.6.0 Fix Pack 5 SFS: release notes and supported source versions</a></li>
+<li><a href="https://www.ibm.com/support/pages/release-qradar-760-fix-pack-5-20264020261002130537" target="_blank" rel="noopener noreferrer">QRadar 7.6.0 Fix Pack 5 SFS: release notes and supported source versions</a></li>
 <li><a href="https://www.ibm.com/support/pages/release-qradar-760-sfs-fix-pack-1-20264020260710212409" target="_blank" rel="noopener noreferrer">QRadar 7.6.0 Fix Pack 1: upgrade sources from selected QRadar 7.5 versions</a></li>
 <li><a href="https://www.ibm.com/support/pages/node/7283630" target="_blank" rel="noopener noreferrer">QRadar 7.5.0 Update Package 16: upgrade-path notice</a></li>
 <li><a href="https://www.ibm.com/community/101/qradar/installs/" target="_blank" rel="noopener noreferrer">QRadar 101 — Installs and Upgrades</a></li>
@@ -260,7 +264,6 @@ mount -o loop /storetmp/760-QRADAR-QRSIEM-2026.4.0.20261002130537.sfs /media/upd
 <li><a href="https://www.ibm.com/docs/en/qsip/7.5.0?topic=applications-backing-up-restoring-app-data" target="_blank" rel="noopener noreferrer">IBM: Backing up and restoring app data</a></li>
 <li><a href="https://www.ibm.com/docs/en/qsip/7.6.0?topic=upgrading-preparation-checklist-qradar-upgrades" target="_blank" rel="noopener noreferrer">IBM: Upgrade preparation checklist — version inventory, custom content, external storage, HA mount checks</a></li>
 <li><a href="https://www.ibm.com/support/pages/qradar-firmware-list-xseries-appliances-updated" target="_blank" rel="noopener noreferrer">IBM Support: QRadar firmware list for supported xSeries appliances</a></li>
-<li><a href="https://www.ibm.com/docs/en/qsip/7.5.0?topic=applications-backing-up-restoring-app-data" target="_blank" rel="noopener noreferrer">IBM: app-volume-backup.py command reference</a></li>
 
 <li><a href="https://www.ibm.com/docs/en/qsip/7.5.0?topic=failovers-manual" target="_blank" rel="noopener noreferrer">QRadar HA — Manual failovers</a></li>
 <li><a href="https://www.ibm.com/support/pages/what-should-i-consider-during-and-after-qradar-siem-upgrade" target="_blank" rel="noopener noreferrer">IBM Support — Before, during, and after a QRadar upgrade</a></li>
