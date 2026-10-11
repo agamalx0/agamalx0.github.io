@@ -108,7 +108,7 @@
     .card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px; }
     .card-label { color: var(--muted-2); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 10px; letter-spacing: .1em; }
     .status { font-size: 10px; color: var(--green); padding: 5px 8px; border: 1px solid rgba(138,255,193,.2); background: rgba(138,255,193,.05); border-radius: 999px; }
-    .avatar-mark { width: 76px; height: 76px; display: grid; place-items: center; border-radius: 24px; margin-bottom: 20px; font-size: 28px; font-weight: 850; letter-spacing: -.08em; background: linear-gradient(140deg, rgba(57,231,255,.2), rgba(154,102,255,.3), rgba(255,79,216,.2)); border: 1px solid rgba(185,192,255,.25); }
+    .avatar-mark { width: 96px; height: 96px; display: grid; place-items: center; overflow: hidden; border-radius: 24px; margin-bottom: 20px; font-size: 28px; font-weight: 850; letter-spacing: -.08em; background: linear-gradient(140deg, rgba(57,231,255,.2), rgba(154,102,255,.3), rgba(255,79,216,.2)); border: 1px solid rgba(185,192,255,.25); box-shadow: 0 0 26px rgba(57,231,255,.10); }\n    .avatar-mark img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center 35%; }
     .profile-card h2 { font-size: 23px; margin: 0; letter-spacing: -.04em; }
     .profile-card p { font-size: 12px; color: var(--muted); margin: 5px 0 23px; }
     .mini-divider { height: 1px; background: var(--line); margin-bottom: 17px; }
@@ -234,7 +234,7 @@
           <div class="orbital"><span class="orbital-dot"></span></div>
           <div class="profile-card">
             <div class="card-top"><span class="card-label">PROFILE / OVERVIEW</span><span class="status">● Building &amp; learning</span></div>
-            <div class="avatar-mark">AG</div>
+            <div class="avatar-mark" aria-label="Portrait of Ashraf Gamal"><img src="/ashraf-avatar.jpg" alt="Ashraf Gamal" onerror="this.remove(); this.parentElement.textContent = 'AG';" /></div>
             <h2>Ashraf Gamal</h2>
             <p>Cybersecurity · SOC Engineering</p>
             <div class="mini-divider"></div>
