@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#080a12">
+<meta name="description" content="An introduction to IBM QRadar SIEM: how it collects events and flows, correlates activity with rules, creates offenses, and supports security operations and compliance evidence.">
+<title>What Is IBM QRadar SIEM? | Ashraf Gamal</title>
+<style>
+:root{color-scheme:dark;--bg:#080a12;--text:#f4f6ff;--muted:#a3abc4;--line:rgba(177,190,255,.15);--cyan:#39e7ff;--purple:#9a66ff;--pink:#ff4fd8;--amber:#ffc879}
+*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:90px}body{margin:0;min-width:320px;color:var(--text);background:radial-gradient(ellipse at 7% 0,rgba(57,231,255,.09),transparent 32rem),radial-gradient(ellipse at 94% 9%,rgba(255,79,216,.08),transparent 28rem),var(--bg);font:16px/1.78 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}a{color:var(--cyan);text-decoration:none}a:hover{text-decoration:underline}.wrap{width:min(920px,calc(100% - 34px));margin:auto}.topbar{position:sticky;top:0;z-index:10;background:rgba(8,10,18,.86);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}.nav{height:68px;display:flex;align-items:center;justify-content:space-between;gap:18px}.brand{color:var(--text);font-weight:750}.back{font-size:13px;color:var(--muted)}.hero{padding:67px 0 35px}.eyebrow,.kicker{font-size:11px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:var(--cyan)}h1{font-size:clamp(36px,6vw,60px);line-height:1.08;letter-spacing:-.06em;margin:15px 0}.gradient{color:transparent;background:linear-gradient(100deg,var(--cyan),#9a8bff 55%,var(--pink));-webkit-background-clip:text;background-clip:text}.lede{font-size:18px;line-height:1.7;color:#c0c8df;max-width:770px}.meta{display:flex;flex-wrap:wrap;gap:10px 18px;font-size:12px;color:var(--muted);margin-top:24px}.pill{border:1px solid rgba(57,231,255,.24);background:rgba(57,231,255,.06);padding:4px 9px;border-radius:99px;color:#d9fbff}.layout{display:grid;grid-template-columns:220px minmax(0,1fr);gap:35px;padding:20px 0 85px}.toc{align-self:start;position:sticky;top:90px;padding:18px;border:1px solid var(--line);border-radius:16px;background:rgba(17,21,40,.6)}.toc strong{font-size:12px}.toc a{display:block;color:var(--muted);font-size:12px;padding:7px 0;line-height:1.4}.content{min-width:0}.content h2{font-size:27px;line-height:1.25;letter-spacing:-.04em;margin:42px 0 13px}.content h3{font-size:18px;margin:26px 0 8px}.content p,.content li{color:#c0c8df}.content li{padding-left:3px;margin:7px 0}.content ul,.content ol{padding-left:22px}.callout{padding:18px 20px;border:1px solid rgba(255,200,121,.28);border-left:3px solid var(--amber);border-radius:13px;background:rgba(255,200,121,.055);margin:22px 0}.callout strong{color:#ffe2b3}.info{padding:17px 20px;border:1px solid rgba(57,231,255,.22);border-radius:13px;background:rgba(57,231,255,.045);margin:20px 0}.info strong{color:#c9faff}.table-wrap{overflow-x:auto;margin:20px 0;border:1px solid var(--line);border-radius:12px}table{width:100%;border-collapse:collapse;min-width:450px;font-size:13px}th,td{text-align:left;vertical-align:top;padding:12px 14px;border-bottom:1px solid var(--line)}th{color:#e9edff;background:rgba(154,102,255,.08)}td{color:#c0c8df}tr:last-child td{border-bottom:0}.related{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:36px}.related a{border:1px solid var(--line);border-radius:13px;padding:15px;color:var(--text);background:rgba(255,255,255,.025)}.related small{display:block;color:var(--muted);font-size:11px}.related strong{display:block;margin-top:5px;font-size:13px}.footer{border-top:1px solid var(--line);padding:23px 0;color:var(--muted);font-size:12px}.footerinner{display:flex;justify-content:space-between;gap:15px;flex-wrap:wrap}
+@media(max-width:760px){.layout{grid-template-columns:1fr;gap:10px}.toc{position:static;display:grid;grid-template-columns:1fr 1fr;gap:0 14px}.toc strong{grid-column:1/-1}.hero{padding-top:45px}.content h2{margin-top:32px}.related{grid-template-columns:1fr}}@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<header class="topbar"><nav class="nav wrap"><a class="brand" href="/">AG <span class="gradient">/ Notes</span></a><a class="back" href="/#articles">← Back to all articles</a></nav></header>
+<header class="hero wrap">
+<div class="eyebrow">Part 1 · SIEM fundamentals · IBM QRadar</div>
+<h1>What is <span class="gradient">IBM QRadar SIEM?</span></h1>
+<p class="lede">An introduction to QRadar, how it turns security telemetry into investigation context, and the role it can play in a security operations program.</p>
+<div class="meta"><span>By Ashraf Gamal</span><span>Updated 11 October 2026</span><span class="pill">Foundations</span><span>Approx. 5 min read</span></div>
+</header>
+<div class="wrap layout">
+<aside class="toc"><strong>In this article</strong><a href="#overview">What is QRadar?</a><a href="#how-it-works">How it works</a><a href="#capabilities">Core capabilities</a><a href="#benefits">Operational benefits</a><a href="#compliance">Compliance considerations</a><a href="#limitations">Important considerations</a><a href="#references">References</a></aside>
+<article class="content">
+<h2 id="overview">1. What is QRadar SIEM?</h2>
+<p>Security Information and Event Management (SIEM) platforms help security teams collect security-relevant telemetry, investigate activity across multiple systems, and identify patterns that may indicate an attack or policy violation. IBM QRadar SIEM is one platform in this category.</p>
+<p>QRadar collects and processes event data from log sources and can also analyze network flow data. It normalizes supported data into fields that analysts can search and correlate, then applies rules and other configured analytics to help surface activity that deserves investigation.</p>
+<p>Rather than investigating a firewall, endpoint, identity provider, and server independently, analysts can use a SIEM to bring relevant signals together, build a timeline, and assess whether separate events may be related.</p>
+<h2 id="how-it-works">2. How QRadar works</h2>
+<p>At a high level, QRadar's workflow can be understood as a pipeline:</p>
+<div class="table-wrap"><table><thead><tr><th>Stage</th><th>What happens</th></tr></thead><tbody>
+<tr><td><strong>Collect</strong></td><td>Receive security events from sources such as firewalls, servers, identity systems, endpoint products, and other supported devices. Depending on the deployment, QRadar can also collect or receive network flow data.</td></tr>
+<tr><td><strong>Parse and normalize</strong></td><td>Interpret supported event formats and map useful values—such as event name, username, source IP, and destination IP—to fields analysts can search and rules can use.</td></tr>
+<tr><td><strong>Correlate</strong></td><td>Evaluate events and flows against configured rules, building blocks, and other supported detection logic.</td></tr>
+<tr><td><strong>Generate offenses</strong></td><td>When configured rule criteria match, QRadar can create or update an offense to group related activity and provide a starting point for investigation.</td></tr>
+<tr><td><strong>Investigate and respond</strong></td><td>Analysts review related events, source and destination details, timelines, and other context, then follow incident procedures or configured response actions.</td></tr>
+</tbody></table></div>
+<p>Events and flows provide different perspectives. An event typically records an action at a point in time—for example, a successful login. A flow describes communication between hosts over a network session. Used together, they can help an analyst connect an account activity event with relevant network behavior.</p>
+<div class="info"><strong>An offense is an investigation lead, not proof of compromise.</strong><p style="margin:6px 0 0">Offenses are generated from configured correlation logic. Analysts still need to validate the underlying events, check context, and determine whether the activity is malicious, authorized, or a false positive.</p></div>
+<h2 id="capabilities">3. Core capabilities</h2>
+<h3>Security event collection and log management</h3>
+<p>QRadar accepts data from supported log sources and uses device support modules (DSMs) and parsing/normalization to make records more useful for investigation. Coverage depends on correct source configuration, supported formats, parsing quality, and whether the data being collected includes the fields required by your use cases.</p>
+<h3>Rule-based detection and correlation</h3>
+<p>QRadar's Custom Rules Engine (CRE) evaluates event and flow data against configured rules. Rules may test one event, a sequence or combination of conditions, flow activity, or offense-related characteristics. Responses can include notifications or offense generation, depending on the rule configuration.</p>
+<h3>Investigation and search</h3>
+<p>Analysts can search event and flow records, inspect raw and normalized data, review offenses, and use query and reporting features to support investigations. The quality of the investigation depends on telemetry coverage, retention, field normalization, time synchronization, and the analyst's interpretation of the evidence.</p>
+<h3>Analytics beyond basic correlation</h3>
+<p>QRadar capabilities vary with the product version, deployment model, licensed components, and installed applications. Some environments may add specialized analytics or user-behavior capabilities, but it is not accurate to assume every QRadar deployment automatically includes every machine-learning feature. Confirm the capability and prerequisite licensing in the documentation for the system in use.</p>
+<h2 id="benefits">4. Benefits for security operations</h2>
+<ul>
+<li><strong>Faster triage:</strong> a central place to review related events can reduce the time spent switching between individual consoles, provided the necessary data is onboarded and normalized.</li>
+<li><strong>Broader visibility:</strong> combining logs and network flow context can help analysts understand activity across hosts and security controls.</li>
+<li><strong>Repeatable detection:</strong> tuned rules and reusable building blocks help teams apply detection logic consistently.</li>
+<li><strong>Investigation context:</strong> offenses can group correlated activity and give analysts a starting point for determining what happened, when, and which systems or accounts were involved.</li>
+<li><strong>Operational reporting:</strong> saved searches, dashboards, and reports can help teams track security activity and communicate findings.</li>
+</ul>
+<p>These benefits are not automatic. They depend on the quality of integrations, rule logic, system sizing, data retention, and the SOC's investigation and response processes.</p>
+<h2 id="compliance">5. Compliance considerations</h2>
+<p>A SIEM can support compliance work by centralizing relevant audit records, improving monitoring, and helping teams produce evidence for selected control activities. QRadar may be one part of a broader control environment for frameworks or regulations such as PCI DSS, HIPAA, or GDPR, depending on the organization's scope and requirements.</p>
+<div class="callout"><strong>A SIEM does not make an organization compliant by itself.</strong><p style="margin:6px 0 0">Compliance depends on the full set of required technical, administrative, and organizational controls. Retention settings, access controls, monitoring coverage, reporting, and evidence-handling procedures must be mapped to the applicable obligations and validated independently.</p></div>
+<h2 id="limitations">6. Important considerations</h2>
+<p>Before relying on QRadar for a use case, confirm that the relevant systems send the necessary telemetry, that the log sources parse as expected, and that rules are tested against both positive and negative examples. Monitor ingestion health, event rates, storage and retention, and whether offenses contain enough context to be useful.</p>
+<p>Also distinguish detection from response. QRadar can generate offenses and configured responses, but effective incident handling still requires an agreed triage process, escalation criteria, evidence preservation, and a method to document outcomes.</p>
+<h2 id="references">7. Official references</h2>
+<ul>
+<li><a href="https://www.ibm.com/docs/en/qsip/7.5.0?topic=overview-qradar-events-flows" target="_blank" rel="noopener noreferrer">IBM QRadar: Events and flows</a></li>
+<li><a href="https://www.ibm.com/docs/en/qsip/7.5.0?topic=phase-qradar-rules-offenses" target="_blank" rel="noopener noreferrer">IBM QRadar: Rules and offenses</a></li>
+<li><a href="https://www.ibm.com/docs/en/qsip/7.5?topic=qradar-getting-started-security-analysts" target="_blank" rel="noopener noreferrer">IBM QRadar: Getting started for security analysts</a></li>
+</ul>
+<p class="note">This article is an introductory overview. Exact features, supported data sources, licensing, and user-interface details vary by QRadar edition and release. Consult the documentation for the version deployed in your environment.</p>
+<div class="related"><a href="/#articles"><small>ARTICLE LIBRARY</small><strong>← Back to all articles</strong></a><a href="/articles/qradar-installation.html"><small>PART 3</small><strong>QRadar installation guide →</strong></a></div>
+</article>
+</div>
+<footer><div class="wrap" style="display:flex;justify-content:space-between;gap:15px;flex-wrap:wrap"><span>© <span id="year">2026</span> Ashraf Gamal</span><a href="/">Home</a></div></footer>
+<script>document.getElementById('year').textContent=new Date().getFullYear();</script>
+</body>
+</html>
