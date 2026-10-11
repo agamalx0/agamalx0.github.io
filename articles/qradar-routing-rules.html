@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#080a12">
+<meta name="description" content="A concise IBM QRadar Routing Rules guide covering online and offline forwarding, Forward, Drop, Bypass Correlation, Log Only, and practical validation.">
+<title>IBM QRadar Routing Rules: A Practical Guide | Ashraf Gamal</title>
+<style>
+:root{color-scheme:dark;--bg:#080a12;--text:#f4f6ff;--muted:#a3abc4;--line:rgba(177,190,255,.15);--cyan:#39e7ff;--purple:#9a66ff;--pink:#ff4fd8;--amber:#ffc879;--green:#8affc1}
+*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:90px}body{margin:0;min-width:320px;color:var(--text);background:radial-gradient(ellipse at 7% 0,rgba(57,231,255,.09),transparent 32rem),radial-gradient(ellipse at 94% 9%,rgba(255,79,216,.08),transparent 28rem),var(--bg);font:16px/1.78 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}a{color:var(--cyan);text-decoration:none}a:hover{text-decoration:underline}.wrap{width:min(960px,calc(100% - 34px));margin:auto}.topbar{position:sticky;top:0;z-index:10;background:rgba(8,10,18,.86);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}.nav{height:68px;display:flex;align-items:center;justify-content:space-between;gap:18px}.brand{color:var(--text);font-weight:750}.back{font-size:13px;color:var(--muted)}.hero{padding:67px 0 35px}.eyebrow,.kicker{font-size:11px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:var(--cyan)}h1{font-size:clamp(36px,6vw,60px);line-height:1.08;letter-spacing:-.06em;margin:15px 0}.gradient{color:transparent;background:linear-gradient(100deg,var(--cyan),#9a8bff 55%,var(--pink));-webkit-background-clip:text;background-clip:text}.lede{font-size:18px;line-height:1.7;color:#c0c8df;max-width:820px}.meta{display:flex;flex-wrap:wrap;gap:10px 18px;font-size:12px;color:var(--muted);margin-top:24px}.pill{border:1px solid rgba(57,231,255,.24);background:rgba(57,231,255,.06);padding:4px 9px;border-radius:99px;color:#d9fbff}.layout{display:grid;grid-template-columns:225px minmax(0,1fr);gap:35px;padding:20px 0 85px}.toc{align-self:start;position:sticky;top:90px;padding:18px;border:1px solid var(--line);border-radius:16px;background:rgba(17,21,40,.6);max-height:calc(100vh - 110px);overflow:auto}.toc strong{font-size:12px}.toc a{display:block;color:var(--muted);font-size:12px;padding:6px 0;line-height:1.4}.content{min-width:0}.content h2{font-size:27px;line-height:1.25;letter-spacing:-.04em;margin:38px 0 12px}.content h3{font-size:18px;margin:24px 0 8px}.content p,.content li{color:#c0c8df}.content li{padding-left:3px;margin:6px 0}.content ul,.content ol{padding-left:22px}.callout{padding:17px 19px;border:1px solid rgba(255,200,121,.28);border-left:3px solid var(--amber);border-radius:13px;background:rgba(255,200,121,.055);margin:20px 0}.callout strong{color:#ffe2b3}.info{padding:16px 19px;border:1px solid rgba(57,231,255,.22);border-radius:13px;background:rgba(57,231,255,.045);margin:18px 0}.info strong{color:#c9faff}code,pre{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}code{font-size:.92em;color:#d7e9ff}.code{overflow:auto;margin:13px 0;padding:15px;border-radius:12px;border:1px solid var(--line);background:#070a12;color:#dbe6ff;font-size:13px;line-height:1.7}.table-wrap{overflow-x:auto;margin:17px 0;border:1px solid var(--line);border-radius:12px}table{width:100%;border-collapse:collapse;min-width:460px;font-size:13px}th,td{text-align:left;vertical-align:top;padding:11px 13px;border-bottom:1px solid var(--line)}th{color:#e9edff;background:rgba(154,102,255,.08)}td{color:#c0c8df}tr:last-child td{border-bottom:0}.related{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:32px}.related a{border:1px solid var(--line);border-radius:13px;padding:14px;color:var(--text);background:rgba(255,255,255,.025)}.related small{display:block;color:var(--muted);font-size:11px}.related strong{display:block;margin-top:5px;font-size:13px}.footer{border-top:1px solid var(--line);padding:23px 0;color:var(--muted);font-size:12px}.footerinner{display:flex;justify-content:space-between;gap:15px;flex-wrap:wrap}
+@media(max-width:800px){.layout{grid-template-columns:1fr;gap:10px}.toc{position:static;display:grid;grid-template-columns:1fr 1fr;gap:0 14px;max-height:none}.toc strong{grid-column:1/-1}.hero{padding-top:45px}.content h2{margin-top:31px}.related{grid-template-columns:1fr}}@media(max-width:480px){.toc{grid-template-columns:1fr}.toc strong{grid-column:auto}}@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<header class="topbar"><nav class="nav wrap"><a class="brand" href="/">AG <span class="gradient">/ Notes</span></a><a class="back" href="/#articles">← Back to all articles</a></nav></header>
+<header class="hero wrap">
+<div class="eyebrow">Part 9 · Data routing · IBM QRadar</div>
+<h1>QRadar routing rules:<br><span class="gradient">what you need to know</span></h1>
+<p class="lede">Routing Rules control what QRadar does with selected events and flows: forward them, drop them, or change how they are processed. Here is the practical version, without turning it into a long manual.</p>
+<div class="meta"><span>By Ashraf Gamal</span><span>Updated 11 October 2026</span><span class="pill">Practical guide</span><span>Approx. 5 min read</span></div>
+</header>
+<div class="wrap layout">
+<aside class="toc"><strong>On this page</strong><a href="#purpose">1. What Routing Rules do</a><a href="#modes">2. Online vs Offline</a><a href="#options">3. Routing options</a><a href="#configure">4. Create a rule</a><a href="#check">5. Common mistakes</a><a href="#references">IBM references</a></aside>
+<article class="content">
+<div class="callout"><strong>First, know the difference:</strong> Routing Rules are for routing and handling event/flow data. They are not the same as Custom Rules Engine (CRE) rules that detect activity and can generate offenses.</div>
+<h2 id="purpose">1. What do Routing Rules do?</h2>
+<p>A Routing Rule applies filters to incoming or stored event/flow data, then applies a selected routing action. Typical uses are sending a filtered copy of logs to another platform, reducing real-time correlation for selected data, or deliberately excluding data that has no retention or detection value.</p>
+<p>To forward data, you need a configured <strong>Forwarding Destination</strong> as well as a Routing Rule that selects the data and destination. Creating a destination alone does not start forwarding. <a href="https://www.ibm.com/docs/en/qsip/7.5.0?topic=administration-forward-data-other-systems" target="_blank" rel="noopener noreferrer">IBM documents this two-part setup.</a></p>
+<h2 id="modes">2. Online vs Offline: choose based on delivery needs</h2>
+<div class="table-wrap"><table><thead><tr><th>Mode</th><th>How it works</th><th>Trade-off</th></tr></thead><tbody>
+<tr><td><strong>Online</strong></td><td>Real-time forwarding from the selected Event Collector.</td><td>Data is current, but if the destination is unreachable, the forwarded copy might not be delivered. It is not a durable store-and-forward queue for the destination outage.</td></tr>
+<tr><td><strong>Offline</strong></td><td>Data is stored first and forwarded from the selected Event Processor.</td><td>Better suited where delivery continuity matters more than immediacy; forwarding can be delayed.</td></tr>
+</tbody></table></div>
+<p>Offline mode does not offer the same action choices as Online mode. In particular, <strong>Drop, Bypass Correlation, and Log Only are not available in Offline mode</strong>. Check the exact options exposed by your QRadar release and deployment type.</p>
+<h2 id="options">3. What each routing option means</h2>
+<div class="table-wrap"><table><thead><tr><th>Option</th><th>Result</th><th>Use carefully when…</th></tr></thead><tbody>
+<tr><td><strong>Forward</strong></td><td>Sends matching data to a selected destination. By itself, QRadar also stores and processes it through the CRE as usual.</td><td>You need a copy in another SIEM, syslog server, or downstream platform.</td></tr>
+<tr><td><strong>Drop</strong></td><td>Matching data is not stored in QRadar and is not processed by the CRE. Online mode only.</td><td>You have confirmed the data is genuinely unnecessary. Dropped data cannot be searched or recovered from QRadar afterwards.</td></tr>
+<tr><td><strong>Bypass Correlation</strong></td><td>Matching data is stored, but bypasses real-time CRE processing. Available in Online mode.</td><td>You need the data to remain searchable but do not want it to trigger normal real-time correlation. Events can still be used in supported historical correlation runs.</td></tr>
+<tr><td><strong>Log Only (Exclude Analytics)</strong></td><td>Events are stored and searchable but bypass CRE and analytics. They do not contribute to offenses or historical correlation.</td><td>Use only when you intentionally want retention without security analytics. This option is for events, not flows, and has QRadar Data Store entitlement considerations.</td></tr>
+</tbody></table></div>
+<div class="info"><strong>Important: “Bypass Correlation” is not the same as “Log Only.”</strong><p style="margin:6px 0 0">Bypass Correlation preserves events for supported historical correlation. Log Only excludes them from historical correlation and some applications may ignore them. Verify license and app behavior before using Log Only; do not select it for internal events.</p></div>
+<p>In Online mode, Forward can be combined with one of the applicable additional options. For example, Forward + Bypass Correlation sends the data outward and keeps it in QRadar without real-time CRE processing. IBM also notes that when multiple rules match the same data, QRadar applies the safest routing option—for example, a Bypass Correlation match prevents another matching Drop rule from dropping the data. <a href="https://www.ibm.com/docs/en/qsip/7.5.0?topic=data-routing-options-rules" target="_blank" rel="noopener noreferrer">See IBM’s routing option definitions and combinations.</a></p>
+<h2 id="configure">4. Create a Routing Rule</h2>
+<ol>
+<li>Open <strong>Admin → System Configuration → Forwarding Destinations</strong> and create/verify the destination if you need to forward data.</li>
+<li>Open <strong>Admin → System Configuration → Routing Rules</strong>, then select <strong>Add</strong>.</li>
+<li>Give the rule a clear name. Choose Online or Offline, then select the relevant Event Collector or Event Processor and whether the data source is Events or Flows.</li>
+<li>Add the narrowest filters that identify the intended data. Use Match All only when you deliberately mean all incoming data.</li>
+<li>Select the routing option and destination as required, save the rule, and verify its enabled state.</li>
+</ol>
+<p>Menu wording can vary by QRadar version. For the exact fields and restrictions, use the guide for your installed release: <a href="https://www.ibm.com/docs/en/qsip/7.4?topic=systems-configuring-routing-rules-forward-data" target="_blank" rel="noopener noreferrer">IBM’s routing-rule configuration procedure</a>.</p>
+<h2 id="check">5. Common mistakes to avoid</h2>
+<ul>
+<li><strong>Dropping data just to reduce correlation load.</strong> If the events may be useful later, consider Bypass Correlation instead of permanently discarding them.</li>
+<li><strong>Assuming forwarding destination configuration is enough.</strong> You also need a rule (or another supported forwarding mechanism) to select what gets sent.</li>
+<li><strong>Using broad filters without testing.</strong> Verify the filter against real examples before enabling destructive options such as Drop.</li>
+<li><strong>Forgetting Online-mode delivery behavior.</strong> If the target is down, the remote copy may be missed. Pick Online or Offline based on whether real-time delivery or more resilient delivery is the priority.</li>
+<li><strong>Skipping validation.</strong> In Forwarding Destinations, inspect the Seen, Sent, and Dropped counters. Then check the destination itself to confirm that messages are arriving.</li>
+</ul>
+<div class="info"><strong>One compatibility note:</strong> When forwarding normalized events between QRadar deployments, their QIDs, custom log source types, custom properties, and related content need to be compatible. If the content is not synchronized, events at the receiving system can be misidentified or remain unparsed. Review IBM’s guidance on <a href="https://www.ibm.com/docs/en/qsip/7.5.0?topic=administration-forward-data-other-systems" target="_blank" rel="noopener noreferrer">forwarding data to other systems</a> before setting up cross-deployment forwarding.</div>
+<h2 id="references">IBM references</h2>
+<ul>
+<li><a href="https://www.ibm.com/docs/en/qsip/7.5.0?topic=data-routing-options-rules" target="_blank" rel="noopener noreferrer">Routing options for rules — QRadar 7.5</a></li>
+<li><a href="https://www.ibm.com/docs/en/qsip/7.5.0?topic=administration-forward-data-other-systems" target="_blank" rel="noopener noreferrer">Forward data to other systems — QRadar 7.5</a></li>
+<li><a href="https://www.ibm.com/docs/en/qsip/7.5.0?topic=systems-configuring-routing-rules-use-qradar-data-store" target="_blank" rel="noopener noreferrer">Routing Rules with QRadar Data Store — QRadar 7.5</a></li>
+<li><a href="https://www.ibm.com/docs/en/qsip/7.4?topic=systems-configuring-routing-rules-forward-data" target="_blank" rel="noopener noreferrer">Configuring Routing Rules to forward data — QRadar 7.4</a></li>
+<li><a href="https://robertrojek.pl/qradars-routing-rules/" target="_blank" rel="noopener noreferrer">Robert Rojek — QRadar’s Routing Rules (reference article)</a></li>
+</ul>
+<p class="subtle">This article summarizes the core concepts rather than covering every release-specific field. QRadar Cloud, licensing, and appliance type can affect which options are available; confirm the current IBM documentation for your deployment before enabling Drop or Log Only in production.</p>
+<div class="related"><a href="/articles/qradar-migration-guide.html"><small>PART 8 · PREVIOUS</small><strong>← QRadar migration guide</strong></a><a href="/#articles"><small>ARTICLE LIBRARY</small><strong>Back to all articles →</strong></a></div>
+</article>
+</div>
+<footer><div class="wrap footerinner"><span>© <span id="year">2026</span> Ashraf Gamal</span><a href="/">Home</a></div></footer>
+<script>document.getElementById('year').textContent=new Date().getFullYear();</script>
+</body>
+</html>
