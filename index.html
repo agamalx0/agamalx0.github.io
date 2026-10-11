@@ -1,309 +1,317 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Ashraf Gamal's cybersecurity portfolio covering SIEM engineering, detection engineering, incident response and security automation.">
-  <title>Ashraf Gamal | SOC Engineering Portfolio</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#080a12" />
+  <meta name="description" content="Ashraf Gamal — cybersecurity, SIEM engineering, detection engineering, threat hunting, incident response, and security automation." />
+  <title>Ashraf Gamal | Cybersecurity</title>
   <style>
     :root {
-      --bg: #0b1120;
-      --panel: #111b2d;
-      --text: #e8eef8;
-      --muted: #a0aec2;
-      --accent: #53b7ff;
-      --border: #25344b;
+      color-scheme: dark;
+      --bg: #080a12;
+      --bg-soft: #0d1020;
+      --panel: rgba(17, 21, 39, .72);
+      --panel-solid: #111528;
+      --text: #f4f6ff;
+      --muted: #a3abc4;
+      --muted-2: #747d9a;
+      --line: rgba(177, 190, 255, .13);
+      --cyan: #39e7ff;
+      --purple: #9a66ff;
+      --magenta: #ff4fd8;
+      --green: #8affc1;
+      --radius: 22px;
+      --max-width: 1120px;
     }
 
     * { box-sizing: border-box; }
-
-    html { scroll-behavior: smooth; }
-
+    html { scroll-behavior: smooth; scroll-padding-top: 90px; }
     body {
       margin: 0;
-      background: var(--bg);
+      min-width: 320px;
       color: var(--text);
-      font-family: Inter, system-ui, -apple-system, sans-serif;
-      line-height: 1.7;
+      background:
+        radial-gradient(ellipse at 12% 2%, rgba(57, 231, 255, .10), transparent 28rem),
+        radial-gradient(ellipse at 88% 16%, rgba(255, 79, 216, .09), transparent 30rem),
+        radial-gradient(ellipse at 55% 65%, rgba(154, 102, 255, .07), transparent 34rem),
+        var(--bg);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.65;
+      overflow-x: hidden;
     }
 
-    a { color: var(--accent); text-decoration: none; }
-    a:hover { text-decoration: underline; }
-
-    .container {
-      width: min(1080px, 90%);
-      margin: auto;
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: -1;
+      background-image: linear-gradient(rgba(255,255,255,.018) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(255,255,255,.018) 1px, transparent 1px);
+      background-size: 52px 52px;
+      mask-image: linear-gradient(to bottom, black, transparent 88%);
     }
 
-    header {
-      border-bottom: 1px solid var(--border);
-      position: sticky;
-      top: 0;
-      background: rgba(11, 17, 32, .95);
-      backdrop-filter: blur(12px);
+    a { color: inherit; text-decoration: none; }
+    a:focus-visible, button:focus-visible { outline: 2px solid var(--cyan); outline-offset: 4px; }
+    .wrap { width: min(var(--max-width), calc(100% - 44px)); margin-inline: auto; }
+    .gradient-text {
+      color: transparent;
+      background: linear-gradient(100deg, var(--cyan) 5%, #8b8cff 48%, var(--magenta) 92%);
+      -webkit-background-clip: text;
+      background-clip: text;
     }
 
-    nav {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 20px;
-      padding: 18px 0;
+    .topbar {
+      position: sticky; top: 0; z-index: 50;
+      border-bottom: 1px solid rgba(177,190,255,.09);
+      background: rgba(8,10,18,.78);
+      backdrop-filter: blur(18px);
     }
-
-    .brand { font-weight: 800; color: var(--text); }
-    .nav-links { display: flex; gap: 22px; flex-wrap: wrap; }
-    .nav-links a { color: var(--muted); font-size: .92rem; }
-
-    .hero { padding: 100px 0 80px; }
-
-    .eyebrow {
-      color: var(--accent);
-      font-weight: 700;
-      letter-spacing: .13em;
-      text-transform: uppercase;
-      font-size: .8rem;
+    .nav { min-height: 76px; display: flex; align-items: center; justify-content: space-between; gap: 26px; }
+    .identity { display: flex; align-items: center; gap: 12px; font-weight: 750; letter-spacing: -.02em; }
+    .monogram {
+      display: grid; place-items: center; width: 40px; height: 40px; border-radius: 13px;
+      background: linear-gradient(140deg, rgba(57,231,255,.18), rgba(154,102,255,.2), rgba(255,79,216,.18));
+      border: 1px solid rgba(154,190,255,.29); box-shadow: inset 0 0 20px rgba(154,102,255,.10);
+      font-size: 14px; letter-spacing: -.06em;
     }
+    .nav-links { display: flex; align-items: center; gap: 28px; color: var(--muted); font-size: 13px; }
+    .nav-links a { transition: color .2s ease; }
+    .nav-links a:hover { color: var(--cyan); }
+    .nav-cta { border: 1px solid rgba(57,231,255,.35); color: #dffbff !important; padding: 9px 14px; border-radius: 11px; background: rgba(57,231,255,.06); }
 
-    h1 {
-      font-size: clamp(2.5rem, 6vw, 4.6rem);
-      line-height: 1.12;
-      letter-spacing: -.04em;
-      margin: 18px 0;
+    .hero { position: relative; min-height: 690px; display: grid; align-items: center; padding-block: 86px 94px; }
+    .hero-grid { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(280px, .65fr); align-items: center; gap: 66px; }
+    .eyebrow { display: inline-flex; gap: 10px; align-items: center; color: #c8d2ee; font-size: 11px; letter-spacing: .16em; text-transform: uppercase; font-weight: 750; }
+    .live-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); box-shadow: 0 0 14px rgba(138,255,193,.8); }
+    h1 { margin: 22px 0 20px; font-size: clamp(48px, 7vw, 84px); line-height: .99; letter-spacing: -.075em; font-weight: 800; }
+    .hero-lede { max-width: 655px; margin: 0; color: var(--muted); font-size: clamp(16px, 2vw, 18px); line-height: 1.8; }
+    .hero-lede strong { color: #e8ecff; font-weight: 600; }
+    .hero-actions { display: flex; align-items: center; gap: 13px; flex-wrap: wrap; margin-top: 32px; }
+    .btn { display: inline-flex; gap: 10px; align-items: center; justify-content: center; min-height: 47px; padding: 0 18px; border-radius: 12px; font-size: 13px; font-weight: 750; transition: transform .2s ease, border-color .2s ease, background .2s ease; }
+    .btn:hover { transform: translateY(-2px); }
+    .btn-primary { color: #080a12; background: linear-gradient(105deg, var(--cyan), #9aafff 65%, #c4a5ff); box-shadow: 0 7px 32px rgba(57,231,255,.13); }
+    .btn-secondary { border: 1px solid var(--line); background: rgba(255,255,255,.025); color: #e8ecff; }
+    .btn-secondary:hover { border-color: rgba(57,231,255,.45); }
+    .hero-meta { display: flex; gap: 18px; flex-wrap: wrap; margin-top: 30px; color: var(--muted-2); font-size: 11px; letter-spacing: .02em; }
+    .hero-meta span { display: inline-flex; align-items: center; gap: 7px; }
+    .meta-mark { color: var(--cyan); }
+
+    .visual-wrap { position: relative; display: grid; place-items: center; min-height: 380px; }
+    .orbital { position: absolute; width: 310px; height: 310px; border: 1px solid rgba(154,102,255,.24); border-radius: 50%; animation: rotate 26s linear infinite; }
+    .orbital::before, .orbital::after { content: ""; position: absolute; border-radius: 50%; border: 1px solid rgba(57,231,255,.17); inset: 24px; }
+    .orbital::after { inset: 54px; border-color: rgba(255,79,216,.16); }
+    .orbital-dot { position: absolute; top: 44px; right: 20px; width: 9px; height: 9px; background: var(--cyan); box-shadow: 0 0 20px var(--cyan); border-radius: 50%; }
+    .profile-card { position: relative; width: min(100%, 330px); padding: 28px; border-radius: 24px; border: 1px solid rgba(181,193,255,.19); background: linear-gradient(145deg, rgba(24,29,53,.93), rgba(10,13,25,.93)); box-shadow: 0 25px 90px rgba(0,0,0,.28), 0 0 45px rgba(154,102,255,.08); }
+    .card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px; }
+    .card-label { color: var(--muted-2); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 10px; letter-spacing: .1em; }
+    .status { font-size: 10px; color: var(--green); padding: 5px 8px; border: 1px solid rgba(138,255,193,.2); background: rgba(138,255,193,.05); border-radius: 999px; }
+    .avatar-mark { width: 76px; height: 76px; display: grid; place-items: center; border-radius: 24px; margin-bottom: 20px; font-size: 28px; font-weight: 850; letter-spacing: -.08em; background: linear-gradient(140deg, rgba(57,231,255,.2), rgba(154,102,255,.3), rgba(255,79,216,.2)); border: 1px solid rgba(185,192,255,.25); }
+    .profile-card h2 { font-size: 23px; margin: 0; letter-spacing: -.04em; }
+    .profile-card p { font-size: 12px; color: var(--muted); margin: 5px 0 23px; }
+    .mini-divider { height: 1px; background: var(--line); margin-bottom: 17px; }
+    .focus-row { display: flex; justify-content: space-between; gap: 12px; padding-block: 8px; font-size: 11px; }
+    .focus-row span:first-child { color: var(--muted-2); }
+    .focus-row span:last-child { color: #dfe5ff; text-align: right; }
+
+    .section { padding-block: 78px; }
+    .section-head { display: flex; align-items: end; justify-content: space-between; gap: 30px; margin-bottom: 28px; }
+    .kicker { color: var(--cyan); text-transform: uppercase; font-weight: 750; font-size: 10px; letter-spacing: .17em; }
+    h2.section-title { margin: 8px 0 0; font-size: clamp(30px, 4vw, 43px); line-height: 1.15; letter-spacing: -.055em; }
+    .section-desc { max-width: 470px; color: var(--muted); margin: 12px 0 0; font-size: 14px; }
+    .about-panel { display: grid; grid-template-columns: 1fr 1fr; gap: 42px; padding: 32px; border: 1px solid var(--line); border-radius: var(--radius); background: linear-gradient(120deg, rgba(16,21,40,.79), rgba(13,16,31,.65)); }
+    .about-panel p { color: var(--muted); font-size: 14px; margin: 0; }
+    .about-panel p + p { margin-top: 14px; }
+    .about-list { display: grid; gap: 12px; align-content: center; }
+    .about-item { display: flex; align-items: center; gap: 12px; padding: 13px 14px; border: 1px solid rgba(177,190,255,.09); border-radius: 13px; background: rgba(255,255,255,.02); font-size: 12px; color: #dce3fb; }
+    .about-item b { color: var(--cyan); font-size: 14px; min-width: 23px; }
+
+    .expertise-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .expertise-card { position: relative; overflow: hidden; padding: 25px; min-height: 205px; border-radius: 18px; border: 1px solid var(--line); background: var(--panel); transition: transform .22s ease, border-color .22s ease; }
+    .expertise-card:hover { transform: translateY(-4px); border-color: rgba(57,231,255,.32); }
+    .expertise-card::after { content: ""; position: absolute; right: -45px; top: -55px; width: 120px; height: 120px; border-radius: 50%; background: var(--glow, rgba(57,231,255,.12)); filter: blur(32px); pointer-events: none; }
+    .icon-box { width: 41px; height: 41px; display: grid; place-items: center; border-radius: 12px; border: 1px solid rgba(177,190,255,.15); color: var(--icon, var(--cyan)); background: rgba(255,255,255,.035); font-size: 18px; }
+    .expertise-card h3 { margin: 19px 0 8px; font-size: 16px; letter-spacing: -.02em; }
+    .expertise-card p { color: var(--muted); font-size: 12px; line-height: 1.75; margin: 0; }
+
+    .stack-panel { padding: 27px; border-radius: 18px; border: 1px solid var(--line); background: rgba(14,18,34,.55); }
+    .stack-tags { display: flex; flex-wrap: wrap; gap: 10px; }
+    .stack-tag { padding: 8px 12px; font-size: 11px; border: 1px solid rgba(177,190,255,.14); border-radius: 9px; color: #cdd5f0; background: rgba(255,255,255,.025); }
+    .stack-tag:nth-child(3n+1) { border-color: rgba(57,231,255,.21); }
+    .stack-tag:nth-child(3n+2) { border-color: rgba(154,102,255,.22); }
+    .stack-tag:nth-child(3n) { border-color: rgba(255,79,216,.2); }
+
+    .article-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .article-card { display: flex; flex-direction: column; min-height: 250px; padding: 23px; border-radius: 18px; border: 1px solid var(--line); background: linear-gradient(150deg, rgba(19,24,45,.88), rgba(12,15,28,.8)); transition: transform .22s ease, border-color .22s ease; }
+    .article-card:hover { transform: translateY(-4px); border-color: rgba(154,102,255,.43); }
+    .article-meta { display: flex; align-items: center; justify-content: space-between; gap: 10px; color: var(--muted-2); font-size: 10px; margin-bottom: 23px; }
+    .article-type { color: var(--cyan); letter-spacing: .11em; text-transform: uppercase; font-weight: 750; }
+    .article-card h3 { margin: 0 0 10px; font-size: 17px; line-height: 1.35; letter-spacing: -.025em; }
+    .article-card p { color: var(--muted); font-size: 12px; margin: 0 0 23px; }
+    .article-link { margin-top: auto; padding-top: 15px; border-top: 1px solid var(--line); color: #d8e4ff; font-size: 11px; font-weight: 700; }
+    .article-link span { color: var(--cyan); padding-left: 5px; }
+    .note { margin-top: 18px; font-size: 11px; color: var(--muted-2); }
+
+    .connect-panel { display: flex; justify-content: space-between; align-items: center; gap: 35px; padding: 35px; border-radius: 22px; border: 1px solid rgba(154,102,255,.22); background: radial-gradient(ellipse at 0 50%, rgba(57,231,255,.08), transparent 48%), radial-gradient(ellipse at 100% 0, rgba(255,79,216,.09), transparent 46%), rgba(14,18,34,.7); }
+    .connect-panel h2 { margin: 0; font-size: clamp(25px, 3vw, 34px); letter-spacing: -.05em; }
+    .connect-panel p { max-width: 570px; color: var(--muted); font-size: 13px; margin: 10px 0 0; }
+    .connect-actions { display: flex; gap: 10px; flex-wrap: wrap; flex-shrink: 0; }
+    footer { margin-top: 50px; border-top: 1px solid var(--line); color: var(--muted-2); font-size: 11px; }
+    .footer-inner { display: flex; align-items: center; justify-content: space-between; gap: 18px; flex-wrap: wrap; padding-block: 25px; }
+    .footer-links { display: flex; gap: 19px; }
+    .footer-links a:hover { color: var(--cyan); }
+
+    @keyframes rotate { to { transform: rotate(360deg); } }
+    @media (max-width: 900px) {
+      .hero-grid { grid-template-columns: 1fr; gap: 30px; }
+      .hero { min-height: unset; }
+      .visual-wrap { min-height: 330px; }
+      .orbital { width: 275px; height: 275px; }
+      .profile-card { width: min(100%, 360px); }
+      .expertise-grid, .article-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .connect-panel { align-items: flex-start; flex-direction: column; }
     }
-
-    h1 span { color: var(--accent); }
-
-    .intro {
-      max-width: 720px;
-      color: var(--muted);
-      font-size: 1.1rem;
+    @media (max-width: 640px) {
+      .wrap { width: min(var(--max-width), calc(100% - 30px)); }
+      .nav { min-height: 68px; }
+      .nav-links { gap: 13px; font-size: 11px; }
+      .nav-links a:not(.nav-cta) { display: none; }
+      .hero { padding-block: 65px 45px; }
+      h1 { font-size: clamp(45px, 13vw, 66px); }
+      .section { padding-block: 52px; }
+      .section-head { display: block; }
+      .about-panel { grid-template-columns: 1fr; gap: 24px; padding: 22px; }
+      .expertise-grid, .article-grid { grid-template-columns: 1fr; }
+      .expertise-card { min-height: unset; }
+      .connect-panel { padding: 25px 21px; }
+      .footer-inner { align-items: flex-start; flex-direction: column; }
     }
-
-    .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
-
-    .button {
-      display: inline-block;
-      padding: 11px 18px;
-      border: 1px solid var(--border);
-      border-radius: 9px;
-      font-weight: 650;
-    }
-
-    .button.primary { background: var(--accent); color: #06111e; }
-
-    section { padding: 55px 0; scroll-margin-top: 80px; }
-
-    h2 { font-size: 1.8rem; margin-bottom: 8px; }
-    .section-intro { color: var(--muted); margin-top: 0; }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 18px;
-      margin-top: 26px;
-    }
-
-    .card {
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 23px;
-    }
-
-    .card h3 { margin-top: 0; }
-    .card p { color: var(--muted); font-size: .95rem; }
-
-    .tag {
-      display: inline-block;
-      color: var(--accent);
-      background: #16283c;
-      padding: 4px 10px;
-      border-radius: 6px;
-      font-size: .8rem;
-      margin: 5px 5px 0 0;
-    }
-
-    .skills { margin-top: 22px; }
-
-    footer {
-      margin-top: 40px;
-      padding: 28px 0;
-      border-top: 1px solid var(--border);
-      color: var(--muted);
-      font-size: .9rem;
-    }
-
-    @media (max-width: 700px) {
-      nav { align-items: flex-start; flex-direction: column; }
-      .grid { grid-template-columns: 1fr; }
-      .hero { padding: 65px 0 45px; }
-      .nav-links { gap: 14px; }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
     }
   </style>
 </head>
 <body>
-  <header>
-    <nav class="container">
-      <a class="brand" href="#">AG / SOC ENGINEERING</a>
+  <header class="topbar">
+    <nav class="nav wrap" aria-label="Main navigation">
+      <a class="identity" href="#home" aria-label="Ashraf Gamal home">
+        <span class="monogram">AG</span><span>Ashraf Gamal</span>
+      </a>
       <div class="nav-links">
         <a href="#about">About</a>
         <a href="#expertise">Expertise</a>
-        <a href="#projects">Projects</a>
         <a href="#articles">Articles</a>
-        <a href="#contact">Contact</a>
+        <a class="nav-cta" href="#connect">Connect ↗</a>
       </div>
     </nav>
   </header>
 
   <main>
-    <section class="hero container">
-      <div class="eyebrow">Cybersecurity · Blue Team · Engineering</div>
-      <h1>Ashraf Gamal<br><span>SOC Engineering Portfolio</span></h1>
-      <p class="intro">
-        SOC Analyst L2 / Senior SOC Engineer focused on SIEM engineering,
-        detection development, incident response, threat hunting and
-        security automation. This portfolio documents practical
-        implementations, configurations and troubleshooting workflows.
-      </p>
-      <div class="actions">
-        <a class="button primary" href="#projects">Explore My Work</a>
-        <a class="button" href="#articles">Technical Articles</a>
-        <a class="button" href="https://github.com/agamalx0">GitHub Profile</a>
+    <section class="hero wrap" id="home">
+      <div class="hero-grid">
+        <div>
+          <div class="eyebrow"><span class="live-dot"></span> Cybersecurity · Blue Team · Engineering</div>
+          <h1>Security with<br><span class="gradient-text">a builder's mindset.</span></h1>
+          <p class="hero-lede">
+            I'm <strong>Ashraf Gamal</strong>, a cybersecurity professional focused on SIEM engineering,
+            detection development, incident response, threat hunting, and security automation.
+            I document practical configurations, investigations, and lessons learned along the way.
+          </p>
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="#articles">Explore technical notes <span aria-hidden="true">↘</span></a>
+            <a class="btn btn-secondary" href="https://github.com/agamalx0" target="_blank" rel="noopener noreferrer">GitHub profile ↗</a>
+          </div>
+          <div class="hero-meta">
+            <span><span class="meta-mark">✳</span> SIEM &amp; Detection</span>
+            <span><span class="meta-mark">⌘</span> Automation &amp; Integrations</span>
+            <span><span class="meta-mark">⌁</span> Threat Hunting</span>
+          </div>
+        </div>
+
+        <div class="visual-wrap" aria-label="Decorative cybersecurity-inspired graphic">
+          <div class="orbital"><span class="orbital-dot"></span></div>
+          <div class="profile-card">
+            <div class="card-top"><span class="card-label">PROFILE / OVERVIEW</span><span class="status">● Building &amp; learning</span></div>
+            <div class="avatar-mark">AG</div>
+            <h2>Ashraf Gamal</h2>
+            <p>Cybersecurity · SOC Engineering</p>
+            <div class="mini-divider"></div>
+            <div class="focus-row"><span>Focus</span><span>Detection &amp; Response</span></div>
+            <div class="focus-row"><span>Platforms</span><span>Wazuh · QRadar · Splunk</span></div>
+            <div class="focus-row"><span>Automation</span><span>SOAR · APIs · n8n</span></div>
+          </div>
+        </div>
       </div>
     </section>
 
-    <section id="about" class="container">
-      <h2>About Me</h2>
-      <p class="section-intro">
-        Practical security engineering, from detection logic to
-        production-oriented SIEM operations.
-      </p>
-      <p>
-        I work across security monitoring and engineering, with an interest
-        in building reliable detection pipelines, integrating security
-        platforms, optimizing SIEM performance and automating repetitive
-        SOC operations. This site is a technical knowledge base for
-        documented experiments, reusable examples and lessons learned.
-      </p>
-    </section>
-
-    <section id="expertise" class="container">
-      <h2>Technical Expertise</h2>
-      <p class="section-intro">
-        Core security domains and technologies.
-      </p>
-      <div class="skills">
-        <span class="tag">Wazuh</span>
-        <span class="tag">IBM QRadar</span>
-        <span class="tag">QRadar SOAR</span>
-        <span class="tag">Splunk</span>
-        <span class="tag">SIEM Engineering</span>
-        <span class="tag">Detection Engineering</span>
-        <span class="tag">MITRE ATT&CK</span>
-        <span class="tag">Threat Hunting</span>
-        <span class="tag">Incident Response</span>
-        <span class="tag">DFIR-IRIS</span>
-        <span class="tag">OpenCTI</span>
-        <span class="tag">MISP</span>
-        <span class="tag">n8n Automation</span>
-        <span class="tag">Linux</span>
-        <span class="tag">Docker</span>
+    <section class="section wrap" id="about">
+      <div class="section-head">
+        <div><div class="kicker">01 / About</div><h2 class="section-title">Curious by nature.<br><span class="gradient-text">Practical by design.</span></h2></div>
+        <p class="section-desc">A place to share technical notes, repeatable methods, and lessons from building and operating security platforms.</p>
+      </div>
+      <div class="about-panel">
+        <div>
+          <p>My work spans security monitoring and engineering: developing detections, improving SIEM operations, integrating security tools, and making SOC workflows more useful and repeatable.</p>
+          <p>This website is my evolving technical notebook. Articles will focus on the reasoning behind a configuration, how to validate it, common failure modes, and what the results mean—not just a list of commands.</p>
+        </div>
+        <div class="about-list">
+          <div class="about-item"><b>↗</b><span>Implementation guides and configuration notes</span></div>
+          <div class="about-item"><b>⌕</b><span>Detection logic, investigation, and troubleshooting</span></div>
+          <div class="about-item"><b>⟲</b><span>Integration patterns and security automation</span></div>
+        </div>
       </div>
     </section>
 
-    <section id="projects" class="container">
-      <h2>Engineering Focus</h2>
-      <p class="section-intro">
-        Practical work I plan to document with configurations,
-        validation steps and technical explanations.
-      </p>
-      <div class="grid">
-        <article class="card">
-          <h3>01 / SIEM Engineering</h3>
-          <p>
-            Custom detection rules, log parsing, false-positive tuning,
-            cluster health, retention policies and performance troubleshooting.
-          </p>
-        </article>
-        <article class="card">
-          <h3>02 / Security Integrations</h3>
-          <p>
-            Alert forwarding, case management, threat intelligence enrichment,
-            API integrations and troubleshooting data pipelines.
-          </p>
-        </article>
-        <article class="card">
-          <h3>03 / SOC Automation</h3>
-          <p>
-            Workflow automation, alert enrichment, incident handling,
-            reporting and repeatable operational processes.
-          </p>
-        </article>
+    <section class="section wrap" id="expertise">
+      <div class="section-head">
+        <div><div class="kicker">02 / Areas of interest</div><h2 class="section-title">Where I work</h2></div>
+        <p class="section-desc">Core disciplines I work with and document through practical examples.</p>
+      </div>
+      <div class="expertise-grid">
+        <article class="expertise-card" style="--icon:var(--cyan);--glow:rgba(57,231,255,.14)"><div class="icon-box">⌘</div><h3>SIEM Engineering</h3><p>Log collection and parsing, custom rules, alert tuning, platform health, retention, and performance troubleshooting.</p></article>
+        <article class="expertise-card" style="--icon:var(--purple);--glow:rgba(154,102,255,.16)"><div class="icon-box">⌕</div><h3>Detection &amp; Threat Hunting</h3><p>Detection logic, event analysis, hypothesis-driven hunting, false-positive reduction, and MITRE ATT&amp;CK mapping.</p></article>
+        <article class="expertise-card" style="--icon:var(--magenta);--glow:rgba(255,79,216,.13)"><div class="icon-box">⤳</div><h3>Security Integrations</h3><p>API-driven integrations, alert normalization, case management, threat intelligence, and reliable data flow.</p></article>
+        <article class="expertise-card" style="--icon:var(--green);--glow:rgba(138,255,193,.12)"><div class="icon-box">⟲</div><h3>SOAR &amp; Automation</h3><p>Incident workflows, enrichment, repeatable response processes, reporting, and automation using APIs and n8n.</p></article>
+        <article class="expertise-card" style="--icon:var(--cyan);--glow:rgba(57,231,255,.12)"><div class="icon-box">⌁</div><h3>Incident Response</h3><p>Alert triage, investigation workflows, evidence-aware analysis, case documentation, and escalation context.</p></article>
+        <article class="expertise-card" style="--icon:var(--purple);--glow:rgba(154,102,255,.15)"><div class="icon-box">▤</div><h3>Platform Operations</h3><p>Linux and Docker operations, availability checks, storage management, cluster troubleshooting, and health checks.</p></article>
       </div>
     </section>
 
-    <section id="articles" class="container">
-      <h2>Technical Articles</h2>
-      <p class="section-intro">
-        Step-by-step technical write-ups will be published here.
-      </p>
-      <div class="grid">
-        <article class="card">
-          <h3>Wazuh Detection Engineering</h3>
-          <p>
-            Rule logic, decoders, event validation and practical
-            false-positive reduction.
-          </p>
-          <span class="tag">Wazuh</span>
-          <span class="tag">Detection</span>
-        </article>
-        <article class="card">
-          <h3>SIEM Troubleshooting</h3>
-          <p>
-            A structured approach to investigating ingestion failures,
-            storage pressure and cluster health.
-          </p>
-          <span class="tag">Operations</span>
-          <span class="tag">Troubleshooting</span>
-        </article>
-        <article class="card">
-          <h3>Security Platform Integration</h3>
-          <p>
-            Documenting API integrations, alert normalization,
-            error handling and automation.
-          </p>
-          <span class="tag">Integration</span>
-          <span class="tag">Automation</span>
-        </article>
+    <section class="section wrap">
+      <div class="section-head">
+        <div><div class="kicker">03 / Toolset</div><h2 class="section-title">Technologies &amp; platforms</h2></div>
+      </div>
+      <div class="stack-panel">
+        <div class="stack-tags">
+          <span class="stack-tag">Wazuh</span><span class="stack-tag">IBM QRadar</span><span class="stack-tag">QRadar SOAR</span><span class="stack-tag">Splunk</span><span class="stack-tag">MITRE ATT&amp;CK</span><span class="stack-tag">DFIR-IRIS</span><span class="stack-tag">OpenCTI</span><span class="stack-tag">MISP</span><span class="stack-tag">n8n</span><span class="stack-tag">Linux</span><span class="stack-tag">Docker</span><span class="stack-tag">REST APIs</span><span class="stack-tag">Log Analysis</span><span class="stack-tag">Detection Rules</span><span class="stack-tag">Incident Response</span>
+        </div>
       </div>
     </section>
 
-    <section id="contact" class="container">
-      <h2>Connect</h2>
-      <p class="section-intro">
-        Explore my code and follow my technical work.
-      </p>
-      <div class="actions">
-        <a class="button primary" href="https://github.com/agamalx0">
-          GitHub
-        </a>
-        <!-- Replace the URL below with your actual LinkedIn profile. -->
-        <a class="button"
-           href="https://www.linkedin.com/"
-           target="_blank" rel="noopener noreferrer">
-          LinkedIn
-        </a>
+    <section class="section wrap" id="articles">
+      <div class="section-head">
+        <div><div class="kicker">04 / Knowledge base</div><h2 class="section-title">Technical notes &amp; articles</h2></div>
+        <p class="section-desc">A growing collection of implementation guides, troubleshooting notes, and lab-tested examples.</p>
+      </div>
+      <div class="article-grid">
+        <article class="article-card"><div class="article-meta"><span class="article-type">Detection</span><span>Wazuh</span></div><h3>Custom Detection Rules &amp; Validation</h3><p>A structured approach to rule logic, event fields, testing, and reducing false positives.</p><a class="article-link" href="https://github.com/agamalx0/agamalx0.github.io" target="_blank" rel="noopener noreferrer">Browse repository <span>↗</span></a></article>
+        <article class="article-card"><div class="article-meta"><span class="article-type">Operations</span><span>SIEM</span></div><h3>SIEM Health Checks &amp; Troubleshooting</h3><p>Practical checks for ingestion, cluster health, retention, disk usage, and platform performance.</p><a class="article-link" href="https://github.com/agamalx0/agamalx0.github.io" target="_blank" rel="noopener noreferrer">Browse repository <span>↗</span></a></article>
+        <article class="article-card"><div class="article-meta"><span class="article-type">Integration</span><span>Automation</span></div><h3>Security Tool Integrations</h3><p>Documenting alert forwarding, API payloads, data mapping, error handling, and response workflows.</p><a class="article-link" href="https://github.com/agamalx0/agamalx0.github.io" target="_blank" rel="noopener noreferrer">Browse repository <span>↗</span></a></article>
+      </div>
+      <p class="note">These cards are starter topics, not published articles yet. Replace each repository link with the corresponding article URL as you publish your write-ups.</p>
+    </section>
+
+    <section class="section wrap" id="connect">
+      <div class="connect-panel">
+        <div><div class="kicker">05 / Contact</div><h2>Let's connect <span class="gradient-text">and share knowledge.</span></h2><p>Find my work on GitHub or connect with me on LinkedIn for cybersecurity topics, technical discussions, and new articles.</p></div>
+        <div class="connect-actions"><a class="btn btn-primary" href="https://www.linkedin.com/in/1elrawy/" target="_blank" rel="noopener noreferrer">LinkedIn ↗</a><a class="btn btn-secondary" href="https://github.com/agamalx0" target="_blank" rel="noopener noreferrer">GitHub ↗</a></div>
       </div>
     </section>
   </main>
 
-  <footer>
-    <div class="container">
-      © 2026 Ashraf Gamal · SOC Engineering Portfolio
-      <br>Technical examples should use sanitized data and authorized lab environments.
-    </div>
-  </footer>
+  <footer><div class="footer-inner wrap"><span>© <span id="year">2026</span> Ashraf Gamal</span><div class="footer-links"><a href="#home">Back to top ↑</a><a href="https://www.linkedin.com/in/1elrawy/" target="_blank" rel="noopener noreferrer">LinkedIn</a><a href="https://github.com/agamalx0" target="_blank" rel="noopener noreferrer">GitHub</a></div></div></footer>
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
 </body>
 </html>
