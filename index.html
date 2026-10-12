@@ -147,8 +147,12 @@
     .stack-tag:nth-child(3n) { border-color: rgba(255,79,216,.2); }
 
     .article-carousel { position: relative; }
-    .article-intro { display: flex; align-items: end; justify-content: space-between; gap: 18px; max-width: 590px; }
-    .article-intro .section-desc { margin: 0; flex: 1; }
+    .article-filters { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 20px; }
+    .article-filter { display: inline-flex; align-items: center; justify-content: center; padding: 10px 16px; border-radius: 11px; border: 1px solid var(--line); background: rgba(255,255,255,.025); color: var(--muted); font: inherit; font-size: 12px; font-weight: 750; cursor: pointer; transition: color .2s ease, border-color .2s ease, background .2s ease; }
+    .article-filter:hover { color: var(--cyan); border-color: rgba(57,231,255,.4); }
+    .article-filter[aria-pressed="true"] { color: #080a12; border-color: transparent; background: linear-gradient(105deg, var(--cyan), #9aafff 65%, #c4a5ff); }
+    .article-library-head { display: flex; align-items: end; justify-content: space-between; gap: 20px; }
+    .article-library-head > div:first-child { min-width: 0; }
     .article-controls { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
     .article-count { min-width: 82px; color: var(--muted-2); font-size: 11px; font-variant-numeric: tabular-nums; text-align: right; margin-right: 3px; }
     .article-arrow { display: grid; place-items: center; width: 39px; height: 39px; border-radius: 12px; border: 1px solid rgba(177,190,255,.18); background: rgba(255,255,255,.035); color: #eaf5ff; font: inherit; font-size: 22px; line-height: 1; cursor: pointer; transition: color .2s ease, border-color .2s ease, background .2s ease, transform .2s ease; }
@@ -207,7 +211,7 @@
       .section-head { display: block; }
       .about-panel { grid-template-columns: 1fr; gap: 24px; padding: 22px; }
       .expertise-grid { grid-template-columns: 1fr; }
-      .article-intro { align-items: center; }
+      .article-library-head { align-items: flex-start; flex-direction: column; gap: 18px; }
       .article-card { flex-basis: 100%; }
       .expertise-card { min-height: unset; }
       .connect-panel { padding: 25px 21px; }
@@ -319,11 +323,14 @@
     </section>
 
      <section class="section wrap" id="articles">
-      <div class="section-head">
-        <div><div class="kicker">04 / Knowledge base</div><h2 class="section-title">QRadar series &amp; SIEM engineering notes</h2></div>
-        <div class="article-intro">
-          <p class="section-desc">Reviewed, locally hosted technical guides with practical context, version-aware notes, and references to official documentation.</p>
-          <div class="article-controls" aria-label="Article carousel controls">
+      <div class="section-head article-library-head">
+        <div><div class="kicker">04 / Knowledge base</div><h2 class="section-title">Technical notes</h2>
+          <div class="article-filters" role="group" aria-label="Filter technical articles">
+            <button class="article-filter" type="button" data-filter="qradar" aria-pressed="true">IBM QRadar</button>
+            <button class="article-filter" type="button" data-filter="wazuh" aria-pressed="false">Wazuh</button>
+          </div>
+        </div>
+        <div class="article-controls" aria-label="Article carousel controls">
             <span class="article-count" id="articleCount" aria-live="polite">01–02 / 10</span>
             <button class="article-arrow" id="articlesPrev" type="button" aria-label="Previous articles" title="Previous articles" disabled>‹</button>
             <button class="article-arrow" id="articlesNext" type="button" aria-label="Next articles" title="Next articles">›</button>
@@ -333,52 +340,52 @@
       <div class="article-carousel" id="articleCarousel">
         <div class="article-viewport" id="articleViewport" tabindex="0" aria-label="Technical articles. Use the left and right arrow keys to browse.">
           <div class="article-grid" id="articleTrack">
-            <a class="article-card" href="/articles/wazuh-all-in-one-installation.html">
+            <a class="article-card" data-category="wazuh" href="/articles/wazuh-all-in-one-installation.html">
               <div class="article-meta"><span class="article-type">Part 1 · Deployment</span><span>Wazuh SIEM</span></div>
               <h3>Wazuh All-in-One: Installation and Validation</h3>
               <p>Prepare a single-host deployment, install the central components, validate services, and troubleshoot an incomplete installation safely.</p>
             </a>
-            <a class="article-card" href="/articles/what-is-qradar-siem.html">
+            <a class="article-card" data-category="qradar" href="/articles/what-is-qradar-siem.html">
               <div class="article-meta"><span class="article-type">Part 1 · Foundations</span><span>IBM QRadar</span></div>
               <h3>What Is IBM QRadar SIEM?</h3>
               <p>An introduction to event and flow collection, correlation rules, offenses, investigation workflows, and compliance considerations.</p>
             </a>
-            <a class="article-card" href="/articles/qradar-installation.html">
+            <a class="article-card" data-category="qradar" href="/articles/qradar-installation.html">
               <div class="article-meta"><span class="article-type">Part 2 · Installation</span><span>IBM QRadar</span></div>
               <h3>QRadar Installation: A Version-Aware Guide</h3>
               <p>Choose the right install path, understand appliance roles, and validate a new deployment without relying on outdated release assumptions.</p>
             </a>
-            <a class="article-card" href="/articles/qradar-health-check.html">
+            <a class="article-card" data-category="qradar" href="/articles/qradar-health-check.html">
               <div class="article-meta"><span class="article-type">Part 3 · Health checks</span><span>IBM QRadar</span></div>
               <h3>QRadar Health Check: DrQ, Recon &amp; Cliniq</h3>
               <p>A repeatable health-check workflow that explains what each tool checks, how to interpret results, and where its limits are.</p>
             </a>
-            <a class="article-card" href="/articles/qradar-troubleshooting.html">
+            <a class="article-card" data-category="qradar" href="/articles/qradar-troubleshooting.html">
               <div class="article-meta"><span class="article-type">Part 4 · Troubleshooting</span><span>IBM QRadar</span></div>
               <h3>QRadar Troubleshooting: A Practical Checklist</h3>
               <p>Structured triage for connectivity, service health, disk space, deployment consistency, logs, applications, and event-flow symptoms.</p>
             </a>
-            <a class="article-card" href="/articles/qradar-operations-essentials.html">
+            <a class="article-card" data-category="qradar" href="/articles/qradar-operations-essentials.html">
               <div class="article-meta"><span class="article-type">Part 5 · Operations</span><span>IBM QRadar</span></div>
               <h3>QRadar Operations Essentials: Deployment, Capacity &amp; Services</h3>
               <p>Understand standard and full configuration deployments, EPS/FPM licensing, service status commands, and safe operational practices.</p>
             </a>
-            <a class="article-card" href="/articles/qradar-upgrade-guide.html">
+            <a class="article-card" data-category="qradar" href="/articles/qradar-upgrade-guide.html">
               <div class="article-meta"><span class="article-type">Part 6 · Upgrade guide</span><span>IBM QRadar</span></div>
               <h3>IBM QRadar Upgrade Guide: Planning, Execution &amp; Validation</h3>
               <p>A comprehensive runbook for upgrade paths, prechecks, backups, HA and managed hosts, installation, post-upgrade testing, and recovery planning.</p>
             </a>
-            <a class="article-card" href="/articles/qradar-high-availability.html">
+            <a class="article-card" data-category="qradar" href="/articles/qradar-high-availability.html">
               <div class="article-meta"><span class="article-type">Part 7 · High availability</span><span>IBM QRadar</span></div>
               <h3>QRadar High Availability: Setup, Failover &amp; Recovery</h3>
               <p>Understand primary/secondary roles, virtual IP addressing, HA prerequisites, controlled failover, failback, and troubleshooting.</p>
             </a>
-            <a class="article-card" href="/articles/qradar-migration-guide.html">
+            <a class="article-card" data-category="qradar" href="/articles/qradar-migration-guide.html">
               <div class="article-meta"><span class="article-type">Part 8 · Migration</span><span>IBM QRadar</span></div>
               <h3>QRadar Migration Guide: Same or New IP Address</h3>
               <p>Plan a Console replacement, restore configuration, transfer Ariel data, migrate certificates, and validate event/flow processing.</p>
             </a>
-            <a class="article-card" href="/articles/qradar-routing-rules.html">
+            <a class="article-card" data-category="qradar" href="/articles/qradar-routing-rules.html">
               <div class="article-meta"><span class="article-type">Part 9 · Routing Rules</span><span>IBM QRadar</span></div>
               <h3>QRadar Routing Rules: A Practical Guide</h3>
               <p>Understand Online vs Offline forwarding, routing options, safe filtering, and how to verify data delivery.</p>
@@ -386,7 +393,6 @@
           </div>
         </div>
       </div>
-      <p class="note">The guides are hosted on this website and include links to relevant IBM documentation. Commands and procedures should always be checked against the QRadar release in use.</p>
     </section>
 
     <section class="section wrap" id="connect">
@@ -423,24 +429,14 @@
       const counter = document.getElementById('articleCount');
       const previous = document.getElementById('articlesPrev');
       const next = document.getElementById('articlesNext');
+      const filters = Array.from(document.querySelectorAll('.article-filter'));
       if (!carousel || !viewport || !track || !counter || !previous || !next) return;
 
-      const cards = Array.from(track.querySelectorAll('.article-card'));
+      const allCards = Array.from(track.querySelectorAll('.article-card'));
+      let cards = [];
       let index = 0;
       let visibleCount = 2;
       let step = 0;
-
-      const measure = () => {
-        if (!cards.length) return;
-        const first = cards[0];
-        const trackStyle = window.getComputedStyle(track);
-        const gap = parseFloat(trackStyle.columnGap || trackStyle.gap) || 0;
-        const cardWidth = first.getBoundingClientRect().width;
-        step = cardWidth + gap;
-        visibleCount = Math.max(1, Math.min(cards.length, Math.round((viewport.clientWidth + gap) / step)));
-        index = Math.min(index, Math.max(0, cards.length - visibleCount));
-        render(false);
-      };
 
       const render = (animate = true) => {
         track.style.transition = animate ? '' : 'none';
@@ -456,23 +452,37 @@
         if (!animate) requestAnimationFrame(() => { track.style.transition = ''; });
       };
 
-      const move = (delta) => {
-        const last = Math.max(0, cards.length - visibleCount);
-        index = Math.max(0, Math.min(last, index + delta));
-        render(true);
+      const measure = () => {
+        if (!cards.length) {
+          step = 0;
+          visibleCount = 1;
+          render(false);
+          return;
+        }
+        const trackStyle = window.getComputedStyle(track);
+        const gap = parseFloat(trackStyle.columnGap || trackStyle.gap) || 0;
+        step = cards[0].getBoundingClientRect().width + gap;
+        visibleCount = Math.max(1, Math.min(cards.length, Math.round((viewport.clientWidth + gap) / step)));
+        index = Math.min(index, Math.max(0, cards.length - visibleCount));
+        render(false);
       };
 
-      previous.addEventListener('click', () => move(-1));
-      next.addEventListener('click', () => move(1));
+      const applyFilter = (category) => {
+        filters.forEach(button => button.setAttribute('aria-pressed', String(button.dataset.filter === category)));
+        allCards.forEach(card => { card.style.display = card.dataset.category === category ? '' : 'none'; });
+        cards = allCards.filter(card => card.dataset.category === category);
+        index = 0;
+        track.style.transform = 'translateX(0)';
+        measure();
+      };
+
+      filters.forEach(button => button.addEventListener('click', () => applyFilter(button.dataset.filter)));
+      previous.addEventListener('click', () => { index = Math.max(0, index - 1); render(true); });
+      next.addEventListener('click', () => { index = Math.min(Math.max(0, cards.length - visibleCount), index + 1); render(true); });
       carousel.addEventListener('keydown', (event) => {
         if (!carousel.contains(document.activeElement)) return;
-        if (event.key === 'ArrowLeft') {
-          event.preventDefault();
-          move(-1);
-        } else if (event.key === 'ArrowRight') {
-          event.preventDefault();
-          move(1);
-        }
+        if (event.key === 'ArrowLeft') { event.preventDefault(); index = Math.max(0, index - 1); render(true); }
+        else if (event.key === 'ArrowRight') { event.preventDefault(); index = Math.min(Math.max(0, cards.length - visibleCount), index + 1); render(true); }
       });
 
       if ('ResizeObserver' in window) {
@@ -481,7 +491,7 @@
       } else {
         window.addEventListener('resize', measure);
       }
-      measure();
+      applyFilter('qradar');
     })();
   </script>
 </body>
