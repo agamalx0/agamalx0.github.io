@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#080a12">
+<meta name="description" content="Test an n8n Webhook node locally with curl before production. Configure a POST endpoint, inspect incoming JSON, understand test versus production URLs, and troubleshoot common failures.">
+<meta name="keywords" content="n8n, webhook, curl, local testing, HTTP POST, JSON, workflow automation, API testing">
+<title>Testing n8n Webhooks Locally with curl Before Production | Ashraf Gamal</title>
+<style>
+:root{color-scheme:dark;--bg:#080a12;--panel:#111528;--text:#f4f6ff;--muted:#a3abc4;--line:rgba(177,190,255,.15);--cyan:#39e7ff;--purple:#9a66ff;--pink:#ff4fd8;--amber:#ffc879}
+*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:90px}body{margin:0;min-width:320px;color:var(--text);background:radial-gradient(ellipse at 6% 0,rgba(57,231,255,.09),transparent 32rem),radial-gradient(ellipse at 96% 12%,rgba(255,79,216,.08),transparent 28rem),var(--bg);font:16px/1.78 "Space Grotesk",Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}a{color:var(--cyan);text-decoration:none}a:hover{text-decoration:underline}.wrap{width:min(920px,calc(100% - 34px));margin:auto}.topbar{position:sticky;top:0;z-index:10;background:rgba(8,10,18,.86);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}.nav{height:68px;display:flex;align-items:center;justify-content:space-between;gap:18px}.brand{color:var(--text);font-weight:750;letter-spacing:-.02em}.back{font-size:13px;color:var(--muted)}.hero{padding:67px 0 35px}.eyebrow,.kicker{font-size:11px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:var(--cyan)}h1{font-size:clamp(36px,6vw,60px);line-height:1.08;letter-spacing:-.06em;margin:15px 0}.gradient{color:transparent;background:linear-gradient(100deg,var(--cyan),#9a8bff 55%,var(--pink));-webkit-background-clip:text;background-clip:text}.lede{font-size:18px;line-height:1.7;color:#c0c8df;max-width:770px}.meta{display:flex;flex-wrap:wrap;gap:10px 18px;font-size:12px;color:var(--muted);margin-top:24px}.pill{border:1px solid rgba(57,231,255,.24);background:rgba(57,231,255,.06);padding:4px 9px;border-radius:99px;color:#d9fbff}.layout{display:grid;grid-template-columns:220px minmax(0,1fr);gap:35px;padding:20px 0 85px}.toc{align-self:start;position:sticky;top:90px;padding:18px;border:1px solid var(--line);border-radius:16px;background:rgba(17,21,40,.6)}.toc strong{font-size:12px}.toc a{display:block;color:var(--muted);font-size:12px;padding:7px 0;line-height:1.4}.content{min-width:0}.content h2{font-size:27px;line-height:1.25;letter-spacing:-.04em;margin:42px 0 13px}.content h3{font-size:18px;margin:26px 0 8px}.content p,.content li{color:#c0c8df}.content li{padding-left:3px;margin:7px 0}.content ul,.content ol{padding-left:22px}.callout{padding:18px 20px;border:1px solid rgba(255,200,121,.28);border-left:3px solid var(--amber);border-radius:13px;background:rgba(255,200,121,.055);margin:22px 0}.callout strong{color:#ffe2b3}.info{padding:17px 20px;border:1px solid rgba(57,231,255,.22);border-radius:13px;background:rgba(57,231,255,.045);margin:20px 0}.info strong{color:#c9faff}code,pre{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}code{font-size:.92em;color:#d7e9ff}.code{overflow:auto;margin:15px 0;padding:17px;border-radius:12px;border:1px solid var(--line);background:#070a12;color:#dbe6ff;font-size:13px;line-height:1.7}.related{display:grid;grid-template-columns:1fr;gap:12px;margin-top:36px}.related a{border:1px solid var(--line);border-radius:13px;padding:15px;color:var(--text);background:rgba(255,255,255,.025)}.related small{display:block;color:var(--muted);font-size:11px}.related strong{display:block;margin-top:5px;font-size:13px}.footer{border-top:1px solid var(--line);padding:23px 0;color:var(--muted);font-size:12px}.footerinner{display:flex;justify-content:space-between;gap:15px;flex-wrap:wrap}.contact-hook{margin:30px 0 0;padding:22px 24px;border:1px solid rgba(57,231,255,.23);border-radius:15px;background:linear-gradient(120deg,rgba(57,231,255,.055),rgba(154,102,255,.065),rgba(255,79,216,.04))}.hook-kicker{display:block;color:var(--cyan);font-size:10px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;margin-bottom:8px}.hook-title{color:var(--text);font-size:19px;line-height:1.45;letter-spacing:-.025em;margin:0}.contact-hook p{color:#c0c8df;margin:8px 0 0}.contact-links{display:flex;flex-wrap:wrap;gap:9px;margin-top:15px}.contact-links a{display:inline-flex;align-items:center;justify-content:center;padding:8px 12px;border:1px solid rgba(177,190,255,.18);border-radius:9px;background:rgba(255,255,255,.025);color:#e4edff;font-size:12px;font-weight:700}.contact-links a:hover{border-color:rgba(57,231,255,.5);background:rgba(57,231,255,.07);color:var(--cyan);text-decoration:none}.personal-note{margin:0 0 22px;padding:11px 14px;border:1px solid rgba(177,190,255,.13);border-radius:10px;background:rgba(255,255,255,.025);color:#a3abc4;font-size:12px;line-height:1.65}.personal-note strong{color:#dce5ff;font-weight:700}.note{font-size:12px;color:var(--muted)}
+@media(max-width:760px){.layout{grid-template-columns:1fr;gap:10px}.toc{position:static;display:grid;grid-template-columns:1fr 1fr;gap:0 14px}.toc strong{grid-column:1/-1}.hero{padding-top:45px}.content h2{margin-top:32px}}@media(max-width:480px){.contact-hook{padding:18px}.hook-title{font-size:17px}}@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+</head>
+<body>
+<header class="topbar"><nav class="nav wrap"><a class="brand" href="/">AG <span class="gradient">/ Notes</span></a><a class="back" href="/#articles">← Back to all articles</a></nav></header>
+<header class="hero wrap">
+<div class="eyebrow">n8n · Webhooks · API testing</div>
+<h1>Testing n8n Webhooks Locally<br><span class="gradient">with curl Before Production</span></h1>
+<p class="lede">A repeatable way to send a test HTTP request to an n8n Webhook node, inspect the incoming JSON, distinguish test and production URLs, and troubleshoot the most common failures before connecting a workflow to production systems.</p>
+<div class="meta"><span>By Ashraf Gamal</span><span>Updated 12 October 2026</span><span class="pill">n8n · Webhook testing</span><span>Approx. 5 min read</span></div>
+</header>
+<div class="wrap layout">
+<aside class="toc"><strong>In this guide</strong><a href="#objective">Objective and scope</a><a href="#configure">Configure the Webhook node</a><a href="#curl">Send a test with curl</a><a href="#validate">Validate the execution</a><a href="#troubleshoot">Troubleshooting</a><a href="#production">Before production</a><a href="#references">Official references</a></aside>
+<article class="content">
+<p class="personal-note"><strong>Personal note:</strong> This article reflects my experience and is for educational purposes only—not official vendor guidance. Always verify procedures against current vendor documentation.</p>
+<h2 id="objective">1. Objective and scope</h2>
+<p>The goal is to prove that an n8n Webhook node can receive an HTTP POST request and parse its JSON body before the workflow is connected to any production system. The workflow can be tested with curl from the n8n host or another machine that can reach it over the network.</p>
+<p>In the lab setup documented in the conversation, n8n is already running on port <code>5678</code> and the chosen test path is <code>aiwazuh</code>. The private host address is intentionally left as a variable in this public article. The conversation did not record a completed curl response or a successful n8n execution, so successful delivery is a validation step—not a claimed result.</p>
+<h2 id="configure">2. Configure the Webhook node</h2>
+<ol>
+<li>Create or open the workflow in n8n and add a <strong>Webhook</strong> trigger node.</li>
+<li>Set <strong>HTTP Method</strong> to <code>POST</code>.</li>
+<li>Set <strong>Path</strong> to <code>aiwazuh</code>, matching the path you plan to call. If you use a different path, update the curl URL to match it exactly.</li>
+<li>For a restricted local smoke test, choose the authentication setting appropriate for your lab. Do not expose a webhook with authentication disabled to untrusted networks.</li>
+<li>Select <strong>Listen for test event</strong> (or the equivalent test execution action in your n8n version) so the test URL is registered before sending the request.</li>
+</ol>
+<p>n8n generates a separate test URL and production URL for each Webhook node. The test URL is used while building and debugging the workflow; the production URL is registered when the workflow is published. See the official <a href="https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.webhook/" target="_blank" rel="noopener noreferrer">Webhook node documentation</a>.</p>
+<h2 id="curl">3. Send a test request with curl</h2>
+<p>Run the following from the same host as n8n by using <code>localhost</code>, or replace the base URL with the address reachable from the machine running curl. For example, in a shell:</p>
+<pre class="code"><code># Use localhost when curl runs on the n8n host.
+# For a remote test client, use the n8n host's reachable LAN address.
+N8N_BASE_URL="http://localhost:5678"
+
+curl -i --max-time 10 -X POST \
+  "${N8N_BASE_URL}/webhook-test/aiwazuh" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "message": "n8n webhook connectivity test",
+    "source": "curl",
+    "test": true
+  }'</code></pre>
+<p><code>-i</code> prints the HTTP response headers as well as the response body, and <code>--max-time 10</code> prevents the client from waiting indefinitely. The request body is deliberately small and contains synthetic test values. Replace the URL path if the Webhook node uses a different path.</p>
+<div class="info"><strong>Timing matters for test URLs</strong><p style="margin:6px 0 0">The test URL only works while n8n is listening for the test event. Current n8n documentation states that the test webhook remains registered for 120 seconds after the test listener is started. Start listening immediately before running curl if the test endpoint has expired.</p></div>
+<h2 id="validate">4. Validate the execution</h2>
+<p>Confirm both sides of the request rather than relying only on an HTTP status:</p>
+<ul>
+<li><strong>In curl:</strong> inspect the HTTP status and response body. A response proves that an HTTP endpoint replied, but its exact meaning depends on the Webhook node's response mode.</li>
+<li><strong>In n8n:</strong> inspect the waiting test execution and confirm the incoming request appears in the node's output. Check that the body contains the expected <code>message</code>, <code>source</code>, and <code>test</code> values.</li>
+<li><strong>For multi-node workflows:</strong> verify that downstream nodes ran and inspect their outputs separately. A Webhook node configured to respond immediately may return before the rest of the workflow finishes.</li>
+</ul>
+<p>If you want curl to receive a final workflow result, configure the Webhook node to respond when the last node finishes, or use a <a href="https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.respondtowebhook/" target="_blank" rel="noopener noreferrer">Respond to Webhook</a> node. Choose a response mode that matches the workflow's actual behavior.</p>
+<h2 id="troubleshoot">5. Known issues and troubleshooting</h2>
+<h3>Connection refused or timeout</h3>
+<ul><li>Verify that the n8n process/container is running and listening on port <code>5678</code>.</li><li>If curl runs on another machine, use the n8n host's reachable IP address or DNS name rather than <code>localhost</code>.</li><li>Check host firewall rules and, for Docker deployments, verify that the port is published as intended.</li></ul>
+<h3>Webhook not registered or not found</h3>
+<ul><li>Make sure the editor is listening for the test event before calling <code>/webhook-test/aiwazuh</code>.</li><li>Confirm the HTTP method is <code>POST</code> and the path matches exactly.</li><li>Use the Test URL while debugging. A production URL uses <code>/webhook/</code>, not <code>/webhook-test/</code>.</li></ul>
+<h3>The request arrives, but the workflow output is not what I expected</h3>
+<ul><li>Send valid JSON with the <code>Content-Type: application/json</code> header.</li><li>Inspect the Webhook node's execution input before investigating downstream nodes.</li><li>Check the Webhook node's response mode. An immediate 200 response does not guarantee that every downstream step completed successfully.</li></ul>
+<p>For further diagnostics, the official <a href="https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.webhook/common-issues/" target="_blank" rel="noopener noreferrer">Webhook common-issues guide</a> includes curl examples and advice for test versus production URLs.</p>
+<h2 id="production">6. Checklist before production</h2>
+<ol>
+<li>Confirm the request body and workflow execution are correct using the test URL.</li>
+<li>Save and publish the workflow, then switch the caller to the production URL shown by the Webhook node, usually <code>/webhook/aiwazuh</code>.</li>
+<li>Use appropriate webhook authentication (Basic, Header, or JWT where suitable), restrict network access, and use HTTPS for production traffic.</li>
+<li>Review the production workflow's response mode and error paths so the caller receives a truthful HTTP status and response body.</li>
+<li>After switching URLs, run a controlled production-path check and review the workflow's Executions view. Production executions do not appear in the editor's test canvas in the same way as test events.</li>
+</ol>
+<div class="callout"><strong>Test and production are separate endpoints</strong><p style="margin:6px 0 0">Do not leave a production caller pointed at <code>/webhook-test/</code>. Test URLs are for active development sessions; published workflows use the production URL. Re-check authentication, URL reachability, and execution logs before relying on the endpoint.</p></div>
+<h2 id="references">7. Official references</h2>
+<ul>
+<li><a href="https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.webhook/" target="_blank" rel="noopener noreferrer">n8n Webhook node</a></li>
+<li><a href="https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.webhook/workflow-development/" target="_blank" rel="noopener noreferrer">Webhook workflow development: testing and production</a></li>
+<li><a href="https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.webhook/common-issues/" target="_blank" rel="noopener noreferrer">Webhook common issues, including curl tests</a></li>
+<li><a href="https://docs.n8n.io/integrations/builtin/credentials/webhook/" target="_blank" rel="noopener noreferrer">Webhook authentication credentials</a></li>
+<li><a href="https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.respondtowebhook/" target="_blank" rel="noopener noreferrer">Respond to Webhook node</a></li>
+</ul>
+<p class="note">This article documents the planned local validation process, not a verified successful test. Record the actual curl status and n8n execution output before describing the webhook as working in your environment. Validate these steps against the documentation for your installed n8n version.</p>
+<div class="contact-hook"><span class="hook-kicker">Discuss workflow testing and automation</span><p class="hook-title">Need help validating a self-hosted n8n workflow or preparing an API endpoint for production?</p><p>Reach out to discuss webhook testing, HTTP API integrations, workflow reliability, and production-readiness.</p><div class="contact-links"><a href="https://www.linkedin.com/in/1elrawy/" target="_blank" rel="noopener noreferrer">LinkedIn ↗</a><a href="mailto:as.ga2019@gmail.com?subject=n8n%20webhook%20testing%20inquiry&amp;body=Hi%20Ashraf%2C%0A%0AI%20read%20your%20n8n%20webhook%20testing%20guide%20and%20would%20like%20to%20discuss%20validating%20a%20local%20workflow%20before%20production.%0A%0ABest%20regards%2C">Email me ↗</a><a href="https://wa.me/966598243358?text=Hi%20Ashraf%2C%20I%20read%20your%20n8n%20webhook%20testing%20guide%20and%20would%20like%20to%20discuss%20testing%20a%20local%20workflow%20before%20production." target="_blank" rel="noopener noreferrer">WhatsApp ↗</a></div></div>
+<div class="related"><a href="/#articles"><small>ARTICLE LIBRARY</small><strong>← Back to all technical notes</strong></a></div>
+</article>
+</div>
+<footer class="footer"><div class="wrap footerinner"><span>© 2026 Ashraf Gamal · Technical notes</span><a href="/#articles">Back to the article library ↑</a></div></footer>
+</body>
+</html>
