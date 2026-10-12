@@ -330,6 +330,7 @@
             <button class="article-filter" type="button" data-filter="wazuh" aria-pressed="false">Wazuh</button>
             <button class="article-filter" type="button" data-filter="dfir-iris" aria-pressed="false">DFIR-IRIS</button>
             <button class="article-filter" type="button" data-filter="n8n" aria-pressed="false">n8n</button>
+            <button class="article-filter" type="button" data-filter="cuckoo" aria-pressed="false">Cuckoo Sandbox</button>
           </div>
         </div>
         <div class="article-controls" aria-label="Article carousel controls">
@@ -342,6 +343,11 @@
       <div class="article-carousel" id="articleCarousel">
         <div class="article-viewport" id="articleViewport" tabindex="0" aria-label="Technical articles. Use the left and right arrow keys to browse.">
           <div class="article-grid" id="articleTrack">
+            <a class="article-card" data-category="cuckoo" data-tags="malware-analysis detection-engineering yara vmware-vsphere esxi sandbox dynamic-analysis" href="/articles/cuckoo-sandbox-vsphere-yara.html">
+              <div class="article-meta"><span class="article-type">Part 1 · Sandbox</span><span>Cuckoo Sandbox</span></div>
+              <h3>Cuckoo Sandbox with vSphere, Two Windows VMs, and YARA</h3>
+              <p>Integrate Cuckoo 2.0.7 with VMware vSphere, validate Windows 7/10 guest orchestration, fix PCAP capture permissions, and test external YARA rules against a recent ransomware sample.</p>
+            </a>
             <a class="article-card" data-category="n8n" data-tags="security-automation self-hosting docker docker-compose webhooks local-automation" href="/articles/n8n-installation-local-automation.html">
               <div class="article-meta"><span class="article-type">Part 1 · Installation</span><span>n8n Automation</span></div>
               <h3>Installing n8n for Local Workflow Automation</h3>
