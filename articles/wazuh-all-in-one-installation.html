@@ -38,12 +38,27 @@
 <li>Prepare a persistent terminal session for long-running remote installation work, and retain the full installer output for troubleshooting.</li>
 </ul>
 <p>Common default ports include TCP 443 for the dashboard, TCP 1514 for agent communication, TCP 1515 for enrollment, TCP 55000 for the Wazuh API, and TCP 9200 for the indexer API. Do not expose management APIs or the indexer directly to untrusted networks; restrict access according to the official port and security guidance.</p>
+<h3>Capture a baseline before installation</h3>
+<p>These preflight checks document the host before the installer changes it. Save the output in your change record, but redact hostnames, addresses, usernames, and sensitive environment details before sharing it.</p>
+<pre class="code"><code>hostnamectl
+cat /etc/os-release
+uname -m
+nproc
+free -h
+df -h
+timedatectl status
+sudo ss -lntup</code></pre>
+<p>Check the OS and architecture against the selected Wazuh release requirements, confirm time synchronization, review free disk and memory, and identify port conflicts before proceeding.</p>
 <h2 id="install">3. Install the central components</h2>
 <p>For a straightforward single-host deployment, Wazuh documents an assisted installation command. Run it on the target host with an account that has sudo privileges:</p>
 <pre class="code"><code>curl -sO https://packages.wazuh.com/4.14/wazuh-install.sh
 sudo bash ./wazuh-install.sh -a</code></pre>
 <p>The <code>-a</code> option requests an all-in-one installation. Read the official quickstart before running the script, and obtain it only from the official Wazuh package endpoint. For production environments, review the script and change controls required by your organization's policy.</p>
 <p>The installer should complete the setup of the central components and display a summary that includes the dashboard URL and generated access credentials. Save the generated credentials securely and share them only through an approved secure channel.</p>
+<h3>Check listeners and the local indexer endpoint</h3>
+<pre class="code"><code>sudo ss -lntp | grep -E ':(443|1514|1515|55000|9200)\\b'
+curl -k -u admin 'https://127.0.0.1:9200/_cluster/health?pretty'</code></pre>
+<p>The <code>curl</code> example prompts for the password because it is not supplied on the command line. Use the configured CA and verified hostname instead of <code>-k</code> when certificate trust is configured; the insecure flag is shown only as a short local diagnostic. A successful indexer response alone does not prove that the manager, Filebeat, and dashboard are healthy.</p>
 <h2 id="validate">4. Validate the deployment instead of trusting one success message</h2>
 <p>First, check each expected service on the host. The following loop reports each service independently, making it easier to spot a component that was not installed or did not start:</p>
 <pre class="code"><code>for service in wazuh-indexer wazuh-manager filebeat wazuh-dashboard; do
@@ -60,6 +75,16 @@ sudo journalctl -u wazuh-dashboard -n 100 --no-pager</code></pre>
 <h2 id="field-note">5. Field note: the indexer completed, but the full installation did not</h2>
 <p>During my Wazuh lab work, an installation attempt using the 4.14.7 assistant reached an indexer state reported as <strong>GREEN</strong> with a single OpenSearch 2.19.5 node. However, the available troubleshooting record showed that the Wazuh manager, dashboard, and Filebeat were not installed in that attempt.</p>
 <p>This is an important distinction: a healthy indexer proves only that the indexer is healthy. It does not prove the all-in-one deployment is complete. In this case, the available record does not establish a confirmed root cause for why the remaining components were missing, so this article does not attribute the result to a specific dependency, timeout, or configuration error.</p>
+<h3>Confirm agent enrollment and event flow</h3>
+<p>After installing an agent and configuring its manager address, validate the connection from both sides. Replace the endpoint with the approved manager address; do not publish internal addresses.</p>
+<pre class="code"><code># On a Linux agent
+sudo systemctl --no-pager status wazuh-agent
+sudo grep -A5 -B1 '&lt;server&gt;' /var/ossec/etc/ossec.conf
+
+# On the manager
+sudo /var/ossec/bin/agent_control -l
+sudo tail -n 30 /var/ossec/logs/ossec.log</code></pre>
+<p>On Windows, use an elevated PowerShell session to check the <code>WazuhSvc</code> service. If an agent was migrated from an older all-in-one server, update its configured manager endpoint and validate enrollment rather than assuming it will follow the new server automatically.</p>
 <h3>Safe troubleshooting sequence</h3>
 <ol>
 <li>Capture the exact command, installer output, timestamp, OS release, disk/memory state, and service status. Redact hostnames, IPs, passwords, tokens, and other sensitive details before sharing logs.</li>
