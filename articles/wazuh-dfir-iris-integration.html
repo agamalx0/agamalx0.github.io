@@ -47,7 +47,7 @@ cd iris-web
 
 # Select a stable tagged version appropriate for your environment.
 # Example shown by the versioned 2.4 documentation:
-git checkout v2.4.15
+git checkout v2.4.13
 
 # Create the local environment configuration
 cp .env.model .env
@@ -60,7 +60,7 @@ docker compose up -d
 # Inspect the running services
 docker compose ps
 docker compose logs --tail=100</code></pre>
-<p>These are a release-specific pattern, not a guarantee that every IRIS version uses identical environment files or container commands. Follow the <a href="https://docs.dfir-iris.org/2.4.15/getting_started/" target="_blank" rel="noopener noreferrer">versioned IRIS v2.4.15 Quick Start</a> for the target release. Current IRIS v3 instructions are documented separately in the <a href="https://docs.dfir-iris.org/latest/getting_started/" target="_blank" rel="noopener noreferrer">current Quick Start</a>.</p>
+<p>These are a release-specific pattern, not a guarantee that every IRIS version uses identical environment files or container commands. The official v2.4 Quick Start currently shows the <code>v2.4.13</code> tag in its Docker sequence; verify the exact stable tag in the versioned documentation before using it. Follow the <a href="https://docs.dfir-iris.org/2.4.15/getting_started/" target="_blank" rel="noopener noreferrer">versioned IRIS v2.4 Quick Start</a> for the target release. Current IRIS v3 instructions are documented separately in the <a href="https://docs.dfir-iris.org/latest/getting_started/" target="_blank" rel="noopener noreferrer">current Quick Start</a>. Install Docker Engine and the Compose plugin using the <a href="https://docs.docker.com/engine/install/" target="_blank" rel="noopener noreferrer">official Docker Engine installation guide</a> for your operating system.</p>
 <ul>
 <li>Use a private, controlled network and configure TLS for analyst access.</li>
 <li>Do not expose the IRIS interface or API directly to the public internet.</li>
@@ -84,7 +84,7 @@ docker compose logs --tail=100</code></pre>
     &lt;alert_format&gt;json&lt;/alert_format&gt;
   &lt;/integration&gt;
 &lt;/ossec_config&gt;</code></pre>
-<p>Replace the host and key placeholders locally. Use the exact API route for the deployed IRIS version; in the conversation, the deployed API endpoint was supplied as the third script argument, rather than constructed from an assumed URL inside the code. If using Wazuh's documented JSON alert filtering, configure a threshold such as <code>&lt;level&gt;7&lt;/level&gt;</code> and let Python apply any exclusions that the Integrator configuration cannot express as a blacklist.</p>
+<p>Replace the host, route, and key placeholders locally. IRIS API documentation is versioned: the surfaced v2.1 reference documents <code>POST /api/v2/alerts</code>, while the older v2.0.1 reference uses <code>POST /alerts/add</code>. Put the route documented for your installed release in <code>hook_url</code>; in the lab script this URL is supplied as argument 3, not constructed from an assumed path. If using Wazuh's documented JSON alert filtering, configure a threshold such as <code>&lt;level&gt;7&lt;/level&gt;</code> and let Python apply exclusions that the Integrator configuration cannot express as a blacklist.</p>
 <p>Use Wazuh's documented permissions and ownership for custom integrations:</p>
 <pre class="code"><code>sudo chmod 750 /var/ossec/integrations/custom-wazuh_iris
 sudo chown root:wazuh /var/ossec/integrations/custom-wazuh_iris</code></pre>
@@ -392,7 +392,19 @@ if __name__ == "__main__":
     sys.exit(main())</code></pre>
 <div class="callout"><strong>Important before production</strong><p style="margin:6px 0 0">This is a reviewed reference implementation for the v2-style alert schema, not a universal drop-in for all IRIS releases. Set <code>CUSTOMER_ID</code>, <code>STATUS_ID_NEW</code>, the severity mapping, TLP ID, dashboard link, and IOC type IDs to values verified in your own IRIS environment. The example deliberately avoids disabling TLS verification; configure a trusted certificate/CA for the IRIS endpoint instead.</p></div>
 
-<h2 id="iocs">7. IOC extraction and type mapping</h2>
+<h2 id="comparison">7. What this implementation adds beyond a minimal example</h2>
+<p>The goal is not to claim that every public example is inferior. A small proof of concept can be useful. This lab implementation adds controls for the specific issues encountered during integration:</p>
+<div class="table-wrap"><table><thead><tr><th>Engineering choice</th><th>Practical benefit</th></tr></thead><tbody>
+<tr><td>Structured <code>alert_context</code> object</td><td>Displays key/value metadata in IRIS Context without relying on large HTML tables inside the alert note.</td></tr>
+<tr><td>Typed <code>alert_iocs</code> in the alert request</td><td>Creates IOC records in the IOC section in the same request when supported by the deployed API schema; IOCs are not reduced to comma-separated tags.</td></tr>
+<tr><td>Instance-specific IOC type IDs</td><td>Avoids mapping an IP or filename to unrelated taxonomy entries when an installation has a different IOC type order.</td></tr>
+<tr><td>Structured fields first, then syntax-aware extraction</td><td>Reduces mistakes such as treating <code>powershell.exe</code> as a domain or returning only <code>exe</code> from a captured regex group.</td></tr>
+<tr><td>Context, source content, and tags are separated</td><td>Analysts get readable context; the original alert remains preserved; tags include the Wazuh rule, agent, IP, and MITRE metadata for searching.</td></tr>
+<tr><td>Group exclusion and explicit HTTP error logging</td><td>Suppresses the selected <code>cis</code>/<code>sca</code> noise groups without maintaining a long allowlist, and records API failures with a timeout.</td></tr>
+</tbody></table></div>
+<p>These are focused improvements based on the failures observed in the lab, not a measured performance comparison against every GitHub repository. Re-test them against your own IRIS version, data taxonomy, load, and security requirements.</p>
+
+<h2 id="iocs">8. IOC extraction and type mapping</h2>
 <p>One of the most useful debugging lessons from the lab was that IOC extraction must preserve both the full indicator value and the correct IRIS type ID. The type IDs shown below came from the taxonomy response inspected in this environment; do not assume they are universal across instances or after taxonomy changes.</p>
 <div class="table-wrap"><table><thead><tr><th>IOC kind</th><th>Taxonomy type</th><th>ID in the inspected instance</th><th>Detection note</th></tr></thead><tbody>
 <tr><td>IPv4</td><td><code>ip-any</code></td><td>76</td><td>Validate IP octets with a parser, not regex alone.</td></tr>
@@ -405,7 +417,7 @@ if __name__ == "__main__":
 <p>For the supplied Sysmon Event ID 11 example, structured fields included the executable image and target filename. Extract those fields directly where possible; scanning the entire serialized JSON can produce false positives from paths, labels, timestamps, or unrelated text. IOC regexes should be treated as candidates and enriched/validated separately where required.</p>
 <p>IRIS v2 documents <code>alert_iocs</code> as an array of objects containing fields such as <code>ioc_value</code>, <code>ioc_description</code>, <code>ioc_tlp_id</code>, <code>ioc_type_id</code>, and <code>ioc_tags</code>. This is why sending IOCs directly in the alert request is preferable to placing a comma-separated IOC list in <code>alert_tags</code>. Tags remain labels; they are not a replacement for typed IOC records.</p>
 
-<h2 id="validate">8. Validation workflow</h2>
+<h2 id="validate">9. Validation workflow</h2>
 <ol>
 <li>Check syntax using the Python interpreter configured in the script.</li>
 <li>Use a saved redacted Wazuh JSON alert to test parsing and group/level filters before posting to production IRIS.</li>
@@ -426,7 +438,7 @@ sudo tail -n 100 /var/ossec/logs/ossec.log
 sudo stat /var/ossec/integrations/custom-wazuh_iris.py</code></pre>
 <p>For direct testing, use the saved alert file as argument 1, a test API key as argument 2, and the exact API endpoint as argument 3. Use a test customer and an indicator-free sample first; after the simple path works, test structured IOCs and edge cases one at a time.</p>
 
-<h2 id="troubleshoot">9. Known issues &amp; troubleshooting</h2>
+<h2 id="troubleshoot">10. Known issues &amp; troubleshooting</h2>
 <div class="table-wrap"><table><thead><tr><th>Observed symptom</th><th>Root cause</th><th>Fix / validation</th></tr></thead><tbody>
 <tr><td><code>Invalid URL 'None'</code></td><td>The script received no usable webhook URL, commonly because shell environment variables were assumed to be inherited by the Wazuh service.</td><td>Pass the endpoint using the documented Integrator argument/config, validate arguments, and fail clearly when missing.</td></tr>
 <tr><td>HTTP 400: <code>ioc_type</code> invalid input type</td><td>The request used a string type such as <code>ip</code> where the IRIS schema expects a numeric <code>ioc_type_id</code>.</td><td>Send <code>ioc_type_id</code> and map it to the taxonomy returned by the current IRIS instance.</td></tr>
@@ -439,7 +451,7 @@ sudo stat /var/ossec/integrations/custom-wazuh_iris.py</code></pre>
 </tbody></table></div>
 <p>For the <code>cis</code> and <code>sca</code> exclusions, this implementation checks group names in Python so it can exclude only the two noisy groups while preserving the wider set of active detection groups. Wazuh also supports level, rule ID, and group filters in the Integrator configuration, but its group filter is an inclusion filter—not a general exclusion expression.</p>
 
-<h2 id="lessons">10. Engineering lessons</h2>
+<h2 id="lessons">11. Engineering lessons</h2>
 <ul>
 <li><strong>Separate alert metadata from raw telemetry.</strong> Use the short title/description for quick triage, <code>alert_context</code> for searchable/displayable key/value fields, and <code>alert_source_content</code> for the original event.</li>
 <li><strong>Model IOCs as typed objects.</strong> IOCs should carry values and type IDs that match the running IRIS taxonomy; tags are for searchable labels and correlation hints.</li>
@@ -448,12 +460,12 @@ sudo stat /var/ossec/integrations/custom-wazuh_iris.py</code></pre>
 <li><strong>Do not claim success before verifying the receiving system.</strong> A request call completing is not enough; confirm the API status and inspect the resulting IRIS alert and IOC table.</li>
 </ul>
 
-<h2 id="references">11. Official references</h2>
+<h2 id="references">12. Official references</h2>
 <ul>
 <li><a href="https://documentation.wazuh.com/current/user-manual/manager/integration-with-external-apis.html" target="_blank" rel="noopener noreferrer">Wazuh — External API integration</a></li>
 <li><a href="https://documentation.wazuh.com/current/user-manual/reference/ossec-conf/integration.html" target="_blank" rel="noopener noreferrer">Wazuh — <code>&lt;integration&gt;</code> configuration reference</a></li>
 <li><a href="https://docs.dfir-iris.org/2.4.15/getting_started/" target="_blank" rel="noopener noreferrer">DFIR-IRIS v2.4.15 — Quick Start</a></li>
-<li><a href="https://docs.dfir-iris.org/2.4.15/_static/iris_api_reference_v2.0.1.html" target="_blank" rel="noopener noreferrer">DFIR-IRIS v2 API reference — alert creation and IOC schema</a></li>
+<li><a href="https://docs.dfir-iris.org/latest/_static/iris_api_reference_v2.1.0.html" target="_blank" rel="noopener noreferrer">DFIR-IRIS v2.1 API reference — alert creation and IOC schema</a></li>
 <li><a href="https://docs.dfir-iris.org/latest/operations/alerts/" target="_blank" rel="noopener noreferrer">DFIR-IRIS — Alerts, merging, and case creation</a></li>
 <li><a href="https://docs.dfir-iris.org/latest/api_reference/legacy_endpoints/" target="_blank" rel="noopener noreferrer">DFIR-IRIS — Legacy endpoint migration reference</a></li>
 <li><a href="https://docs.dfir-iris.org/latest/getting_started/" target="_blank" rel="noopener noreferrer">DFIR-IRIS — Current Quick Start and version notes</a></li>
