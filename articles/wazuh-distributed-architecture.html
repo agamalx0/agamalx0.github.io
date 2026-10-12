@@ -33,6 +33,10 @@
 <tr><td>Load balancing</td><td>HAProxy / VIP layer where required</td><td>Provides a stable endpoint for selected traffic; it does not replace native Wazuh clustering.</td></tr>
 </tbody></table></div>
 <p>This layout reflects the multi-node topology explored in my deployment planning. It is not a universal minimum. In particular, a two-node indexer cluster needs deliberate quorum and failure-domain planning; do not assume that adding a second node alone guarantees availability under every failure scenario.</p>
+<figure class="article-figure">
+  <img src="/assets/wazuh-distributed-architecture-sanitized.svg" alt="Sanitized reference diagram showing agents, an optional HAProxy endpoint, the Wazuh master and worker nodes, two indexers, and the dashboard. Host addresses and credentials are omitted." loading="lazy" />
+  <figcaption>Sanitized architecture view based on the deployment diagram supplied for this project. Private addresses and credential fields are omitted; this is a reference view, not a substitute for the release-specific port matrix.</figcaption>
+</figure>
 <h2 id="roles">2. Know each node's job</h2>
 <ul>
 <li><strong>Wazuh indexer:</strong> stores and searches alert data. Multi-node clusters require consistent node names, transport connectivity, certificates, and cluster configuration.</li>
@@ -63,7 +67,22 @@
 </ol>
 <p>Example for downloading the release-matched assistant on a trusted admin session:</p>
 <pre class="code"><code>curl -sO https://packages.wazuh.com/4.14/wazuh-install.sh</code></pre>
-<p>Do not run an all-in-one option for this topology. Follow the exact node-specific commands from the official assisted installation guide for the selected release; the node names must match the configuration.</p>
+<p>Do not run an all-in-one option for this topology. The following illustrates the release-matched assistant sequence; use the exact node names defined in your generated configuration and follow the current official guide before executing it.</p>
+<pre class="code"><code># On the administration host: generate node inventory and certificates
+sudo bash ./wazuh-install.sh --generate-config-files
+
+# On each indexer host, using its configured node name
+sudo bash ./wazuh-install.sh --wazuh-indexer &lt;INDEXER_NODE_NAME&gt;
+
+# Once all indexers are installed, initialize the cluster on the designated node
+sudo bash ./wazuh-install.sh --start-cluster
+
+# On each manager host, using the configured node name
+sudo bash ./wazuh-install.sh --wazuh-server &lt;MANAGER_NODE_NAME&gt;
+
+# On the dashboard host, using its configured node name
+sudo bash ./wazuh-install.sh --wazuh-dashboard &lt;DASHBOARD_NODE_NAME&gt;</code></pre>
+<p>These are command patterns, not copy-and-run values: options and ordering must match the exact Wazuh release. Keep the generated certificate/password bundle out of source control, transfer required files only through an approved restricted channel, and follow the official procedure for copying files to each host.</p>
 <div class="callout"><strong>Certificate and secret handling</strong><p style="margin:6px 0 0">Wazuh's distributed installation uses generated certificates and passwords. Transfer required files only over a controlled channel, restrict file permissions, and remove temporary copies according to your organization's secure deployment procedure. Never reuse a certificate bundle from a different node inventory.</p></div>
 <h2 id="network">5. Network paths and load balancing</h2>
 <div class="table-wrap"><table><thead><tr><th>Traffic</th><th>Typical port</th><th>Design check</th></tr></thead><tbody>
@@ -76,6 +95,42 @@
 </tbody></table></div>
 <p>These are common defaults, not a substitute for the official port matrix for your release and configuration. Firewall rules must reflect the actual flow between nodes.</p>
 <p>In my lab planning, HAProxy was used as a stable agent-facing endpoint, with workers as the primary backend pool and a master fallback considered for the relevant traffic. Treat that as a topology-specific design, not a universal Wazuh recommendation: registration and event traffic have different operational considerations, and the master should not be used as a fallback unless the routing behavior and capacity have been deliberately tested.</p>
+<h3>Example HAProxy TCP backend pattern</h3>
+<p>This sanitized example shows the structure of a worker-first pool. Replace placeholders locally. Confirm manager listeners and your enrollment design before enabling an optional master backup. Do not expose the HAProxy statistics page publicly.</p>
+<pre class="code"><code>defaults
+    mode tcp
+    timeout connect 5s
+    timeout client  1m
+    timeout server  1m
+
+frontend wazuh-agent-events
+    bind *:1514
+    default_backend wazuh-workers-events
+
+backend wazuh-workers-events
+    balance leastconn
+    option tcp-check
+    server worker1 &lt;WORKER_1_IP&gt;:1514 check
+    server worker2 &lt;WORKER_2_IP&gt;:1514 check
+    # Optional only after failover testing:
+    # server master &lt;MASTER_IP&gt;:1514 check backup
+
+frontend wazuh-agent-enrollment
+    bind *:1515
+    default_backend wazuh-workers-enrollment
+
+backend wazuh-workers-enrollment
+    balance leastconn
+    option tcp-check
+    server worker1 &lt;WORKER_1_IP&gt;:1515 check
+    server worker2 &lt;WORKER_2_IP&gt;:1515 check
+    # Optional only after failover testing:
+    # server master &lt;MASTER_IP&gt;:1515 check backup</code></pre>
+<p>Validate the configuration before reloading HAProxy. Test normal routing and worker failure with a controlled test agent before routing production traffic.</p>
+<pre class="code"><code>sudo haproxy -c -f /etc/haproxy/haproxy.cfg
+sudo systemctl status haproxy --no-pager
+sudo journalctl -u haproxy -n 100 --no-pager
+sudo ss -lntp | grep -E ':(1514|1515)\\b'</code></pre>
 <p>For a TCP frontend, validate both the listener and real traffic. A backend marked <code>UP</code> only proves that its configured health check passed; it does not prove agents are using the VIP.</p>
 <pre class="code"><code>sudo ss -lntp
 sudo systemctl status haproxy --no-pager
@@ -97,6 +152,22 @@ sudo /var/ossec/bin/cluster_control -l</code></pre>
 <li>Generate a known test event and verify it appears in the expected alert view.</li>
 <li>Test a planned worker failure in a maintenance window and verify agent behavior, alert continuity, and recovery.</li>
 </ul>
+<h3>Commands used to validate the layers</h3>
+<pre class="code"><code># Indexer cluster health (use trusted CA and hostname in production)
+curl --cacert /path/to/root-ca.pem -u admin 'https://&lt;INDEXER_FQDN&gt;:9200/_cluster/health?pretty'
+
+# Manager cluster and service state
+sudo /var/ossec/bin/cluster_control -l
+sudo systemctl status wazuh-manager filebeat --no-pager
+
+# Network listeners and agent connections
+sudo ss -lntp | grep -E ':(1514|1515|1516|55000|9200|9300)\\b'
+sudo /var/ossec/bin/agent_control -l
+
+# Recent manager events for triage
+sudo tail -n 100 /var/ossec/logs/ossec.log
+sudo tail -n 50 /var/ossec/logs/alerts/alerts.json</code></pre>
+<p>Run indexer API checks from an authorized host only. Do not publish raw output if it includes private addresses, hostnames, agent identifiers, or sensitive event content.</p>
 <h2 id="troubleshoot">7. Fast troubleshooting checklist</h2>
 <div class="table-wrap"><table><thead><tr><th>Symptom</th><th>Check first</th></tr></thead><tbody>
 <tr><td>Indexer is green but alerts are absent</td><td>Check manager service, Filebeat, output configuration, indexer reachability, and recent logs.</td></tr>
