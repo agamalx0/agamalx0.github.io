@@ -1,0 +1,473 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#080a12">
+<meta name="description" content="Install DFIR-IRIS, connect Wazuh SIEM with the Wazuh Integrator and DFIR-IRIS Alerts API, enrich alerts with structured context and typed IOCs, and troubleshoot real integration failures.">
+<title>Integrating Wazuh SIEM with DFIR-IRIS Case Management | Ashraf Gamal</title>
+<style>
+:root{color-scheme:dark;--bg:#080a12;--text:#f4f6ff;--muted:#a3abc4;--line:rgba(177,190,255,.15);--cyan:#39e7ff;--purple:#9a66ff;--pink:#ff4fd8;--amber:#ffc879}
+*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:90px}body{margin:0;min-width:320px;color:var(--text);background:radial-gradient(ellipse at 6% 0,rgba(57,231,255,.09),transparent 32rem),radial-gradient(ellipse at 96% 12%,rgba(255,79,216,.08),transparent 28rem),var(--bg);font:16px/1.78 "Space Grotesk",Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}a{color:var(--cyan);text-decoration:none}a:hover{text-decoration:underline}.wrap{width:min(920px,calc(100% - 34px));margin:auto}.topbar{position:sticky;top:0;z-index:10;background:rgba(8,10,18,.86);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}.nav{height:68px;display:flex;align-items:center;justify-content:space-between;gap:18px}.brand{color:var(--text);font-weight:750;letter-spacing:-.02em}.back{font-size:13px;color:var(--muted)}.hero{padding:67px 0 35px}.eyebrow,.kicker{font-size:11px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:var(--cyan)}h1{font-size:clamp(36px,6vw,60px);line-height:1.08;letter-spacing:-.06em;margin:15px 0}.gradient{color:transparent;background:linear-gradient(100deg,var(--cyan),#9a8bff 55%,var(--pink));-webkit-background-clip:text;background-clip:text}.lede{font-size:18px;line-height:1.7;color:#c0c8df;max-width:770px}.meta{display:flex;flex-wrap:wrap;gap:10px 18px;font-size:12px;color:var(--muted);margin-top:24px}.pill{border:1px solid rgba(57,231,255,.24);background:rgba(57,231,255,.06);padding:4px 9px;border-radius:99px;color:#d9fbff}.layout{display:grid;grid-template-columns:220px minmax(0,1fr);gap:35px;padding:20px 0 85px}.toc{align-self:start;position:sticky;top:90px;padding:18px;border:1px solid var(--line);border-radius:16px;background:rgba(17,21,40,.6)}.toc strong{font-size:12px}.toc a{display:block;color:var(--muted);font-size:12px;padding:7px 0;line-height:1.4}.content{min-width:0}.content h2{font-size:27px;line-height:1.25;letter-spacing:-.04em;margin:42px 0 13px}.content h3{font-size:18px;margin:26px 0 8px}.content p,.content li{color:#c0c8df}.content li{padding-left:3px;margin:7px 0}.content ul,.content ol{padding-left:22px}.callout{padding:18px 20px;border:1px solid rgba(255,200,121,.28);border-left:3px solid var(--amber);border-radius:13px;background:rgba(255,200,121,.055);margin:22px 0}.callout strong{color:#ffe2b3}.info{padding:17px 20px;border:1px solid rgba(57,231,255,.22);border-radius:13px;background:rgba(57,231,255,.045);margin:20px 0}.info strong{color:#c9faff}code,pre{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}code{font-size:.92em;color:#d7e9ff}.code{overflow:auto;margin:15px 0;padding:17px;border-radius:12px;border:1px solid var(--line);background:#070a12;color:#dbe6ff;font-size:13px;line-height:1.7}.table-wrap{overflow-x:auto;margin:20px 0;border:1px solid var(--line);border-radius:12px}table{width:100%;border-collapse:collapse;min-width:460px;font-size:13px}th,td{text-align:left;vertical-align:top;padding:12px 14px;border-bottom:1px solid var(--line)}th{color:#e9edff;background:rgba(154,102,255,.08)}td{color:#c0c8df}tr:last-child td{border-bottom:0}.related{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:36px}.related a{border:1px solid var(--line);border-radius:13px;padding:15px;color:var(--text);background:rgba(255,255,255,.025)}.related small{display:block;color:var(--muted);font-size:11px}.related strong{display:block;margin-top:5px;font-size:13px}.footer{border-top:1px solid var(--line);padding:23px 0;color:var(--muted);font-size:12px}.footerinner{display:flex;justify-content:space-between;gap:15px;flex-wrap:wrap}@media(max-width:760px){.layout{grid-template-columns:1fr;gap:10px}.toc{position:static;display:grid;grid-template-columns:1fr 1fr;gap:0 14px}.toc strong{grid-column:1/-1}.hero{padding-top:45px}.content h2{margin-top:32px}.related{grid-template-columns:1fr}}@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+.contact-hook{margin:30px 0 0;padding:22px 24px;border:1px solid rgba(57,231,255,.23);border-radius:15px;background:linear-gradient(120deg,rgba(57,231,255,.055),rgba(154,102,255,.065),rgba(255,79,216,.04))}.contact-hook .hook-kicker{display:block;color:var(--cyan);font-size:10px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;margin-bottom:8px}.contact-hook .hook-title{color:var(--text);font-size:19px;line-height:1.45;letter-spacing:-.025em;margin:0}.contact-hook p{color:#c0c8df;margin:8px 0 0}.contact-links{display:flex;flex-wrap:wrap;gap:9px;margin-top:15px}.contact-links a{display:inline-flex;align-items:center;justify-content:center;padding:8px 12px;border:1px solid rgba(177,190,255,.18);border-radius:9px;background:rgba(255,255,255,.025);color:#e4edff;font-size:12px;font-weight:700}.contact-links a:hover{border-color:rgba(57,231,255,.5);background:rgba(57,231,255,.07);color:var(--cyan);text-decoration:none}@media(max-width:480px){.contact-hook{padding:18px}.contact-hook .hook-title{font-size:17px}}.personal-note{margin:0 0 22px;padding:11px 14px;border:1px solid rgba(177,190,255,.13);border-radius:10px;background:rgba(255,255,255,.025);color:#a3abc4;font-size:12px;line-height:1.65}.personal-note strong{color:#dce5ff;font-weight:700}
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+</head>
+<body>
+<header class="topbar"><nav class="nav wrap"><a class="brand" href="/">AG <span class="gradient">/ Notes</span></a><a class="back" href="/#articles">← Back to all articles</a></nav></header>
+<header class="hero wrap">
+<div class="eyebrow">Integration guide · SIEM &amp; DFIR case management</div>
+<h1>Integrating Wazuh SIEM<br><span class="gradient">with DFIR-IRIS</span></h1>
+<p class="lede">Build a practical alert pipeline from Wazuh to DFIR-IRIS: deploy IRIS, configure the Wazuh Integrator, map alert context and tags, extract typed IOCs, and validate the API payload with evidence-based troubleshooting.</p>
+<div class="meta"><span>By Ashraf Gamal</span><span>Updated 12 October 2026</span><span class="pill">Wazuh + DFIR-IRIS</span><span>Approx. 12 min read</span></div>
+</header>
+<div class="wrap layout">
+<aside class="toc"><strong>In this guide</strong><a href="#objective">Objective</a><a href="#architecture">Architecture</a><a href="#install-iris">Install DFIR-IRIS</a><a href="#api-key">API access</a><a href="#wazuh">Configure Wazuh</a><a href="#script">Integration script</a><a href="#iocs">IOC mapping</a><a href="#validate">Validation</a><a href="#troubleshoot">Known issues</a><a href="#lessons">Lessons</a><a href="#references">Official references</a></aside>
+<article class="content">
+<p class="personal-note"><strong>Personal note:</strong> This article reflects my experience and is for educational purposes only—not official vendor guidance. Always verify procedures against current vendor documentation.</p>
+
+<h2 id="objective">1. Objective</h2>
+<p>The goal is to send actionable Wazuh alerts into DFIR-IRIS so analysts can triage the alert, inspect its original event, pivot on indicators, and promote selected alerts into cases. This implementation uses the Wazuh Integrator to pass a JSON alert file to a custom Python script, which shapes a documented IRIS Alerts API request.</p>
+<p>The work in this article comes from a lab integration and the troubleshooting recorded while refining it: HTML notes were replaced with structured alert context; tags were expanded with rule, agent, and MITRE fields; IOC extraction errors were corrected; and IOC type IDs were mapped from the actual IRIS taxonomy rather than guessed.</p>
+
+<h2 id="architecture">2. Architecture and data flow</h2>
+<div class="table-wrap"><table><thead><tr><th>Stage</th><th>Responsibility</th><th>Output</th></tr></thead><tbody>
+<tr><td>Wazuh manager</td><td>Rules generate alerts; the Integrator applies level filtering and invokes the custom integration.</td><td>JSON alert file and script arguments</td></tr>
+<tr><td>Python integration</td><td>Parse alert JSON, exclude unwanted groups, build structured context/tags, extract candidate IOCs, send an HTTP request.</td><td>JSON request to IRIS</td></tr>
+<tr><td>DFIR-IRIS Alerts API</td><td>Validate and store alert metadata, source content, context, tags, and supported IOC objects.</td><td>Alert available for analyst triage</td></tr>
+<tr><td>Analyst workflow</td><td>Review the alert and select which IOCs/assets to bring into a case when promoting or merging alerts.</td><td>Case with selected investigation data</td></tr>
+</tbody></table></div>
+<p>IRIS alerts and IRIS cases are related but not interchangeable. An alert can be triaged and later merged into a case; the API does not imply that every alert automatically creates a case. IRIS documents a merge/escalation workflow for choosing IOCs and assets to import. See the official <a href="https://docs.dfir-iris.org/latest/operations/alerts/" target="_blank" rel="noopener noreferrer">IRIS Alerts documentation</a>.</p>
+
+<h2 id="install-iris">3. Install DFIR-IRIS first</h2>
+<div class="callout"><strong>Choose the correct release first</strong><p style="margin:6px 0 0">IRIS installation steps differ between version lines. The current documentation describes v3 as a beta release, while the API fields in the Wazuh integration discussed here match the documented v2 alert schema. For a production system, select an appropriate stable tagged release and use that version’s installation and API docs; do not copy a beta install command into a production runbook by default.</p></div>
+<p>For the v2 Docker-based installation path documented by the IRIS project, the high-level sequence is to install Docker/Compose, clone the official <code>iris-web</code> repository, check out a stable release tag, configure the environment file, then pull/build and start the services.</p>
+<pre class="code"><code># On the IRIS host
+git clone https://github.com/dfir-iris/iris-web.git
+cd iris-web
+
+# Select a stable tagged version appropriate for your environment.
+# Example shown by the versioned 2.4 documentation:
+git checkout v2.4.15
+
+# Create the local environment configuration
+cp .env.model .env
+# Edit .env and set strong secrets and environment-specific values.
+
+# Use the commands specified by the chosen release's official guide.
+docker compose pull
+docker compose up -d
+
+# Inspect the running services
+docker compose ps
+docker compose logs --tail=100</code></pre>
+<p>These are a release-specific pattern, not a guarantee that every IRIS version uses identical environment files or container commands. Follow the <a href="https://docs.dfir-iris.org/2.4.15/getting_started/" target="_blank" rel="noopener noreferrer">versioned IRIS v2.4.15 Quick Start</a> for the target release. Current IRIS v3 instructions are documented separately in the <a href="https://docs.dfir-iris.org/latest/getting_started/" target="_blank" rel="noopener noreferrer">current Quick Start</a>.</p>
+<ul>
+<li>Use a private, controlled network and configure TLS for analyst access.</li>
+<li>Do not expose the IRIS interface or API directly to the public internet.</li>
+<li>Set database credentials, application secrets, and other required environment variables before starting the stack.</li>
+<li>Back up the database and persistent data according to your recovery objectives.</li>
+<li>Keep the deployed version and its API schema recorded; do not assume that endpoints and fields are identical across major versions.</li>
+</ul>
+
+<h2 id="api-key">4. Create an API identity and validate access</h2>
+<p>IRIS API endpoints use Bearer authentication. Create or select a dedicated account with the permissions needed to write alerts; the current alert documentation identifies <code>alerts_read</code> and <code>alerts_write</code> as relevant permissions. Use the API key from the appropriate user settings and store it outside the script, for example in the Wazuh Integrator configuration arguments. Do not commit real keys into Git.</p>
+<p>Before connecting Wazuh, test API reachability from the Wazuh manager using a non-production test request or an authorized read endpoint supported by the installed IRIS version. Use the exact base path documented for your release (for example, v2 uses the versioned API route) and validate certificate trust. Avoid using <code>verify=False</code> in production; it disables TLS certificate verification.</p>
+
+<h2 id="wazuh">5. Configure the Wazuh Integrator</h2>
+<p>Wazuh's official configuration places integrations inside <code>/var/ossec/etc/ossec.conf</code>. A custom integration name must start with <code>custom-</code>, and the script must be located in <code>/var/ossec/integrations/</code> with the same base name. With <code>alert_format</code> set to <code>json</code>, the script receives the alert file as argument 1, the configured API key as argument 2, and the webhook URL as argument 3.</p>
+<pre class="code"><code>&lt;ossec_config&gt;
+  &lt;integration&gt;
+    &lt;name&gt;custom-wazuh_iris&lt;/name&gt;
+    &lt;hook_url&gt;https://IRIS_HOST/api/v2/alerts&lt;/hook_url&gt;
+    &lt;api_key&gt;IRIS_API_KEY&lt;/api_key&gt;
+    &lt;level&gt;7&lt;/level&gt;
+    &lt;alert_format&gt;json&lt;/alert_format&gt;
+  &lt;/integration&gt;
+&lt;/ossec_config&gt;</code></pre>
+<p>Replace the host and key placeholders locally. Use the exact API route for the deployed IRIS version; in the conversation, the deployed API endpoint was supplied as the third script argument, rather than constructed from an assumed URL inside the code. If using Wazuh's documented JSON alert filtering, configure a threshold such as <code>&lt;level&gt;7&lt;/level&gt;</code> and let Python apply any exclusions that the Integrator configuration cannot express as a blacklist.</p>
+<p>Use Wazuh's documented permissions and ownership for custom integrations:</p>
+<pre class="code"><code>sudo chmod 750 /var/ossec/integrations/custom-wazuh_iris
+sudo chown root:wazuh /var/ossec/integrations/custom-wazuh_iris</code></pre>
+<p>Ensure the file's first line points to the intended Python interpreter. This lab used the Wazuh-bundled interpreter:</p>
+<pre class="code"><code>#!/var/ossec/framework/python/bin/python3</code></pre>
+<p>Wazuh's documentation says to restart the manager after integration configuration changes. During development, you can execute the script directly with a saved alert JSON, API key, and endpoint to validate parsing before waiting for a live event.</p>
+<pre class="code"><code>sudo systemctl restart wazuh-manager
+sudo tail -f /var/ossec/logs/integrations.log
+sudo tail -f /var/ossec/logs/ossec.log</code></pre>
+
+<h2 id="script">6. Integration script</h2>
+<p>The key design choice is to keep each IRIS field fit for purpose: the title/description stay concise; <code>alert_context</code> is an object of key/value fields; <code>alert_source_content</code> retains the original alert JSON; <code>alert_tags</code> contains searchable metadata; and <code>alert_iocs</code> uses IRIS IOC objects rather than a comma-separated list of indicators.</p>
+<p>The following is a focused implementation template based on the lab workflow. Confirm the endpoint schema and status/severity IDs against the deployed IRIS version and your own taxonomy before production use.</p>
+<pre class="code"><code>#!/var/ossec/framework/python/bin/python3
+import ipaddress
+import json
+import logging
+import os
+import re
+import sys
+import uuid
+from urllib.parse import urlsplit
+
+import requests
+
+LOG_FILE = "/var/ossec/logs/integrations.log"
+LEVEL_THRESHOLD = 7
+CUSTOMER_ID = 1  # Set to the customer ID from your IRIS instance.
+STATUS_ID_NEW = 2  # Verify against your installed IRIS taxonomy.
+WAZUH_DASHBOARD_URL = "https://WAZUH_DASHBOARD_HOST/app/wz-home"
+
+# These IDs came from the IRIS IOC taxonomy inspected in the lab.
+# Reconfirm them after upgrades or any taxonomy customization.
+IOC_TYPE_IDS = {
+    "ip-any": 76,
+    "domain": 20,
+    "url": 141,
+    "md5": 90,
+    "sha1": 111,
+    "sha256": 113,
+    "filename": 37,
+    "email": 22,
+}
+
+logging.basicConfig(
+    filename=LOG_FILE,
+    level=logging.INFO,
+    format="%(asctime)s %(levelname)s %(message)s",
+)
+
+FILE_EXTENSIONS = {
+    ".exe", ".dll", ".sys", ".bat", ".cmd", ".ps1", ".vbs",
+    ".js", ".hta", ".scr", ".msi", ".jar", ".sh", ".py",
+}
+
+
+def flatten_for_context(value, prefix=""):
+    """Return flattened key/value pairs while preserving list positions."""
+    result = {}
+    if isinstance(value, dict):
+        for key, child in value.items():
+            name = f"{prefix}.{key}" if prefix else str(key)
+            result.update(flatten_for_context(child, name))
+    elif isinstance(value, list):
+        if all(not isinstance(x, (dict, list)) for x in value):
+            result[prefix] = ", ".join(str(x) for x in value)
+        else:
+            for index, child in enumerate(value):
+                result.update(flatten_for_context(child, f"{prefix}[{index}]"))
+    else:
+        result[prefix] = "" if value is None else str(value)
+    return result
+
+
+def build_context(alert):
+    # IRIS v2 schema expects an object: { "key": "value" }.
+    context = {}
+    for key, value in flatten_for_context(alert).items():
+        value = str(value).replace("\r", " ").replace("\n", " ")
+        if len(value) > 1000:
+            value = value[:1000] + "…"
+        context[key] = value
+    return context
+
+
+def is_valid_ipv4(value):
+    try:
+        return isinstance(ipaddress.ip_address(value), ipaddress.IPv4Address)
+    except ValueError:
+        return False
+
+
+def add_ioc(items, value, type_name, description):
+    value = str(value).strip().rstrip(".,;)")
+    if not value:
+        return
+    type_id = IOC_TYPE_IDS.get(type_name)
+    if type_id is None:
+        return
+    items[(value.lower(), type_id)] = {
+        "ioc_value": value,
+        "ioc_description": description,
+        "ioc_tlp_id": 1,  # Confirm TLP ID in your IRIS environment.
+        "ioc_type_id": type_id,
+        "ioc_tags": "wazuh",
+    }
+
+
+def extract_iocs(alert):
+    """Prefer structured event fields, then scan selected text values."""
+    found = {}
+
+    data = alert.get("data", {})
+    win = data.get("win", {}) if isinstance(data, dict) else {}
+    eventdata = win.get("eventdata", {}) if isinstance(win, dict) else {}
+
+    # Pull known structured fields first; file paths remain filenames, not domains.
+    structured_candidates = []
+    for field in ("image", "targetFilename", "ParentImage", "filePath", "filename"):
+        candidate = eventdata.get(field)
+        if isinstance(candidate, str) and candidate.strip():
+            structured_candidates.append(candidate.strip())
+
+    # Scan all string-valued fields to catch other telemetry, but classify by syntax.
+    searchable = list(structured_candidates)
+
+    def collect_strings(obj):
+        if isinstance(obj, dict):
+            for val in obj.values():
+                collect_strings(val)
+        elif isinstance(obj, list):
+            for val in obj:
+                collect_strings(val)
+        elif isinstance(obj, str):
+            searchable.append(obj)
+
+    collect_strings(alert)
+
+    seen_texts = set()
+    for text in searchable:
+        if text in seen_texts:
+            continue
+        seen_texts.add(text)
+
+        # URLs first; strip common trailing punctuation.
+        for match in re.findall(r"https?://[^\s\"'<>]+", text, flags=re.IGNORECASE):
+            url = match.rstrip(".,;)]}")
+            add_ioc(found, url, "url", "Extracted from Wazuh alert")
+
+        # IPv4: validate each candidate instead of accepting 999.999.999.999.
+        for match in re.findall(r"\b(?:\d{1,3}\.){3}\d{1,3}\b", text):
+            if is_valid_ipv4(match):
+                add_ioc(found, match, "ip-any", "Extracted from Wazuh alert")
+
+        # Hashes are matched by length.
+        for match in re.findall(r"\b[a-fA-F0-9]{64}\b", text):
+            add_ioc(found, match, "sha256", "SHA-256 candidate extracted from Wazuh alert")
+        for match in re.findall(r"\b[a-fA-F0-9]{40}\b", text):
+            add_ioc(found, match, "sha1", "SHA-1 candidate extracted from Wazuh alert")
+        for match in re.findall(r"\b[a-fA-F0-9]{32}\b", text):
+            add_ioc(found, match, "md5", "MD5 candidate extracted from Wazuh alert")
+
+        # Extract complete filenames. Non-capturing groups keep the full match.
+        for match in re.findall(
+            r"(?i)(?<![A-Za-z0-9_.-])[A-Za-z0-9_.$@!~() -]+\.(?:exe|dll|sys|bat|cmd|ps1|vbs|js|hta|scr|msi|jar|sh|py)\b",
+            text,
+        ):
+            filename = match.strip().strip('"')
+            if filename:
+                add_ioc(found, filename, "filename", "Filename candidate extracted from Wazuh alert")
+
+        # Domain candidates: require a dotted hostname-like token and exclude file extensions.
+        file_extensions = {ext.lstrip(".") for ext in FILE_EXTENSIONS}
+        for match in re.findall(
+            r"(?i)(?<![A-Za-z0-9_-])(?:[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?\.)+[A-Za-z]{2,63}\b",
+            text,
+        ):
+            domain = match.rstrip(".")
+            tld = domain.rsplit(".", 1)[-1].lower()
+            if tld not in file_extensions and not is_valid_ipv4(domain):
+                add_ioc(found, domain, "domain", "Domain candidate extracted from Wazuh alert")
+
+        # Email addresses
+        for match in re.findall(
+            r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,63}\b",
+            text,
+        ):
+            add_ioc(found, match, "email", "Email address candidate extracted from Wazuh alert")
+
+    return list(found.values())[:50]
+
+
+def normalize_list(value):
+    if value is None:
+        return []
+    if isinstance(value, list):
+        return [str(item) for item in value if item not in (None, "")]
+    return [str(value)] if value != "" else []
+
+
+def build_tags(alert):
+    rule = alert.get("rule", {})
+    agent = alert.get("agent", {})
+    mitre = rule.get("mitre", {})
+
+    raw_tags = [
+        "wazuh",
+        f"rule_{rule.get('id', 'unknown')}",
+        str(agent.get("name", "unknown")),
+        str(agent.get("ip", "unknown")),
+    ]
+    raw_tags += normalize_list(mitre.get("id"))
+    raw_tags += normalize_list(mitre.get("tactic"))
+    raw_tags += normalize_list(mitre.get("technique"))
+
+    # IRIS alert_tags is a comma-separated string.
+    return ",".join(
+        tag.strip().replace(",", "_").replace(" ", "_")
+        for tag in raw_tags if tag and tag.strip()
+    )
+
+
+def main():
+    if len(sys.argv) < 4:
+        logging.error("Expected arguments: alert_file api_key hook_url")
+        return 2
+
+    alert_file, api_key, hook_url = sys.argv[1:4]
+    if not api_key or not hook_url:
+        logging.error("Missing IRIS API key or hook URL argument")
+        return 2
+
+    try:
+        with open(alert_file, "r", encoding="utf-8") as handle:
+            alert = json.load(handle)
+    except (OSError, json.JSONDecodeError) as exc:
+        logging.error("Could not read Wazuh JSON alert: %s", exc)
+        return 2
+
+    rule = alert.get("rule", {})
+    if not isinstance(rule, dict):
+        rule = {}
+
+    groups = normalize_list(rule.get("groups"))
+    if any(group.lower() in {"cis", "sca"} for group in groups):
+        logging.info("Skipping alert because rule group is excluded: %s", groups)
+        return 0
+
+    try:
+        level = int(rule.get("level", 0))
+    except (TypeError, ValueError):
+        level = 0
+    if level < LEVEL_THRESHOLD:
+        return 0
+
+    title = str(rule.get("description") or "Wazuh Alert")
+    severity_id = 6 if level >= 13 else 5 if level >= 10 else 4 if level >= 7 else 3
+
+    payload = {
+        "alert_title": title,
+        "alert_description": title,
+        "alert_source": "Wazuh",
+        "alert_source_ref": str(alert.get("id") or uuid.uuid4()),
+        "alert_source_link": WAZUH_DASHBOARD_URL,
+        "alert_severity_id": severity_id,
+        "alert_status_id": STATUS_ID_NEW,
+        "alert_source_event_time": alert.get("timestamp"),
+        "alert_note": "",
+        "alert_tags": build_tags(alert),
+        "alert_customer_id": CUSTOMER_ID,
+        "alert_context": build_context(alert),
+        "alert_iocs": extract_iocs(alert),
+        "alert_source_content": alert,
+    }
+
+    try:
+        response = requests.post(
+            hook_url,
+            json=payload,
+            headers={
+                "Authorization": f"Bearer {api_key}",
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+            },
+            timeout=15,
+        )
+        if response.status_code in (200, 201, 202, 204):
+            logging.info(
+                "Sent Wazuh rule=%s level=%s IOC_count=%s HTTP=%s",
+                rule.get("id"), level, len(payload["alert_iocs"]), response.status_code,
+            )
+            return 0
+
+        # Avoid logging credentials. Response bodies may contain internal details.
+        logging.error("IRIS API rejected alert: HTTP %s; response=%s",
+                      response.status_code, response.text[:1000])
+        return 1
+
+    except requests.RequestException as exc:
+        logging.error("IRIS request failed: %s", exc)
+        return 1
+
+
+if __name__ == "__main__":
+    sys.exit(main())</code></pre>
+<div class="callout"><strong>Important before production</strong><p style="margin:6px 0 0">This is a reviewed reference implementation for the v2-style alert schema, not a universal drop-in for all IRIS releases. Set <code>CUSTOMER_ID</code>, <code>STATUS_ID_NEW</code>, the severity mapping, TLP ID, dashboard link, and IOC type IDs to values verified in your own IRIS environment. The example deliberately avoids disabling TLS verification; configure a trusted certificate/CA for the IRIS endpoint instead.</p></div>
+
+<h2 id="iocs">7. IOC extraction and type mapping</h2>
+<p>One of the most useful debugging lessons from the lab was that IOC extraction must preserve both the full indicator value and the correct IRIS type ID. The type IDs shown below came from the taxonomy response inspected in this environment; do not assume they are universal across instances or after taxonomy changes.</p>
+<div class="table-wrap"><table><thead><tr><th>IOC kind</th><th>Taxonomy type</th><th>ID in the inspected instance</th><th>Detection note</th></tr></thead><tbody>
+<tr><td>IPv4</td><td><code>ip-any</code></td><td>76</td><td>Validate IP octets with a parser, not regex alone.</td></tr>
+<tr><td>Domain</td><td><code>domain</code></td><td>20</td><td>Do not classify executable names such as <code>powershell.exe</code> as domains.</td></tr>
+<tr><td>URL</td><td><code>url</code></td><td>141</td><td>Trim common trailing punctuation where the source is prose.</td></tr>
+<tr><td>MD5 / SHA-1 / SHA-256</td><td><code>md5</code>, <code>sha1</code>, <code>sha256</code></td><td>90 / 111 / 113</td><td>Length-based candidates are not proof that a value is a malicious hash.</td></tr>
+<tr><td>Filename</td><td><code>filename</code></td><td>37</td><td>Use a non-capturing extension group so the full filename is returned, not only <code>exe</code> or <code>ps1</code>.</td></tr>
+<tr><td>Email address</td><td><code>email</code></td><td>22</td><td>Candidate extraction; investigate context before treating it as malicious.</td></tr>
+</tbody></table></div>
+<p>For the supplied Sysmon Event ID 11 example, structured fields included the executable image and target filename. Extract those fields directly where possible; scanning the entire serialized JSON can produce false positives from paths, labels, timestamps, or unrelated text. IOC regexes should be treated as candidates and enriched/validated separately where required.</p>
+<p>IRIS v2 documents <code>alert_iocs</code> as an array of objects containing fields such as <code>ioc_value</code>, <code>ioc_description</code>, <code>ioc_tlp_id</code>, <code>ioc_type_id</code>, and <code>ioc_tags</code>. This is why sending IOCs directly in the alert request is preferable to placing a comma-separated IOC list in <code>alert_tags</code>. Tags remain labels; they are not a replacement for typed IOC records.</p>
+
+<h2 id="validate">8. Validation workflow</h2>
+<ol>
+<li>Check syntax using the Python interpreter configured in the script.</li>
+<li>Use a saved redacted Wazuh JSON alert to test parsing and group/level filters before posting to production IRIS.</li>
+<li>Send a controlled test alert to a non-production IRIS customer, then inspect title, description, context, tags, raw source content, and IOC table individually.</li>
+<li>Verify the created alert appears to the intended IRIS user/customer and that the API account has the required write permissions.</li>
+<li>Promote a test alert to a case manually and confirm that the analyst can select the IOCs to import.</li>
+<li>Review integration logs for status codes; do not log API keys or include them in shell history or source control.</li>
+</ol>
+<pre class="code"><code># Check Python syntax; no output means compile succeeded.
+sudo /var/ossec/framework/python/bin/python3 -m py_compile \
+  /var/ossec/integrations/custom-wazuh_iris.py
+
+# Inspect integration and Wazuh logs
+sudo tail -n 100 /var/ossec/logs/integrations.log
+sudo tail -n 100 /var/ossec/logs/ossec.log
+
+# Validate file permissions
+sudo stat /var/ossec/integrations/custom-wazuh_iris.py</code></pre>
+<p>For direct testing, use the saved alert file as argument 1, a test API key as argument 2, and the exact API endpoint as argument 3. Use a test customer and an indicator-free sample first; after the simple path works, test structured IOCs and edge cases one at a time.</p>
+
+<h2 id="troubleshoot">9. Known issues &amp; troubleshooting</h2>
+<div class="table-wrap"><table><thead><tr><th>Observed symptom</th><th>Root cause</th><th>Fix / validation</th></tr></thead><tbody>
+<tr><td><code>Invalid URL 'None'</code></td><td>The script received no usable webhook URL, commonly because shell environment variables were assumed to be inherited by the Wazuh service.</td><td>Pass the endpoint using the documented Integrator argument/config, validate arguments, and fail clearly when missing.</td></tr>
+<tr><td>HTTP 400: <code>ioc_type</code> invalid input type</td><td>The request used a string type such as <code>ip</code> where the IRIS schema expects a numeric <code>ioc_type_id</code>.</td><td>Send <code>ioc_type_id</code> and map it to the taxonomy returned by the current IRIS instance.</td></tr>
+<tr><td>IOC shows as AS, aba-rtn, or authentihash</td><td>Numeric IDs were guessed and resolved to unrelated entries in the local taxonomy.</td><td>Use the Manage IOC Types endpoint/UI to confirm names and IDs; do not copy IDs blindly from a different installation.</td></tr>
+<tr><td><code>powershell.exe</code> appears as a domain</td><td>A broad dotted-token regex interpreted a filename as a hostname.</td><td>Extract known file fields first, exclude known executable/script suffixes from domain candidates, and retain the original complete value.</td></tr>
+<tr><td>IOC value is only <code>exe</code> or <code>ps1</code></td><td>A capturing group in the filename regex returned only the matching extension.</td><td>Use a non-capturing group <code>(?:...)</code> or a full-match approach.</td></tr>
+<tr><td>Context renders as <code>0:</code>, <code>1:</code>, etc.</td><td>Context was encoded as a list of objects; IRIS expects <code>alert_context</code> as a key/value object for this API schema.</td><td>Send a JSON object such as <code>{"Rule ID":"92213","Agent Name":"host-01"}</code>, then validate the resulting UI.</td></tr>
+<tr><td>Alert note appears empty or HTML layout changes</td><td>HTML in the note can be sanitized or displayed differently by the UI; the context field is better for key/value metadata.</td><td>Keep description concise; use structured context for metadata, source content for raw JSON, and notes for analyst commentary.</td></tr>
+<tr><td>IRIS accepts alert but user cannot see it</td><td>Customer access or service-account permissions may not match the alert's customer.</td><td>Check the account's alert permissions and customer association in IRIS access control.</td></tr>
+</tbody></table></div>
+<p>For the <code>cis</code> and <code>sca</code> exclusions, this implementation checks group names in Python so it can exclude only the two noisy groups while preserving the wider set of active detection groups. Wazuh also supports level, rule ID, and group filters in the Integrator configuration, but its group filter is an inclusion filter—not a general exclusion expression.</p>
+
+<h2 id="lessons">10. Engineering lessons</h2>
+<ul>
+<li><strong>Separate alert metadata from raw telemetry.</strong> Use the short title/description for quick triage, <code>alert_context</code> for searchable/displayable key/value fields, and <code>alert_source_content</code> for the original event.</li>
+<li><strong>Model IOCs as typed objects.</strong> IOCs should carry values and type IDs that match the running IRIS taxonomy; tags are for searchable labels and correlation hints.</li>
+<li><strong>Prefer structured source fields over broad regexes.</strong> Regex extraction is useful as a fallback, but it should not transform process names or file extensions into unrelated indicator types.</li>
+<li><strong>Validate one layer at a time.</strong> Check Wazuh invocation arguments, JSON parsing, the outgoing schema, IRIS HTTP response, UI rendering, and analyst permissions separately.</li>
+<li><strong>Do not claim success before verifying the receiving system.</strong> A request call completing is not enough; confirm the API status and inspect the resulting IRIS alert and IOC table.</li>
+</ul>
+
+<h2 id="references">11. Official references</h2>
+<ul>
+<li><a href="https://documentation.wazuh.com/current/user-manual/manager/integration-with-external-apis.html" target="_blank" rel="noopener noreferrer">Wazuh — External API integration</a></li>
+<li><a href="https://documentation.wazuh.com/current/user-manual/reference/ossec-conf/integration.html" target="_blank" rel="noopener noreferrer">Wazuh — <code>&lt;integration&gt;</code> configuration reference</a></li>
+<li><a href="https://docs.dfir-iris.org/2.4.15/getting_started/" target="_blank" rel="noopener noreferrer">DFIR-IRIS v2.4.15 — Quick Start</a></li>
+<li><a href="https://docs.dfir-iris.org/2.4.15/_static/iris_api_reference_v2.0.1.html" target="_blank" rel="noopener noreferrer">DFIR-IRIS v2 API reference — alert creation and IOC schema</a></li>
+<li><a href="https://docs.dfir-iris.org/latest/operations/alerts/" target="_blank" rel="noopener noreferrer">DFIR-IRIS — Alerts, merging, and case creation</a></li>
+<li><a href="https://docs.dfir-iris.org/latest/api_reference/legacy_endpoints/" target="_blank" rel="noopener noreferrer">DFIR-IRIS — Legacy endpoint migration reference</a></li>
+<li><a href="https://docs.dfir-iris.org/latest/getting_started/" target="_blank" rel="noopener noreferrer">DFIR-IRIS — Current Quick Start and version notes</a></li>
+</ul>
+<p class="note">This guide records a practical lab implementation and its troubleshooting process. It is not official vendor guidance and does not claim that any one script is the best or only implementation. Validate API fields, version compatibility, severity/status IDs, customer IDs, IOC type IDs, and TLS configuration in your own environment before production rollout.</p>
+<div class="contact-hook">
+<span class="hook-kicker">Discuss SIEM-to-DFIR automation</span>
+<p class="hook-title">Building a Wazuh-to-case-management workflow or debugging alert enrichment?</p>
+<p>Reach out to discuss Wazuh integrations, typed IOC extraction, IRIS alert workflows, and SOC automation design.</p>
+<div class="contact-links"><a href="mailto:as.ga2019@gmail.com?subject=Wazuh%20to%20DFIR-IRIS%20Integration%20Inquiry&amp;body=Hi%20Ashraf%2C%0A%0AI%20read%20your%20Wazuh%20and%20DFIR-IRIS%20integration%20article%20and%20would%20like%20to%20discuss%20SIEM%20integration%2C%20IOC%20enrichment%2C%20or%20case-management%20automation.%0A%0ABest%20regards%2C">Email me ↗</a><a href="https://wa.me/966598243358?text=Hi%20Ashraf%2C%20I%20read%20your%20Wazuh%20and%20DFIR-IRIS%20integration%20article%20and%20would%20like%20to%20discuss%20SIEM%20integration%2C%20IOC%20enrichment%2C%20or%20case-management%20automation." target="_blank" rel="noopener noreferrer">WhatsApp ↗</a><a href="https://www.linkedin.com/in/1elrawy/" target="_blank" rel="noopener noreferrer">LinkedIn ↗</a></div>
+</div>
+<div class="related"><a href="/#articles"><small>ARTICLE LIBRARY</small><strong>← Back to all technical notes</strong></a><a href="/articles/wazuh-distributed-architecture.html"><small>RELATED GUIDE</small><strong>Wazuh Distributed Architecture →</strong></a></div>
+</article>
+</div>
+<footer class="footer"><div class="wrap footerinner"><span>© 2026 Ashraf Gamal · Technical notes</span><a href="/#articles">Back to the article library ↑</a></div></footer>
+</body>
+</html>
