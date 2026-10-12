@@ -27,12 +27,12 @@
 <p class="personal-note"><strong>Personal note:</strong> This article reflects my experience and is for educational purposes only—not official vendor guidance. Always verify procedures against current vendor documentation.</p>
 <h2 id="objective">1. Objective and scope</h2>
 <p>The goal is to prove that an n8n Webhook node can receive an HTTP POST request and parse its JSON body before the workflow is connected to any production system. The workflow can be tested with curl from the n8n host or another machine that can reach it over the network.</p>
-<p>In the lab setup documented in the conversation, n8n is already running on port <code>5678</code> and the chosen test path is <code>aiwazuh</code>. The private host address is intentionally left as a variable in this public article. The conversation did not record a completed curl response or a successful n8n execution, so successful delivery is a validation step—not a claimed result.</p>
+<p>In the lab setup documented in the conversation, n8n is already running on port <code>5678</code> and the chosen test path is <code>n8n-test</code>. The private host address is intentionally left as a variable in this public article. The conversation did not record a completed curl response or a successful n8n execution, so successful delivery is a validation step—not a claimed result.</p>
 <h2 id="configure">2. Configure the Webhook node</h2>
 <ol>
 <li>Create or open the workflow in n8n and add a <strong>Webhook</strong> trigger node.</li>
 <li>Set <strong>HTTP Method</strong> to <code>POST</code>.</li>
-<li>Set <strong>Path</strong> to <code>aiwazuh</code>, matching the path you plan to call. If you use a different path, update the curl URL to match it exactly.</li>
+<li>Set <strong>Path</strong> to <code>n8n-test</code>, matching the path you plan to call. If you use a different path, update the curl URL to match it exactly.</li>
 <li>For a restricted local smoke test, choose the authentication setting appropriate for your lab. Do not expose a webhook with authentication disabled to untrusted networks.</li>
 <li>Select <strong>Listen for test event</strong> (or the equivalent test execution action in your n8n version) so the test URL is registered before sending the request.</li>
 </ol>
@@ -44,7 +44,7 @@
 N8N_BASE_URL="http://localhost:5678"
 
 curl -i --max-time 10 -X POST \
-  "${N8N_BASE_URL}/webhook-test/aiwazuh" \
+  "${N8N_BASE_URL}/webhook-test/n8n-test" \
   -H "Content-Type: application/json" \
   -d '{
     "message": "n8n webhook connectivity test",
@@ -65,14 +65,14 @@ curl -i --max-time 10 -X POST \
 <h3>Connection refused or timeout</h3>
 <ul><li>Verify that the n8n process/container is running and listening on port <code>5678</code>.</li><li>If curl runs on another machine, use the n8n host's reachable IP address or DNS name rather than <code>localhost</code>.</li><li>Check host firewall rules and, for Docker deployments, verify that the port is published as intended.</li></ul>
 <h3>Webhook not registered or not found</h3>
-<ul><li>Make sure the editor is listening for the test event before calling <code>/webhook-test/aiwazuh</code>.</li><li>Confirm the HTTP method is <code>POST</code> and the path matches exactly.</li><li>Use the Test URL while debugging. A production URL uses <code>/webhook/</code>, not <code>/webhook-test/</code>.</li></ul>
+<ul><li>Make sure the editor is listening for the test event before calling <code>/webhook-test/n8n-test</code>.</li><li>Confirm the HTTP method is <code>POST</code> and the path matches exactly.</li><li>Use the Test URL while debugging. A production URL uses <code>/webhook/</code>, not <code>/webhook-test/</code>.</li></ul>
 <h3>The request arrives, but the workflow output is not what I expected</h3>
 <ul><li>Send valid JSON with the <code>Content-Type: application/json</code> header.</li><li>Inspect the Webhook node's execution input before investigating downstream nodes.</li><li>Check the Webhook node's response mode. An immediate 200 response does not guarantee that every downstream step completed successfully.</li></ul>
 <p>For further diagnostics, the official <a href="https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.webhook/common-issues/" target="_blank" rel="noopener noreferrer">Webhook common-issues guide</a> includes curl examples and advice for test versus production URLs.</p>
 <h2 id="production">6. Checklist before production</h2>
 <ol>
 <li>Confirm the request body and workflow execution are correct using the test URL.</li>
-<li>Save and publish the workflow, then switch the caller to the production URL shown by the Webhook node, usually <code>/webhook/aiwazuh</code>.</li>
+<li>Save and publish the workflow, then switch the caller to the production URL shown by the Webhook node, usually <code>/webhook/n8n-test</code>.</li>
 <li>Use appropriate webhook authentication (Basic, Header, or JWT where suitable), restrict network access, and use HTTPS for production traffic.</li>
 <li>Review the production workflow's response mode and error paths so the caller receives a truthful HTTP status and response body.</li>
 <li>After switching URLs, run a controlled production-path check and review the workflow's Executions view. Production executions do not appear in the editor's test canvas in the same way as test events.</li>
