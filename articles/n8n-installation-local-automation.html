@@ -26,7 +26,7 @@
 <p class="personal-note"><strong>Personal note:</strong> This article reflects my experience and is for educational purposes only—not official vendor guidance. Always verify procedures against current vendor documentation.</p>
 <h2 id="objective">1. Objective and scope</h2>
 <p>n8n is a workflow automation platform that connects services and APIs through visual workflows. This guide focuses only on installing and preparing n8n for local testing. It does not cover SIEM deployment or AI-model setup.</p>
-<p>The conversation records a running n8n instance reachable at <code>http://192.168.100.225:5678</code> and a test webhook path of <code>/webhook-test/aiwazuh</code>. Those details establish the intended validation endpoint; the conversation does not record the original installation method, exact n8n version, installation commands, or a confirmed installation failure.</p>
+<p>The install method and n8n version of an existing host should be recorded before changing it. The generic examples below are intended for a local test workflow and should be adapted to the network layout of the host.</p>
 <h2 id="choose-method">2. Choose an installation method</h2>
 <p>n8n documents multiple hosting options. For a self-managed Linux host, its documentation recommends Docker for most self-hosting needs and also documents npm-based installation. The current npm documentation states that npm-based installs are deprecated from n8n 3.0 and lists Node.js 20.19 through 24.x for the documented method. Check the official page for the current status before choosing npm.</p>
 <ul><li><strong>Docker:</strong> isolates the application and keeps its state in a named volume.</li><li><strong>npm:</strong> convenient for local experimentation where Node.js is already managed on the host.</li></ul>
@@ -56,11 +56,11 @@ n8n</code></pre>
 <h2 id="access">5. Access and persistence</h2>
 <ol><li>Complete the initial setup in the browser and create the instance owner account if prompted.</li><li>Record the installed n8n version from the UI or terminal, as well as whether the host uses Docker or npm.</li><li>For Docker, confirm a persistent volume is mounted to <code>/home/node/.n8n</code>; do not delete it when recreating the container.</li><li>Restrict access to port <code>5678</code> to trusted networks and administrators. A LAN address is not a substitute for authentication or transport security.</li></ol>
 <h2 id="webhook">6. Validate a test webhook with curl</h2>
-<p>The conversation identifies the following test endpoint:</p>
-<pre class="code"><code>http://192.168.100.225:5678/webhook-test/aiwazuh</code></pre>
-<p>In the n8n editor, create a Webhook node with method <code>POST</code> and path <code>aiwazuh</code>. Start listening for a test event (the button label may differ by version), then send a small JSON request from a machine that can reach the n8n host:</p>
+<p>This example uses a local test endpoint; replace the host if the request originates from another machine:</p>
+<pre class="code"><code>http://localhost:5678/webhook-test/n8n-test</code></pre>
+<p>In the n8n editor, create a Webhook node with method <code>POST</code> and path <code>n8n-test</code>. Start listening for a test event (the button label may differ by version), then send a small JSON request from a machine that can reach the n8n host:</p>
 <pre class="code"><code>curl -i -X POST \
-  'http://192.168.100.225:5678/webhook-test/aiwazuh' \
+  'http://localhost:5678/webhook-test/n8n-test' \
   -H 'Content-Type: application/json' \
   -d '{"message":"n8n webhook connectivity test","source":"curl"}'</code></pre>
 <p>Check the HTTP response and the Webhook node's execution data in the editor. A successful request should reach the waiting test execution; an HTTP response by itself does not prove later nodes or downstream integrations succeeded.</p>
