@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#080a12">
+<meta name="description" content="A concise, practical guide to Wazuh distributed architecture: indexer and manager clusters, dashboard placement, certificates, networking, load balancing, and validation.">
+<title>Wazuh Distributed Architecture: Indexers, Managers, and Dashboard | Ashraf Gamal</title>
+<style>
+:root{color-scheme:dark;--bg:#080a12;--text:#f4f6ff;--muted:#a3abc4;--line:rgba(177,190,255,.15);--cyan:#39e7ff;--purple:#9a66ff;--pink:#ff4fd8;--amber:#ffc879}
+*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:90px}body{margin:0;min-width:320px;color:var(--text);background:radial-gradient(ellipse at 6% 0,rgba(57,231,255,.09),transparent 32rem),radial-gradient(ellipse at 96% 12%,rgba(255,79,216,.08),transparent 28rem),var(--bg);font:16px/1.78 "Space Grotesk",Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}a{color:var(--cyan);text-decoration:none}a:hover{text-decoration:underline}.wrap{width:min(920px,calc(100% - 34px));margin:auto}.topbar{position:sticky;top:0;z-index:10;background:rgba(8,10,18,.86);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}.nav{height:68px;display:flex;align-items:center;justify-content:space-between;gap:18px}.brand{color:var(--text);font-weight:750;letter-spacing:-.02em}.back{font-size:13px;color:var(--muted)}.hero{padding:67px 0 35px}.eyebrow,.kicker{font-size:11px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:var(--cyan)}h1{font-size:clamp(36px,6vw,60px);line-height:1.08;letter-spacing:-.06em;margin:15px 0}.gradient{color:transparent;background:linear-gradient(100deg,var(--cyan),#9a8bff 55%,var(--pink));-webkit-background-clip:text;background-clip:text}.lede{font-size:18px;line-height:1.7;color:#c0c8df;max-width:770px}.meta{display:flex;flex-wrap:wrap;gap:10px 18px;font-size:12px;color:var(--muted);margin-top:24px}.pill{border:1px solid rgba(57,231,255,.24);background:rgba(57,231,255,.06);padding:4px 9px;border-radius:99px;color:#d9fbff}.layout{display:grid;grid-template-columns:220px minmax(0,1fr);gap:35px;padding:20px 0 85px}.toc{align-self:start;position:sticky;top:90px;padding:18px;border:1px solid var(--line);border-radius:16px;background:rgba(17,21,40,.6)}.toc strong{font-size:12px}.toc a{display:block;color:var(--muted);font-size:12px;padding:7px 0;line-height:1.4}.content{min-width:0}.content h2{font-size:27px;line-height:1.25;letter-spacing:-.04em;margin:42px 0 13px}.content h3{font-size:18px;margin:26px 0 8px}.content p,.content li{color:#c0c8df}.content li{padding-left:3px;margin:7px 0}.content ul,.content ol{padding-left:22px}.callout{padding:18px 20px;border:1px solid rgba(255,200,121,.28);border-left:3px solid var(--amber);border-radius:13px;background:rgba(255,200,121,.055);margin:22px 0}.callout strong{color:#ffe2b3}.info{padding:17px 20px;border:1px solid rgba(57,231,255,.22);border-radius:13px;background:rgba(57,231,255,.045);margin:20px 0}.info strong{color:#c9faff}code,pre{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}code{font-size:.92em;color:#d7e9ff}.code{overflow:auto;margin:15px 0;padding:17px;border-radius:12px;border:1px solid var(--line);background:#070a12;color:#dbe6ff;font-size:13px;line-height:1.7}.table-wrap{overflow-x:auto;margin:20px 0;border:1px solid var(--line);border-radius:12px}table{width:100%;border-collapse:collapse;min-width:470px;font-size:13px}th,td{text-align:left;vertical-align:top;padding:12px 14px;border-bottom:1px solid var(--line)}th{color:#e9edff;background:rgba(154,102,255,.08)}td{color:#c0c8df}tr:last-child td{border-bottom:0}.related{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:36px}.related a{border:1px solid var(--line);border-radius:13px;padding:15px;color:var(--text);background:rgba(255,255,255,.025)}.related small{display:block;color:var(--muted);font-size:11px}.related strong{display:block;margin-top:5px;font-size:13px}.footer{border-top:1px solid var(--line);padding:23px 0;color:var(--muted);font-size:12px}.footerinner{display:flex;justify-content:space-between;gap:15px;flex-wrap:wrap}@media(max-width:760px){.layout{grid-template-columns:1fr;gap:10px}.toc{position:static;display:grid;grid-template-columns:1fr 1fr;gap:0 14px}.toc strong{grid-column:1/-1}.hero{padding-top:45px}.content h2{margin-top:32px}.related{grid-template-columns:1fr}}@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}.contact-hook{margin:30px 0 0;padding:22px 24px;border:1px solid rgba(57,231,255,.23);border-radius:15px;background:linear-gradient(120deg,rgba(57,231,255,.055),rgba(154,102,255,.065),rgba(255,79,216,.04))}.contact-hook .hook-kicker{display:block;color:var(--cyan);font-size:10px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;margin-bottom:8px}.contact-hook .hook-title{color:var(--text);font-size:19px;line-height:1.45;letter-spacing:-.025em;margin:0}.contact-hook p{color:#c0c8df;margin:8px 0 0}.contact-links{display:flex;flex-wrap:wrap;gap:9px;margin-top:15px}.contact-links a{display:inline-flex;align-items:center;justify-content:center;padding:8px 12px;border:1px solid rgba(177,190,255,.18);border-radius:9px;background:rgba(255,255,255,.025);color:#e4edff;font-size:12px;font-weight:700}.contact-links a:hover{border-color:rgba(57,231,255,.5);background:rgba(57,231,255,.07);color:var(--cyan);text-decoration:none}@media(max-width:480px){.contact-hook{padding:18px}.contact-hook .hook-title{font-size:17px}}.personal-note{margin:0 0 22px;padding:11px 14px;border:1px solid rgba(177,190,255,.13);border-radius:10px;background:rgba(255,255,255,.025);color:#a3abc4;font-size:12px;line-height:1.65}.personal-note strong{color:#dce5ff;font-weight:700}
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+</head>
+<body>
+<header class="topbar"><nav class="nav wrap"><a class="brand" href="/">AG <span class="gradient">/ Notes</span></a><a class="back" href="/#articles">← Back to all technical notes</a></nav></header>
+<header class="hero wrap">
+<div class="eyebrow">Part 2 · Architecture guide · Wazuh SIEM</div>
+<h1>Wazuh distributed architecture:<br><span class="gradient">design and deployment</span></h1>
+<p class="lede">A direct, implementation-focused guide to separating Wazuh indexers, managers, and dashboard nodes—covering cluster roles, certificates, network paths, load balancing, and validation.</p>
+<div class="meta"><span>By Ashraf Gamal</span><span>Updated 12 October 2026</span><span class="pill">Wazuh 4.14.x example</span><span>Approx. 8 min read</span></div>
+</header>
+<div class="wrap layout">
+<aside class="toc"><strong>In this guide</strong><a href="#architecture">Architecture</a><a href="#roles">Node roles</a><a href="#plan">Plan the deployment</a><a href="#install">Installation sequence</a><a href="#network">Network and load balancing</a><a href="#validate">Validation</a><a href="#troubleshoot">Troubleshooting</a><a href="#references">Official references</a></aside>
+<article class="content">
+<p class="personal-note"><strong>Personal note:</strong> This article reflects my experience and is for educational purposes only—not official vendor guidance. Always verify procedures against current vendor documentation.</p>
+<div class="callout"><strong>Scope</strong><p style="margin:6px 0 0">This guide covers a distributed deployment, not an all-in-one install. The topology below is a reference design based on the architecture and load-balancing work documented in my lab. Confirm every node role, IP, port, and sizing decision against your actual environment before implementation.</p></div>
+<h2 id="architecture">1. Architecture at a glance</h2>
+<p>Wazuh has three central components: the <strong>Wazuh server</strong> (manager and Filebeat), the <strong>Wazuh indexer</strong>, and the <strong>Wazuh dashboard</strong>. In a distributed design, these components run on separate hosts so that ingestion, indexing, and user access can be sized and operated independently.</p>
+<div class="table-wrap"><table><thead><tr><th>Layer</th><th>Reference design</th><th>Purpose</th></tr></thead><tbody>
+<tr><td>Indexer</td><td>2 indexer nodes</td><td>Stores and searches alerts; indexer clustering provides scale and resilience when correctly designed.</td></tr>
+<tr><td>Wazuh server</td><td>1 master + 2 workers</td><td>Receives agent data, analyzes events, manages cluster configuration, and forwards alerts to the indexer.</td></tr>
+<tr><td>Dashboard</td><td>1 dashboard node</td><td>Provides the analyst interface and connects to the indexer and Wazuh server API.</td></tr>
+<tr><td>Load balancing</td><td>HAProxy / VIP layer where required</td><td>Provides a stable endpoint for selected traffic; it does not replace native Wazuh clustering.</td></tr>
+</tbody></table></div>
+<p>This layout reflects the multi-node topology explored in my deployment planning. It is not a universal minimum. In particular, a two-node indexer cluster needs deliberate quorum and failure-domain planning; do not assume that adding a second node alone guarantees availability under every failure scenario.</p>
+<h2 id="roles">2. Know each node's job</h2>
+<ul>
+<li><strong>Wazuh indexer:</strong> stores and searches alert data. Multi-node clusters require consistent node names, transport connectivity, certificates, and cluster configuration.</li>
+<li><strong>Wazuh server master:</strong> coordinates manager-cluster configuration and tasks. It is not automatically the best endpoint for every agent's event traffic.</li>
+<li><strong>Wazuh server workers:</strong> handle agent connections and analysis as configured. Manager clustering does not mean every setting or every piece of runtime state is replicated identically; follow the cluster documentation.</li>
+<li><strong>Dashboard:</strong> serves the web interface. Configure its indexer endpoints and Wazuh API endpoint(s) explicitly, and protect access with TLS and network controls.</li>
+<li><strong>HAProxy / VIP:</strong> optionally exposes a stable agent or service endpoint. Design each frontend for the actual protocol and failover requirement; do not put all Wazuh traffic through one generic backend.</li>
+</ul>
+<h2 id="plan">3. Plan before installing</h2>
+<ol>
+<li>Choose a supported Wazuh release and OS for every host. Keep the central components on a compatible release set.</li>
+<li>Assign a unique hostname and static IP to every node. Do not reuse a hypervisor IP for a guest VM.</li>
+<li>Define indexer node names, manager master/worker roles, dashboard address, and any VIP/DNS names before generating certificates.</li>
+<li>Size CPU, RAM, and persistent storage using expected endpoint count, event volume, query load, and retention—not node count alone.</li>
+<li>Prepare firewall rules between the specific source and destination components. Open only required ports.</li>
+<li>Plan backups, monitoring, certificate renewal, index retention, and how each node will be recovered or replaced.</li>
+</ol>
+<div class="info"><strong>Addressing pattern</strong><p style="margin:6px 0 0">Use stable names such as <code>indexer-1</code>, <code>indexer-2</code>, <code>wazuh-master</code>, <code>wazuh-worker-1</code>, <code>wazuh-worker-2</code>, and <code>wazuh-dashboard</code>. Replace these examples with real DNS names and addresses. Avoid embedding lab IPs in reusable deployment documentation.</p></div>
+<h2 id="install">4. Install in the correct order</h2>
+<p>For a distributed deployment, use Wazuh's version-matched installation assistant or follow the step-by-step documentation. The high-level sequence is:</p>
+<ol>
+<li><strong>Generate configuration, certificates, and passwords.</strong> Define every indexer, server, and dashboard node in the configuration file before creating the certificate bundle.</li>
+<li><strong>Install all indexer nodes.</strong> Use the exact node names from the configuration and initialize the indexer cluster once, following the official procedure.</li>
+<li><strong>Install the Wazuh server nodes.</strong> Configure the master and workers, then establish the manager cluster according to the documented steps.</li>
+<li><strong>Install the dashboard.</strong> Point it to the indexer nodes and the intended Wazuh server API endpoint.</li>
+<li><strong>Configure agent endpoints and any load balancer.</strong> Confirm the agent destination, enrollment path, protocol, and failover design.</li>
+<li><strong>Validate before onboarding production agents.</strong> Check service status, cluster health, connectivity, and end-to-end event flow.</li>
+</ol>
+<p>Example for downloading the release-matched assistant on a trusted admin session:</p>
+<pre class="code"><code>curl -sO https://packages.wazuh.com/4.14/wazuh-install.sh</code></pre>
+<p>Do not run an all-in-one option for this topology. Follow the exact node-specific commands from the official assisted installation guide for the selected release; the node names must match the configuration.</p>
+<div class="callout"><strong>Certificate and secret handling</strong><p style="margin:6px 0 0">Wazuh's distributed installation uses generated certificates and passwords. Transfer required files only over a controlled channel, restrict file permissions, and remove temporary copies according to your organization's secure deployment procedure. Never reuse a certificate bundle from a different node inventory.</p></div>
+<h2 id="network">5. Network paths and load balancing</h2>
+<div class="table-wrap"><table><thead><tr><th>Traffic</th><th>Typical port</th><th>Design check</th></tr></thead><tbody>
+<tr><td>Agent event communication</td><td>TCP 1514</td><td>Confirm agent protocol and destination; test that traffic reaches a manager listener.</td></tr>
+<tr><td>Agent enrollment</td><td>TCP 1515</td><td>Confirm enrollment is enabled and routed to the intended service.</td></tr>
+<tr><td>Wazuh API</td><td>TCP 55000</td><td>Restrict to authorized dashboard and administration paths.</td></tr>
+<tr><td>Indexer API</td><td>TCP 9200</td><td>Restrict to trusted platform components and administrators.</td></tr>
+<tr><td>Indexer cluster transport</td><td>TCP 9300</td><td>Allow only between the required indexer nodes; verify against the release documentation.</td></tr>
+<tr><td>Dashboard</td><td>TCP 443</td><td>Expose only through approved user-access paths and valid TLS configuration.</td></tr>
+</tbody></table></div>
+<p>These are common defaults, not a substitute for the official port matrix for your release and configuration. Firewall rules must reflect the actual flow between nodes.</p>
+<p>In my lab planning, HAProxy was used as a stable agent-facing endpoint, with workers as the primary backend pool and a master fallback considered for the relevant traffic. Treat that as a topology-specific design, not a universal Wazuh recommendation: registration and event traffic have different operational considerations, and the master should not be used as a fallback unless the routing behavior and capacity have been deliberately tested.</p>
+<p>For a TCP frontend, validate both the listener and real traffic. A backend marked <code>UP</code> only proves that its configured health check passed; it does not prove agents are using the VIP.</p>
+<pre class="code"><code>sudo ss -lntp
+sudo systemctl status haproxy --no-pager
+sudo journalctl -u haproxy -n 100 --no-pager</code></pre>
+<h2 id="validate">6. Validate each layer</h2>
+<h3>Indexer cluster</h3>
+<p>Use an authorized account and the certificate/trust settings appropriate for your environment. Do not put passwords directly in shell history.</p>
+<pre class="code"><code>curl --cacert /path/to/root-ca.pem -u admin https://&lt;indexer-node&gt;:9200/_cluster/health?pretty</code></pre>
+<p>Check the reported cluster status and node count, then inspect node membership and logs if expected nodes are missing. A green status by itself does not validate manager ingestion or dashboard connectivity.</p>
+<h3>Manager cluster and services</h3>
+<pre class="code"><code>sudo systemctl status wazuh-manager filebeat --no-pager
+sudo /var/ossec/bin/cluster_control -l</code></pre>
+<p>Confirm the expected master and workers appear in the cluster output. Check the manager logs on the affected node if cluster membership or agent connections are not as expected.</p>
+<h3>Dashboard and end-to-end event flow</h3>
+<ul>
+<li>Confirm the dashboard service is running and the UI is reachable over HTTPS.</li>
+<li>Verify the dashboard can reach the configured indexer nodes and Wazuh API.</li>
+<li>Enroll a test agent and confirm it becomes active.</li>
+<li>Generate a known test event and verify it appears in the expected alert view.</li>
+<li>Test a planned worker failure in a maintenance window and verify agent behavior, alert continuity, and recovery.</li>
+</ul>
+<h2 id="troubleshoot">7. Fast troubleshooting checklist</h2>
+<div class="table-wrap"><table><thead><tr><th>Symptom</th><th>Check first</th></tr></thead><tbody>
+<tr><td>Indexer is green but alerts are absent</td><td>Check manager service, Filebeat, output configuration, indexer reachability, and recent logs.</td></tr>
+<tr><td>Manager worker missing from cluster</td><td>Check node names, cluster key/configuration, time sync, required network paths, and manager logs.</td></tr>
+<tr><td>HAProxy backends are UP but counters stay at zero</td><td>Confirm agents target the VIP, check the frontend listener and firewall path, and observe actual traffic.</td></tr>
+<tr><td>Agent cannot enroll</td><td>Check DNS/IP destination, TCP 1515 path, enrollment configuration, and manager logs.</td></tr>
+<tr><td>Dashboard opens but data is unavailable</td><td>Check dashboard-to-indexer connectivity, certificates, configured indexer endpoints, and dashboard logs.</td></tr>
+</tbody></table></div>
+<p>Diagnose from the first failing layer and preserve timestamps and relevant logs. Avoid changing several components at once; one change followed by a clear validation makes the cause easier to identify.</p>
+<h2 id="references">8. Official documentation</h2>
+<ul>
+<li><a href="https://documentation.wazuh.com/current/installation-guide/index.html" target="_blank" rel="noopener noreferrer">Wazuh installation guide</a></li>
+<li><a href="https://documentation.wazuh.com/current/installation-guide/wazuh-indexer/installation-assistant.html" target="_blank" rel="noopener noreferrer">Indexer cluster assisted installation</a></li>
+<li><a href="https://documentation.wazuh.com/current/installation-guide/wazuh-server/step-by-step.html" target="_blank" rel="noopener noreferrer">Wazuh server installation and cluster configuration</a></li>
+<li><a href="https://documentation.wazuh.com/current/installation-guide/wazuh-dashboard/step-by-step.html" target="_blank" rel="noopener noreferrer">Wazuh dashboard installation</a></li>
+<li><a href="https://documentation.wazuh.com/current/user-manual/wazuh-server-cluster/index.html" target="_blank" rel="noopener noreferrer">Wazuh server cluster</a></li>
+<li><a href="https://documentation.wazuh.com/current/user-manual/wazuh-indexer-cluster/index.html" target="_blank" rel="noopener noreferrer">Wazuh indexer cluster</a></li>
+</ul>
+<p class="note">This is a practical architecture guide, not a substitute for release-specific vendor instructions. Confirm compatibility, port requirements, certificates, sizing, and failure behavior before deploying to production.</p>
+<div class="contact-hook">
+<span class="hook-kicker">Discuss distributed SIEM architecture</span>
+<p class="hook-title">Planning a distributed Wazuh deployment or troubleshooting cluster communication?</p>
+<p>Contact me to discuss SIEM architecture, Wazuh implementation, high availability, and platform operations.</p>
+<div class="contact-links"><a href="mailto:as.ga2019@gmail.com?subject=Wazuh%20Distributed%20Architecture%20Inquiry&amp;body=Hi%20Ashraf%2C%0A%0AI%20read%20your%20Wazuh%20Distributed%20Architecture%20guide%20and%20would%20like%20to%20discuss%20a%20deployment%20or%20cluster%20troubleshooting%20requirement.%0A%0ABest%20regards%2C">Email me ↗</a><a href="https://wa.me/966598243358?text=Hi%20Ashraf%2C%20I%20read%20your%20Wazuh%20Distributed%20Architecture%20guide%20and%20would%20like%20to%20discuss%20a%20deployment%20or%20cluster%20troubleshooting%20requirement." target="_blank" rel="noopener noreferrer">WhatsApp ↗</a><a href="https://www.linkedin.com/in/1elrawy/" target="_blank" rel="noopener noreferrer">LinkedIn ↗</a></div>
+</div>
+<div class="related"><a href="/#articles"><small>ARTICLE LIBRARY</small><strong>← Back to all technical notes</strong></a><a href="/articles/wazuh-all-in-one-installation.html"><small>PART 1 · WAZUH</small><strong>Wazuh All-in-One: Installation and Validation →</strong></a></div>
+</article>
+</div>
+<footer class="footer"><div class="wrap footerinner"><span>© 2026 Ashraf Gamal · Technical notes</span><a href="/#articles">Back to the article library ↑</a></div></footer>
+</body>
+</html>
