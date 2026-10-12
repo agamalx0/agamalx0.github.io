@@ -43,8 +43,7 @@
 <pre class="code"><code>curl -sO https://packages.wazuh.com/4.14/wazuh-install.sh
 sudo bash ./wazuh-install.sh -a</code></pre>
 <p>The <code>-a</code> option requests an all-in-one installation. Read the official quickstart before running the script, and obtain it only from the official Wazuh package endpoint. For production environments, review the script and change controls required by your organization's policy.</p>
-<p>The installer should complete the setup of the central components and display a summary that includes the dashboard URL and generated access credentials. Save the credentials securely; do not publish them in screenshots, terminal recordings, Git repositories, or support requests.</p>
-<div class="info"><strong>Keep the generated installation archive private</strong><p style="margin:6px 0 0">The installer may create <code>wazuh-install-files.tar</code>, which can contain security-sensitive installation material. Store it with restrictive permissions, do not upload it to the portfolio, and follow Wazuh's guidance for whether it should be retained or securely removed after installation.</p></div>
+<p>The installer should complete the setup of the central components and display a summary that includes the dashboard URL and generated access credentials. Save the generated credentials securely and share them only through an approved secure channel.</p>
 <h2 id="validate">4. Validate the deployment instead of trusting one success message</h2>
 <p>First, check each expected service on the host. The following loop reports each service independently, making it easier to spot a component that was not installed or did not start:</p>
 <pre class="code"><code>for service in wazuh-indexer wazuh-manager filebeat wazuh-dashboard; do
@@ -59,7 +58,7 @@ sudo journalctl -u wazuh-dashboard -n 100 --no-pager</code></pre>
 <p>Then verify the dashboard at <code>https://&lt;server-ip&gt;</code> using the generated administrator credentials. A browser warning about a self-signed or locally issued certificate can occur in a fresh lab; do not treat it as a reason to disable TLS verification globally. For production, plan certificate trust and secure access explicitly.</p>
 <p>Finally, enroll a test agent from the dashboard and verify that it becomes active and that its events are visible. A running dashboard alone does not prove the manager, Filebeat, indexer, and data pipeline are all working end to end.</p>
 <h2 id="field-note">5. Field note: the indexer completed, but the full installation did not</h2>
-<p>During my Wazuh lab work, an installation attempt using the 4.14.7 assistant reached an indexer state reported as <strong>GREEN</strong> with a single OpenSearch 2.19.5 node. However, the available troubleshooting record showed that the Wazuh manager, dashboard, and Filebeat were not installed in that attempt. A generated <code>/root/wazuh-install-files.tar</code> archive was also present.</p>
+<p>During my Wazuh lab work, an installation attempt using the 4.14.7 assistant reached an indexer state reported as <strong>GREEN</strong> with a single OpenSearch 2.19.5 node. However, the available troubleshooting record showed that the Wazuh manager, dashboard, and Filebeat were not installed in that attempt.</p>
 <p>This is an important distinction: a healthy indexer proves only that the indexer is healthy. It does not prove the all-in-one deployment is complete. In this case, the available record does not establish a confirmed root cause for why the remaining components were missing, so this article does not attribute the result to a specific dependency, timeout, or configuration error.</p>
 <h3>Safe troubleshooting sequence</h3>
 <ol>
@@ -93,7 +92,7 @@ sudo journalctl -u wazuh-dashboard -n 100 --no-pager</code></pre>
 <p>Contact me to discuss Wazuh installation, SIEM engineering, platform troubleshooting, or security monitoring requirements.</p>
 <div class="contact-links"><a href="mailto:as.ga2019@gmail.com?subject=Wazuh%20All-in-One%20Deployment%20Inquiry&amp;body=Hi%20Ashraf%2C%0A%0AI%20read%20your%20Wazuh%20All-in-One%20installation%20guide%20and%20would%20like%20to%20discuss%20a%20Wazuh%20deployment%20or%20troubleshooting%20requirement.%0A%0ABest%20regards%2C">Email me ↗</a><a href="https://wa.me/966598243358?text=Hi%20Ashraf%2C%20I%20read%20your%20Wazuh%20All-in-One%20installation%20guide%20and%20would%20like%20to%20discuss%20a%20Wazuh%20deployment%20or%20troubleshooting%20requirement." target="_blank" rel="noopener noreferrer">WhatsApp ↗</a><a href="https://www.linkedin.com/in/1elrawy/" target="_blank" rel="noopener noreferrer">LinkedIn ↗</a></div>
 </div>
-<div class="related"><a href="/#articles"><small>PORTFOLIO</small><strong>← Back to the article library</strong></a><a href="/articles/qradar-installation.html"><small>RELATED GUIDE</small><strong>QRadar installation: a version-aware guide →</strong></a></div>
+<div class="related"><a href="/#articles"><small>ARTICLE LIBRARY</small><strong>← Back to all technical notes</strong></a><a href="/articles/qradar-installation.html"><small>RELATED GUIDE</small><strong>QRadar installation: a version-aware guide →</strong></a></div>
 </article>
 </div>
 <footer class="footer"><div class="wrap footerinner"><span>© 2026 Ashraf Gamal · Technical notes</span><a href="/#articles">Back to the article library ↑</a></div></footer>
