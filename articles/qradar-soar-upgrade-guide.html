@@ -45,6 +45,7 @@
 <li>Identify whether the deployment is the SOAR Virtual Appliance, standalone software, or cloud. Confirm the current platform version and the exact target version.</li>
 <li>Read the target release notes, upgrade notes, supported upgrade path, and known issues.</li>
 <li>Apply the latest applicable operating-system and SOAR virtual-appliance security updates that IBM requires before upgrading.</li>
+<li>Check the current IBM prerequisites for the target release, including required service accounts/groups such as <code>res-email</code>, <code>res-messaging</code>, and <code>res-keystore</code> where specified by the upgrade notes.</li>
 <li>Arrange an approved maintenance window, user notification, operational owner, recovery owner, and a documented rollback/recovery plan.</li>
 <li>Check available disk space and system health. The upgrade creates database and search-data backups/snapshots and therefore requires additional space.</li>
 <li>If an App Host is deployed, review its separate upgrade requirements. If Disaster Recovery is configured, follow IBM's instructions to disable and re-enable DR around the upgrade.</li>
@@ -95,6 +96,12 @@
 <li>Record alerts, logs, skipped or failed steps, and the final version. Keep pre-upgrade recovery material according to your retention policy.</li>
 </ul>
 <h2 id="troubleshooting">Known issues &amp; troubleshooting</h2>
+<h3>Installer reports “Post-installation setup has failed”</h3>
+<p>IBM documents a release-specific rollback path for this failure. First capture the exact error and relevant logs, then use the procedure for your source/target release and approved recovery plan. IBM's 51.0.0 guide says to list package transaction history:</p>
+<pre class="code"><code>sudo yum history</code></pre>
+<p>Then use the matching pre-upgrade restore-point directory and the backup package ID shown by that history (the angle-bracket values are placeholders):</p>
+<pre class="code"><code>sudo /crypt/resRollbackServerUpgrade /crypt/db_restore_points/before-upgrade-&lt;version&gt;-&lt;date&gt; &lt;backup_package_ID&gt;</code></pre>
+<p>Do not copy the placeholders literally. If the rollback utility cannot find the backup set, follow IBM's documented pgBackRest restore-point procedure before rolling back the SOAR application. This is a controlled recovery procedure, not a routine validation command; do not improvise or run it without confirming the correct restore point and package ID.</p>
 <h3>Upgrade path rejected or installer cannot proceed</h3>
 <p>Do not force a direct upgrade. Confirm the installed source version, installer file name, package notes, and each required intermediate Modification level. Download the packages IBM lists for the path from Fix Central.</p>
 <h3>Upgrade appears to take a long time</h3>
