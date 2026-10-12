@@ -167,6 +167,16 @@ sudo /var/ossec/bin/agent_control -l
 # Recent manager events for triage
 sudo tail -n 100 /var/ossec/logs/ossec.log
 sudo tail -n 50 /var/ossec/logs/alerts/alerts.json</code></pre>
+<h3>Point a Linux agent at the new manager endpoint</h3>
+<p>For an agent being enrolled against the distributed environment, use the approved VIP or load-balancer DNS name. This is a sanitized version of the endpoint-migration workflow; use it only when the agent needs enrollment and the configured enrollment service is available.</p>
+<pre class="code"><code># On the agent: request enrollment against the new endpoint
+sudo /var/ossec/bin/agent-auth -m &lt;MANAGER_VIP_OR_HOSTNAME&gt;
+
+# Confirm the configured server endpoint in ossec.conf
+sudo grep -A5 -B1 '&lt;server&gt;' /var/ossec/etc/ossec.conf
+sudo systemctl restart wazuh-agent
+sudo systemctl --no-pager status wazuh-agent</code></pre>
+<p>If the agent is already enrolled and only its destination changes, update the <code>&lt;server&gt;</code> address in <code>/var/ossec/etc/ossec.conf</code> to the approved endpoint, then restart the agent and verify its state from the manager. Do not bulk-replace endpoint addresses until you have a tested rollback and a small pilot group.</p>
 <p>Run indexer API checks from an authorized host only. Do not publish raw output if it includes private addresses, hostnames, agent identifiers, or sensitive event content.</p>
 <h2 id="troubleshoot">7. Fast troubleshooting checklist</h2>
 <div class="table-wrap"><table><thead><tr><th>Symptom</th><th>Check first</th></tr></thead><tbody>
