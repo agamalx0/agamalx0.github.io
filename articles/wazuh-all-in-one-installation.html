@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#080a12">
+<meta name="description" content="A practical Wazuh all-in-one deployment guide covering prerequisites, the installation assistant, service validation, secure credential handling, and a real incomplete-installation troubleshooting case.">
+<title>Wazuh All-in-One Installation and Configuration | Ashraf Gamal</title>
+<style>
+:root{color-scheme:dark;--bg:#080a12;--text:#f4f6ff;--muted:#a3abc4;--line:rgba(177,190,255,.15);--cyan:#39e7ff;--purple:#9a66ff;--pink:#ff4fd8;--amber:#ffc879}
+*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:90px}body{margin:0;min-width:320px;color:var(--text);background:radial-gradient(ellipse at 6% 0,rgba(57,231,255,.09),transparent 32rem),radial-gradient(ellipse at 96% 12%,rgba(255,79,216,.08),transparent 28rem),var(--bg);font:16px/1.78 "Space Grotesk",Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}a{color:var(--cyan);text-decoration:none}a:hover{text-decoration:underline}.wrap{width:min(920px,calc(100% - 34px));margin:auto}.topbar{position:sticky;top:0;z-index:10;background:rgba(8,10,18,.86);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}.nav{height:68px;display:flex;align-items:center;justify-content:space-between;gap:18px}.brand{color:var(--text);font-weight:750;letter-spacing:-.02em}.back{font-size:13px;color:var(--muted)}.hero{padding:67px 0 35px}.eyebrow,.kicker{font-size:11px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:var(--cyan)}h1{font-size:clamp(36px,6vw,60px);line-height:1.08;letter-spacing:-.06em;margin:15px 0}.gradient{color:transparent;background:linear-gradient(100deg,var(--cyan),#9a8bff 55%,var(--pink));-webkit-background-clip:text;background-clip:text}.lede{font-size:18px;line-height:1.7;color:#c0c8df;max-width:770px}.meta{display:flex;flex-wrap:wrap;gap:10px 18px;font-size:12px;color:var(--muted);margin-top:24px}.pill{border:1px solid rgba(57,231,255,.24);background:rgba(57,231,255,.06);padding:4px 9px;border-radius:99px;color:#d9fbff}.layout{display:grid;grid-template-columns:220px minmax(0,1fr);gap:35px;padding:20px 0 85px}.toc{align-self:start;position:sticky;top:90px;padding:18px;border:1px solid var(--line);border-radius:16px;background:rgba(17,21,40,.6)}.toc strong{font-size:12px}.toc a{display:block;color:var(--muted);font-size:12px;padding:7px 0;line-height:1.4}.content{min-width:0}.content h2{font-size:27px;line-height:1.25;letter-spacing:-.04em;margin:42px 0 13px}.content h3{font-size:18px;margin:26px 0 8px}.content p,.content li{color:#c0c8df}.content li{padding-left:3px;margin:7px 0}.content ul,.content ol{padding-left:22px}.callout{padding:18px 20px;border:1px solid rgba(255,200,121,.28);border-left:3px solid var(--amber);border-radius:13px;background:rgba(255,200,121,.055);margin:22px 0}.callout strong{color:#ffe2b3}.info{padding:17px 20px;border:1px solid rgba(57,231,255,.22);border-radius:13px;background:rgba(57,231,255,.045);margin:20px 0}.info strong{color:#c9faff}code,pre{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}code{font-size:.92em;color:#d7e9ff}.code{overflow:auto;margin:15px 0;padding:17px;border-radius:12px;border:1px solid var(--line);background:#070a12;color:#dbe6ff;font-size:13px;line-height:1.7}.table-wrap{overflow-x:auto;margin:20px 0;border:1px solid var(--line);border-radius:12px}table{width:100%;border-collapse:collapse;min-width:460px;font-size:13px}th,td{text-align:left;vertical-align:top;padding:12px 14px;border-bottom:1px solid var(--line)}th{color:#e9edff;background:rgba(154,102,255,.08)}td{color:#c0c8df}tr:last-child td{border-bottom:0}.related{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:36px}.related a{border:1px solid var(--line);border-radius:13px;padding:15px;color:var(--text);background:rgba(255,255,255,.025)}.related small{display:block;color:var(--muted);font-size:11px}.related strong{display:block;margin-top:5px;font-size:13px}.footer{border-top:1px solid var(--line);padding:23px 0;color:var(--muted);font-size:12px}.footerinner{display:flex;justify-content:space-between;gap:15px;flex-wrap:wrap}@media(max-width:760px){.layout{grid-template-columns:1fr;gap:10px}.toc{position:static;display:grid;grid-template-columns:1fr 1fr;gap:0 14px}.toc strong{grid-column:1/-1}.hero{padding-top:45px}.content h2{margin-top:32px}.related{grid-template-columns:1fr}}@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+.contact-hook{margin:30px 0 0;padding:22px 24px;border:1px solid rgba(57,231,255,.23);border-radius:15px;background:linear-gradient(120deg,rgba(57,231,255,.055),rgba(154,102,255,.065),rgba(255,79,216,.04))}.contact-hook .hook-kicker{display:block;color:var(--cyan);font-size:10px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;margin-bottom:8px}.contact-hook .hook-title{color:var(--text);font-size:19px;line-height:1.45;letter-spacing:-.025em;margin:0}.contact-hook p{color:#c0c8df;margin:8px 0 0}.contact-links{display:flex;flex-wrap:wrap;gap:9px;margin-top:15px}.contact-links a{display:inline-flex;align-items:center;justify-content:center;padding:8px 12px;border:1px solid rgba(177,190,255,.18);border-radius:9px;background:rgba(255,255,255,.025);color:#e4edff;font-size:12px;font-weight:700}.contact-links a:hover{border-color:rgba(57,231,255,.5);background:rgba(57,231,255,.07);color:var(--cyan);text-decoration:none}@media(max-width:480px){.contact-hook{padding:18px}.contact-hook .hook-title{font-size:17px}}.personal-note{margin:0 0 22px;padding:11px 14px;border:1px solid rgba(177,190,255,.13);border-radius:10px;background:rgba(255,255,255,.025);color:#a3abc4;font-size:12px;line-height:1.65}.personal-note strong{color:#dce5ff;font-weight:700}
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+</head>
+<body>
+<header class="topbar"><nav class="nav wrap"><a class="brand" href="/">AG <span class="gradient">/ Notes</span></a><a class="back" href="/#articles">← Back to all articles</a></nav></header>
+<header class="hero wrap">
+<div class="eyebrow">Part 1 · Deployment guide · Wazuh SIEM</div>
+<h1>Wazuh all-in-one:<br><span class="gradient">installation and validation</span></h1>
+<p class="lede">A practical guide to deploying the Wazuh central components on one Linux host, validating the services, and investigating an installation that stopped after the indexer stage.</p>
+<div class="meta"><span>By Ashraf Gamal</span><span>Updated 12 October 2026</span><span class="pill">Wazuh 4.14.x example</span><span>Approx. 7 min read</span></div>
+</header>
+<div class="wrap layout">
+<aside class="toc"><strong>In this guide</strong><a href="#scope">Scope and architecture</a><a href="#prerequisites">Prerequisites</a><a href="#install">Installation</a><a href="#validate">Validate the deployment</a><a href="#field-note">Real troubleshooting note</a><a href="#security">Security and cleanup</a><a href="#references">Official references</a></aside>
+<article class="content">
+<p class="personal-note"><strong>Personal note:</strong> This article reflects my experience and is for educational purposes only—not official vendor guidance. Always verify procedures against current vendor documentation.</p>
+<div class="callout"><strong>Version and environment note</strong><p style="margin:6px 0 0">The example command below follows Wazuh's current 4.14 quickstart path. Confirm the current patch release, supported operating system, sizing, and upgrade/installation guidance before running it. Do not mix commands from different Wazuh releases.</p></div>
+<h2 id="scope">1. What an all-in-one deployment contains</h2>
+<p>Wazuh's central platform has three main components: the <strong>Wazuh server</strong> (manager and Filebeat), the <strong>Wazuh indexer</strong>, and the <strong>Wazuh dashboard</strong>. In an all-in-one deployment, these components run on the same host. Agents are installed separately on monitored endpoints.</p>
+<p>This design is useful for a lab, proof of concept, or appropriately sized small environment. It simplifies initial deployment, but it does not provide host-level high availability: if the server fails, the central platform is unavailable. Larger or availability-sensitive environments may require a distributed design, which is covered separately.</p>
+<h2 id="prerequisites">2. Check prerequisites before installing</h2>
+<ul>
+<li>Use a clean, supported 64-bit Linux host and verify the supported OS list in the official quickstart for your selected release.</li>
+<li>Size CPU, RAM, and storage for the expected endpoint count, alert volume, and retention period. The quickstart's sizing table is a starting point, not a substitute for workload-specific planning.</li>
+<li>Confirm outbound access to the Wazuh package endpoints and inbound access to the dashboard and any required agent services.</li>
+<li>Set a stable hostname, time synchronization, DNS where applicable, and a documented network/firewall policy.</li>
+<li>Take a snapshot or backup if the host contains anything you need to preserve. Do not run a new installation over an existing deployment without a recovery plan.</li>
+<li>Prepare a persistent terminal session for long-running remote installation work, and retain the full installer output for troubleshooting.</li>
+</ul>
+<p>Common default ports include TCP 443 for the dashboard, TCP 1514 for agent communication, TCP 1515 for enrollment, TCP 55000 for the Wazuh API, and TCP 9200 for the indexer API. Do not expose management APIs or the indexer directly to untrusted networks; restrict access according to the official port and security guidance.</p>
+<h2 id="install">3. Install the central components</h2>
+<p>For a straightforward single-host deployment, Wazuh documents an assisted installation command. Run it on the target host with an account that has sudo privileges:</p>
+<pre class="code"><code>curl -sO https://packages.wazuh.com/4.14/wazuh-install.sh
+sudo bash ./wazuh-install.sh -a</code></pre>
+<p>The <code>-a</code> option requests an all-in-one installation. Read the official quickstart before running the script, and obtain it only from the official Wazuh package endpoint. For production environments, review the script and change controls required by your organization's policy.</p>
+<p>The installer should complete the setup of the central components and display a summary that includes the dashboard URL and generated access credentials. Save the credentials securely; do not publish them in screenshots, terminal recordings, Git repositories, or support requests.</p>
+<div class="info"><strong>Keep the generated installation archive private</strong><p style="margin:6px 0 0">The installer may create <code>wazuh-install-files.tar</code>, which can contain security-sensitive installation material. Store it with restrictive permissions, do not upload it to the portfolio, and follow Wazuh's guidance for whether it should be retained or securely removed after installation.</p></div>
+<h2 id="validate">4. Validate the deployment instead of trusting one success message</h2>
+<p>First, check each expected service on the host. The following loop reports each service independently, making it easier to spot a component that was not installed or did not start:</p>
+<pre class="code"><code>for service in wazuh-indexer wazuh-manager filebeat wazuh-dashboard; do
+  echo "===== $service ====="
+  systemctl --no-pager --full status "$service"
+done</code></pre>
+<p>If a service is missing or failed, inspect its journal and the installation output before attempting a repair:</p>
+<pre class="code"><code>sudo journalctl -u wazuh-indexer -n 100 --no-pager
+sudo journalctl -u wazuh-manager -n 100 --no-pager
+sudo journalctl -u filebeat -n 100 --no-pager
+sudo journalctl -u wazuh-dashboard -n 100 --no-pager</code></pre>
+<p>Then verify the dashboard at <code>https://&lt;server-ip&gt;</code> using the generated administrator credentials. A browser warning about a self-signed or locally issued certificate can occur in a fresh lab; do not treat it as a reason to disable TLS verification globally. For production, plan certificate trust and secure access explicitly.</p>
+<p>Finally, enroll a test agent from the dashboard and verify that it becomes active and that its events are visible. A running dashboard alone does not prove the manager, Filebeat, indexer, and data pipeline are all working end to end.</p>
+<h2 id="field-note">5. Field note: the indexer completed, but the full installation did not</h2>
+<p>During my Wazuh lab work, an installation attempt using the 4.14.7 assistant reached an indexer state reported as <strong>GREEN</strong> with a single OpenSearch 2.19.5 node. However, the available troubleshooting record showed that the Wazuh manager, dashboard, and Filebeat were not installed in that attempt. A generated <code>/root/wazuh-install-files.tar</code> archive was also present.</p>
+<p>This is an important distinction: a healthy indexer proves only that the indexer is healthy. It does not prove the all-in-one deployment is complete. In this case, the available record does not establish a confirmed root cause for why the remaining components were missing, so this article does not attribute the result to a specific dependency, timeout, or configuration error.</p>
+<h3>Safe troubleshooting sequence</h3>
+<ol>
+<li>Capture the exact command, installer output, timestamp, OS release, disk/memory state, and service status. Redact hostnames, IPs, passwords, tokens, and other sensitive details before sharing logs.</li>
+<li>Check all four services independently. Do not infer the manager, dashboard, or Filebeat state from the indexer's GREEN cluster health.</li>
+<li>Review the service journals and the installer output to find the first failing step, rather than rerunning commands blindly.</li>
+<li>For a new lab where a clean install is intended, confirm that no required data must be preserved and follow the current official quickstart from start to finish.</li>
+<li>Run the full assisted installation in a persistent terminal session if the SSH session may disconnect, and keep its complete output. A persistent session reduces interruption risk but does not fix an underlying installation error.</li>
+<li>Repeat the service checks, open the dashboard, and enroll a test agent before calling the deployment complete.</li>
+</ol>
+<div class="callout"><strong>What is confirmed—and what is not</strong><p style="margin:6px 0 0">Confirmed from the recorded attempt: the indexer was GREEN and the other listed components were not installed at that point. The subsequent plan was to rerun the all-in-one assistant in a persistent session. The available notes do not confirm the final outcome of that retry, so no successful recovery is claimed here.</p></div>
+<h2 id="security">6. Security and operational considerations</h2>
+<ul>
+<li>Restrict access to ports based on actual requirements; do not publish the indexer or API endpoints directly to the internet.</li>
+<li>Change or securely manage default/generated credentials according to the official setup guidance and your environment's policy.</li>
+<li>Back up configuration and important data before reinstalling, changing storage, or applying upgrades.</li>
+<li>Plan storage around alert volume and retention. Indexer health and free disk capacity should be monitored over time.</li>
+<li>Keep version-specific notes: a procedure that worked on one patch release should be rechecked before reuse on another.</li>
+</ul>
+<h2 id="references">7. Official documentation</h2>
+<ul>
+<li><a href="https://documentation.wazuh.com/current/quickstart.html" target="_blank" rel="noopener noreferrer">Wazuh Quickstart — all-in-one installation and sizing</a></li>
+<li><a href="https://documentation.wazuh.com/current/getting-started/architecture.html" target="_blank" rel="noopener noreferrer">Wazuh architecture and default ports</a></li>
+<li><a href="https://documentation.wazuh.com/current/installation-guide/index.html" target="_blank" rel="noopener noreferrer">Wazuh installation guide</a></li>
+<li><a href="https://documentation.wazuh.com/current/user-manual/agent/agent-enrollment/troubleshooting.html" target="_blank" rel="noopener noreferrer">Wazuh agent enrollment troubleshooting</a></li>
+</ul>
+<p class="note">Always check the official documentation for the exact release and operating system you use. This guide is educational and does not replace a tested deployment plan, backup, or change approval for production systems.</p>
+<div class="contact-hook">
+<span class="hook-kicker">Discuss a Wazuh deployment</span>
+<p class="hook-title">Planning a Wazuh lab or troubleshooting an incomplete SIEM deployment?</p>
+<p>Contact me to discuss Wazuh installation, SIEM engineering, platform troubleshooting, or security monitoring requirements.</p>
+<div class="contact-links"><a href="mailto:as.ga2019@gmail.com?subject=Wazuh%20All-in-One%20Deployment%20Inquiry&amp;body=Hi%20Ashraf%2C%0A%0AI%20read%20your%20Wazuh%20All-in-One%20installation%20guide%20and%20would%20like%20to%20discuss%20a%20Wazuh%20deployment%20or%20troubleshooting%20requirement.%0A%0ABest%20regards%2C">Email me ↗</a><a href="https://wa.me/966598243358?text=Hi%20Ashraf%2C%20I%20read%20your%20Wazuh%20All-in-One%20installation%20guide%20and%20would%20like%20to%20discuss%20a%20Wazuh%20deployment%20or%20troubleshooting%20requirement." target="_blank" rel="noopener noreferrer">WhatsApp ↗</a><a href="https://www.linkedin.com/in/1elrawy/" target="_blank" rel="noopener noreferrer">LinkedIn ↗</a></div>
+</div>
+<div class="related"><a href="/#articles"><small>PORTFOLIO</small><strong>← Back to the article library</strong></a><a href="/articles/qradar-installation.html"><small>RELATED GUIDE</small><strong>QRadar installation: a version-aware guide →</strong></a></div>
+</article>
+</div>
+<footer class="footer"><div class="wrap footerinner"><span>© 2026 Ashraf Gamal · Technical notes</span><a href="/#articles">Back to the article library ↑</a></div></footer>
+</body>
+</html>
