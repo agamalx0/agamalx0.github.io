@@ -328,6 +328,7 @@
           <div class="article-filters" role="group" aria-label="Filter technical articles">
             <button class="article-filter" type="button" data-filter="qradar" aria-pressed="true">IBM QRadar</button>
             <button class="article-filter" type="button" data-filter="wazuh" aria-pressed="false">Wazuh</button>
+            <button class="article-filter" type="button" data-filter="dfir-iris" aria-pressed="false">DFIR-IRIS</button>
           </div>
         </div>
         <div class="article-controls" aria-label="Article carousel controls">
@@ -350,7 +351,7 @@
               <h3>Wazuh Distributed Architecture: Indexers, Managers, and Dashboard</h3>
               <p>Plan a multi-node deployment, configure cluster roles and certificates, validate network paths, and troubleshoot component communication.</p>
             </a>
-            <a class="article-card" data-category="wazuh" href="/articles/wazuh-dfir-iris-integration.html">
+            <a class="article-card" data-category="wazuh" data-tags="dfir-iris security-automation" href="/articles/wazuh-dfir-iris-integration.html">
               <div class="article-meta"><span class="article-type">Part 3 · Integration</span><span>Wazuh SIEM · DFIR-IRIS</span></div>
               <h3>Integrating Wazuh SIEM with DFIR-IRIS Case Management</h3>
               <p>Install IRIS, configure the Wazuh Integrator, structure alert context, map IOC types, and troubleshoot API ingestion.</p>
@@ -479,8 +480,9 @@
 
       const applyFilter = (category) => {
         filters.forEach(button => button.setAttribute('aria-pressed', String(button.dataset.filter === category)));
-        allCards.forEach(card => { card.style.display = card.dataset.category === category ? '' : 'none'; });
-        cards = allCards.filter(card => card.dataset.category === category);
+        const matchesFilter = (card) => card.dataset.category === category || (card.dataset.tags || '').split(/\\s+/).includes(category);
+        allCards.forEach(card => { card.style.display = matchesFilter(card) ? '' : 'none'; });
+        cards = allCards.filter(matchesFilter);
         index = 0;
         track.style.transform = 'translateX(0)';
         measure();
