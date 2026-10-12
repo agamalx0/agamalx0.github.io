@@ -480,7 +480,7 @@
 
       const applyFilter = (category) => {
         filters.forEach(button => button.setAttribute('aria-pressed', String(button.dataset.filter === category)));
-        const matchesFilter = (card) => card.dataset.category === category || (card.dataset.tags || '').split(/\\s+/).includes(category);
+        const matchesFilter = (card) => card.dataset.category === category || (card.dataset.tags || '').split(/\s+/).includes(category);
         allCards.forEach(card => { card.style.display = matchesFilter(card) ? '' : 'none'; });
         cards = allCards.filter(matchesFilter);
         index = 0;
