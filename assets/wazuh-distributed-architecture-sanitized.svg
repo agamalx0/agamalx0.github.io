@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="620" viewBox="0 0 1200 620" role="img" aria-labelledby="title desc">
+<title id="title">Sanitized Wazuh distributed deployment architecture</title>
+<desc id="desc">Conceptual Wazuh deployment with agents, an HAProxy endpoint, three manager nodes, two indexer nodes, and a dashboard. Sensitive addresses and credentials are omitted.</desc>
+<defs>
+ <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#4b9ce2"/></marker>
+ <style>
+ .bg{fill:#0b1220}.panel{fill:#111d30;stroke:#29425f;stroke-width:2}.head{font:700 22px Arial,sans-serif;fill:#f0f7ff}.label{font:700 18px Arial,sans-serif;fill:#d8e9ff}.small{font:15px Arial,sans-serif;fill:#b7c8dc}.note{font:14px Arial,sans-serif;fill:#94a9c2}.blue{stroke:#4b9ce2;stroke-width:3;fill:none;marker-end:url(#arrow)}.dash{stroke-dasharray:7 6}
+ </style>
+</defs>
+<rect class="bg" width="1200" height="620" rx="18"/>
+<text x="600" y="42" text-anchor="middle" class="head" font-size="28">WAZUH DISTRIBUTED ARCHITECTURE</text>
+<text x="600" y="68" text-anchor="middle" class="note">Sanitized reference view · host addresses and credentials intentionally omitted</text>
+<rect x="30" y="130" width="205" height="135" rx="14" class="panel"/>
+<text x="132" y="165" text-anchor="middle" class="label">Agents / Sources</text>
+<text x="132" y="195" text-anchor="middle" class="small">Windows · Linux</text><text x="132" y="219" text-anchor="middle" class="small">Servers · Endpoints</text><text x="132" y="243" text-anchor="middle" class="small">TCP 1514 / 1515*</text>
+<rect x="280" y="130" width="190" height="135" rx="14" class="panel"/>
+<text x="375" y="165" text-anchor="middle" class="label">HAProxy / VIP</text>
+<text x="375" y="195" text-anchor="middle" class="small">Stable agent endpoint</text><text x="375" y="219" text-anchor="middle" class="small">TCP mode / health checks</text><text x="375" y="243" text-anchor="middle" class="note">Optional layer</text>
+<path d="M235 195 H280" class="blue"/>
+<rect x="525" y="100" width="330" height="225" rx="14" class="panel"/>
+<text x="690" y="132" text-anchor="middle" class="label">Wazuh Manager Cluster</text>
+<rect x="545" y="153" width="135" height="65" rx="9" fill="#183a35" stroke="#48b99c"/>
+<text x="612" y="179" text-anchor="middle" class="label">Master</text><text x="612" y="201" text-anchor="middle" class="small">Cluster control</text>
+<rect x="700" y="153" width="135" height="65" rx="9" fill="#183a35" stroke="#48b99c"/>
+<text x="767" y="179" text-anchor="middle" class="label">Worker 1</text><text x="767" y="201" text-anchor="middle" class="small">Event analysis</text>
+<rect x="622" y="235" width="135" height="65" rx="9" fill="#183a35" stroke="#48b99c"/>
+<text x="689" y="261" text-anchor="middle" class="label">Worker 2</text><text x="689" y="283" text-anchor="middle" class="small">Event analysis</text>
+<path d="M470 195 H525" class="blue"/>
+<path d="M680 185 H700 M612 218 L662 235 M767 218 L717 235" stroke="#48b99c" stroke-width="2" stroke-dasharray="5 4" fill="none"/>
+<text x="690" y="345" text-anchor="middle" class="note">Manager cluster communication: TCP 1516</text>
+<rect x="910" y="100" width="260" height="225" rx="14" class="panel"/>
+<text x="1040" y="132" text-anchor="middle" class="label">Wazuh Indexer Cluster</text>
+<rect x="935" y="155" width="210" height="55" rx="9" fill="#18314a" stroke="#4b9ce2"/>
+<text x="1040" y="188" text-anchor="middle" class="label">Indexer 1</text>
+<rect x="935" y="235" width="210" height="55" rx="9" fill="#18314a" stroke="#4b9ce2"/>
+<text x="1040" y="268" text-anchor="middle" class="label">Indexer 2</text>
+<path d="M855 210 H910" class="blue"/>
+<text x="883" y="196" text-anchor="middle" class="note">9200/TCP*</text>
+<path d="M1040 210 V235" stroke="#4b9ce2" stroke-width="2" stroke-dasharray="5 4" fill="none"/>
+<text x="1040" y="345" text-anchor="middle" class="note">Cluster transport: TCP 9300*</text>
+<rect x="400" y="420" width="390" height="130" rx="14" class="panel"/>
+<text x="595" y="455" text-anchor="middle" class="label">Wazuh Dashboard</text>
+<text x="595" y="485" text-anchor="middle" class="small">Analyst interface · TLS / HTTPS</text>
+<text x="595" y="510" text-anchor="middle" class="small">Queries indexers; uses Wazuh API</text>
+<path d="M595 420 V370 H1040 V325" class="blue"/>
+<path d="M595 370 H690 V325" class="blue"/>
+<text x="600" y="584" text-anchor="middle" class="note">* Confirm ports and protocol against the selected Wazuh release and your configured services.</text>
+</svg>
