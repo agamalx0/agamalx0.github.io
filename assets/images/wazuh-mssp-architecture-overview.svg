@@ -1,0 +1,113 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="980" viewBox="0 0 1440 980" role="img" aria-labelledby="title desc">
+<title id="title">Wazuh MSSP multi-tenant reference architecture</title>
+<desc id="desc">Active Directory over LDAPS provides group membership. Wazuh Manager, Indexer and Dashboard process and display alerts. Client A, Client B and SOC operations use dedicated dashboard tenants, indexer roles and document-level security.</desc>
+<defs>
+  <linearGradient id="header" x1="0" x2="1"><stop offset="0" stop-color="#082f65"/><stop offset="1" stop-color="#315bd5"/></linearGradient>
+  <style>
+    text{font-family:Inter,Arial,sans-serif;fill:#182843}
+    .title{font-size:34px;font-weight:800;letter-spacing:1.4px;fill:#10294e}
+    .subtitle{font-size:16px;font-weight:500;fill:#50617c}
+    .panel{fill:#fff;stroke:#cad6e8;stroke-width:1.5}
+    .head{fill:url(#header)}
+    .htext{font-size:16px;font-weight:750;fill:#fff;letter-spacing:.4px}
+    .body{font-size:14px}
+    .small{font-size:12px;fill:#4c5c75}
+    .bold{font-weight:750}
+    .blue{fill:#155bd8}
+    .green{fill:#167340}
+    .orange{fill:#c65c13}
+    .purple{fill:#5334a3}
+    .line{stroke:#526b91;stroke-width:2;fill:none}
+    .dash{stroke-dasharray:7 5}
+  </style>
+  <marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#526b91"/></marker>
+</defs>
+<rect width="1440" height="980" fill="#f5f8fd"/>
+<text x="720" y="48" text-anchor="middle" class="title">WAZUH MSSP ARCHITECTURE</text>
+<text x="720" y="76" text-anchor="middle" class="subtitle">Active Directory + LDAPS · Role-based access · Document-level security · Dashboard tenants</text>
+
+<!-- identity -->
+<rect x="35" y="105" width="270" height="315" rx="13" class="panel"/>
+<path d="M48 105 H292 Q305 105 305 118 V143 H35 V118 Q35 105 48 105 Z" fill="#5631a8"/>
+<text x="170" y="130" text-anchor="middle" class="htext">1. IDENTITY PROVIDER</text>
+<text x="170" y="168" text-anchor="middle" class="body bold">Active Directory (AD01)</text>
+<rect x="55" y="185" width="230" height="66" rx="8" fill="#f2efff" stroke="#d5c9ff"/>
+<text x="170" y="209" text-anchor="middle" class="body bold purple">LDAPS · TCP 636</text>
+<text x="170" y="230" text-anchor="middle" class="small">TLS certificate validation</text>
+<text x="54" y="277" class="body bold">Security groups</text>
+<circle cx="65" cy="300" r="5" fill="#16803f"/><text x="79" y="305" class="body">SOC-MSSP-ClientA</text>
+<circle cx="65" cy="327" r="5" fill="#1764df"/><text x="79" y="332" class="body">SOC-MSSP-ClientB</text>
+<circle cx="65" cy="354" r="5" fill="#e56d19"/><text x="79" y="359" class="body">SOC-MSSP-Operators</text>
+<text x="54" y="392" class="small">Identity → backend roles → indexer roles</text>
+
+<!-- core -->
+<rect x="330" y="105" width="535" height="315" rx="13" class="panel"/>
+<path d="M343 105 H852 Q865 105 865 118 V143 H330 V118 Q330 105 343 105 Z" fill="url(#header)"/>
+<text x="597" y="130" text-anchor="middle" class="htext">2. WAZUH CORE (SINGLE NODE IN DIAGRAM)</text>
+<rect x="350" y="164" width="150" height="78" rx="9" fill="#eff6ff" stroke="#9ebcf5"/>
+<text x="425" y="189" text-anchor="middle" class="body bold">Wazuh Manager</text><text x="425" y="211" text-anchor="middle" class="small">Analysis &amp; rules</text><text x="425" y="228" text-anchor="middle" class="small">Agent groups / labels</text>
+<rect x="522" y="164" width="150" height="78" rx="9" fill="#eff6ff" stroke="#9ebcf5"/>
+<text x="597" y="189" text-anchor="middle" class="body bold">Wazuh Indexer</text><text x="597" y="211" text-anchor="middle" class="small">OpenSearch</text><text x="597" y="228" text-anchor="middle" class="small">RBAC + DLS enforced</text>
+<rect x="694" y="164" width="150" height="78" rx="9" fill="#eff6ff" stroke="#9ebcf5"/>
+<text x="769" y="189" text-anchor="middle" class="body bold">Wazuh Dashboard</text><text x="769" y="211" text-anchor="middle" class="small">UI / saved objects</text><text x="769" y="228" text-anchor="middle" class="small">Tenant selection</text>
+<path d="M500 203 H518 M672 203 H690" class="line" marker-end="url(#arrow)"/>
+<text x="597" y="266" text-anchor="middle" class="small">Alert events forwarded to the indexer</text>
+<rect x="371" y="285" width="174" height="66" rx="8" fill="#f8fafc" stroke="#c7d3e5"/>
+<text x="458" y="310" text-anchor="middle" class="body bold">Agent telemetry</text><text x="458" y="332" text-anchor="middle" class="small">Filebeat / forwarding</text>
+<path d="M458 285 V250" class="line" marker-end="url(#arrow)"/>
+<rect x="565" y="285" width="274" height="66" rx="8" fill="#f0fdf4" stroke="#a5ddb7"/>
+<text x="702" y="310" text-anchor="middle" class="body bold green">wazuh-alerts-*</text><text x="702" y="332" text-anchor="middle" class="small">Indexed alert documents + labels</text>
+<path d="M597 242 V276" class="line" marker-end="url(#arrow)"/>
+<text x="597" y="384" text-anchor="middle" class="small">Single node = lab simplification / single point of failure</text>
+
+<!-- tenants -->
+<rect x="890" y="105" width="515" height="315" rx="13" class="panel"/>
+<path d="M903 105 H1392 Q1405 105 1405 118 V143 H890 V118 Q890 105 903 105 Z" fill="#092b60"/>
+<text x="1147" y="130" text-anchor="middle" class="htext">3. DASHBOARD TENANTS / WORKSPACES</text>
+<rect x="910" y="158" width="475" height="72" rx="8" fill="#effcf3" stroke="#9ad8ab"/>
+<circle cx="938" cy="194" r="10" fill="#16803f"/><text x="960" y="183" class="body bold green">Client-A tenant</text><text x="960" y="204" class="small">Client A saved dashboards, searches and visualizations</text><text x="1365" y="194" text-anchor="end" class="body bold green">A data only*</text>
+<rect x="910" y="240" width="475" height="72" rx="8" fill="#eff6ff" stroke="#9bbcf6"/>
+<circle cx="938" cy="276" r="10" fill="#1764df"/><text x="960" y="265" class="body bold blue">Client-B tenant</text><text x="960" y="286" class="small">Client B saved dashboards, searches and visualizations</text><text x="1365" y="276" text-anchor="end" class="body bold blue">B data only*</text>
+<rect x="910" y="322" width="475" height="72" rx="8" fill="#fff7ed" stroke="#f7bd88"/>
+<circle cx="938" cy="358" r="10" fill="#e56d19"/><text x="960" y="347" class="body bold orange">SOC-Operations tenant</text><text x="960" y="368" class="small">SOC-wide dashboards and cross-customer investigation</text><text x="1365" y="358" text-anchor="end" class="body bold orange">Authorized data*</text>
+
+<!-- agents -->
+<rect x="35" y="445" width="400" height="265" rx="13" class="panel"/>
+<path d="M48 445 H422 Q435 445 435 458 V483 H35 V458 Q35 445 48 445 Z" fill="url(#header)"/>
+<text x="235" y="470" text-anchor="middle" class="htext">4. CUSTOMER / SOC AGENTS</text>
+<rect x="55" y="502" width="110" height="112" rx="8" fill="#effcf3" stroke="#a2dcb1"/>
+<text x="110" y="526" text-anchor="middle" class="body bold green">Client A</text><text x="110" y="549" text-anchor="middle" class="small">Agent group</text><text x="110" y="569" text-anchor="middle" class="body bold">client-a</text><text x="110" y="592" text-anchor="middle" class="small">Label: client-a</text>
+<rect x="179" y="502" width="110" height="112" rx="8" fill="#eff6ff" stroke="#9bbcf6"/>
+<text x="234" y="526" text-anchor="middle" class="body bold blue">Client B</text><text x="234" y="549" text-anchor="middle" class="small">Agent group</text><text x="234" y="569" text-anchor="middle" class="body bold">client-b</text><text x="234" y="592" text-anchor="middle" class="small">Label: client-b</text>
+<rect x="303" y="502" width="112" height="112" rx="8" fill="#fff7ed" stroke="#f7bd88"/>
+<text x="359" y="526" text-anchor="middle" class="body bold orange">SOC Ops</text><text x="359" y="549" text-anchor="middle" class="small">Agent group</text><text x="359" y="569" text-anchor="middle" class="body bold">soc-ops</text><text x="359" y="592" text-anchor="middle" class="small">Label: soc-ops</text>
+<text x="235" y="644" text-anchor="middle" class="small">DLS needs a field that is actually indexed.</text><text x="235" y="663" text-anchor="middle" class="small">Agent groups alone are not a data filter.</text>
+
+<!-- RBAC -->
+<rect x="460" y="445" width="535" height="265" rx="13" class="panel"/>
+<path d="M473 445 H982 Q995 445 995 458 V483 H460 V458 Q460 445 473 445 Z" fill="#5631a8"/>
+<text x="728" y="470" text-anchor="middle" class="htext">5. INDEXER ROLES + DOCUMENT-LEVEL SECURITY</text>
+<rect x="478" y="500" width="499" height="37" rx="6" fill="#f8fafc" stroke="#d7e0ed"/>
+<text x="492" y="523" class="body bold">mssp-clienta-indexer</text><text x="961" y="523" text-anchor="end" class="body green">DLS: client-a</text>
+<rect x="478" y="543" width="499" height="37" rx="6" fill="#f8fafc" stroke="#d7e0ed"/>
+<text x="492" y="566" class="body bold">mssp-clientb-indexer</text><text x="961" y="566" text-anchor="end" class="body blue">DLS: client-b</text>
+<rect x="478" y="586" width="499" height="37" rx="6" fill="#fff7ed" stroke="#f7bd88"/>
+<text x="492" y="609" class="body bold">mssp-operator-indexer</text><text x="961" y="609" text-anchor="end" class="body orange">All authorized data</text>
+<text x="728" y="651" text-anchor="middle" class="small">Read-only data roles · explicit backend-role mappings</text>
+<text x="728" y="670" text-anchor="middle" class="small">Separate permissions for each index pattern</text>
+
+<!-- boundaries -->
+<rect x="1020" y="445" width="385" height="265" rx="13" class="panel"/>
+<path d="M1033 445 H1392 Q1405 445 1405 458 V483 H1020 V458 Q1020 445 1033 445 Z" fill="#092b60"/>
+<text x="1212" y="470" text-anchor="middle" class="htext">6. ISOLATION CHECKS</text>
+<circle cx="1048" cy="517" r="6" fill="#167340"/><text x="1065" y="522" class="body bold">Authentication</text><text x="1065" y="541" class="small">Who can sign in?</text>
+<circle cx="1048" cy="568" r="6" fill="#155bd8"/><text x="1065" y="573" class="body bold">Indexer DLS + index permissions</text><text x="1065" y="592" class="small">Which alert documents can be read?</text>
+<circle cx="1048" cy="619" r="6" fill="#5631a8"/><text x="1065" y="624" class="body bold">Tenant permissions</text><text x="1065" y="643" class="small">Which saved objects can be used?</text>
+<text x="1212" y="681" text-anchor="middle" class="small" font-weight="700">Tenants alone do not isolate data.</text>
+
+<rect x="35" y="735" width="1370" height="78" rx="11" fill="#eaf1fc" stroke="#c9d7ed"/>
+<text x="55" y="762" class="body bold">Expected access model</text>
+<text x="55" y="786" class="body">Client A: only client-a documents  ·  Client B: only client-b documents  ·  SOC operators: all data explicitly authorized for SOC operations</text>
+<text x="720" y="846" text-anchor="middle" class="small">Reference design reconstructed from the supplied architecture sketch. Validate all role mappings, indexed fields and access-denial tests in the actual deployment.</text>
+<text x="720" y="877" text-anchor="middle" class="small">Wazuh 4.14.7 is the version shown in the source diagram; confirm compatibility against the installed patch release.</text>
+</svg>
