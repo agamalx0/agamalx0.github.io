@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#080a12">
+<meta name="description" content="A Wazuh MSSP multi-tenant reference design covering Active Directory over LDAPS, backend-role mapping, OpenSearch document-level security, Wazuh agent labels, dashboard tenants, and cross-customer isolation tests.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<title>Wazuh MSSP Multi-Tenant Architecture: AD, LDAPS, RBAC &amp; DLS | Ashraf Gamal</title>
+<style>
+:root{color-scheme:dark;--bg:#080a12;--text:#f4f6ff;--muted:#a3abc4;--line:rgba(177,190,255,.15);--cyan:#39e7ff;--purple:#9a66ff;--pink:#ff4fd8;--amber:#ffc879}
+*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:90px}body{margin:0;min-width:320px;color:var(--text);background:radial-gradient(ellipse at 6% 0,rgba(57,231,255,.09),transparent 32rem),radial-gradient(ellipse at 96% 12%,rgba(255,79,216,.08),transparent 28rem),var(--bg);font:16px/1.78 "Space Grotesk",Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}a{color:var(--cyan);text-decoration:none}a:hover{text-decoration:underline}.wrap{width:min(1120px,calc(100% - 34px));margin:auto}.topbar{position:sticky;top:0;z-index:10;background:rgba(8,10,18,.82);backdrop-filter:blur(18px);border-bottom:1px solid var(--line)}.nav{min-height:64px;display:flex;align-items:center;justify-content:space-between;gap:20px}.brand{font-weight:800;color:var(--text);letter-spacing:.02em}.gradient{background:linear-gradient(100deg,var(--cyan),#9aa9ff 52%,var(--pink));-webkit-background-clip:text;background-clip:text;color:transparent}.back{font-size:13px;color:var(--muted)}.hero{padding:56px 0 32px}.eyebrow,.hook-kicker{color:var(--cyan);font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase}.hero h1{font-size:clamp(32px,5vw,52px);line-height:1.08;letter-spacing:-.045em;margin:15px 0}.lede{max-width:900px;color:#bbc5df;font-size:17px;line-height:1.75}.meta{display:flex;gap:10px 18px;flex-wrap:wrap;align-items:center;color:var(--muted);font-size:12px;margin-top:22px}.pill{border:1px solid rgba(57,231,255,.25);background:rgba(57,231,255,.06);border-radius:999px;padding:4px 10px;color:#bdf7ff}.layout{display:grid;grid-template-columns:230px minmax(0,1fr);align-items:start;gap:32px;padding-bottom:64px}.toc{position:sticky;top:86px;border:1px solid var(--line);background:rgba(14,18,34,.7);border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:8px;font-size:12px}.toc strong{color:var(--text);font-size:13px;margin-bottom:5px}.toc a{color:var(--muted)}.toc a:hover{color:var(--cyan)}.content{min-width:0}.content h2{font-size:24px;letter-spacing:-.03em;line-height:1.25;margin:38px 0 12px}.content h3{font-size:18px;line-height:1.35;margin:25px 0 8px}.content p,.content li{color:#c7cde0}.content li{margin:6px 0}.content ul,.content ol{padding-left:22px}.content strong{color:#fff}.personal-note,.callout,.note{border:1px solid var(--line);background:rgba(255,255,255,.035);padding:15px 17px;border-radius:12px;color:var(--muted);font-size:13px}.callout{border-left:3px solid var(--cyan)}.warning{border-left-color:var(--amber)}.figure{margin:24px 0;border:1px solid var(--line);border-radius:16px;overflow:hidden;background:#f5f8fd}.figure img{display:block;width:100%;height:auto}.figure figcaption{padding:10px 14px;background:rgba(14,18,34,.92);font-size:12px;color:var(--muted)}.table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;margin:18px 0}table{width:100%;border-collapse:collapse;min-width:620px;font-size:13px}th,td{text-align:left;vertical-align:top;padding:11px 12px;border-bottom:1px solid var(--line)}th{background:rgba(154,102,255,.1);color:#e5e7ff;font-weight:700}td{color:#c7cde0}tr:last-child td{border-bottom:0}code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:.9em;color:#b9f7ff;background:rgba(57,231,255,.07);padding:.1em .28em;border-radius:4px;overflow-wrap:anywhere}pre{overflow:auto;padding:16px;border-radius:12px;border:1px solid var(--line);background:#070912;line-height:1.55}pre code{background:none;padding:0;color:#dceaff;white-space:pre}.contact-hook{margin:42px 0 24px;padding:23px;border:1px solid rgba(57,231,255,.22);border-radius:17px;background:linear-gradient(125deg,rgba(57,231,255,.07),rgba(154,102,255,.07))}.hook-title{font-size:20px;line-height:1.3;font-weight:700;margin:8px 0}.contact-links{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}.contact-links a{border:1px solid var(--line);border-radius:9px;padding:8px 12px;font-weight:700;font-size:12px}.related{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.related a{padding:15px;border:1px solid var(--line);border-radius:12px;display:flex;flex-direction:column;gap:7px}.related small{color:var(--cyan);font-weight:800;font-size:10px;letter-spacing:.1em}.related strong{font-size:13px;color:var(--text)}.footer{border-top:1px solid var(--line);padding:20px 0;color:var(--muted);font-size:12px}.footerinner{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}@media(max-width:800px){.layout{grid-template-columns:1fr;gap:20px}.toc{position:static;display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.toc strong{grid-column:1/-1}.hero{padding-top:40px}}@media(max-width:520px){.wrap{width:calc(100% - 26px)}.nav{min-height:56px}.back{font-size:11px}.hero h1{font-size:33px}.lede{font-size:15px}.toc{grid-template-columns:1fr 1fr;padding:14px}.content h2{font-size:22px}.related{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header class="topbar"><nav class="nav wrap"><a class="brand" href="/">AG <span class="gradient">/ Notes</span></a><a class="back" href="/#articles">← Back to technical notes</a></nav></header>
+<header class="hero wrap">
+<div class="eyebrow">MSSP architecture · Multi-tenancy · Wazuh SIEM</div>
+<h1>Designing a multi-tenant Wazuh MSSP:<br><span class="gradient">AD, LDAPS, RBAC and document-level security</span></h1>
+<p class="lede">A reference architecture for separating Client A, Client B, and SOC-operations data in a shared Wazuh platform—using Active Directory groups for identity, OpenSearch roles and document-level security for data access, and dashboard tenants for customer-specific saved objects.</p>
+<div class="meta"><span>By Ashraf Gamal</span><span>Updated 15 October 2026</span><span class="pill">Reference design · Wazuh 4.14.7 diagram</span><span>Approx. 12–15 min read</span></div>
+</header>
+<div class="wrap layout">
+<aside class="toc"><strong>In this guide</strong><a href="#scope">Scope and evidence</a><a href="#architecture">Architecture overview</a><a href="#access-model">Access model</a><a href="#identity">1. AD and LDAPS</a><a href="#data-labels">2. Label telemetry</a><a href="#dls">3. Document-level security</a><a href="#tenants">4. Dashboard tenants</a><a href="#validation">5. Isolation tests</a><a href="#troubleshooting">Troubleshooting</a><a href="#hardening">Security checklist</a><a href="#evidence">Evidence and filenames</a><a href="#references">Official references</a></aside>
+<article class="content">
+<p class="personal-note"><strong>Personal note:</strong> This article reconstructs the design from the surviving architecture diagram and screenshot labels after the original implementation chat was deleted. It is a technical reference, not an assertion that every underlying configuration file or command was recovered. Validate each field, role and permission against your own deployment before applying it.</p>
+<div class="callout warning"><strong>Version context:</strong> The supplied diagram identifies Wazuh 4.14.7 and an OpenSearch indexer. Wazuh's release notes list 4.14.9 as released on 14 October 2026. Treat 4.14.7 as the version represented by the evidence and check the exact installed version and matching documentation before changing a live platform. <a href="https://documentation.wazuh.com/current/release-notes/" target="_blank" rel="noopener noreferrer">Wazuh release notes ↗</a></div>
+
+<h2 id="scope">1. Scope and what the evidence supports</h2>
+<p>The goal is to host multiple customers in one Wazuh deployment without allowing one customer to read another customer's alerts. The supplied diagram describes three identity populations: Client A users, Client B users, and privileged SOC/MSSP operators. It also shows a workspace for each customer and an SOC-operations workspace for cross-customer investigation.</p>
+<p>The surviving overview and screenshot labels identify evidence for AD groups and users, LDAP authentication/group lookup on the Wazuh side, an MSSP login page, separate Client A and Client B views, an attempt by Client A to reach Client B data, and an operator's available tenants. These screens can document behavior of the tested lab; by themselves, they do not prove every setting on disk or every possible bypass path.</p>
+
+<h2 id="architecture">2. Architecture overview</h2>
+<figure class="figure"><img src="/assets/images/wazuh-mssp-architecture-overview.svg" alt="Reference diagram showing Active Directory over LDAPS, a single-node Wazuh manager/indexer/dashboard deployment, Client A and Client B dashboard tenants, an SOC operations tenant, agent labels, indexer roles, and document-level security." loading="lazy"><figcaption>Reference architecture redrawn from the supplied diagram. The original diagram labels Wazuh 4.14.7. The single-node layout explains the concept; it is not a high-availability production topology.</figcaption></figure>
+<div class="table-wrap"><table><thead><tr><th>Component</th><th>Responsibility</th><th>Important design point</th></tr></thead><tbody>
+<tr><td>Active Directory</td><td>Central identity store and group membership.</td><td>Separate security groups determine expected backend roles.</td></tr>
+<tr><td>LDAPS</td><td>Encrypts directory communication on TCP 636.</td><td>Trust the issuing CA and verify the server hostname.</td></tr>
+<tr><td>Wazuh Manager</td><td>Receives agent data, applies decoders/rules and creates alerts.</td><td>Customer identity needs to appear consistently in the indexed documents used by filters.</td></tr>
+<tr><td>Wazuh Indexer (OpenSearch)</td><td>Stores and searches alerts and related telemetry.</td><td>Index permissions and document-level security enforce which documents a role can query.</td></tr>
+<tr><td>Wazuh Dashboard</td><td>Analyst interface and dashboard objects.</td><td>Tenants separate saved objects; they do not replace data authorization.</td></tr>
+<tr><td>Customer/SOC agents</td><td>Provide endpoint telemetry from customer and MSSP environments.</td><td>Use consistent groups/labels and verify their indexed representation.</td></tr>
+</tbody></table></div>
+<p><strong>Deployment caveat:</strong> The diagram places Manager, Indexer and Dashboard on a single node. This may be suitable for a compact lab, but it is a single point of failure and does not demonstrate production capacity, resilient storage, disaster recovery or high availability.</p>
+
+<h2 id="access-model">3. Access model: identity, data and workspace are separate controls</h2>
+<p>A safe design applies three distinct controls: authentication proves who signed in; indexer permissions determine which documents that identity can read; tenant permissions determine which saved dashboards and searches the user can access or edit. OpenSearch defines DLS as a read/search control and documents that writes are governed separately by index permissions. <a href="https://docs.opensearch.org/latest/security/access-control/document-level-security/" target="_blank" rel="noopener noreferrer">OpenSearch DLS documentation ↗</a></p>
+<div class="table-wrap"><table><thead><tr><th>AD group (illustrative)</th><th>Indexer role (illustrative)</th><th>Data scope</th><th>Dashboard tenant</th></tr></thead><tbody>
+<tr><td><code>SOC-MSSP-ClientA</code></td><td><code>mssp_client_a_alerts_read</code></td><td>Alerts labeled <code>client-a</code> only</td><td><code>client-a</code></td></tr>
+<tr><td><code>SOC-MSSP-ClientB</code></td><td><code>mssp_client_b_alerts_read</code></td><td>Alerts labeled <code>client-b</code> only</td><td><code>client-b</code></td></tr>
+<tr><td><code>SOC-MSSP-Operators</code></td><td><code>mssp_soc_operators_alerts_read</code></td><td>Customer and SOC data explicitly authorized for operators</td><td><code>soc-operations</code></td></tr>
+</tbody></table></div>
+<p>These names are illustrative and align with the supplied diagram's intent. The diagram uses names such as <code>mssp-clienta-indexer</code>. Choose one consistent naming convention across AD groups, backend roles, indexer roles, tenants and tests. Keep the operator data role read-only unless it has a documented need for more.</p>
+<div class="callout warning"><strong>Critical isolation rule:</strong> Do not rely on tenant names, saved searches, dashboard filters, hidden menu items or Wazuh agent-group UI to enforce customer separation. Isolation must be enforced by indexer permissions and a verified document-level filter on every index that contains customer data.</div>
+
+<h2 id="identity">4. Configure Active Directory and LDAPS</h2>
+<ol>
+<li><strong>Create dedicated groups.</strong> Keep Client A, Client B and SOC operator membership separate. Avoid putting customer users into shared administrator groups.</li>
+<li><strong>Use LDAPS.</strong> Configure the Wazuh Indexer's LDAP authentication and authorization backends to connect to the AD FQDN on port 636. Trust the correct CA chain and keep hostname verification enabled.</li>
+<li><strong>Use a least-privileged bind account.</strong> It needs to read the user/group attributes required for authentication and role lookup, not administer the domain.</li>
+<li><strong>Map group membership into backend roles.</strong> The exact <code>userbase</code>, <code>usersearch</code>, <code>rolebase</code>, <code>rolesearch</code> and group attributes depend on AD schema and nesting. Validate that a test user returns only the expected backend roles.</li>
+<li><strong>Map backend roles to indexer roles.</strong> A directory group is not automatically an indexer permission. Create explicit mappings and check inherited memberships so a client user cannot receive a broad operator/admin role through another group.</li>
+</ol>
+<p>Back up security configuration and keep a rollback path before making changes. Wazuh's LDAP guide covers the indexer authentication (<code>authc</code>) and authorization (<code>authz</code>) blocks, role lookup, backend-role mappings and dashboard role mapping. Follow the procedure for the installed release rather than copying a block from another version unchanged. <a href="https://documentation.wazuh.com/current/user-manual/user-administration/ldap.html" target="_blank" rel="noopener noreferrer">Wazuh Active Directory and LDAP integration ↗</a></p>
+<p>A useful transport check from the Indexer host is:</p>
+<pre><code>openssl s_client \
+  -connect &lt;AD_FQDN&gt;:636 \
+  -servername &lt;AD_FQDN&gt; \
+  -CAfile &lt;PATH_TO_TRUSTED_AD_CA&gt; \
+  -verify_return_error</code></pre>
+<p>Replace the placeholders with your environment's values. A successful TCP connection alone is not enough: verify chain validation, hostname matching, DNS and group lookup. Never put the bind password or other secrets in a public GitHub repository.</p>
+
+<h2 id="data-labels">5. Label customer telemetry consistently</h2>
+<p>DLS can filter only on fields that exist in indexed documents. Wazuh's documented group-restricted access example uses <code>agent.labels.group</code> for alerts. A centralized agent configuration can add a label like this to a customer's agents:</p>
+<pre><code>&lt;agent_config&gt;
+  &lt;labels&gt;
+    &lt;label key="group"&gt;client-a&lt;/label&gt;
+  &lt;/labels&gt;
+&lt;/agent_config&gt;</code></pre>
+<p>Use a distinct label for Client B and the SOC-operations environment. Before writing a DLS query, inspect a real alert and confirm the field path and exact value. Newly configured labels appear in new alerts; historical alerts may not have the field.</p>
+<p>Do not assume an agent-management group name is automatically present in every alert document. Agent groups help manage configurations. The indexed label used by DLS is a separate data attribute that must be tested. Monitoring and other indexes can use different schemas, so inspect them and design their filters separately.</p>
+<p>Official walkthrough: <a href="https://documentation.wazuh.com/current/user-manual/user-administration/rbac.html" target="_blank" rel="noopener noreferrer">Wazuh RBAC — restrict access to a group of agents ↗</a></p>
+
+<h2 id="dls">6. Create per-customer indexer roles and DLS filters</h2>
+<p>For a read-only Client A role, limit index permissions to the required patterns (for example, <code>wazuh-alerts-*</code>), the necessary read actions, and a DLS query selecting Client A's label. An illustrative DLS query is:</p>
+<pre><code>{
+  "bool": {
+    "must": [
+      {
+        "match": {
+          "agent.labels.group": "client-a"
+        }
+      }
+    ]
+  }
+}</code></pre>
+<p>For Client B, use its own verified label value, such as <code>client-b</code>. This is the query body for the DLS setting, not a complete role definition. Configure index patterns, cluster permissions, tenant permissions and other operational indexes separately.</p>
+<ul>
+<li>Grant only required read/search permissions. Do not grant customer roles write, update, delete or broad cluster-admin actions.</li>
+<li>Apply customer scope to every index that may expose customer information. Monitoring or agent-inventory indexes may use a different field path than alert documents.</li>
+<li>Keep the SOC operator role separate. If cross-customer investigation is required, grant it the explicit data scope the SOC is authorized to access; do not reuse this role for customers.</li>
+<li>Audit every role each user receives. OpenSearch combines DLS queries from multiple roles with OR logic; an additional broad or unfiltered role can undermine the intended separation.</li>
+</ul>
+<p>Reference: <a href="https://documentation.wazuh.com/current/user-manual/user-administration/rbac.html" target="_blank" rel="noopener noreferrer">Wazuh RBAC guide ↗</a> · <a href="https://docs.opensearch.org/latest/security/access-control/document-level-security/" target="_blank" rel="noopener noreferrer">OpenSearch DLS behavior ↗</a></p>
+
+<h2 id="tenants">7. Create dashboard tenants for each audience</h2>
+<p>Use dedicated tenants/workspaces for Client A, Client B and SOC operations. Assign each role access only to the appropriate tenant, and choose read-only or read-write access depending on whether users may save or edit dashboards. OpenSearch tenants store dashboard objects such as saved dashboards, visualizations and index patterns/data views; they do not independently isolate the alert documents. <a href="https://docs.opensearch.org/latest/security/multi-tenancy/tenant-index/" target="_blank" rel="noopener noreferrer">OpenSearch multi-tenancy overview ↗</a></p>
+<p>Configure the UI layer after the indexer data controls work. A Client A user must still be unable to query Client B documents through Discover, another index pattern, a direct search URL or an API request made with that user's identity. Similarly, placing a SOC dashboard inside the SOC-operations tenant does not prevent Client A from reading SOC documents if indexer permissions are too broad.</p>
+
+<h2 id="validation">8. Validate isolation with positive and negative tests</h2>
+<p>Use separate test accounts for Client A, Client B and SOC operators. Run tests as those users, not only as an administrator who can bypass restrictions. Capture both what a user can see and what the user must not see.</p>
+<div class="table-wrap"><table><thead><tr><th>Test account</th><th>Expected result</th><th>Evidence to capture</th></tr></thead><tbody>
+<tr><td>Client A</td><td>Can sign in, open the Client A tenant and search Client A-labeled alerts.</td><td>Client A dashboard/Discover results showing its label.</td></tr>
+<tr><td>Client A</td><td>Cannot return Client B alerts via a direct search or alternate index pattern.</td><td>Negative cross-customer attempt under the Client A test account.</td></tr>
+<tr><td>Client B</td><td>Can read Client B alerts but not Client A alerts.</td><td>Client B dashboard and a negative Client A query.</td></tr>
+<tr><td>SOC operator</td><td>Can select the SOC-operations tenant and access only the cross-customer datasets explicitly authorized for SOC.</td><td>Available-tenants view and sanitized cross-customer results.</td></tr>
+<tr><td>All roles</td><td>Cannot bypass scope through another saved search, direct URL, index pattern or API search.</td><td>Role/DLS configuration plus user-level positive and negative results.</td></tr>
+</tbody></table></div>
+<p>Record the test date, account role, index pattern, query, expected result, actual result and pass/fail outcome. An empty result or a forbidden response may both be valid denial behavior depending on configuration, but the test must show that another customer's records were not returned.</p>
+
+<h2 id="troubleshooting">9. Troubleshooting and failure modes</h2>
+<ul>
+<li><strong>Login works but access is wrong:</strong> inspect returned backend roles, role mappings, indexer roles and tenant permissions separately. Successful LDAP authentication does not prove authorization is correct.</li>
+<li><strong>Client A sees no results:</strong> inspect an actual alert's source fields. Confirm the DLS field/value, read permission, index pattern and whether the alert contains the label.</li>
+<li><strong>Client A can see Client B:</strong> suspend use of the account for normal analysis while investigating. Review every inherited role, look for broad/unfiltered index permissions, inspect DLS on each relevant index and retest cross-customer queries.</li>
+<li><strong>LDAPS group lookup fails:</strong> check DNS/FQDN, TCP 636, CA trust, hostname verification, bind-account permissions, search bases, group attributes and nested-group behavior.</li>
+<li><strong>Old alerts do not filter:</strong> historical documents may lack newly configured labels. Plan an approved version-appropriate backfill/reindex or document the history gap; do not claim full isolation until old-data paths are addressed.</li>
+<li><strong>Dashboards appear in the wrong tenant:</strong> review tenant permissions and which tenant was selected when the saved object was created. Fix the workspace mapping without weakening indexer data isolation.</li>
+</ul>
+
+<h2 id="hardening">10. Production-readiness checklist</h2>
+<ul>
+<li>Use a supported and matched Wazuh component set; review release notes before patching.</li>
+<li>Keep LDAP bind credentials, admin keys and other secrets outside the website and Git repository.</li>
+<li>Validate LDAPS certificates, verify hostnames, restrict network paths, and do not expose Indexer/API endpoints publicly without a deliberate security design.</li>
+<li>Keep customer roles read-only and least-privileged; do not map client groups to broad administrator roles.</li>
+<li>Verify DLS covers alert data and every additional index exposed to clients.</li>
+<li>Test multiple-group membership, nested groups, disabled accounts and revoked membership.</li>
+<li>Repeat isolation tests after changes to roles, labels, data schema or Wazuh/OpenSearch versions.</li>
+<li>Plan backups/snapshots, retention, capacity, monitoring and recovery. The supplied single-node diagram is not a high-availability architecture.</li>
+</ul>
+
+<h2 id="evidence">11. Evidence checklist and recommended filenames</h2>
+<p>The architecture is included above as a vector redraw. The smaller strip supplied with the chat is a contact sheet, not a set of full-resolution individual screenshots, so I have not used it as a gallery of proof. Upload the original sanitized screenshots to <code>assets/images/wazuh-mssp/</code> with the names below. These names are designed to keep one verifiable claim per image and will make it straightforward to embed each file here.</p>
+<div class="table-wrap"><table><thead><tr><th>Filename</th><th>What it demonstrates</th><th>Sanitization notes</th></tr></thead><tbody>
+<tr><td><code>01-wazuh-mssp-architecture-overview.png</code></td><td>Full architecture and separation model.</td><td>The embedded SVG is already present; optionally upload the original full-resolution PNG as source evidence.</td></tr>
+<tr><td><code>02-active-directory-mssp-security-groups.png</code></td><td>Separate AD groups for Client A, Client B and SOC operators.</td><td>Hide unrelated domains and internal details.</td></tr>
+<tr><td><code>03-active-directory-mssp-test-users.png</code></td><td>Test users and their intended security-group membership.</td><td>Blur real names, email addresses, UPNs, SIDs and domain details; never show passwords.</td></tr>
+<tr><td><code>04-wazuh-indexer-ldap-group-lookup.png</code></td><td>LDAP configuration and backend-group lookup on the Wazuh/Indexer side.</td><td>Redact bind secrets, private IPs and sensitive certificate details.</td></tr>
+<tr><td><code>05-wazuh-mssp-login-page.png</code></td><td>MSSP dashboard login screen.</td><td>Use a lab account or redact identity details.</td></tr>
+<tr><td><code>06-wazuh-mssp-client-a-dashboard.png</code></td><td>Client A tenant and results limited to Client A.</td><td>Use sanitized or synthetic event data.</td></tr>
+<tr><td><code>07-wazuh-mssp-client-b-dashboard.png</code></td><td>Client B tenant and results limited to Client B.</td><td>Use a comparable view to Client A.</td></tr>
+<tr><td><code>08-wazuh-mssp-client-a-denied-client-b-data.png</code></td><td>Client A's negative attempt to search/open Client B data.</td><td>Show the actual result; hiding a menu item is not an isolation test.</td></tr>
+<tr><td><code>09-wazuh-mssp-operator-available-tenants.png</code></td><td>Available tenants for the SOC operator role.</td><td>Sanitize real customer names and internal URLs.</td></tr>
+<tr><td><code>10-wazuh-mssp-indexer-dls-role-client-a.png</code></td><td>Client A index pattern, read permission and DLS filter.</td><td>Keep the field path and label readable; redact secrets.</td></tr>
+<tr><td><code>11-wazuh-mssp-indexer-dls-role-client-b.png</code></td><td>Client B's separate role/filter.</td><td>Show its distinct scope.</td></tr>
+<tr><td><code>12-wazuh-mssp-soc-operations-access.png</code></td><td>Operator cross-customer investigation over authorized data.</td><td>Use synthetic/sanitized events and make operator scope clear.</td></tr>
+<tr><td><code>13-wazuh-mssp-agent-groups-and-labels.png</code></td><td>Agent groups and the actual label field used by DLS.</td><td>Make clear that management group and indexed label are different things.</td></tr>
+</tbody></table></div>
+<p><strong>Filename convention:</strong> use lowercase, hyphens, two-digit sequence numbers and PNG for UI screenshots with text. Keep a private copy of originals if redaction is needed; publish only sanitized evidence. Do not publish credentials, tokens, private keys, customer identifiers or live event payloads that disclose sensitive data.</p>
+
+<h2 id="references">12. Official documentation</h2>
+<ul>
+<li><a href="https://documentation.wazuh.com/current/user-manual/user-administration/ldap.html" target="_blank" rel="noopener noreferrer">Wazuh — Active Directory and LDAP integration</a></li>
+<li><a href="https://documentation.wazuh.com/current/user-manual/user-administration/rbac.html" target="_blank" rel="noopener noreferrer">Wazuh — RBAC and restricting access to agent groups</a></li>
+<li><a href="https://documentation.wazuh.com/current/user-manual/wazuh-dashboard/navigating-the-wazuh-dashboard.html" target="_blank" rel="noopener noreferrer">Wazuh — Dashboard and Indexer Management overview</a></li>
+<li><a href="https://documentation.wazuh.com/current/release-notes/" target="_blank" rel="noopener noreferrer">Wazuh — Release notes</a></li>
+<li><a href="https://docs.opensearch.org/latest/security/access-control/document-level-security/" target="_blank" rel="noopener noreferrer">OpenSearch — Document-level security</a></li>
+<li><a href="https://docs.opensearch.org/latest/security/access-control/users-roles/" target="_blank" rel="noopener noreferrer">OpenSearch — Users, roles and mappings</a></li>
+<li><a href="https://docs.opensearch.org/latest/security/multi-tenancy/tenant-index/" target="_blank" rel="noopener noreferrer">OpenSearch — Multi-tenancy and tenant objects</a></li>
+<li><a href="https://docs.opensearch.org/latest/security/multi-tenancy/multi-tenancy-config/" target="_blank" rel="noopener noreferrer">OpenSearch — Tenant configuration and permissions</a></li>
+</ul>
+<p class="note">This note is educational, based on the surviving architecture diagram and evidence labels, and is not official vendor guidance. Confirm version-specific behavior and test both allowed and denied access paths before using a similar design with production customer data.</p>
+<div class="contact-hook"><span class="hook-kicker">Discuss Wazuh MSSP architecture</span><p class="hook-title">Designing tenant isolation, SIEM access controls or a multi-customer SOC?</p><p>Reach out to discuss Wazuh engineering, identity integrations, security monitoring and practical SOC platform design.</p><div class="contact-links"><a href="mailto:as.ga2019@gmail.com?subject=Wazuh%20MSSP%20Architecture%20Inquiry&amp;body=Hi%20Ashraf%2C%0A%0AI%20read%20your%20Wazuh%20MSSP%20multi-tenant%20architecture%20note%20and%20would%20like%20to%20discuss%20identity%20integration%2C%20tenant%20isolation%2C%20or%20Wazuh%20architecture.%0A%0ABest%20regards%2C">Email me ↗</a><a href="https://wa.me/966598243358?text=Hi%20Ashraf%2C%20I%20read%20your%20Wazuh%20MSSP%20multi-tenant%20architecture%20note%20and%20would%20like%20to%20discuss%20identity%20integration%2C%20tenant%20isolation%2C%20or%20Wazuh%20architecture." target="_blank" rel="noopener noreferrer">WhatsApp ↗</a><a href="https://www.linkedin.com/in/1elrawy/" target="_blank" rel="noopener noreferrer">LinkedIn ↗</a></div></div>
+<div class="related"><a href="/#articles"><small>ARTICLE LIBRARY</small><strong>← Back to all technical notes</strong></a><a href="/articles/wazuh-all-in-one-installation.html"><small>RELATED GUIDE</small><strong>Wazuh All-in-One: Installation &amp; Validation →</strong></a></div>
+</article></div>
+<footer class="footer"><div class="wrap footerinner"><span>© 2026 Ashraf Gamal · Technical notes</span><a href="/#articles">Back to the article library ↑</a></div></footer>
+</body>
+</html>
