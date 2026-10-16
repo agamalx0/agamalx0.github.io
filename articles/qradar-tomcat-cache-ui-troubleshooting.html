@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en" class="dark">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#080a12">
+<meta name="description" content="Practical QRadar UI troubleshooting: check Tomcat service state and disk space first, then follow IBM Support guidance for cache cleanup when appropriate.">
+<title>QRadar UI Unresponsive: Tomcat Cache and Backend Checks | Ashraf Gamal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&amp;display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/terminal-design.css">
+</head>
+<body>
+<header class="topbar"><nav class="nav wrap"><a class="brand" href="/">AG <span class="gradient">/ Notes</span></a><a class="back" href="/#articles">← Back to technical notes</a></nav></header>
+<header class="hero wrap">
+<div class="eyebrow">IBM QRadar SIEM · UI Troubleshooting</div>
+<h1>QRadar GUI unresponsive:<br><span class="gradient">backend checks and Tomcat cache</span></h1>
+<p class="lede">A focused workflow for an unreachable or slow QRadar Console UI. Check service state and disk health first; clear Tomcat's cache only when the symptom and support guidance justify it.</p>
+<div class="meta"><span>By Ashraf Gamal</span><span>Updated 17 October 2026</span><span class="pill">Backend troubleshooting</span><span>Approx. 5 min read</span></div>
+</header>
+<div class="wrap layout">
+<aside class="toc"><strong>In this guide</strong>
+<a href="#scope">Symptoms and scope</a><a href="#baseline">Backend checks</a><a href="#when-cache">When to clear cache</a><a href="#procedure">Tomcat cache procedure</a><a href="#validate">Validate recovery</a><a href="#field-lesson">Field lesson</a><a href="#references">IBM references</a>
+</aside>
+<article class="content">
+<p class="personal-note"><strong>Personal note:</strong> This technical note reflects practical QRadar troubleshooting experience and summarizes IBM Support guidance. Confirm the procedure against your installed QRadar version and follow your change-control process.</p>
+<div class="callout"><strong>Cache cleanup is not a universal fix.</strong><p style="margin:6px 0 0">A stopped Tomcat service, a full filesystem, or a failed backend dependency requires root-cause investigation. Deleting cached JSP files does not fix those underlying conditions.</p></div>
+
+<h2 id="scope">1. Identify the symptom</h2>
+<p>Separate a browser-specific problem from a Console-side failure before changing backend files.</p>
+<ul>
+<li>If only one user is affected, try a private/incognito window or another supported browser. If that works, clear the browser cache and retry.</li>
+<li>If the GUI is unavailable for all users, or Tomcat is down, start with backend service and resource checks.</li>
+<li>If the page loads but a specific UI component is slow or missing, browser testing and backend logs can help narrow the scope.</li>
+</ul>
+
+<h2 id="baseline">2. Check the backend first</h2>
+<p>Run these read-only checks on the QRadar Console. Record the output and timestamp before restarting services or deleting files.</p>
+<pre class="code"><code>systemctl status tomcat --no-pager
+systemctl --failed
+df -hT / /store
+journalctl -u tomcat -n 100 --no-pager</code></pre>
+<table><thead><tr><th>Finding</th><th>Next action</th></tr></thead><tbody>
+<tr><td>Tomcat is inactive or failed</td><td>Review service logs and dependencies. Do not assume cache corruption is the cause.</td></tr>
+<tr><td><code>/</code> or <code>/store</code> is critically full</td><td>Investigate storage usage and resolve the underlying space issue using the procedure for your QRadar version. Do not start with cache cleanup.</td></tr>
+<tr><td>Tomcat is active, but the UI is slow or a component fails to load</td><td>Check browser behavior, resource pressure, and relevant QRadar logs. Consider cache cleanup only when support guidance and symptoms justify it.</td></tr>
+</tbody></table>
+<div class="info"><strong>Service impact</strong><p style="margin:6px 0 0">Stopping or restarting Tomcat makes the QRadar UI unavailable during the operation and ends active UI sessions. Use an approved maintenance window when required by your change policy.</p></div>
+
+<h2 id="when-cache">3. When Tomcat cache cleanup is appropriate</h2>
+<p>IBM documents this procedure for cases where the QRadar UI is slow or specific components do not load as expected. IBM Support may recommend clearing Tomcat's cached JSP files after initial troubleshooting.</p>
+<p>Do not use it as the first response to an unreachable GUI when Tomcat is stopped, storage is exhausted, or another backend service has failed. Resolve that condition first or work with IBM Support.</p>
+
+<h2 id="procedure">4. Clear the Tomcat JSP cache</h2>
+<p>Use this procedure only when it is appropriate for your QRadar release and approved for your environment. Confirm that <code>/store</code> has enough free space for the backup and that the source directory exists.</p>
+<ol><li>SSH to the QRadar Console as <code>root</code> through your approved administration path.</li><li>Create the support backup directory:</li></ol>
+<pre class="code"><code>mkdir -p /store/ibm_support</code></pre>
+<ol start="3"><li>Stop Tomcat and confirm that it has stopped:</li></ol>
+<pre class="code"><code>systemctl stop tomcat
+systemctl status tomcat --no-pager</code></pre>
+<ol start="4"><li>Back up the cached JSP directory. If the copy fails, stop here and do not run the removal command.</li></ol>
+<pre class="code"><code>cp -pr /opt/tomcat/work/Catalina/localhost/console/org/apache/jsp /store/ibm_support/</code></pre>
+<ol start="5"><li>Only after confirming the backup succeeded, remove the cached JSP files:</li></ol>
+<pre class="code"><code>rm -rfv /opt/tomcat/work/Catalina/localhost/console/org/apache/jsp</code></pre>
+<ol start="6"><li>Start Tomcat and confirm its state:</li></ol>
+<pre class="code"><code>systemctl start tomcat
+systemctl status tomcat --no-pager</code></pre>
+<div class="callout"><strong>Destructive command warning</strong><p style="margin:6px 0 0">The <code>rm -rfv</code> command permanently removes the specified directory. Verify the full path, stop Tomcat first, and confirm the backup exists before running it. Run commands one at a time; do not paste the block as an unattended script.</p></div>
+
+<h2 id="validate">5. Validate recovery</h2>
+<ul><li>Confirm Tomcat is active and check for startup errors.</li><li>Open QRadar in a private/incognito browser session and test the affected pages or components.</li><li>If the UI remains unavailable, do not repeat cache deletion blindly. Recheck service dependencies, disk space, and logs, then continue with IBM Support.</li></ul>
+
+<h2 id="field-lesson">6. Field lesson</h2>
+<p>During a previous QRadar GUI outage, backend checks showed Tomcat was stopped while <code>/store</code> was full. The recovery priority was to investigate service state and storage exhaustion—not to treat the incident as a cache-only problem.</p>
+<p>The operational sequence is: <strong>confirm scope → inspect services and disk → review logs → apply a targeted fix → validate the UI.</strong></p>
+
+<h2 id="references">7. IBM references</h2>
+<ul>
+<li><a href="https://www.ibm.com/support/pages/clear-tomcat-cache-fix-slow-or-unresponsive-qradar-user-interface" target="_blank" rel="noopener noreferrer">IBM Support — Clear Tomcat Cache to Fix Slow or Unresponsive QRadar User Interface</a></li>
+<li><a href="https://www.ibm.com/support/pages/slow-qradar-ui-response-due-high-cpu-or-memory-usage-%E2%80%93-how-diagnose-and-resolve-performance-issues" target="_blank" rel="noopener noreferrer">IBM Support — Diagnose slow QRadar UI response caused by CPU or memory pressure</a></li>
+<li><a href="https://www.ibm.com/support/pages/qradar-troubleshooting-disk-space-issues-partition-due-large-files-transientmonitor" target="_blank" rel="noopener noreferrer">IBM Support — Troubleshoot QRadar disk-space issues and service failures</a></li>
+</ul>
+<p class="note">This is a concise operational reference, not a replacement for IBM Support instructions. Service behavior, file paths, and approved procedures can vary by QRadar version and environment.</p>
+
+<div class="contact-hook">
+<span class="hook-kicker">IBM QRadar SIEM</span>
+<p class="hook-title">Backend troubleshooting, service recovery, and SIEM operations</p>
+<p>For technical discussion around QRadar health checks, UI failures, and operational troubleshooting, use one of the contact options below.</p>
+<div class="contact-links"><a href="mailto:as.ga2019@gmail.com?subject=QRadar%20UI%20troubleshooting">Email ↗</a><a href="https://wa.me/966598243358?text=Hi%20Ashraf%2C%20I%20read%20your%20QRadar%20UI%20troubleshooting%20note." target="_blank" rel="noopener noreferrer">WhatsApp ↗</a><a href="https://www.linkedin.com/in/1elrawy/" target="_blank" rel="noopener noreferrer">LinkedIn ↗</a></div>
+</div>
+<div class="related"><a href="/articles/qradar-troubleshooting.html"><small>RELATED GUIDE</small><strong>← QRadar troubleshooting checklist</strong></a><a href="/articles/qradar-health-check.html"><small>RELATED GUIDE</small><strong>QRadar health check →</strong></a></div>
+</article>
+</div>
+<footer class="footer"><div class="wrap footerinner"><span>© <span id="year">2026</span> Ashraf Gamal</span><a href="/">Home</a></div></footer>
+<script>document.getElementById('year').textContent=new Date().getFullYear();</script>
+<script src="/assets/js/terminal-design.js"></script>
+</body>
+</html>
