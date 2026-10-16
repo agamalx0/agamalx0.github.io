@@ -116,7 +116,7 @@ a:focus-visible,button:focus-visible{outline:2px solid #00f59b;outline-offset:3p
 
 <section id="articles" class="space-y-6">
 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end border-b border-brand-borderLight dark:border-brand-borderDark pb-2 gap-4">
-<div><div class="text-xs font-bold tracking-widest text-neutral-500 uppercase">// 03 . FIELD NOTES &amp; TECHNICAL GUIDES</div><h2 class="font-sans font-bold text-2xl text-black dark:text-white uppercase mt-2">Wazuh Technical Notes</h2></div>
+<div><div class="text-xs font-bold tracking-widest text-neutral-500 uppercase">// 03 . FIELD NOTES &amp; TECHNICAL GUIDES</div><h2 id="articles-heading" class="font-sans font-bold text-2xl text-black dark:text-white uppercase mt-2">Wazuh Technical Notes</h2></div>
 <div class="flex flex-wrap gap-2 items-center text-xs" id="filter-container">
 <button class="filter-btn border px-3 py-1 font-bold" data-filter="wazuh" aria-pressed="true">WAZUH</button>
 <button class="filter-btn border px-3 py-1 font-bold" data-filter="qradar-siem" aria-pressed="false">IBM QRADAR SIEM</button>
@@ -300,6 +300,7 @@ function updateCarousel(reset=false){
 }
 function applyArticleFilter(category){
  activeCategory=category;
+ document.getElementById('articles-heading').textContent=category==='qradar-siem'?'IBM QRadar SIEM Technical Notes':'Wazuh Technical Notes';
  filterBtns.forEach(btn=>{
   const active=btn.dataset.filter===category;
   btn.className=active?activeFilterClasses:inactiveFilterClasses;
