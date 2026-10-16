@@ -25,6 +25,10 @@
 <div class="wrap layout">
 <aside class="toc"><strong>In this guide</strong><a href="#scope">Scope and architecture</a><a href="#prerequisites">Prerequisites</a><a href="#install">Installation</a><a href="#validate">Validate the deployment</a><a href="#field-note">Real troubleshooting note</a><a href="#security">Security and cleanup</a><a href="#references">Official references</a></aside>
 <article class="content">
+<figure class="figure all-in-one-cover">
+<a href="/assets/images/WAZUH%20SIEM%20%E2%80%94%20ALL-IN-ONE%20INSTALLATION%20%26%20VALIDATION.png" target="_blank" rel="noopener noreferrer"><img src="/assets/images/WAZUH%20SIEM%20%E2%80%94%20ALL-IN-ONE%20INSTALLATION%20%26%20VALIDATION.png" alt="Wazuh SIEM All-in-One architecture: log sources feed the Indexer, Manager, Dashboard and local storage on a single server, with dashboard users and key SIEM capabilities." loading="lazy"></a>
+<figcaption>Wazuh SIEM All-in-One architecture — single-host components, log ingestion path, dashboard access, and core validation capabilities. Select the image to open it at full size.</figcaption>
+</figure>
 <p class="personal-note"><strong>Personal note:</strong> This article reflects my experience and is for educational purposes only—not official vendor guidance. Always verify procedures against current vendor documentation.</p>
 <div class="callout"><strong>Version and environment note</strong><p style="margin:6px 0 0">The example command below follows Wazuh's current 4.14 quickstart path. Confirm the current patch release, supported operating system, sizing, and upgrade/installation guidance before running it. Do not mix commands from different Wazuh releases.</p></div>
 <h2 id="scope">1. What an all-in-one deployment contains</h2>
