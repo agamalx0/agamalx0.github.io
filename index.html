@@ -25,10 +25,13 @@ a:focus-visible,button:focus-visible{outline:2px solid #00f59b;outline-offset:3p
 .article-item:hover{transform:translateY(-2px)}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
 
-/* Article cover image: use a full, uncropped view of the architecture diagram. */
+/* Consistent article-cover frame. Preserve source proportions; never stretch images. */
 .article-item.has-cover{padding:0!important;display:flex;flex-direction:column;min-width:0}
-.article-cover{width:100%;aspect-ratio:16/10;overflow:hidden;display:flex;align-items:center;justify-content:center;background:#f5f8fd;border-bottom:1px solid #24272d}
-.article-cover img{display:block;width:100%;height:100%;object-fit:contain;object-position:center}
+.article-cover{position:relative;width:100%;aspect-ratio:16/10;overflow:hidden;display:flex;align-items:center;justify-content:center;background:#0a0b0d;border-bottom:1px solid #24272d}
+.article-cover img{display:block;width:100%;height:100%;object-fit:contain;object-position:center;background:#0a0b0d}
+.article-cover--aio::before,.article-cover--aio::after{content:"";position:absolute;left:0;right:0;height:5%;background:#0a0b0d;z-index:1;pointer-events:none}
+.article-cover--aio::before{top:0}
+.article-cover--aio::after{bottom:0}
 .article-card-content{display:flex;flex:1;flex-direction:column}
 .article-card-content .mt-4{margin-top:auto;padding-top:14px}
 @media(max-width:640px){.article-cover{aspect-ratio:16/10}}
@@ -91,7 +94,7 @@ a:focus-visible,button:focus-visible{outline:2px solid #00f59b;outline-offset:3p
 </div>
 <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="articles-grid">
 <a href="/articles/wazuh-all-in-one-installation.html" class="article-item has-cover block border border-brand-borderLight dark:border-brand-borderDark bg-white dark:bg-[#0c0d0e] overflow-hidden hover:border-brand-green transition-colors group" data-category="wazuh">
-<div class="article-cover" aria-hidden="true"><img src="/assets/images/WAZUH%20SIEM%20%E2%80%94%20ALL-IN-ONE%20INSTALLATION%20%26%20VALIDATION.png" alt="" loading="lazy"></div>
+<div class="article-cover article-cover--aio" aria-hidden="true"><img src="/assets/images/WAZUH%20SIEM%20%E2%80%94%20ALL-IN-ONE%20INSTALLATION%20%26%20VALIDATION.png" alt="" loading="lazy"></div>
 <div class="article-card-content p-5">
 <div class="flex justify-between items-center mb-3"><span class="text-[10px] text-brand-greenDark dark:text-brand-green uppercase tracking-widest border border-brand-greenDark/30 dark:border-brand-green/30 px-2 py-0.5">Wazuh SIEM · Deployment</span><span class="text-neutral-400 group-hover:text-black dark:group-hover:text-white transition-colors">↗</span></div>
 <h3 class="font-sans font-bold text-lg text-black dark:text-white mb-2 uppercase leading-tight">Wazuh All-in-One: Installation &amp; Validation</h3>
