@@ -106,3 +106,11 @@ td,th{border-color:var(--site-border)!important}
 html:not(.dark) .content pre{background:#101614!important;border-color:#293b33!important}
 @media(max-width:800px){.layout{grid-template-columns:1fr!important;gap:20px!important}.toc{position:static!important;display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important}.toc strong{grid-column:1/-1}.hero.wrap{padding-top:36px!important}.nav{min-height:58px!important}}
 @media(max-width:540px){.wrap,.layout{width:calc(100% - 24px)!important}.nav{gap:8px!important;flex-wrap:wrap;padding:9px 0!important}.back{font-size:9px!important}.theme-toggle{font-size:9px;padding:6px 7px}.hero h1{font-size:clamp(31px,10vw,42px)!important}.lede{font-size:12px!important}.toc{grid-template-columns:1fr 1fr!important;padding:12px!important}.content h2{font-size:21px!important}.related{grid-template-columns:1fr!important}}
+
+/* Shared structural layout for article contact links and related guides */
+.contact-links{display:flex;align-items:center;flex-wrap:wrap;gap:9px;margin-top:15px}
+.contact-links a{display:inline-flex;align-items:center;justify-content:center;padding:8px 12px;border:1px solid var(--site-border)}
+.related{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:30px}
+.related a{display:block;min-width:0;padding:14px;border:1px solid var(--site-border);overflow-wrap:anywhere}
+.related small{display:block;margin-bottom:5px}
+.related strong{display:block;margin-top:5px;overflow-wrap:anywhere}
