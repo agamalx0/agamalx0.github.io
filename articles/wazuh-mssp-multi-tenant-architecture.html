@@ -19,18 +19,18 @@
 <header class="hero wrap">
 <div class="eyebrow">MSSP architecture · Multi-tenancy · Wazuh SIEM</div>
 <h1>Designing a multi-tenant Wazuh MSSP:<br><span class="gradient">AD, LDAPS, RBAC and document-level security</span></h1>
-<p class="lede">A reference architecture for separating Client A, Client B, and SOC-operations data in a shared Wazuh platform—using Active Directory groups for identity, OpenSearch roles and document-level security for data access, and dashboard tenants for customer-specific saved objects.</p>
-<div class="meta"><span>By Ashraf Gamal</span><span>Updated 15 October 2026</span><span class="pill">Reference design · Wazuh 4.14.7 diagram</span><span>Approx. 12–15 min read</span></div>
+<p class="lede">This design uses one shared Wazuh platform for Client A, Client B, and SOC operations. Active Directory manages identities, indexer roles and document-level security restrict alert access, and dashboard tenants separate saved objects.</p>
+<div class="meta"><span>By Ashraf Gamal</span><span>Updated 16 October 2026</span><span class="pill">Reference design · Wazuh 4.14.7 diagram</span><span>Approx. 12–15 min read</span></div>
 </header>
 <div class="wrap layout">
 <aside class="toc"><strong>In this guide</strong><a href="#scope">Scope and evidence</a><a href="#architecture">Architecture overview</a><a href="#access-model">Access model</a><a href="#identity">1. AD and LDAPS</a><a href="#data-labels">2. Label telemetry</a><a href="#dls">3. Document-level security</a><a href="#tenants">4. Dashboard tenants</a><a href="#validation">5. Isolation tests</a><a href="#troubleshooting">Troubleshooting</a><a href="#hardening">Security checklist</a><a href="#evidence">Evidence and filenames</a><a href="#references">Official references</a></aside>
 <article class="content">
 
-<div class="callout warning"><strong>Version context:</strong> The supplied diagram identifies Wazuh 4.14.7 and an OpenSearch indexer. Wazuh's release notes list 4.14.9 as released on 14 October 2026. Treat 4.14.7 as the version represented by the evidence and check the exact installed version and matching documentation before changing a live platform. <a href="https://documentation.wazuh.com/current/release-notes/" target="_blank" rel="noopener noreferrer">Wazuh release notes ↗</a></div>
+<div class="callout warning"><strong>Version context:</strong> The architecture diagram identifies Wazuh 4.14.7. The official release notes list 4.14.9 as released on 14 October 2026. Confirm the version installed in your environment and use its matching documentation before applying version-specific changes. <a href="https://documentation.wazuh.com/current/release-notes/" target="_blank" rel="noopener noreferrer">Wazuh release notes ↗</a></div>
 
-<h2 id="scope">1. Scope and what the evidence supports</h2>
-<p>The goal is to host multiple customers in one Wazuh deployment without allowing one customer to read another customer's alerts. The supplied diagram describes three identity populations: Client A users, Client B users, and privileged SOC/MSSP operators. It also shows a workspace for each customer and an SOC-operations workspace for cross-customer investigation.</p>
-<p>The surviving overview and screenshot labels identify evidence for AD groups and users, LDAP authentication/group lookup on the Wazuh side, an MSSP login page, separate Client A and Client B views, an attempt by Client A to reach Client B data, and an operator's available tenants. These screens can document behavior of the tested lab; by themselves, they do not prove every setting on disk or every possible bypass path.</p>
+<h2 id="scope">1. Design scope</h2>
+<p>The design separates three user populations: Client A, Client B, and privileged SOC/MSSP operators. Each customer has a dedicated dashboard tenant; SOC operators have a separate workspace for authorized cross-customer investigation.</p>
+<p>The evidence gallery shows directory groups and users, LDAP group lookup, customer dashboards, a Client A cross-customer access test, and the operator tenant list. These screenshots document specific UI results; role configuration and negative-access tests are also required to validate the full authorization path.</p>
 
 <h2 id="architecture">2. Architecture overview</h2>
 <figure class="figure"><img src="/assets/images/wazuh-mssp-architecture-overview.svg" alt="Reference diagram showing Active Directory over LDAPS, a single-node Wazuh manager/indexer/dashboard deployment, Client A and Client B dashboard tenants, an SOC operations tenant, agent labels, indexer roles, and document-level security." loading="lazy"><figcaption>Reference architecture redrawn from the supplied diagram. The original diagram labels Wazuh 4.14.7. The single-node layout explains the concept; it is not a high-availability production topology.</figcaption></figure>
@@ -44,14 +44,14 @@
 </tbody></table></div>
 <p><strong>Deployment caveat:</strong> The diagram places Manager, Indexer and Dashboard on a single node. This may be suitable for a compact lab, but it is a single point of failure and does not demonstrate production capacity, resilient storage, disaster recovery or high availability.</p>
 
-<h2 id="access-model">3. Access model: identity, data and workspace are separate controls</h2>
-<p>A safe design applies three distinct controls: authentication proves who signed in; indexer permissions determine which documents that identity can read; tenant permissions determine which saved dashboards and searches the user can access or edit. OpenSearch defines DLS as a read/search control and documents that writes are governed separately by index permissions. <a href="https://docs.opensearch.org/latest/security/access-control/document-level-security/" target="_blank" rel="noopener noreferrer">OpenSearch DLS documentation ↗</a></p>
+<h2 id="access-model">3. Access model: identity, data, and workspace</h2>
+<p>Keep these controls separate: authentication identifies the user; indexer permissions determine which documents the user can read; tenant permissions govern dashboard objects and saved searches. OpenSearch DLS filters read/search results, not writes. Restrict write permissions separately. <a href="https://docs.opensearch.org/latest/security/access-control/document-level-security/" target="_blank" rel="noopener noreferrer">OpenSearch DLS documentation ↗</a></p>
 <div class="table-wrap"><table><thead><tr><th>AD group (illustrative)</th><th>Indexer role (illustrative)</th><th>Data scope</th><th>Dashboard tenant</th></tr></thead><tbody>
-<tr><td><code>SOC-MSSP-ClientA</code></td><td><code>mssp_client_a_alerts_read</code></td><td>Alerts labeled <code>client-a</code> only</td><td><code>client-a</code></td></tr>
-<tr><td><code>SOC-MSSP-ClientB</code></td><td><code>mssp_client_b_alerts_read</code></td><td>Alerts labeled <code>client-b</code> only</td><td><code>client-b</code></td></tr>
+<tr><td><code>SOC-MSSP-ClientA</code></td><td><code>mssp_client_a_alerts_read</code></td><td>Alerts labeled <code>Client-A</code> only</td><td><code>client-a</code></td></tr>
+<tr><td><code>SOC-MSSP-ClientB</code></td><td><code>mssp_client_b_alerts_read</code></td><td>Alerts labeled <code>Client-B</code> only</td><td><code>client-b</code></td></tr>
 <tr><td><code>SOC-MSSP-Operators</code></td><td><code>mssp_soc_operators_alerts_read</code></td><td>Customer and SOC data explicitly authorized for operators</td><td><code>soc-operations</code></td></tr>
 </tbody></table></div>
-<p>These names are illustrative and align with the supplied diagram's intent. The diagram uses names such as <code>mssp-clienta-indexer</code>. Choose one consistent naming convention across AD groups, backend roles, indexer roles, tenants and tests. Keep the operator data role read-only unless it has a documented need for more.</p>
+<p>The names in the table are examples; the diagram shows names such as <code>mssp-clienta-indexer</code>. Keep naming consistent across AD groups, backend roles, indexer roles, tenants, and test accounts. Give SOC operator roles only the permissions required for their duties.</p>
 <div class="callout warning"><strong>Critical isolation rule:</strong> Do not rely on tenant names, saved searches, dashboard filters, hidden menu items or Wazuh agent-group UI to enforce customer separation. Isolation must be enforced by indexer permissions and a verified document-level filter on every index that contains customer data.</div>
 
 <h2 id="identity">4. Configure Active Directory and LDAPS</h2>
@@ -63,7 +63,7 @@
 <li><strong>Map backend roles to indexer roles.</strong> A directory group is not automatically an indexer permission. Create explicit mappings and check inherited memberships so a client user cannot receive a broad operator/admin role through another group.</li>
 </ol>
 <p>Back up security configuration and keep a rollback path before making changes. Wazuh's LDAP guide covers the indexer authentication (<code>authc</code>) and authorization (<code>authz</code>) blocks, role lookup, backend-role mappings and dashboard role mapping. Follow the procedure for the installed release rather than copying a block from another version unchanged. <a href="https://documentation.wazuh.com/current/user-manual/user-administration/ldap.html" target="_blank" rel="noopener noreferrer">Wazuh Active Directory and LDAP integration ↗</a></p>
-<p>A useful transport check from the Indexer host is:</p>
+<p>Check LDAPS connectivity and certificate validation from the Indexer host:</p>
 <pre><code>openssl s_client \
   -connect &lt;AD_FQDN&gt;:636 \
   -servername &lt;AD_FQDN&gt; \
@@ -71,45 +71,45 @@
   -verify_return_error</code></pre>
 <p>Replace the placeholders with your environment's values. A successful TCP connection alone is not enough: verify chain validation, hostname matching, DNS and group lookup. Never put the bind password or other secrets in a public GitHub repository.</p>
 
-<h2 id="data-labels">5. Label customer telemetry consistently</h2>
+<h2 id="data-labels">5. Label customer telemetry</h2>
 <p>DLS can filter only on fields that exist in indexed documents. Wazuh's documented group-restricted access example uses <code>agent.labels.group</code> for alerts. A centralized agent configuration can add a label like this to a customer's agents:</p>
 <pre><code>&lt;agent_config&gt;
   &lt;labels&gt;
     &lt;label key="group"&gt;client-a&lt;/label&gt;
   &lt;/labels&gt;
 &lt;/agent_config&gt;</code></pre>
-<p>Use a distinct label for Client B and the SOC-operations environment. Before writing a DLS query, inspect a real alert and confirm the field path and exact value. Newly configured labels appear in new alerts; historical alerts may not have the field.</p>
-<p>Do not assume an agent-management group name is automatically present in every alert document. Agent groups help manage configurations. The indexed label used by DLS is a separate data attribute that must be tested. Monitoring and other indexes can use different schemas, so inspect them and design their filters separately.</p>
+<p>Configure separate labels for Client B and SOC operations. Before creating DLS queries, inspect indexed alert documents and confirm the field path and exact value. New labels apply to new alerts; older documents may not contain them.</p>
+<p>An agent-management group name is not automatically the field used by DLS. The indexed label is a separate document attribute. Validate it in Discover, and configure separate filters for monitoring or other indexes because their field schemas may differ.</p>
 <p>Official walkthrough: <a href="https://documentation.wazuh.com/current/user-manual/user-administration/rbac.html" target="_blank" rel="noopener noreferrer">Wazuh RBAC — restrict access to a group of agents ↗</a></p>
 
 <h2 id="dls">6. Create per-customer indexer roles and DLS filters</h2>
-<p>For a read-only Client A role, limit index permissions to the required patterns (for example, <code>wazuh-alerts-*</code>), the necessary read actions, and a DLS query selecting Client A's label. An illustrative DLS query is:</p>
+<p>For Client A, create a read-only role limited to the required alert index pattern (for example, <code>wazuh-alerts*</code>) and add a DLS query using the value confirmed in Discover. Example:</p>
 <pre><code>{
   "bool": {
     "must": [
       {
         "match": {
-          "agent.labels.group": "client-a"
+          "agent.labels.group": "Client-A"
         }
       }
     ]
   }
 }</code></pre>
-<p>For Client B, use its own verified label value, such as <code>client-b</code>. This is the query body for the DLS setting, not a complete role definition. Configure index patterns, cluster permissions, tenant permissions and other operational indexes separately.</p>
+<p>For Client B, use the observed <code>Client-B</code> value. This query is only the DLS condition, not a complete role definition. Configure index patterns, cluster permissions, tenant permissions, and other index permissions separately.</p>
 <ul>
 <li>Grant only required read/search permissions. Do not grant customer roles write, update, delete or broad cluster-admin actions.</li>
 <li>Apply customer scope to every index that may expose customer information. Monitoring or agent-inventory indexes may use a different field path than alert documents.</li>
 <li>Keep the SOC operator role separate. If cross-customer investigation is required, grant it the explicit data scope the SOC is authorized to access; do not reuse this role for customers.</li>
-<li>Audit every role each user receives. OpenSearch combines DLS queries from multiple roles with OR logic; an additional broad or unfiltered role can undermine the intended separation.</li>
+<li>Review every role assigned to each user. OpenSearch combines DLS queries from multiple roles using OR logic. The setting <code>plugins.security.dfm_empty_overrides_all</code> can also change how an unrestricted role interacts with DLS. Check effective role assignments and this setting for the deployed version, then test the resulting permissions.</li>
 </ul>
 <p>Reference: <a href="https://documentation.wazuh.com/current/user-manual/user-administration/rbac.html" target="_blank" rel="noopener noreferrer">Wazuh RBAC guide ↗</a> · <a href="https://docs.opensearch.org/latest/security/access-control/document-level-security/" target="_blank" rel="noopener noreferrer">OpenSearch DLS behavior ↗</a></p>
 
 <h2 id="tenants">7. Create dashboard tenants for each audience</h2>
-<p>Use dedicated tenants/workspaces for Client A, Client B and SOC operations. Assign each role access only to the appropriate tenant, and choose read-only or read-write access depending on whether users may save or edit dashboards. OpenSearch tenants store dashboard objects such as saved dashboards, visualizations and index patterns/data views; they do not independently isolate the alert documents. <a href="https://docs.opensearch.org/latest/security/multi-tenancy/tenant-index/" target="_blank" rel="noopener noreferrer">OpenSearch multi-tenancy overview ↗</a></p>
+<p>Create tenants for Client A, Client B, and SOC operations. Grant each role access only to the required tenant, with read-only or read-write permissions based on job duties. Tenants isolate saved objects such as dashboards, visualizations, and index patterns; they do not isolate alert documents. <a href="https://docs.opensearch.org/latest/security/multi-tenancy/tenant-index/" target="_blank" rel="noopener noreferrer">OpenSearch multi-tenancy overview ↗</a></p>
 <p>Configure the UI layer after the indexer data controls work. A Client A user must still be unable to query Client B documents through Discover, another index pattern, a direct search URL or an API request made with that user's identity. Similarly, placing a SOC dashboard inside the SOC-operations tenant does not prevent Client A from reading SOC documents if indexer permissions are too broad.</p>
 
-<h2 id="validation">8. Validate isolation with positive and negative tests</h2>
-<p>Use separate test accounts for Client A, Client B and SOC operators. Run tests as those users, not only as an administrator who can bypass restrictions. Capture both what a user can see and what the user must not see.</p>
+<h2 id="validation">8. Test tenant isolation</h2>
+<p>Test with separate Client A, Client B, and SOC operator accounts. Run each test using the account being evaluated—not only an administrator account. Record both allowed queries and negative cross-customer queries.</p>
 <div class="table-wrap"><table><thead><tr><th>Test account</th><th>Expected result</th><th>Evidence to capture</th></tr></thead><tbody>
 <tr><td>Client A</td><td>Can sign in, open the Client A tenant and search Client A-labeled alerts.</td><td>Client A dashboard/Discover results showing its label.</td></tr>
 <tr><td>Client A</td><td>Cannot return Client B alerts via a direct search or alternate index pattern.</td><td>Negative cross-customer attempt under the Client A test account.</td></tr>
@@ -119,7 +119,7 @@
 </tbody></table></div>
 <p>Record the test date, account role, index pattern, query, expected result, actual result and pass/fail outcome. An empty result or a forbidden response may both be valid denial behavior depending on configuration, but the test must show that another customer's records were not returned.</p>
 
-<h2 id="troubleshooting">9. Troubleshooting and failure modes</h2>
+<h2 id="troubleshooting">9. Troubleshooting</h2>
 <ul>
 <li><strong>Login works but access is wrong:</strong> inspect returned backend roles, role mappings, indexer roles and tenant permissions separately. Successful LDAP authentication does not prove authorization is correct.</li>
 <li><strong>Client A sees no results:</strong> inspect an actual alert's source fields. Confirm the DLS field/value, read permission, index pattern and whether the alert contains the label.</li>
