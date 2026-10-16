@@ -1,533 +1,131 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#080a12" />
-  <meta name="description" content="Ashraf Gamal — cybersecurity, SIEM engineering, detection engineering, threat hunting, incident response, and security automation." />
-  <title>Ashraf Gamal | Cyber Security , SOC , Blue Team</title>
-  <style>
-    :root {
-      color-scheme: dark;
-      --bg: #080a12;
-      --bg-soft: #0d1020;
-      --panel: rgba(17, 21, 39, .72);
-      --panel-solid: #111528;
-      --text: #f4f6ff;
-      --muted: #a3abc4;
-      --muted-2: #747d9a;
-      --line: rgba(177, 190, 255, .13);
-      --cyan: #39e7ff;
-      --purple: #9a66ff;
-      --magenta: #ff4fd8;
-      --green: #8affc1;
-      --radius: 22px;
-      --max-width: 1120px;
-    }
-
-    * { box-sizing: border-box; }
-    html { scroll-behavior: smooth; scroll-padding-top: 90px; }
-    body {
-      margin: 0;
-      min-width: 320px;
-      color: var(--text);
-      background:
-        radial-gradient(ellipse at 12% 2%, rgba(57, 231, 255, .10), transparent 28rem),
-        radial-gradient(ellipse at 88% 16%, rgba(255, 79, 216, .09), transparent 30rem),
-        radial-gradient(ellipse at 55% 65%, rgba(154, 102, 255, .07), transparent 34rem),
-        var(--bg);
-      font-family: "Space Grotesk", Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      line-height: 1.65;
-      overflow-x: hidden;
-    }
-
-    body::before {
-      content: "";
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      z-index: -1;
-      background-image: linear-gradient(rgba(255,255,255,.018) 1px, transparent 1px),
-                        linear-gradient(90deg, rgba(255,255,255,.018) 1px, transparent 1px);
-      background-size: 52px 52px;
-      mask-image: linear-gradient(to bottom, black, transparent 88%);
-    }
-
-    a { color: inherit; text-decoration: none; }
-    a:focus-visible, button:focus-visible { outline: 2px solid var(--cyan); outline-offset: 4px; }
-    .wrap { width: min(var(--max-width), calc(100% - 44px)); margin-inline: auto; }
-    .gradient-text {
-      color: transparent;
-      background: linear-gradient(100deg, var(--cyan) 5%, #8b8cff 48%, var(--magenta) 92%);
-      -webkit-background-clip: text;
-      background-clip: text;
-    }
-
-    .topbar {
-      position: sticky; top: 0; z-index: 50;
-      border-bottom: 1px solid rgba(177,190,255,.09);
-      background: rgba(8,10,18,.78);
-      backdrop-filter: blur(18px);
-    }
-    .nav { min-height: 76px; display: flex; align-items: center; justify-content: space-between; gap: 26px; }
-    .identity { display: flex; align-items: center; gap: 12px; font-weight: 750; letter-spacing: -.02em; }
-    .monogram {
-      display: grid; place-items: center; width: 40px; height: 40px; border-radius: 13px;
-      background: linear-gradient(140deg, rgba(57,231,255,.18), rgba(154,102,255,.2), rgba(255,79,216,.18));
-      border: 1px solid rgba(154,190,255,.29); box-shadow: inset 0 0 20px rgba(154,102,255,.10);
-      font-size: 14px; letter-spacing: -.06em;
-    }
-    .nav-links { display: flex; align-items: center; gap: 28px; color: var(--muted); font-size: 13px; }
-    .nav-links a { transition: color .2s ease; }
-    .nav-links a:hover { color: var(--cyan); }
-    .nav-cta { border: 1px solid rgba(57,231,255,.35); color: #dffbff !important; padding: 9px 14px; border-radius: 11px; background: rgba(57,231,255,.06); }
-
-    .hero { position: relative; min-height: 690px; display: grid; align-items: center; padding-block: 86px 94px; }
-    .hero-grid { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(280px, .65fr); align-items: center; gap: 66px; }
-    .eyebrow { display: inline-flex; gap: 10px; align-items: center; color: #c8d2ee; font-size: 11px; letter-spacing: .16em; text-transform: uppercase; font-weight: 750; }
-    .live-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); box-shadow: 0 0 14px rgba(138,255,193,.8); }
-    h1 { margin: 22px 0 20px; font-size: clamp(48px, 7vw, 84px); line-height: .99; letter-spacing: -.075em; font-weight: 800; }
-    .hero-lede { max-width: 655px; margin: 0; color: var(--muted); font-size: clamp(16px, 2vw, 18px); line-height: 1.8; }
-    .hero-lede strong { color: #e8ecff; font-weight: 600; }
-    .hero-actions { display: flex; align-items: center; gap: 13px; flex-wrap: wrap; margin-top: 32px; }
-    .btn { display: inline-flex; gap: 10px; align-items: center; justify-content: center; min-height: 47px; padding: 0 18px; border-radius: 12px; font-size: 13px; font-weight: 750; transition: transform .2s ease, border-color .2s ease, background .2s ease; }
-    .btn:hover { transform: translateY(-2px); }
-    .btn-primary { color: #080a12; background: linear-gradient(105deg, var(--cyan), #9aafff 65%, #c4a5ff); box-shadow: 0 7px 32px rgba(57,231,255,.13); }
-    .btn-secondary { border: 1px solid var(--line); background: rgba(255,255,255,.025); color: #e8ecff; }
-    .btn-secondary:hover { border-color: rgba(57,231,255,.45); }
-    .hero-meta { display: flex; gap: 18px; flex-wrap: wrap; margin-top: 30px; color: var(--muted-2); font-size: 11px; letter-spacing: .02em; }
-    .hero-meta span { display: inline-flex; align-items: center; gap: 7px; }
-    .meta-mark { color: var(--cyan); }
-
-    .visual-wrap { position: relative; display: grid; place-items: center; min-height: 380px; }
-    .orbital { position: absolute; width: 310px; height: 310px; border: 1px solid rgba(154,102,255,.24); border-radius: 50%; animation: rotate 26s linear infinite; }
-    .orbital::before, .orbital::after { content: ""; position: absolute; border-radius: 50%; border: 1px solid rgba(57,231,255,.17); inset: 24px; }
-    .orbital::after { inset: 54px; border-color: rgba(255,79,216,.16); }
-    .orbital-dot { position: absolute; top: 44px; right: 20px; width: 9px; height: 9px; background: var(--cyan); box-shadow: 0 0 20px var(--cyan); border-radius: 50%; }
-    .profile-card { position: relative; width: min(100%, 330px); padding: 28px; border-radius: 24px; border: 1px solid rgba(181,193,255,.19); background: linear-gradient(145deg, rgba(24,29,53,.93), rgba(10,13,25,.93)); box-shadow: 0 25px 90px rgba(0,0,0,.28), 0 0 45px rgba(154,102,255,.08); }
-    .card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px; }
-    .card-label { color: var(--muted-2); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 10px; letter-spacing: .1em; }
-    .status { font-size: 10px; color: var(--green); padding: 5px 8px; border: 1px solid rgba(138,255,193,.2); background: rgba(138,255,193,.05); border-radius: 999px; }
-.avatar-mark { width: 96px; height: 96px; display: grid; place-items: center; overflow: hidden; border-radius: 24px; margin-bottom: 20px; font-size: 28px; font-weight: 850; letter-spacing: -.08em; background: linear-gradient(140deg, rgba(57,231,255,.2), rgba(154,102,255,.3), rgba(255,79,216,.2)); border: 1px solid rgba(185,192,255,.25); box-shadow: 0 0 26px rgba(57,231,255,.10); }
-    .avatar-mark img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center 32%; }
-    .monogram { overflow: hidden; padding: 0; flex: 0 0 40px; }
-    .monogram img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center 32%; }
-    .profile-card h2 { font-size: 23px; margin: 0; letter-spacing: -.04em; }
-    .profile-card p { font-size: 12px; color: var(--muted); margin: 5px 0 23px; }
-    .mini-divider { height: 1px; background: var(--line); margin-bottom: 17px; }
-    .focus-row { display: flex; justify-content: space-between; gap: 12px; padding-block: 8px; font-size: 11px; }
-    .focus-row span:first-child { color: var(--muted-2); }
-    .focus-row span:last-child { color: #dfe5ff; text-align: right; }
-
-    .section { padding-block: 78px; }
-    .section-head { display: flex; align-items: end; justify-content: space-between; gap: 30px; margin-bottom: 28px; }
-    .kicker { color: var(--cyan); text-transform: uppercase; font-weight: 750; font-size: 10px; letter-spacing: .17em; }
-    h2.section-title { margin: 8px 0 0; font-size: clamp(30px, 4vw, 43px); line-height: 1.15; letter-spacing: -.055em; }
-    .section-desc { max-width: 470px; color: var(--muted); margin: 12px 0 0; font-size: 14px; }
-    .about-panel { display: grid; grid-template-columns: 1fr 1fr; gap: 42px; padding: 32px; border: 1px solid var(--line); border-radius: var(--radius); background: linear-gradient(120deg, rgba(16,21,40,.79), rgba(13,16,31,.65)); }
-    .about-panel p { color: var(--muted); font-size: 14px; margin: 0; }
-    .about-panel p + p { margin-top: 14px; }
-    .about-list { display: grid; gap: 12px; align-content: center; }
-    .about-item { display: flex; align-items: center; gap: 12px; padding: 13px 14px; border: 1px solid rgba(177,190,255,.09); border-radius: 13px; background: rgba(255,255,255,.02); font-size: 12px; color: #dce3fb; }
-    .about-item b { color: var(--cyan); font-size: 14px; min-width: 23px; }
-
-    .expertise-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
-    .expertise-card { position: relative; overflow: hidden; padding: 25px; min-height: 205px; border-radius: 18px; border: 1px solid var(--line); background: var(--panel); transition: transform .22s ease, border-color .22s ease; }
-    .expertise-card:hover { transform: translateY(-4px); border-color: rgba(57,231,255,.32); }
-    .expertise-card::after { content: ""; position: absolute; right: -45px; top: -55px; width: 120px; height: 120px; border-radius: 50%; background: var(--glow, rgba(57,231,255,.12)); filter: blur(32px); pointer-events: none; }
-    .icon-box { width: 41px; height: 41px; display: grid; place-items: center; border-radius: 12px; border: 1px solid rgba(177,190,255,.15); color: var(--icon, var(--cyan)); background: rgba(255,255,255,.035); font-size: 18px; }
-    .expertise-card h3 { margin: 19px 0 8px; font-size: 16px; letter-spacing: -.02em; }
-    .expertise-card p { color: var(--muted); font-size: 12px; line-height: 1.75; margin: 0; }
-
-    .stack-panel { padding: 27px; border-radius: 18px; border: 1px solid var(--line); background: rgba(14,18,34,.55); }
-    .stack-tags { display: flex; flex-wrap: wrap; gap: 10px; }
-    .stack-tag { padding: 8px 12px; font-size: 11px; border: 1px solid rgba(177,190,255,.14); border-radius: 9px; color: #cdd5f0; background: rgba(255,255,255,.025); }
-    .stack-tag:nth-child(3n+1) { border-color: rgba(57,231,255,.21); }
-    .stack-tag:nth-child(3n+2) { border-color: rgba(154,102,255,.22); }
-    .stack-tag:nth-child(3n) { border-color: rgba(255,79,216,.2); }
-
-    .article-carousel { position: relative; }
-    .article-filters { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 20px; }
-    .article-filter { display: inline-flex; align-items: center; justify-content: center; padding: 10px 16px; border-radius: 11px; border: 1px solid var(--line); background: rgba(255,255,255,.025); color: var(--muted); font: inherit; font-size: 12px; font-weight: 750; cursor: pointer; transition: color .2s ease, border-color .2s ease, background .2s ease; }
-    .article-filter:hover { color: var(--cyan); border-color: rgba(57,231,255,.4); }
-    .article-filter[aria-pressed="true"] { color: #080a12; border-color: transparent; background: linear-gradient(105deg, var(--cyan), #9aafff 65%, #c4a5ff); }
-    .article-library-head { display: flex; align-items: end; justify-content: space-between; gap: 20px; }
-    .article-library-head > div:first-child { min-width: 0; }
-    .article-controls { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
-    .article-count { min-width: 82px; color: var(--muted-2); font-size: 11px; font-variant-numeric: tabular-nums; text-align: right; margin-right: 3px; }
-    .article-arrow { display: grid; place-items: center; width: 39px; height: 39px; border-radius: 12px; border: 1px solid rgba(177,190,255,.18); background: rgba(255,255,255,.035); color: #eaf5ff; font: inherit; font-size: 22px; line-height: 1; cursor: pointer; transition: color .2s ease, border-color .2s ease, background .2s ease, transform .2s ease; }
-    .article-arrow:hover:not(:disabled) { color: #080a12; border-color: var(--cyan); background: var(--cyan); transform: translateY(-2px); }
-    .article-arrow:focus-visible { outline: 2px solid var(--cyan); outline-offset: 3px; }
-    .article-arrow:disabled { opacity: .28; cursor: not-allowed; }
-    .article-viewport { overflow: hidden; border-radius: 20px; margin: -2px; padding: 2px; }
-    .article-viewport:focus-visible { outline: 2px solid rgba(57,231,255,.65); outline-offset: 3px; }
-    .article-grid { display: flex; align-items: stretch; gap: 16px; transform: translateX(0); transition: transform .38s cubic-bezier(.2,.75,.25,1); will-change: transform; }
-    .article-card { position: relative; display: flex; flex: 0 0 calc((100% - 16px) / 2); flex-direction: column; min-width: 0; min-height: 255px; padding: 23px; border-radius: 18px; border: 1px solid var(--line); background: linear-gradient(150deg, rgba(19,24,45,.88), rgba(12,15,28,.8)); color: var(--text); text-decoration: none; cursor: pointer; transition: transform .22s ease, border-color .22s ease, background .22s ease, box-shadow .22s ease; }
-    .article-card:hover, .article-card:focus-visible { transform: translateY(-4px); border-color: rgba(57,231,255,.58); background: linear-gradient(150deg, rgba(24,33,59,.97), rgba(15,20,38,.96)); box-shadow: 0 12px 38px rgba(57,231,255,.09), 0 0 0 1px rgba(154,102,255,.12); text-decoration: none; }
-    .article-card:focus-visible { outline: 2px solid var(--cyan); outline-offset: 3px; }
-    .article-card::after { content: "OPEN GUIDE ↗"; position: absolute; right: 20px; bottom: 19px; padding: 5px 8px; border: 1px solid rgba(57,231,255,.28); border-radius: 7px; background: rgba(57,231,255,.075); color: var(--cyan); font-size: 9px; font-weight: 800; letter-spacing: .08em; opacity: 0; transform: translateY(4px); transition: opacity .2s ease, transform .2s ease; pointer-events: none; }
-    .article-card:hover::after, .article-card:focus-visible::after { opacity: 1; transform: translateY(0); }
-    .article-meta { display: flex; align-items: center; justify-content: space-between; gap: 10px; color: var(--muted-2); font-size: 10px; margin-bottom: 23px; }
-    .article-type { color: var(--cyan); letter-spacing: .11em; text-transform: uppercase; font-weight: 750; }
-    .article-card h3 { margin: 0 0 10px; font-size: 17px; line-height: 1.4; letter-spacing: -.025em; }
-    .article-card p { color: var(--muted); font-size: 12px; margin: 0; }
-    .article-card:hover .article-type, .article-card:focus-visible .article-type { color: #b8fbff; }
-    .note { margin-top: 18px; font-size: 11px; color: var(--muted-2); }
-
-    .connect-copy { min-width: 0; }
-    .connect-panel { display: flex; justify-content: space-between; align-items: center; gap: 35px; padding: 35px; border-radius: 22px; border: 1px solid rgba(154,102,255,.22); background: radial-gradient(ellipse at 0 50%, rgba(57,231,255,.08), transparent 48%), radial-gradient(ellipse at 100% 0, rgba(255,79,216,.09), transparent 46%), rgba(14,18,34,.7); }
-    .connect-panel h2 { margin: 0; font-size: clamp(25px, 3vw, 34px); letter-spacing: -.05em; }
-    .connect-panel p { max-width: 570px; color: var(--muted); font-size: 13px; margin: 10px 0 0; }
-    .contact-details { display: flex; align-items: center; flex-wrap: wrap; gap: 7px 10px; margin-top: 17px; font-size: 12px; }
-    .contact-details a { color: #dbeaff; border-bottom: 1px solid rgba(57,231,255,.26); }
-    .contact-details a:hover { color: var(--cyan); border-color: var(--cyan); }
-    .contact-separator { color: var(--muted-2); }
-    .connect-actions { display: flex; gap: 10px; flex-wrap: wrap; flex-shrink: 0; max-width: 490px; }
-    .btn-whatsapp { color: #c5ffdc; border: 1px solid rgba(138,255,193,.3); background: rgba(138,255,193,.07); }
-    .btn-whatsapp:hover { border-color: rgba(138,255,193,.65); background: rgba(138,255,193,.13); }
-    footer { margin-top: 50px; border-top: 1px solid var(--line); color: var(--muted-2); font-size: 11px; }
-    .footer-inner { display: flex; align-items: center; justify-content: space-between; gap: 18px; flex-wrap: wrap; padding-block: 25px; }
-    .footer-links { display: flex; gap: 19px; }
-    .footer-links a:hover { color: var(--cyan); }
-
-    @keyframes rotate { to { transform: rotate(360deg); } }
-    @media (max-width: 900px) {
-      .hero-grid { grid-template-columns: 1fr; gap: 30px; }
-      .hero { min-height: unset; }
-      .visual-wrap { min-height: 330px; }
-      .orbital { width: 275px; height: 275px; }
-      .profile-card { width: min(100%, 360px); }
-      .expertise-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .connect-panel { align-items: flex-start; flex-direction: column; }
-    }
-    @media (max-width: 640px) {
-      .wrap { width: min(var(--max-width), calc(100% - 30px)); }
-      .nav { min-height: 68px; }
-      .nav-links { gap: 13px; font-size: 11px; }
-      .nav-links a:not(.nav-cta) { display: none; }
-      .hero { padding-block: 65px 45px; }
-      h1 { font-size: clamp(45px, 13vw, 66px); }
-      .section { padding-block: 52px; }
-      .section-head { display: block; }
-      .about-panel { grid-template-columns: 1fr; gap: 24px; padding: 22px; }
-      .expertise-grid { grid-template-columns: 1fr; }
-      .article-library-head { align-items: flex-start; flex-direction: column; gap: 18px; }
-      .article-card { flex-basis: 100%; }
-      .expertise-card { min-height: unset; }
-      .connect-panel { padding: 25px 21px; }
-      .footer-inner { align-items: flex-start; flex-direction: column; }
-    }
-    @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
-    }
-  </style>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0a0b0d">
+<meta name="description" content="Ashraf Gamal — cybersecurity, SIEM engineering, detection engineering, threat hunting, incident response, and security automation.">
+<title>Ashraf Gamal | Cyber Security, SOC &amp; Blue Team</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Space+Grotesk:wght@600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config={darkMode:'class',theme:{extend:{fontFamily:{mono:['"JetBrains Mono"','monospace'],sans:['"Space Grotesk"','sans-serif']},colors:{brand:{green:'#00f59b',greenDark:'#059669',lavender:'#a78bfa',surfaceDark:'#0a0b0d',surfaceLight:'#f8fafc',borderDark:'#1c1e24',borderLight:'#e2e8f0',textDark:'#f0f2f5',textLight:'#0f172a'}}}}};
+</script>
+<style>
+.bg-grid-dark{background-size:32px 32px;background-image:linear-gradient(to right,rgba(255,255,255,.04) 1px,transparent 1px),linear-gradient(to bottom,rgba(255,255,255,.04) 1px,transparent 1px)}
+.bg-grid-light{background-size:32px 32px;background-image:linear-gradient(to right,rgba(0,0,0,.05) 1px,transparent 1px),linear-gradient(to bottom,rgba(0,0,0,.05) 1px,transparent 1px)}
+html{scroll-behavior:smooth;scroll-padding-top:100px}
+body{font-family:"JetBrains Mono",monospace}
+::selection{background:#00f59b;color:#050706}
+::-webkit-scrollbar{width:8px}::-webkit-scrollbar-track{background:#0a0b0d}::-webkit-scrollbar-thumb{background:#3b4048}
+a:focus-visible,button:focus-visible{outline:2px solid #00f59b;outline-offset:3px}
+.article-item{min-width:0;transition:border-color .18s ease,transform .18s ease}
+.article-item:hover{transform:translateY(-2px)}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+</style>
 </head>
-<body>
-  <header class="topbar">
-    <nav class="nav wrap" aria-label="Main navigation">
-      <a class="identity" href="#home" aria-label="Ashraf Gamal home">
-        <span class="monogram"><img src="/ashraf-avatar.jpg?v=2" alt="" aria-hidden="true" onerror="this.remove(); this.parentElement.textContent = 'AG';"></span><span>Ashraf Gamal</span>
-      </a>
-      <div class="nav-links">
-        <a href="#about">About</a>
-        <a href="#expertise">Expertise</a>
-        <a href="#articles">Articles</a>
-        <a class="nav-cta" href="#connect">Connect ↗</a>
-      </div>
-    </nav>
-  </header>
+<body class="font-mono bg-brand-surfaceLight dark:bg-brand-surfaceDark text-brand-textLight dark:text-brand-textDark transition-colors duration-200 antialiased selection:bg-brand-green selection:text-black">
+<div class="min-h-screen bg-grid-light dark:bg-grid-dark flex flex-col p-4 sm:p-6 lg:p-10">
+<header class="max-w-6xl w-full mx-auto flex items-center justify-between border-b border-brand-borderLight dark:border-brand-borderDark pb-4 mb-10 sticky top-0 bg-brand-surfaceLight/90 dark:bg-brand-surfaceDark/90 backdrop-blur-md z-50">
+<div class="flex items-center space-x-4">
+<div class="flex items-center space-x-2 text-xs font-bold tracking-widest uppercase"><span class="inline-block w-2 h-2 bg-brand-greenDark dark:bg-brand-green animate-pulse"></span><span>// Ashraf_Gamal</span></div>
+<nav class="hidden md:flex space-x-6 text-xs text-neutral-500 dark:text-neutral-400"><a href="#about" class="hover:text-black dark:hover:text-white transition-colors">ABOUT</a><a href="#expertise" class="hover:text-black dark:hover:text-white transition-colors">EXPERTISE</a><a href="#articles" class="hover:text-black dark:hover:text-white transition-colors">NOTES</a></nav>
+</div>
+<div class="flex items-center space-x-3 text-xs"><a href="#connect" class="hidden sm:inline-block border border-brand-borderLight dark:border-brand-borderDark px-3 py-1 hover:border-brand-greenDark dark:hover:border-brand-green transition-colors">[ CONNECT ]</a><button id="theme-toggle" class="border border-brand-borderLight dark:border-brand-borderDark px-3 py-1 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors" type="button"><span id="theme-icon">MODE: DARK</span></button></div>
+</header>
 
-  <main>
-    <section class="hero wrap" id="home">
-      <div class="hero-grid">
-        <div>
-          <div class="eyebrow"><span class="live-dot"></span> Cybersecurity · Blue Team · SOC Engineering</div>
-          <h1>From security signals<br><span class="gradient-text">to decisive action.</span></h1>
-          <p class="hero-lede">
-            I'm <strong>Ashraf Gamal</strong>, a cybersecurity professional who engineers SIEM platforms,
-            builds meaningful detections, investigates threats, and automates security operations—
-            helping teams move from alert noise to informed decisions.
-          </p>
-          <div class="hero-actions">
-            <a class="btn btn-primary" href="#articles">Explore technical notes <span aria-hidden="true">↘</span></a>
-            <a class="btn btn-secondary" href="https://github.com/agamalx0" target="_blank" rel="noopener noreferrer">GitHub profile ↗</a>
-          </div>
-          <div class="hero-meta">
-            <span><span class="meta-mark">✳</span> SIEM &amp; Detection</span>
-            <span><span class="meta-mark">⌘</span> Automation &amp; Integrations</span>
-            <span><span class="meta-mark">⌁</span> Threat Hunting</span>
-          </div>
-        </div>
+<main class="max-w-6xl w-full mx-auto space-y-20">
+<section id="about" class="space-y-6 pt-10">
+<div class="text-xs font-bold text-brand-greenDark dark:text-brand-green tracking-widest uppercase">// 01 . IDENTITY &amp; ARCHITECTURE</div>
+<h1 class="font-sans text-5xl sm:text-7xl lg:text-8xl font-black tracking-tighter text-black dark:text-white uppercase leading-[0.9]">FROM SIGNALS TO<br><span class="text-brand-greenDark dark:text-brand-green">DECISIVE ACTION.</span></h1>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8 pt-6">
+<div class="md:col-span-2 space-y-4">
+<p class="text-sm sm:text-base text-neutral-600 dark:text-neutral-400 leading-relaxed max-w-2xl">I'm <strong class="text-black dark:text-white">Ashraf Gamal</strong>, a cybersecurity professional who engineers SIEM platforms, builds meaningful detections, investigates threats, and automates security operations—helping teams move from alert noise to informed decisions.</p>
+<p class="text-sm text-neutral-600 dark:text-neutral-400 max-w-2xl">My work spans developing detections, improving SIEM operations, integrating security tools, and making SOC workflows more useful and repeatable. This website is my evolving technical notebook, focused on practical implementation, troubleshooting and how to validate results.</p>
+<div class="flex flex-wrap gap-4 pt-4 text-xs font-bold"><a href="#articles" class="bg-black dark:bg-white text-white dark:text-black px-6 py-3 hover:opacity-80 transition-opacity">READ TECHNICAL NOTES →</a><a href="https://github.com/agamalx0" target="_blank" rel="noopener noreferrer" class="border border-neutral-300 dark:border-neutral-700 px-6 py-3 hover:border-brand-greenDark dark:hover:border-brand-green transition-colors">GITHUB [↗]</a><a href="https://www.linkedin.com/in/1elrawy/" target="_blank" rel="noopener noreferrer" class="border border-neutral-300 dark:border-neutral-700 px-6 py-3 hover:border-brand-greenDark dark:hover:border-brand-green transition-colors">LINKEDIN [↗]</a></div>
+</div>
+<div class="border border-brand-borderLight dark:border-brand-borderDark bg-white dark:bg-[#0c0d0e] p-4 h-fit">
+<div class="flex justify-between items-center text-[10px] text-neutral-400 mb-4 border-b border-brand-borderLight dark:border-brand-borderDark pb-2"><span>SYS.STATUS</span><span class="text-brand-greenDark dark:text-brand-green">● ACTIVE</span></div>
+<div class="space-y-3 text-xs">
+<div class="flex justify-between gap-4"><span class="text-neutral-500">ROLE</span><span class="text-right font-bold text-black dark:text-white">SOC Engineer</span></div>
+<div class="flex justify-between gap-4"><span class="text-neutral-500">FOCUS</span><span class="text-right font-bold text-black dark:text-white">Detection &amp; Response</span></div>
+<div class="flex justify-between gap-4"><span class="text-neutral-500">STACK</span><span class="text-right font-bold text-black dark:text-white">QRadar / Wazuh</span></div>
+<div class="flex justify-between gap-4"><span class="text-neutral-500">BASE</span><span class="text-right font-bold text-black dark:text-white">Saudi Arabia</span></div>
+</div>
+</div>
+</div>
+</section>
 
-        <div class="visual-wrap" aria-label="Decorative cybersecurity-inspired graphic">
-          <div class="orbital"><span class="orbital-dot"></span></div>
-          <div class="profile-card">
-            <div class="card-top"><span class="card-label">PROFILE / OVERVIEW</span><span class="status">● Building &amp; learning</span></div>
-            <div class="avatar-mark" aria-label="Portrait of Ashraf Gamal"><img src="/ashraf-avatar.jpg?v=2" alt="Ashraf Gamal" onerror="this.remove(); this.parentElement.textContent = 'AG';" /></div>
-            <h2>Ashraf Gamal</h2>
-            <p>Cybersecurity · SOC Engineering</p>
-            <div class="mini-divider"></div>
-            <div class="focus-row"><span>Focus</span><span>Detection &amp; Response</span></div>
-            <div class="focus-row"><span>Platforms</span><span>Wazuh · QRadar · Splunk</span></div>
-            <div class="focus-row"><span>Automation</span><span>SOAR · APIs · n8n</span></div>
-          </div>
-        </div>
-      </div>
-    </section>
+<section id="expertise" class="space-y-6">
+<div class="flex justify-between items-end border-b border-brand-borderLight dark:border-brand-borderDark pb-2"><div class="text-xs font-bold tracking-widest text-neutral-500 uppercase">// 02 . CORE EXPERTISE</div><span class="text-[10px] text-neutral-400">CAPABILITIES / 06</span></div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+<div class="border border-brand-borderLight dark:border-brand-borderDark bg-white/50 dark:bg-[#0c0d0e]/50 p-5 hover:border-brand-green transition-colors"><div class="text-brand-greenDark dark:text-brand-green text-xl mb-3">⌘</div><h3 class="font-sans font-bold text-lg text-black dark:text-white mb-2 uppercase">SIEM Engineering</h3><p class="text-xs text-neutral-600 dark:text-neutral-400">Log collection and parsing, custom rules, alert tuning, platform health, retention, and performance troubleshooting.</p></div>
+<div class="border border-brand-borderLight dark:border-brand-borderDark bg-white/50 dark:bg-[#0c0d0e]/50 p-5 hover:border-brand-lavender transition-colors"><div class="text-brand-lavender text-xl mb-3">⌕</div><h3 class="font-sans font-bold text-lg text-black dark:text-white mb-2 uppercase">Detection &amp; Hunting</h3><p class="text-xs text-neutral-600 dark:text-neutral-400">Detection logic, event analysis, hypothesis-driven hunting, false-positive reduction, and MITRE ATT&amp;CK mapping.</p></div>
+<div class="border border-brand-borderLight dark:border-brand-borderDark bg-white/50 dark:bg-[#0c0d0e]/50 p-5 hover:border-brand-green transition-colors"><div class="text-brand-greenDark dark:text-brand-green text-xl mb-3">⤳</div><h3 class="font-sans font-bold text-lg text-black dark:text-white mb-2 uppercase">Security Integrations</h3><p class="text-xs text-neutral-600 dark:text-neutral-400">API-driven integrations, alert normalization, case management, threat intelligence, and reliable data flow.</p></div>
+<div class="border border-brand-borderLight dark:border-brand-borderDark bg-white/50 dark:bg-[#0c0d0e]/50 p-5 hover:border-brand-green transition-colors"><div class="text-brand-greenDark dark:text-brand-green text-xl mb-3">⟲</div><h3 class="font-sans font-bold text-lg text-black dark:text-white mb-2 uppercase">SOAR &amp; Automation</h3><p class="text-xs text-neutral-600 dark:text-neutral-400">Incident workflows, enrichment, repeatable response processes, reporting, and automation using APIs and n8n.</p></div>
+<div class="border border-brand-borderLight dark:border-brand-borderDark bg-white/50 dark:bg-[#0c0d0e]/50 p-5 hover:border-red-400 transition-colors"><div class="text-red-500 text-xl mb-3">⌁</div><h3 class="font-sans font-bold text-lg text-black dark:text-white mb-2 uppercase">Incident Response</h3><p class="text-xs text-neutral-600 dark:text-neutral-400">Alert triage, investigation workflows, evidence-aware analysis, case documentation, and escalation context.</p></div>
+<div class="border border-brand-borderLight dark:border-brand-borderDark bg-white/50 dark:bg-[#0c0d0e]/50 p-5 hover:border-brand-lavender transition-colors"><div class="text-brand-lavender text-xl mb-3">▤</div><h3 class="font-sans font-bold text-lg text-black dark:text-white mb-2 uppercase">Platform Operations</h3><p class="text-xs text-neutral-600 dark:text-neutral-400">Linux and Docker operations, availability checks, storage management, cluster troubleshooting, and health checks.</p></div>
+</div>
+<div class="mt-4 border border-brand-borderLight dark:border-brand-borderDark bg-neutral-100 dark:bg-black p-4 text-xs">
+<div class="text-neutral-400 mb-2">$ cat current_stack.json</div>
+<div class="flex flex-wrap gap-2 text-brand-greenDark dark:text-brand-green"><span>"Wazuh",</span><span>"IBM QRadar SIEM",</span><span>"IBM QRadar SOAR",</span><span>"MITRE ATT&amp;CK",</span><span>"DFIR-IRIS",</span><span>"OpenCTI",</span><span>"MISP",</span><span>"n8n",</span><span>"Linux",</span><span>"Docker",</span><span>"REST APIs"</span></div>
+</div>
+</section>
 
-    <section class="section wrap" id="about">
-      <div class="section-head">
-        <div><div class="kicker">01 / About</div><h2 class="section-title">Curious by nature.<br><span class="gradient-text">Practical by design.</span></h2></div>
-        <p class="section-desc">A place to share technical notes, repeatable methods, and lessons from building and operating security platforms.</p>
-      </div>
-      <div class="about-panel">
-        <div>
-          <p>My work spans security monitoring and engineering: developing detections, improving SIEM operations, integrating security tools, and making SOC workflows more useful and repeatable.</p>
-          <p>This website is my evolving technical notebook. Articles will focus on the reasoning behind a configuration, how to validate it, common failure modes, and what the results mean—not just a list of commands.</p>
-        </div>
-        <div class="about-list">
-          <div class="about-item"><b>↗</b><span>Implementation guides and configuration notes</span></div>
-          <div class="about-item"><b>⌕</b><span>Detection logic, investigation, and troubleshooting</span></div>
-          <div class="about-item"><b>⟲</b><span>Integration patterns and security automation</span></div>
-        </div>
-      </div>
-    </section>
+<section id="articles" class="space-y-6">
+<div class="flex flex-col sm:flex-row justify-between items-start sm:items-end border-b border-brand-borderLight dark:border-brand-borderDark pb-2 gap-4">
+<div><div class="text-xs font-bold tracking-widest text-neutral-500 uppercase">// 03 . FIELD NOTES &amp; TECHNICAL GUIDES</div><h2 class="font-sans font-bold text-2xl text-black dark:text-white uppercase mt-2">Wazuh Technical Notes</h2></div>
+<div class="flex gap-2 text-xs" id="filter-container"><button class="filter-btn active border border-brand-greenDark dark:border-brand-green px-3 py-1 bg-black text-brand-green dark:bg-brand-green dark:text-black font-bold" data-filter="wazuh" aria-pressed="true">WAZUH / 02 VISIBLE NOTES</button></div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="articles-grid">
+<a href="/articles/wazuh-all-in-one-installation.html" class="article-item block border border-brand-borderLight dark:border-brand-borderDark bg-white dark:bg-[#0c0d0e] p-5 hover:border-brand-green transition-colors group" data-category="wazuh">
+<div class="flex justify-between items-center mb-3"><span class="text-[10px] text-brand-greenDark dark:text-brand-green uppercase tracking-widest border border-brand-greenDark/30 dark:border-brand-green/30 px-2 py-0.5">Wazuh SIEM · Deployment</span><span class="text-neutral-400 group-hover:text-black dark:group-hover:text-white transition-colors">↗</span></div>
+<h3 class="font-sans font-bold text-lg text-black dark:text-white mb-2 uppercase leading-tight">Wazuh All-in-One: Installation &amp; Validation</h3>
+<p class="text-xs text-neutral-600 dark:text-neutral-400">Prepare a single-host deployment, validate central services, and troubleshoot an incomplete installation safely.</p>
+<div class="mt-4 pt-3 border-t border-brand-borderLight dark:border-brand-borderDark text-[10px] text-neutral-400">OPEN TECHNICAL NOTE →</div>
+</a>
+<a href="/articles/wazuh-mssp-multi-tenant-architecture.html" class="article-item block border border-brand-borderLight dark:border-brand-borderDark bg-white dark:bg-[#0c0d0e] p-5 hover:border-brand-green transition-colors group" data-category="wazuh">
+<div class="flex justify-between items-center mb-3"><span class="text-[10px] text-brand-greenDark dark:text-brand-green uppercase tracking-widest border border-brand-greenDark/30 dark:border-brand-green/30 px-2 py-0.5">Wazuh SIEM · MSSP Architecture</span><span class="text-neutral-400 group-hover:text-black dark:group-hover:text-white transition-colors">↗</span></div>
+<h3 class="font-sans font-bold text-lg text-black dark:text-white mb-2 uppercase leading-tight">Multi-Tenant Wazuh MSSP Architecture</h3>
+<p class="text-xs text-neutral-600 dark:text-neutral-400">Logical customer isolation through Active Directory, LDAPS, indexer roles, document-level security, and dashboard tenants.</p>
+<div class="mt-4 pt-3 border-t border-brand-borderLight dark:border-brand-borderDark text-[10px] text-neutral-400">OPEN TECHNICAL NOTE →</div>
+</a>
+</div>
+<p class="text-[10px] leading-relaxed text-neutral-500">Additional technical notes remain in the repository and can be published to this page when ready.</p>
+</section>
 
-    <section class="section wrap" id="expertise">
-      <div class="section-head">
-        <div><div class="kicker">02 / Areas of interest</div><h2 class="section-title">Where I work</h2></div>
-        <p class="section-desc">Core disciplines I work with and document through practical examples.</p>
-      </div>
-      <div class="expertise-grid">
-        <article class="expertise-card" style="--icon:var(--cyan);--glow:rgba(57,231,255,.14)"><div class="icon-box">⌘</div><h3>SIEM Engineering</h3><p>Log collection and parsing, custom rules, alert tuning, platform health, retention, and performance troubleshooting.</p></article>
-        <article class="expertise-card" style="--icon:var(--purple);--glow:rgba(154,102,255,.16)"><div class="icon-box">⌕</div><h3>Detection &amp; Threat Hunting</h3><p>Detection logic, event analysis, hypothesis-driven hunting, false-positive reduction, and MITRE ATT&amp;CK mapping.</p></article>
-        <article class="expertise-card" style="--icon:var(--magenta);--glow:rgba(255,79,216,.13)"><div class="icon-box">⤳</div><h3>Security Integrations</h3><p>API-driven integrations, alert normalization, case management, threat intelligence, and reliable data flow.</p></article>
-        <article class="expertise-card" style="--icon:var(--green);--glow:rgba(138,255,193,.12)"><div class="icon-box">⟲</div><h3>SOAR &amp; Automation</h3><p>Incident workflows, enrichment, repeatable response processes, reporting, and automation using APIs and n8n.</p></article>
-        <article class="expertise-card" style="--icon:var(--cyan);--glow:rgba(57,231,255,.12)"><div class="icon-box">⌁</div><h3>Incident Response</h3><p>Alert triage, investigation workflows, evidence-aware analysis, case documentation, and escalation context.</p></article>
-        <article class="expertise-card" style="--icon:var(--purple);--glow:rgba(154,102,255,.15)"><div class="icon-box">▤</div><h3>Platform Operations</h3><p>Linux and Docker operations, availability checks, storage management, cluster troubleshooting, and health checks.</p></article>
-      </div>
-    </section>
+<section id="connect" class="border border-brand-borderLight dark:border-brand-borderDark bg-white/80 dark:bg-[#0c0d0e]/80 p-8 sm:p-12 mb-20 backdrop-blur-sm relative overflow-hidden">
+<div class="absolute top-0 right-0 p-4 text-neutral-200 dark:text-neutral-800 font-sans text-9xl font-black opacity-30 select-none pointer-events-none">_</div>
+<div class="text-xs font-bold text-brand-greenDark dark:text-brand-green tracking-widest uppercase mb-4">// 04 . INITIALIZE HANDSHAKE</div>
+<h2 class="font-sans text-4xl md:text-5xl font-black text-black dark:text-white uppercase mb-4 leading-none">EXECUTE<br>COMMUNICATION.</h2>
+<p class="text-sm text-neutral-600 dark:text-neutral-400 max-w-lg mb-8">Have a cybersecurity inquiry, want to discuss an opportunity, or need my CV? Initiate a connection below.</p>
+<div class="flex flex-wrap gap-4 text-xs font-bold">
+<a href="mailto:as.ga2019@gmail.com" class="border border-black dark:border-white bg-black dark:bg-white text-white dark:text-black px-6 py-3 hover:opacity-80 transition-opacity">$ mailx --to as.ga2019@gmail.com</a>
+<a href="https://wa.me/966598243358" target="_blank" rel="noopener noreferrer" class="border border-brand-borderLight dark:border-brand-borderDark px-6 py-3 hover:border-brand-greenDark dark:hover:border-brand-green transition-colors text-black dark:text-white">WHATSAPP [↗]</a>
+<a href="https://www.linkedin.com/in/1elrawy/" target="_blank" rel="noopener noreferrer" class="border border-brand-borderLight dark:border-brand-borderDark px-6 py-3 hover:border-brand-greenDark dark:hover:border-brand-green transition-colors text-black dark:text-white">LINKEDIN [↗]</a>
+</div>
+</section>
+</main>
 
-    <section class="section wrap">
-      <div class="section-head">
-        <div><div class="kicker">03 / Toolset</div><h2 class="section-title">Technologies &amp; platforms</h2></div>
-      </div>
-      <div class="stack-panel">
-        <div class="stack-tags">
-          <span class="stack-tag">Wazuh</span><span class="stack-tag">IBM QRadar</span><span class="stack-tag">QRadar SOAR</span><span class="stack-tag">Splunk</span><span class="stack-tag">MITRE ATT&amp;CK</span><span class="stack-tag">DFIR-IRIS</span><span class="stack-tag">OpenCTI</span><span class="stack-tag">MISP</span><span class="stack-tag">n8n</span><span class="stack-tag">Linux</span><span class="stack-tag">Docker</span><span class="stack-tag">REST APIs</span><span class="stack-tag">Log Analysis</span><span class="stack-tag">Detection Rules</span><span class="stack-tag">Incident Response</span>
-        </div>
-      </div>
-    </section>
+<footer class="max-w-6xl w-full mx-auto border-t border-brand-borderLight dark:border-brand-borderDark pt-6 mt-12 flex flex-col sm:flex-row justify-between text-[10px] text-neutral-500 space-y-2 sm:space-y-0 tracking-widest uppercase"><div>[ <span id="year"></span> ] ASHRAF GAMAL . SYSTEM SECURE</div><div class="flex space-x-6"><a href="#about" class="hover:text-black dark:hover:text-white transition-colors">^ TOP</a><span>EOF</span></div></footer>
+</div>
 
-     <section class="section wrap" id="articles">
-      <div class="section-head article-library-head">
-        <div><div class="kicker">04 / Knowledge base</div><h2 class="section-title">Technical notes</h2>
-          <div class="article-filters" role="group" aria-label="Filter technical articles">
-                        <button class="article-filter" type="button" data-filter="wazuh" aria-pressed="true">Wazuh</button>
-          </div>
-        </div>
-        <div class="article-controls" aria-label="Article carousel controls">
-            <span class="article-count" id="articleCount" aria-live="polite">01–02 / 9</span>
-            <button class="article-arrow" id="articlesPrev" type="button" aria-label="Previous articles" title="Previous articles" disabled>‹</button>
-            <button class="article-arrow" id="articlesNext" type="button" aria-label="Next articles" title="Next articles">›</button>
-          </div>
-        </div>
-      </div>
-      <div class="article-carousel" id="articleCarousel">
-        <div class="article-viewport" id="articleViewport" tabindex="0" aria-label="Technical articles. Use the left and right arrow keys to browse.">
-          <div class="article-grid" id="articleTrack">
-            <a class="article-card" data-category="cuckoo" data-tags="malware-analysis detection-engineering yara vmware-vsphere esxi sandbox dynamic-analysis" href="/articles/cuckoo-sandbox-vsphere-yara.html">
-              <div class="article-meta"><span class="article-type">Part 1 · Sandbox</span><span>Cuckoo Sandbox</span></div>
-              <h3>Cuckoo Sandbox with vSphere, Two Windows VMs, and YARA</h3>
-              <p>Integrate Cuckoo 2.0.7 with VMware vSphere, validate Windows 7/10 guest orchestration, fix PCAP capture permissions, and test external YARA rules against a recent ransomware sample.</p>
-            </a>
-            <a class="article-card" data-category="n8n" data-tags="security-automation self-hosting docker docker-compose webhooks local-automation" href="/articles/n8n-installation-local-automation.html">
-              <div class="article-meta"><span class="article-type">Part 1 · Installation</span><span>n8n Automation</span></div>
-              <h3>Installing n8n for Local Workflow Automation</h3>
-              <p>Set up a self-hosted n8n instance, preserve its data, configure local access, and prepare a test workflow using current Docker-based guidance.</p>
-            </a>
-            <a class="article-card" data-category="n8n" data-tags="security-automation webhooks curl local-testing api-testing workflow-automation" href="/articles/testing-n8n-webhooks-locally-curl.html">
-              <div class="article-meta"><span class="article-type">Part 2 · Webhook testing</span><span>n8n Automation</span></div>
-              <h3>Testing n8n Webhooks Locally with curl Before Production</h3>
-              <p>Send a POST request, inspect incoming JSON, distinguish test from production URLs, and troubleshoot before connecting a workflow to live systems.</p>
-            </a>
-            <a class="article-card" data-category="wazuh" href="/articles/wazuh-all-in-one-installation.html">
-              <div class="article-meta"><span class="article-type">Part 1 · Deployment</span><span>Wazuh SIEM</span></div>
-              <h3>Wazuh All-in-One: Installation and Validation</h3>
-              <p>Prepare a single-host deployment, install the central components, validate services, and troubleshoot an incomplete installation safely.</p>
-            </a>
-            <a class="article-card" data-category="wazuh" data-tags="mssp multi-tenancy ldap ldaps active-directory rbac dls opensearch" href="/articles/wazuh-mssp-multi-tenant-architecture.html">
-              <div class="article-meta"><span class="article-type">MSSP Architecture · Multi-tenancy</span><span>Wazuh SIEM</span></div>
-              <h3>Designing a Multi-Tenant Wazuh MSSP: AD, RBAC &amp; DLS</h3>
-              <p>Separate customer data with Active Directory groups, LDAPS, OpenSearch document-level security, dashboard tenants, and cross-customer isolation tests.</p>
-            </a>
-            <a class="article-card" data-category="hidden" href="/articles/wazuh-distributed-architecture.html">
-              <div class="article-meta"><span class="article-type">Part 2 · Architecture</span><span>Wazuh SIEM</span></div>
-              <h3>Wazuh Distributed Architecture: Indexers, Managers, and Dashboard</h3>
-              <p>Plan a multi-node deployment, configure cluster roles and certificates, validate network paths, and troubleshoot component communication.</p>
-            </a>
-            <a class="article-card" data-category="hidden" data-tags="dfir-iris security-automation" href="/articles/wazuh-dfir-iris-integration.html">
-              <div class="article-meta"><span class="article-type">Part 3 · Integration</span><span>Wazuh SIEM · DFIR-IRIS</span></div>
-              <h3>Integrating Wazuh SIEM with DFIR-IRIS Case Management</h3>
-              <p>Install IRIS, configure the Wazuh Integrator, structure alert context, map IOC types, and troubleshoot API ingestion.</p>
-            </a>
-            <a class="article-card" data-category="qradar" href="/articles/what-is-qradar-siem.html">
-              <div class="article-meta"><span class="article-type">Part 1 · Foundations</span><span>IBM QRadar</span></div>
-              <h3>What Is IBM QRadar SIEM?</h3>
-              <p>An introduction to event and flow collection, correlation rules, offenses, investigation workflows, and compliance considerations.</p>
-            </a>
-            <a class="article-card" data-category="qradar" href="/articles/qradar-installation.html">
-              <div class="article-meta"><span class="article-type">Part 2 · Installation</span><span>IBM QRadar</span></div>
-              <h3>QRadar Installation: A Version-Aware Guide</h3>
-              <p>Choose the right install path, understand appliance roles, and validate a new deployment without relying on outdated release assumptions.</p>
-            </a>
-            <a class="article-card" data-category="qradar" href="/articles/qradar-health-check.html">
-              <div class="article-meta"><span class="article-type">Part 3 · Health checks</span><span>IBM QRadar</span></div>
-              <h3>QRadar Health Check: DrQ, Recon &amp; Cliniq</h3>
-              <p>A repeatable health-check workflow that explains what each tool checks, how to interpret results, and where its limits are.</p>
-            </a>
-            <a class="article-card" data-category="qradar" href="/articles/qradar-troubleshooting.html">
-              <div class="article-meta"><span class="article-type">Part 4 · Troubleshooting</span><span>IBM QRadar</span></div>
-              <h3>QRadar Troubleshooting: A Practical Checklist</h3>
-              <p>Structured triage for connectivity, service health, disk space, deployment consistency, logs, applications, and event-flow symptoms.</p>
-            </a>
-            <a class="article-card" data-category="qradar" href="/articles/qradar-operations-essentials.html">
-              <div class="article-meta"><span class="article-type">Part 5 · Operations</span><span>IBM QRadar</span></div>
-              <h3>QRadar Operations Essentials: Deployment, Capacity &amp; Services</h3>
-              <p>Understand standard and full configuration deployments, EPS/FPM licensing, service status commands, and safe operational practices.</p>
-            </a>
-            <a class="article-card" data-category="qradar-soar" data-tags="qradar-soar soar upgrade app-host disaster-recovery" href="/articles/qradar-soar-upgrade-guide.html">
-              <div class="article-meta"><span class="article-type">SOAR · Upgrade guide</span><span>IBM QRadar SOAR</span></div>
-              <h3>IBM QRadar SOAR Upgrade Guide: Preparation, Execution &amp; Validation</h3>
-              <p>Follow IBM's Virtual Appliance upgrade flow, verify sequential release paths, monitor database and search snapshots, and plan App Host/DR and post-upgrade checks.</p>
-            </a>
-            <a class="article-card" data-category="qradar" href="/articles/qradar-upgrade-guide.html">
-              <div class="article-meta"><span class="article-type">Part 6 · Upgrade guide</span><span>IBM QRadar</span></div>
-              <h3>IBM QRadar Upgrade Guide: Planning, Execution &amp; Validation</h3>
-              <p>A comprehensive runbook for upgrade paths, prechecks, backups, HA and managed hosts, installation, post-upgrade testing, and recovery planning.</p>
-            </a>
-            <a class="article-card" data-category="qradar" href="/articles/qradar-high-availability.html">
-              <div class="article-meta"><span class="article-type">Part 7 · High availability</span><span>IBM QRadar</span></div>
-              <h3>QRadar High Availability: Setup, Failover &amp; Recovery</h3>
-              <p>Understand primary/secondary roles, virtual IP addressing, HA prerequisites, controlled failover, failback, and troubleshooting.</p>
-            </a>
-            <a class="article-card" data-category="qradar" href="/articles/qradar-migration-guide.html">
-              <div class="article-meta"><span class="article-type">Part 8 · Migration</span><span>IBM QRadar</span></div>
-              <h3>QRadar Migration Guide: Same or New IP Address</h3>
-              <p>Plan a Console replacement, restore configuration, transfer Ariel data, migrate certificates, and validate event/flow processing.</p>
-            </a>
-            <a class="article-card" data-category="qradar" href="/articles/qradar-routing-rules.html">
-              <div class="article-meta"><span class="article-type">Part 9 · Routing Rules</span><span>IBM QRadar</span></div>
-              <h3>QRadar Routing Rules: A Practical Guide</h3>
-              <p>Understand Online vs Offline forwarding, routing options, safe filtering, and how to verify data delivery.</p>
-            </a>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="section wrap" id="connect">
-      <div class="connect-panel">
-        <div class="connect-copy">
-          <div class="kicker">05 / Contact</div>
-          <h2>Let's connect <span class="gradient-text">and share knowledge.</span></h2>
-          <p>Have a cybersecurity inquiry, want to discuss an opportunity, or need my CV? Choose a contact option below and your message will be pre-filled for you.</p>
-          <div class="contact-details">
-            <a href="mailto:as.ga2019@gmail.com?subject=Inquiry%20from%20Your%20Portfolio&amp;body=Hi%20Ashraf%2C%0A%0AI%20visited%20your%20website%20and%20would%20like%20to%20connect%20with%20you%20regarding%20a%20cybersecurity%20inquiry.%0A%0ABest%20regards%2C">as.ga2019@gmail.com</a>
-            <span class="contact-separator" aria-hidden="true">·</span>
-            <a href="https://wa.me/966598243358?text=Hi%20Ashraf%2C%20I%20visited%20your%20website%20and%20would%20like%20to%20connect%20with%20you%20regarding%20a%20cybersecurity%20inquiry." target="_blank" rel="noopener noreferrer">+966 59 824 3358</a>
-          </div>
-        </div>
-        <div class="connect-actions">
-          <a class="btn btn-primary" href="mailto:as.ga2019@gmail.com?subject=Inquiry%20from%20Your%20Portfolio&amp;body=Hi%20Ashraf%2C%0A%0AI%20visited%20your%20website%20and%20would%20like%20to%20connect%20with%20you%20regarding%20a%20cybersecurity%20inquiry.%0A%0ABest%20regards%2C">Email Inquiry ↗</a>
-          <a class="btn btn-whatsapp" href="https://wa.me/966598243358?text=Hi%20Ashraf%2C%20I%20visited%20your%20website%20and%20would%20like%20to%20connect%20with%20you%20regarding%20a%20cybersecurity%20inquiry." target="_blank" rel="noopener noreferrer">WhatsApp ↗</a>
-          <a class="btn btn-secondary" href="mailto:as.ga2019@gmail.com?subject=Request%20for%20CV&amp;body=Hi%20Ashraf%2C%0A%0AI%20visited%20your%20website%20and%20would%20like%20to%20request%20a%20copy%20of%20your%20CV.%0A%0AThank%20you.">Request My CV ↗</a>
-          <a class="btn btn-secondary" href="https://www.linkedin.com/in/1elrawy/" target="_blank" rel="noopener noreferrer">LinkedIn ↗</a>
-          <a class="btn btn-secondary" href="https://github.com/agamalx0" target="_blank" rel="noopener noreferrer">GitHub ↗</a>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <footer><div class="footer-inner wrap"><span>© <span id="year">2026</span> Ashraf Gamal</span><div class="footer-links"><a href="#home">Back to top ↑</a><a href="https://www.linkedin.com/in/1elrawy/" target="_blank" rel="noopener noreferrer">LinkedIn</a><a href="https://github.com/agamalx0" target="_blank" rel="noopener noreferrer">GitHub</a></div></div></footer>
-  <script>
-    document.getElementById('year').textContent = new Date().getFullYear();
-
-    (() => {
-      const carousel = document.getElementById('articleCarousel');
-      const viewport = document.getElementById('articleViewport');
-      const track = document.getElementById('articleTrack');
-      const counter = document.getElementById('articleCount');
-      const previous = document.getElementById('articlesPrev');
-      const next = document.getElementById('articlesNext');
-      const filters = Array.from(document.querySelectorAll('.article-filter'));
-      if (!carousel || !viewport || !track || !counter || !previous || !next) return;
-
-      const allCards = Array.from(track.querySelectorAll('.article-card'));
-      let cards = [];
-      let index = 0;
-      let visibleCount = 2;
-      let step = 0;
-
-      const render = (animate = true) => {
-        track.style.transition = animate ? '' : 'none';
-        track.style.transform = 'translateX(-' + (index * step) + 'px)';
-        const last = Math.max(0, cards.length - visibleCount);
-        previous.disabled = index <= 0;
-        next.disabled = index >= last;
-        const start = cards.length ? index + 1 : 0;
-        const end = Math.min(cards.length, index + visibleCount);
-        counter.textContent = start === end
-          ? String(end).padStart(2, '0') + ' / ' + String(cards.length).padStart(2, '0')
-          : String(start).padStart(2, '0') + '–' + String(end).padStart(2, '0') + ' / ' + String(cards.length).padStart(2, '0');
-        if (!animate) requestAnimationFrame(() => { track.style.transition = ''; });
-      };
-
-      const measure = () => {
-        if (!cards.length) {
-          step = 0;
-          visibleCount = 1;
-          render(false);
-          return;
-        }
-        const trackStyle = window.getComputedStyle(track);
-        const gap = parseFloat(trackStyle.columnGap || trackStyle.gap) || 0;
-        step = cards[0].getBoundingClientRect().width + gap;
-        visibleCount = Math.max(1, Math.min(cards.length, Math.round((viewport.clientWidth + gap) / step)));
-        index = Math.min(index, Math.max(0, cards.length - visibleCount));
-        render(false);
-      };
-
-      const applyFilter = (category) => {
-        filters.forEach(button => button.setAttribute('aria-pressed', String(button.dataset.filter === category)));
-        const matchesFilter = (card) => card.dataset.category === category || (card.dataset.tags || '').split(/\s+/).includes(category);
-        allCards.forEach(card => { card.style.display = matchesFilter(card) ? '' : 'none'; });
-        cards = allCards.filter(matchesFilter);
-        index = 0;
-        track.style.transform = 'translateX(0)';
-        measure();
-      };
-
-      filters.forEach(button => button.addEventListener('click', () => applyFilter(button.dataset.filter)));
-      previous.addEventListener('click', () => { index = Math.max(0, index - 1); render(true); });
-      next.addEventListener('click', () => { index = Math.min(Math.max(0, cards.length - visibleCount), index + 1); render(true); });
-      carousel.addEventListener('keydown', (event) => {
-        if (!carousel.contains(document.activeElement)) return;
-        if (event.key === 'ArrowLeft') { event.preventDefault(); index = Math.max(0, index - 1); render(true); }
-        else if (event.key === 'ArrowRight') { event.preventDefault(); index = Math.min(Math.max(0, cards.length - visibleCount), index + 1); render(true); }
-      });
-
-      if ('ResizeObserver' in window) {
-        const observer = new ResizeObserver(measure);
-        observer.observe(viewport);
-      } else {
-        window.addEventListener('resize', measure);
-      }
-      applyFilter('wazuh');
-    })();
-  </script>
+<script>
+document.getElementById('year').textContent=new Date().getFullYear();
+const themeToggleBtn=document.getElementById('theme-toggle');
+const themeIcon=document.getElementById('theme-icon');
+const htmlElement=document.documentElement;
+function applyTheme(isDark){if(isDark){htmlElement.classList.add('dark');themeIcon.innerText='MODE: DARK';}else{htmlElement.classList.remove('dark');themeIcon.innerText='MODE: LIGHT';}try{localStorage.setItem('theme',isDark?'dark':'light');}catch(e){}}
+let savedTheme=null;try{savedTheme=localStorage.getItem('theme');}catch(e){}
+const systemPrefersDark=window.matchMedia('(prefers-color-scheme: dark)').matches;
+applyTheme(savedTheme?savedTheme==='dark':systemPrefersDark);
+themeToggleBtn.addEventListener('click',()=>applyTheme(!htmlElement.classList.contains('dark')));
+const filterBtns=document.querySelectorAll('.filter-btn');
+const articles=document.querySelectorAll('.article-item');
+function applyWazuhFilter(){filterBtns.forEach(btn=>{btn.classList.add('active');btn.setAttribute('aria-pressed','true');});articles.forEach(article=>{article.style.display=article.getAttribute('data-category').split(' ').includes('wazuh')?'block':'none';});}
+filterBtns.forEach(btn=>btn.addEventListener('click',applyWazuhFilter));applyWazuhFilter();
+</script>
 </body>
 </html>
