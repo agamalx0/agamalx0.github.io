@@ -23,7 +23,7 @@
 <div class="meta"><span>By Ashraf Gamal</span><span>Updated 16 October 2026</span><span class="pill">Reference design · Wazuh 4.14.7 diagram</span><span>Approx. 12–15 min read</span></div>
 </header>
 <div class="wrap layout">
-<aside class="toc"><strong>In this guide</strong><a href="#scope">Scope and evidence</a><a href="#architecture">Architecture overview</a><a href="#access-model">Access model</a><a href="#identity">1. AD and LDAPS</a><a href="#data-labels">2. Label telemetry</a><a href="#dls">3. Document-level security</a><a href="#tenants">4. Dashboard tenants</a><a href="#validation">5. Isolation tests</a><a href="#troubleshooting">Troubleshooting</a><a href="#hardening">Security checklist</a><a href="#evidence">Evidence and filenames</a><a href="#references">Official references</a></aside>
+<aside class="toc"><strong>In this guide</strong><a href="#scope">Design scope</a><a href="#architecture">Architecture overview</a><a href="#access-model">Access model</a><a href="#identity">AD and LDAPS</a><a href="#data-labels">Customer labels</a><a href="#dls">Indexer roles and DLS</a><a href="#tenants">Dashboard tenants</a><a href="#validation">Isolation tests</a><a href="#troubleshooting">Troubleshooting</a><a href="#hardening">Production hardening</a><a href="#evidence">Evidence gallery</a><a href="#references">Official documentation</a></aside>
 <article class="content">
 
 <div class="callout warning"><strong>Version context:</strong> The architecture diagram identifies Wazuh 4.14.7. The official release notes list 4.14.9 as released on 14 October 2026. Confirm the version installed in your environment and use its matching documentation before applying version-specific changes. <a href="https://documentation.wazuh.com/current/release-notes/" target="_blank" rel="noopener noreferrer">Wazuh release notes ↗</a></div>
@@ -33,7 +33,7 @@
 <p>The evidence gallery shows directory groups and users, LDAP group lookup, customer dashboards, a Client A cross-customer access test, and the operator tenant list. These screenshots document specific UI results; role configuration and negative-access tests are also required to validate the full authorization path.</p>
 
 <h2 id="architecture">2. Architecture overview</h2>
-<figure class="figure"><img src="/assets/images/wazuh-mssp-architecture-overview.svg" alt="Reference diagram showing Active Directory over LDAPS, a single-node Wazuh manager/indexer/dashboard deployment, Client A and Client B dashboard tenants, an SOC operations tenant, agent labels, indexer roles, and document-level security." loading="lazy"><figcaption>Reference architecture redrawn from the supplied diagram. The original diagram labels Wazuh 4.14.7. The single-node layout explains the concept; it is not a high-availability production topology.</figcaption></figure>
+<figure class="figure"><img src="/assets/images/wazuh-mssp-architecture-overview.svg" alt="Reference diagram showing Active Directory over LDAPS, a single-node Wazuh manager/indexer/dashboard deployment, Client A and Client B dashboard tenants, an SOC operations tenant, agent labels, indexer roles, and document-level security." loading="lazy"><figcaption>The diagram shows the shared Wazuh components, identity source, customer tenants, and SOC-operations workspace. Manager, Indexer, and Dashboard are drawn on one node to explain the access model; this is not a high-availability topology.</figcaption></figure>
 <div class="table-wrap"><table><thead><tr><th>Component</th><th>Responsibility</th><th>Important design point</th></tr></thead><tbody>
 <tr><td>Active Directory</td><td>Central identity store and group membership.</td><td>Separate security groups determine expected backend roles.</td></tr>
 <tr><td>LDAPS</td><td>Encrypts directory communication on TCP 636.</td><td>Trust the issuing CA and verify the server hostname.</td></tr>
@@ -46,7 +46,7 @@
 
 <h2 id="access-model">3. Access model: identity, data, and workspace</h2>
 <p>Keep these controls separate: authentication identifies the user; indexer permissions determine which documents the user can read; tenant permissions govern dashboard objects and saved searches. OpenSearch DLS filters read/search results, not writes. Restrict write permissions separately. <a href="https://docs.opensearch.org/latest/security/access-control/document-level-security/" target="_blank" rel="noopener noreferrer">OpenSearch DLS documentation ↗</a></p>
-<div class="table-wrap"><table><thead><tr><th>AD group (illustrative)</th><th>Indexer role (illustrative)</th><th>Data scope</th><th>Dashboard tenant</th></tr></thead><tbody>
+<div class="table-wrap"><table><thead><tr><th>Directory group (example)</th><th>Indexer role (example)</th><th>Data scope</th><th>Dashboard tenant</th></tr></thead><tbody>
 <tr><td><code>SOC-MSSP-ClientA</code></td><td><code>mssp_client_a_alerts_read</code></td><td>Alerts labeled <code>Client-A</code> only</td><td><code>client-a</code></td></tr>
 <tr><td><code>SOC-MSSP-ClientB</code></td><td><code>mssp_client_b_alerts_read</code></td><td>Alerts labeled <code>Client-B</code> only</td><td><code>client-b</code></td></tr>
 <tr><td><code>SOC-MSSP-Operators</code></td><td><code>mssp_soc_operators_alerts_read</code></td><td>Customer and SOC data explicitly authorized for operators</td><td><code>soc-operations</code></td></tr>
@@ -75,7 +75,7 @@
 <p>DLS can filter only on fields that exist in indexed documents. Wazuh's documented group-restricted access example uses <code>agent.labels.group</code> for alerts. A centralized agent configuration can add a label like this to a customer's agents:</p>
 <pre><code>&lt;agent_config&gt;
   &lt;labels&gt;
-    &lt;label key="group"&gt;client-a&lt;/label&gt;
+    &lt;label key="group"&gt;Client-A&lt;/label&gt;
   &lt;/labels&gt;
 &lt;/agent_config&gt;</code></pre>
 <p>Configure separate labels for Client B and SOC operations. Before creating DLS queries, inspect indexed alert documents and confirm the field path and exact value. New labels apply to new alerts; older documents may not contain them.</p>
@@ -211,7 +211,7 @@
 </ul>
 <p class="note">Use this as a design and validation reference, not as a drop-in deployment runbook. Confirm version compatibility, effective role permissions, and both allowed and denied access paths in the target environment.</p>
 
-<div class="contact-hook"><span class="hook-kicker">Discuss Wazuh MSSP architecture</span><p class="hook-title">Designing tenant isolation, SIEM access controls or a multi-customer SOC?</p><p>Reach out to discuss Wazuh engineering, identity integrations, security monitoring and practical SOC platform design.</p><div class="contact-links"><a href="mailto:as.ga2019@gmail.com?subject=Wazuh%20MSSP%20Architecture%20Inquiry&amp;body=Hi%20Ashraf%2C%0A%0AI%20read%20your%20Wazuh%20MSSP%20multi-tenant%20architecture%20note%20and%20would%20like%20to%20discuss%20identity%20integration%2C%20tenant%20isolation%2C%20or%20Wazuh%20architecture.%0A%0ABest%20regards%2C">Email me ↗</a><a href="https://wa.me/966598243358?text=Hi%20Ashraf%2C%20I%20read%20your%20Wazuh%20MSSP%20multi-tenant%20architecture%20note%20and%20would%20like%20to%20discuss%20identity%20integration%2C%20tenant%20isolation%2C%20or%20Wazuh%20architecture." target="_blank" rel="noopener noreferrer">WhatsApp ↗</a><a href="https://www.linkedin.com/in/1elrawy/" target="_blank" rel="noopener noreferrer">LinkedIn ↗</a></div></div>
+<div class="contact-hook"><span class="hook-kicker">Wazuh MSSP architecture</span><p class="hook-title">Multi-tenant SIEM design and access-control engineering</p><p>For Wazuh architecture, identity integration, or customer-isolation work, use one of the contact options below.</p><div class="contact-links"><a href="mailto:as.ga2019@gmail.com?subject=Wazuh%20MSSP%20Architecture%20Inquiry&amp;body=Hi%20Ashraf%2C%0A%0AI%20read%20your%20Wazuh%20MSSP%20multi-tenant%20architecture%20note%20and%20would%20like%20to%20discuss%20identity%20integration%2C%20tenant%20isolation%2C%20or%20Wazuh%20architecture.%0A%0ABest%20regards%2C">Email me ↗</a><a href="https://wa.me/966598243358?text=Hi%20Ashraf%2C%20I%20read%20your%20Wazuh%20MSSP%20multi-tenant%20architecture%20note%20and%20would%20like%20to%20discuss%20identity%20integration%2C%20tenant%20isolation%2C%20or%20Wazuh%20architecture." target="_blank" rel="noopener noreferrer">WhatsApp ↗</a><a href="https://www.linkedin.com/in/1elrawy/" target="_blank" rel="noopener noreferrer">LinkedIn ↗</a></div></div>
 <div class="related"><a href="/#articles"><small>ARTICLE LIBRARY</small><strong>← Back to all technical notes</strong></a><a href="/articles/wazuh-all-in-one-installation.html"><small>RELATED GUIDE</small><strong>Wazuh All-in-One: Installation &amp; Validation →</strong></a></div>
 </article></div>
 <footer class="footer"><div class="wrap footerinner"><span>© 2026 Ashraf Gamal · Technical notes</span><a href="/#articles">Back to the article library ↑</a></div></footer>
