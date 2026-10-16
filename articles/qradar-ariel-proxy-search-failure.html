@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en" class="dark">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#080a12">
+<meta name="description" content="Troubleshoot QRadar Log Activity filtered searches that fail with 'There was a problem connecting to the query server' while real-time streaming still works.">
+<title>QRadar Ariel Proxy Search Failure: Port 32011 Troubleshooting | Ashraf Gamal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&amp;display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/terminal-design.css">
+</head>
+<body>
+<header class="topbar"><nav class="nav wrap"><a class="brand" href="/">AG <span class="gradient">/ Notes</span></a><a class="back" href="/#articles">← Back to technical notes</a></nav></header>
+<header class="hero wrap">
+<div class="eyebrow">IBM QRadar SIEM · Search Troubleshooting</div>
+<h1>Log Activity search fails:<br><span class="gradient">Ariel Proxy and port 32011</span></h1>
+<p class="lede">When live streaming works but filtered Log Activity searches return “There was a problem connecting to the query server,” check Ariel Proxy startup and its search-data backlog before changing search files.</p>
+<div class="meta"><span>By Ashraf Gamal</span><span>Updated 17 October 2026</span><span class="pill">Backend troubleshooting</span><span>Approx. 5 min read</span></div>
+</header>
+<div class="wrap layout">
+<aside class="toc"><strong>In this guide</strong>
+<a href="#symptom">Symptom</a><a href="#cause">Likely cause</a><a href="#triage">Read-only triage</a><a href="#targeted-cleanup">Review search files</a><a href="#recovery">Recovery procedure</a><a href="#verify">Validate search</a><a href="#references">IBM references</a>
+</aside>
+<article class="content">
+<p class="personal-note"><strong>Personal note:</strong> This is an operational troubleshooting note based on the documented QRadar failure pattern. Confirm paths and procedure against the installed QRadar version and IBM Support guidance before making changes.</p>
+<div class="callout"><strong>Do not start with a wildcard delete.</strong><p style="margin:6px 0 0">Ariel search data may include active or retained search state. Removing files and restarting Ariel Proxy can interrupt searches. Identify the affected files first, preserve what is required, and use a maintenance window.</p></div>
+
+<h2 id="symptom">1. Confirm the failure pattern</h2>
+<ul>
+<li>The Log Activity tab displays real-time event streaming.</li>
+<li>Starting a filtered or saved search fails with <code>There was a problem connecting to the query server</code>.</li>
+<li>The same failure occurs with different filter criteria, rather than one specific AQL or filter causing the error.</li>
+</ul>
+<p>This pattern points to the search path, not necessarily event collection. Streaming and query execution are different workflows; working streaming alone does not prove the Ariel search service is ready.</p>
+
+<h2 id="cause">2. Why it can happen</h2>
+<p>When <code>ariel_proxy_server</code> starts, it loads search-related items from its transient data directory before it is ready to accept requests. A large number of files or accumulated search state can lengthen startup. If the Ariel listening socket on TCP <code>32011</code> is not listening when a search is submitted, the UI can return the query-server connection error.</p>
+<p>IBM lists TCP <code>32011</code> as the Ariel listening port used for database searches, progress information, and related commands. The exact transient path can vary by filesystem layout: IBM's file-analysis guidance references <code>/transient/ariel_proxy.ariel_proxy_server/data/</code>, while some environments expose it under <code>/store/transient/</code>. Confirm the actual mounted path on the target appliance before proceeding.</p>
+
+<h2 id="triage">3. Start with read-only checks</h2>
+<p>Run these checks on the QRadar Console as an approved administrator. Capture output before restarting services or removing files.</p>
+<pre class="code"><code>systemctl status ariel_proxy_server --no-pager
+df -h
+ss -lntp | grep ':32011'</code></pre>
+<p>Inspect the size of the transient Ariel Proxy directory. Use the path that exists on your host:</p>
+<pre class="code"><code>du -sh /transient/ariel_proxy.ariel_proxy_server 2>/dev/null
+du -sh /store/transient/ariel_proxy.ariel_proxy_server 2>/dev/null</code></pre>
+<ul>
+<li>If the service is still starting and port <code>32011</code> is not listening, inspect service logs and startup progress.</li>
+<li>If the transient filesystem is near capacity or the Ariel Proxy directory contains an unusually large number of files, identify the search data responsible before removing anything.</li>
+<li>If the service is active and the port is listening, investigate other causes—including query criteria, search service logs, resource pressure, and version-specific issues—instead of deleting files by default.</li>
+</ul>
+
+<h2 id="targeted-cleanup">4. Identify large or accumulated search files</h2>
+<p>IBM recommends identifying the files responsible for transient usage and correlating them with saved searches or search results before deleting them. These commands are for inspection only:</p>
+<pre class="code"><code>find /transient -xdev -type f -size +200M -exec ls -lh {} \;
+ls -lhSr /transient/ariel_proxy.ariel_proxy_server/data/
+ls -lh /transient/ariel_proxy.ariel_proxy_server/data/ | wc -l</code></pre>
+<p>If your deployment uses <code>/store/transient/</code>, substitute the confirmed path. The <code>200M</code> threshold is an example for finding large files; many smaller files can also delay startup.</p>
+<p>Review QRadar search activity and retention settings to understand why data accumulated. IBM's support note provides an AQL example for identifying users who executed searches and explains how search-result retention can affect transient storage. Align retention with your organization's policy rather than reducing it blindly.</p>
+
+<h2 id="recovery">5. Recovery procedure</h2>
+<p>Use this only after identifying the relevant search data and confirming the action with your change process or IBM Support. Restarting Ariel Proxy can cause searches to fail and may reset Ariel queues; schedule a maintenance window when required.</p>
+<ol>
+<li>Confirm the exact transient directory and identify specific files eligible for removal. Preserve required search data and check available space before creating a backup under <code>/store</code>.</li>
+<li>If a backup is required, store the selected files in an approved backup location and verify the copy before deleting anything. Do not back up the entire directory to a nearly full filesystem.</li>
+<li>Stop the service only when the approved recovery plan calls for it:</li>
+</ol>
+<pre class="code"><code>systemctl stop ariel_proxy_server
+systemctl status ariel_proxy_server --no-pager</code></pre>
+<ol start="4">
+<li>Remove only the specifically identified search files and their related files, if IBM's procedure confirms they belong to the same search ID. Avoid a blanket <code>rm .../data/*</code> unless IBM Support has explicitly approved that option for your case and you understand the impact.</li>
+<li>Restart Ariel Proxy:</li>
+</ol>
+<pre class="code"><code>systemctl start ariel_proxy_server
+systemctl status ariel_proxy_server --no-pager</code></pre>
+<p>If your approved procedure explicitly requires restarting the service in one operation, use the version-appropriate IBM instructions. Do not combine stop, delete, and restart commands into an unattended block.</p>
+
+<h2 id="verify">6. Verify recovery</h2>
+<pre class="code"><code>ss -lntp | grep ':32011'</code></pre>
+<p>Confirm that the Ariel listening port is in <code>LISTEN</code> state. Then run a narrow Log Activity search over a recent time range, verify the results, and check that the service remains healthy. If the port stays closed or searches continue to fail, preserve the service logs and open or continue an IBM Support case rather than repeating cleanup.</p>
+
+<div class="info"><strong>Practical diagnostic split</strong><p style="margin:6px 0 0">Live streaming works + filtered searches fail + TCP 32011 is not listening = investigate Ariel Proxy startup and accumulated search data. If TCP 32011 is listening, continue with query, service-log, and resource diagnostics.</p></div>
+
+<h2 id="references">7. IBM references</h2>
+<ul>
+<li><a href="https://www.ibm.com/support/pages/qradar-ariel-proxy-server-error-%E2%80%9Cthere-was-problem-connecting-query-server%E2%80%9D-when-performing-filtered-searches-log-activity-port-32011-not-listening" target="_blank" rel="noopener noreferrer">IBM Support — Ariel Proxy error when filtered Log Activity searches fail (port 32011 not listening)</a></li>
+<li><a href="https://www.ibm.com/support/pages/node/882072" target="_blank" rel="noopener noreferrer">IBM Support — Identify and remove large search data files from the transient Ariel Proxy directory</a></li>
+<li><a href="https://www.ibm.com/docs/en/qsip/7.5.0?topic=cpsubq-qradar-port-usage" target="_blank" rel="noopener noreferrer">IBM Documentation — QRadar port usage (TCP 32011)</a></li>
+</ul>
+<p class="note">This article is a focused troubleshooting reference, not a universal cleanup runbook. File paths, service behavior, and supported recovery steps can vary by QRadar version and deployment. Use IBM Support's procedure for your specific environment.</p>
+
+<div class="contact-hook">
+<span class="hook-kicker">IBM QRadar SIEM</span>
+<p class="hook-title">Search failures, Ariel services, and QRadar operations</p>
+<p>For technical discussion around QRadar search troubleshooting and SIEM operations, use one of the contact options below.</p>
+<div class="contact-links"><a href="mailto:as.ga2019@gmail.com?subject=QRadar%20Ariel%20Proxy%20search%20issue">Email ↗</a><a href="https://wa.me/966598243358?text=Hi%20Ashraf%2C%20I%20read%20your%20QRadar%20Ariel%20Proxy%20search%20troubleshooting%20note." target="_blank" rel="noopener noreferrer">WhatsApp ↗</a><a href="https://www.linkedin.com/in/1elrawy/" target="_blank" rel="noopener noreferrer">LinkedIn ↗</a></div>
+</div>
+<div class="related"><a href="/articles/qradar-troubleshooting.html"><small>RELATED GUIDE</small><strong>← QRadar troubleshooting checklist</strong></a><a href="/articles/qradar-tomcat-cache-ui-troubleshooting.html"><small>RELATED GUIDE</small><strong>QRadar GUI and Tomcat recovery →</strong></a></div>
+</article>
+</div>
+<footer class="footer"><div class="wrap footerinner"><span>© <span id="year">2026</span> Ashraf Gamal</span><a href="/">Home</a></div></footer>
+<script>document.getElementById('year').textContent=new Date().getFullYear();</script>
+<script src="/assets/js/terminal-design.js"></script>
+</body>
+</html>
