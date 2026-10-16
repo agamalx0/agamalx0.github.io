@@ -1,6 +1,6 @@
 (() => {
   const root = document.documentElement;
-  const key = 'ag-portfolio-theme';
+  const key = 'theme';
   let stored = null;
   try { stored = localStorage.getItem(key); } catch (_) {}
   const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
