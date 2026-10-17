@@ -37,7 +37,6 @@
 <div class="wrap layout">
 <aside class="toc"><strong>On this page</strong><a href="#scope">1. Scope and decision</a><a href="#prep">2. Pre-migration checklist</a><a href="#same-ip">3. Same IP migration</a><a href="#new-ip">4. New IP migration</a><a href="#data">5. Data transfer notes</a><a href="#validate">6. Validation and rollback</a><a href="#references">Official references</a></aside>
 <article class="content">
-<p class="personal-note"><strong>Personal note:</strong> This article reflects my experience and is for educational purposes only—not official vendor guidance. Always verify procedures against current vendor documentation.</p>
 <div class="callout"><strong>Important: this is a planned Console replacement workflow for non-HA deployments.</strong><p style="margin:6px 0 0">Do not use these steps as a substitute for a supported HA migration, disaster-recovery procedure, managed-host migration, or upgrade. Confirm the procedure for the exact QRadar version and appliance type before making changes. A migration can interrupt Console administration, event/flow visibility, and integrations. Schedule a maintenance window and establish a tested rollback plan.</p></div>
 <h2 id="scope">1. Choose the correct migration path</h2>
 <p>IBM provides separate procedures for replacing a Console while keeping the existing IP address and replacing one with a new IP address. Both flows assume the managed hosts remain in the deployment and that the new Console is installed at a matching QRadar software version/fix level before the configuration is restored.</p>
@@ -110,11 +109,10 @@ sh syncAriel.sh -i &lt;new_Console_IP&gt;</code></pre>
 <li><a href="https://www.securitylearningacademy.com/course/view.php?id=5097" target="_blank" rel="noopener noreferrer">IBM Security Learning Academy — Migrating a QRadar Console (same IP path)</a></li>
 <li><a href="https://www.securitylearningacademy.com/course/view.php?id=5241" target="_blank" rel="noopener noreferrer">IBM Security Learning Academy — Migrating a QRadar Console (new IP path)</a></li>
 </ul>
-<p class="subtle">This guide is a practical checklist, not a substitute for the complete IBM procedure. The new-IP documentation link above is for QRadar 7.5, while the same-IP link is for 7.6; use the corresponding documentation version for the system being migrated. Menu names, network tooling, host firewall steps, data transfer tooling, and supported restore options may differ by release. Validate every command and each step against IBM documentation before executing in production.</p>
+<p class="subtle">Use the IBM procedure for the relevant QRadar release. The linked new-IP migration guide covers QRadar 7.5, while the same-IP guide covers 7.6; select documentation that matches the system being migrated. Network tooling, firewall handling, data-transfer steps, and restore options can differ by release. Validate every command before production use.</p>
 <div class="contact-hook">
-<span class="hook-kicker">Need help with your environment?</span>
-<p class="hook-title">Replacing a QRadar Console? Reach out to review the migration approach, IP cutover, and validation plan before your maintenance window.</p>
-<p>For a technical inquiry or service request, reach out through the channel that works best for you.</p>
+<span class="hook-kicker">IBM QRadar SIEM</span>
+<p class="hook-title">For QRadar Console replacement planning, contact me before the maintenance window with the source and target versions, IP plan, and data-retention requirements.</p>
 <div class="contact-links"><a href="mailto:as.ga2019@gmail.com?subject=QRadar%20migration%20inquiry&amp;body=Hi%20Ashraf%2C%0A%0AI%20read%20your%20QRadar%20migration%20guide%20and%20would%20like%20to%20discuss%20a%20Console%20replacement%20or%20migration%20plan.%0A%0ABest%20regards%2C">Email me ↗</a><a href="https://wa.me/966598243358?text=Hi%20Ashraf%2C%20I%20read%20your%20QRadar%20migration%20guide%20and%20would%20like%20to%20discuss%20a%20Console%20replacement%20or%20migration%20plan." target="_blank" rel="noopener noreferrer">WhatsApp ↗</a><a href="https://www.linkedin.com/in/1elrawy/" target="_blank" rel="noopener noreferrer">LinkedIn ↗</a></div>
 </div>
 <div class="related"><a href="/articles/qradar-high-availability.html"><small>PART 7 · PREVIOUS</small><strong>← QRadar high availability</strong></a><a href="/articles/qradar-routing-rules.html"><small>PART 9 · NEXT</small><strong>QRadar routing rules →</strong></a></div>
