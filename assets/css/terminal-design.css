@@ -114,3 +114,24 @@ html:not(.dark) .content pre{background:#101614!important;border-color:#293b33!i
 .related a{display:block;min-width:0;padding:14px;border:1px solid var(--site-border);overflow-wrap:anywhere}
 .related small{display:block;margin-bottom:5px}
 .related strong{display:block;margin-top:5px;overflow-wrap:anywhere}
+
+/* Interactive cursor spotlight */
+#spotlight{
+  position:fixed!important;
+  inset:0!important;
+  z-index:40!important;
+  pointer-events:none!important;
+  opacity:0;
+  background:radial-gradient(
+    600px circle at var(--mouse-x,50%) var(--mouse-y,50%),
+    rgba(0,245,155,.065) 0%,
+    rgba(167,139,250,.025) 28%,
+    transparent 62%
+  );
+  mix-blend-mode:screen;
+  transition:opacity .3s ease;
+  will-change:opacity,background;
+}
+#spotlight.is-visible{opacity:1}
+@media(hover:none),(pointer:coarse){#spotlight{display:none!important}}
+@media(prefers-reduced-motion:reduce){#spotlight{transition:none}}
