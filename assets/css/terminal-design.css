@@ -135,3 +135,9 @@ html:not(.dark) .content pre{background:#101614!important;border-color:#293b33!i
 #spotlight.is-visible{opacity:1}
 @media(hover:none),(pointer:coarse){#spotlight{display:none!important}}
 @media(prefers-reduced-motion:reduce){#spotlight{transition:none}}
+
+/* Shared footer site-visit metric */
+.site-visits{display:inline-flex;align-items:center;gap:9px;white-space:nowrap;font:10px/1.6 "JetBrains Mono",monospace;letter-spacing:.06em;text-transform:uppercase;color:var(--site-subtle)}
+.site-visits::before{content:"//";color:var(--site-green)}
+.site-visits-label{color:var(--site-muted)}
+.site-visits .site-visits-count{color:var(--site-green)!important;font:700 11px/1.4 "JetBrains Mono",monospace!important;font-variant-numeric:tabular-nums}
