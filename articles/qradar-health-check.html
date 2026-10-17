@@ -37,7 +37,6 @@
 <div class="wrap layout">
 <aside class="toc"><strong>In this guide</strong><a href="#scope">Scope and preparation</a><a href="#drq">1. DrQ checks</a><a href="#recon">2. Recon status</a><a href="#cliniq">3. Cliniq</a><a href="#workflow">Suggested workflow</a><a href="#limitations">What a health check misses</a><a href="#references">References</a></aside>
 <article class="content">
-<p class="personal-note"><strong>Personal note:</strong> This article reflects my experience and is for educational purposes only—not official vendor guidance. Always verify procedures against current vendor documentation.</p>
 <div class="info"><strong>Quick distinction</strong><p style="margin:6px 0 0"><code>drq</code> runs QRadar health checks for the current host. <code>recon ps</code> is primarily used to inspect QRadar application workloads and their status. <code>cliniq</code> is another QRadar health-check utility. None of these commands alone proves the full deployment is healthy.</p></div>
 <h2 id="scope">1. Define the scope before running checks</h2>
 <p>A health check is most useful when it is tied to a purpose: routine operations, investigation of a known issue, a planned change, or a pre-upgrade review. Record the QRadar release/update package, host role (Console, Event Collector, Event Processor, App Host, or other managed host), and the reason for the check.</p>
@@ -85,11 +84,10 @@
 <li><a href="https://www.ibm.com/docs/en/qsip/7.5.0?topic=upgrading-preparation-checklist-qradar-upgrades" target="_blank" rel="noopener noreferrer">IBM: Preparation checklist for QRadar upgrades</a></li>
 <li><a href="https://www.ibm.com/support/pages/qradar-upgrade-75-fails-%E2%80%9Cunable-find-cliniq-binary-optqradarsupportcliniq%E2%80%9D-error-%E2%80%93-resolve-missing-cliniq-symlink" target="_blank" rel="noopener noreferrer">IBM Support: Missing Cliniq binary during upgrade</a></li>
 </ul>
-<p class="note">These procedures are operational guidance, not permission to modify a production QRadar appliance. Check the release-specific IBM documentation and follow your organization's change-management process.</p>
+<p class="note">Run these checks with approved access. Before changing a production appliance, follow the procedure for your QRadar release and your organization's change process.</p>
 <div class="contact-hook">
-<span class="hook-kicker">Need help with your environment?</span>
-<p class="hook-title">Want to understand your QRadar health before an upgrade—or get a clearer view of a recurring issue? Let’s discuss a targeted health check.</p>
-<p>For a technical inquiry or service request, reach out through the channel that works best for you.</p>
+<span class="hook-kicker">IBM QRadar SIEM</span>
+<p class="hook-title">For pre-upgrade readiness or recurring QRadar issues, contact me to arrange a health check scoped to the affected hosts and services.</p>
 <div class="contact-links"><a href="mailto:as.ga2019@gmail.com?subject=QRadar%20health%20check%20inquiry&amp;body=Hi%20Ashraf%2C%0A%0AI%20read%20your%20QRadar%20health-check%20guide%20and%20would%20like%20to%20discuss%20a%20health%20check%20or%20operational%20issue.%0A%0ABest%20regards%2C">Email me ↗</a><a href="https://wa.me/966598243358?text=Hi%20Ashraf%2C%20I%20read%20your%20QRadar%20health-check%20guide%20and%20would%20like%20to%20discuss%20a%20health%20check%20or%20operational%20issue." target="_blank" rel="noopener noreferrer">WhatsApp ↗</a><a href="https://www.linkedin.com/in/1elrawy/" target="_blank" rel="noopener noreferrer">LinkedIn ↗</a></div>
 </div>
 <div class="related"><a href="/articles/qradar-installation.html"><small>PART 2 · PREVIOUS GUIDE</small><strong>← QRadar installation</strong></a><a href="/articles/qradar-troubleshooting.html"><small>PART 4 · NEXT GUIDE</small><strong>QRadar troubleshooting →</strong></a></div>
