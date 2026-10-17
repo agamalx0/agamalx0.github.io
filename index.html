@@ -68,6 +68,13 @@ a:focus-visible,button:focus-visible{outline:2px solid #00f59b;outline-offset:3p
 #spotlight.is-visible{opacity:1}
 @media(hover:none),(pointer:coarse){#spotlight{display:none!important}}
 @media(prefers-reduced-motion:reduce){#spotlight{transition:none}}
+
+/* Footer GoatCounter metric */
+.site-visits{display:inline-flex;align-items:center;gap:9px;white-space:nowrap;align-self:center;font:10px/1.6 "JetBrains Mono",monospace;letter-spacing:.06em;text-transform:uppercase;color:#737985}
+.site-visits::before{content:"//";color:#059669}
+.site-visits-label{color:#737985}
+.site-visits .site-visits-count{color:#059669;font:700 11px/1.4 "JetBrains Mono",monospace;font-variant-numeric:tabular-nums}
+.dark .site-visits::before,.dark .site-visits .site-visits-count{color:#00f59b}
 </style>
 </head>
 <body class="font-mono bg-brand-surfaceLight dark:bg-brand-surfaceDark text-brand-textLight dark:text-brand-textDark transition-colors duration-200 antialiased selection:bg-brand-green selection:text-black">
@@ -392,5 +399,6 @@ if(spotlightMedia.matches&&!reduceMotionMedia.matches){
  window.addEventListener('blur',()=>spotlight.classList.remove('is-visible'));
 }
 </script>
+<script src="/assets/js/site-visits.js"></script>
 </body>
 </html>
