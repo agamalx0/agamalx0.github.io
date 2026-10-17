@@ -37,7 +37,6 @@
 <div class="wrap layout">
 <aside class="toc"><strong>In this guide</strong><a href="#deployment">1. Deployment types</a><a href="#cli">2. CLI deployment cautions</a><a href="#capacity">3. EPS and FPM capacity</a><a href="#license">4. Reviewing licenses</a><a href="#systemctl">5. systemctl basics</a><a href="#workflow">6. Safe operational workflow</a><a href="#references">References</a></aside>
 <article class="content">
-<p class="personal-note"><strong>Personal note:</strong> This article reflects my experience and is for educational purposes only—not official vendor guidance. Always verify procedures against current vendor documentation.</p>
 <div class="callout"><strong>Production safety</strong><p style="margin:6px 0 0">Deployment operations and service restarts can affect log processing or service availability. Prefer the QRadar UI and the procedure documented for your exact release. Do not run internal deployment scripts or restart QRadar services just because a generic Linux command is available.</p></div>
 <h2 id="deployment">1. Understand QRadar deployment types</h2>
 <p>QRadar saves configuration changes in a staging area. Changes must be deployed before they become active in the production configuration. The deployment method depends on the type of change; a “normal deploy” is commonly used informally to mean the standard <em>Deploy Changes</em> action in the UI.</p>
@@ -61,7 +60,7 @@
 </ul>
 <p>Events are records produced by systems, applications, security devices, and other log sources. Flows represent network communications aggregated according to flow attributes. They are different telemetry types and consume different capacity allocations.</p>
 <p>Both the license pool and hardware limits matter. A license entitlement is not a guarantee that a given appliance can process an unlimited rate; capacity allocations need to align with the appliance role and hardware capability.</p>
-<h3>What happens when the rate is too high?</h3>
+<h3>Handling sustained rate overload</h3>
 <p>It is not accurate to say that every EPS/FPM overage immediately drops all excess telemetry. Depending on the type of data and the condition, QRadar may queue data for later processing, which delays event processing and offense generation. Sustained overload can create a growing backlog; flow capacity limits can also produce overflow records that omit some flow detail. Therefore, capacity alerts should be investigated rather than ignored.</p>
 <div class="callout"><strong>Size for peaks, not only averages.</strong><p style="margin:6px 0 0">A host operating close to its allocated EPS/FPM capacity has less room to absorb bursts. Persistent overload is not solved by increasing queue size alone. Review rates, queue behavior, hardware limits, license allocations, parsing quality, and rules/custom properties that may have changed data volume.</p></div>
 <h2 id="license">4. Review and allocate licenses</h2>
@@ -102,11 +101,10 @@ journalctl -u hostcontext --since "1 hour ago"</code></pre>
 <li><a href="https://www.ibm.com/community/101/qradar/tools/" target="_blank" rel="noopener noreferrer">IBM QRadar Support Tools 101</a></li>
 <li><a href="https://www.ibm.com/support/pages/qradar-general-health-checklist" target="_blank" rel="noopener noreferrer">IBM Support: QRadar General Health Checklist</a></li>
 </ul>
-<p class="note">This guide is an operational overview, not a substitute for the procedure documented for the QRadar version you operate. QRadar UI paths, service handling, licensing details, and CLI tools can differ by release and entitlement. Use a maintenance window and approved change process for operations that may affect ingestion or availability.</p>
+<p class="note">Service handling, UI paths, capacity, and licensing depend on QRadar release, host role, and entitlement. Use the documented procedure and an approved change window for operations that can affect ingestion or availability.</p>
 <div class="contact-hook">
-<span class="hook-kicker">Need help with your environment?</span>
-<p class="hook-title">Need to improve QRadar operations, EPS/FPM allocation, or deployment reliability? Let’s talk about your environment and SOC requirements.</p>
-<p>For a technical inquiry or service request, reach out through the channel that works best for you.</p>
+<span class="hook-kicker">IBM QRadar SIEM</span>
+<p class="hook-title">For QRadar operations reviews, EPS/FPM allocation, or deployment reliability work, contact me with the deployment topology and current capacity or health indicators.</p>
 <div class="contact-links"><a href="mailto:as.ga2019@gmail.com?subject=QRadar%20operations%20inquiry&amp;body=Hi%20Ashraf%2C%0A%0AI%20read%20your%20QRadar%20operations%20guide%20and%20would%20like%20to%20discuss%20capacity%2C%20reliability%2C%20or%20operational%20support.%0A%0ABest%20regards%2C">Email me ↗</a><a href="https://wa.me/966598243358?text=Hi%20Ashraf%2C%20I%20read%20your%20QRadar%20operations%20guide%20and%20would%20like%20to%20discuss%20capacity%2C%20reliability%2C%20or%20operational%20support." target="_blank" rel="noopener noreferrer">WhatsApp ↗</a><a href="https://www.linkedin.com/in/1elrawy/" target="_blank" rel="noopener noreferrer">LinkedIn ↗</a></div>
 </div>
 <div class="related"><a href="/articles/qradar-troubleshooting.html"><small>PART 4 · PREVIOUS</small><strong>← QRadar troubleshooting</strong></a><a href="/articles/qradar-upgrade-guide.html"><small>PART 6 · NEXT</small><strong>QRadar upgrade guide →</strong></a></div>
