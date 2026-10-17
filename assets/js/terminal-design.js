@@ -64,4 +64,11 @@
     }, { passive: true });
     window.addEventListener('blur', () => spotlight.classList.remove('is-visible'));
   }
+    // Shared footer visit counter
+  if (!document.querySelector('script[src="/assets/js/site-visits.js"]')) {
+    const visitScript = document.createElement('script');
+    visitScript.src = '/assets/js/site-visits.js';
+    visitScript.defer = true;
+    document.head.appendChild(visitScript);
+  }
 })();
