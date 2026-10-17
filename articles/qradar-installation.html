@@ -78,7 +78,7 @@ mount -o loop /root/qradar.iso /media/cdrom</code></pre>
 <h2 id="roles">5. Select the right appliance role</h2>
 <p>QRadar deployments can include a Console, Event Collector, Event Processor, App Host, and other specialized roles or managed hosts. High availability (HA) is an architecture decision, not just a checkbox: determine which host is the Console, document the intended active/standby roles, and follow the matching HA requirements.</p>
 <h3 id="role-console">Console / All-in-One</h3>
-<p>Select <strong>All-In-One Console</strong> when the supported design places the Console and event-processing functions on the same host. Confirm that the hardware sizing, license entitlement, and target QRadar release support this deployment model. The installer screenshots for this path will be shown here as a numbered sequence once the image files are uploaded.</p>
+<p>For the software-install path shown in the installer, choose <strong>Software Install (hardware was purchased separately)</strong>, then select <strong>All-In-One Console</strong> as the assignment. Continue through the shared installer prompts for your target QRadar release, and confirm that sizing and licensing support this deployment model.</p>
 
 <h3 id="role-ec-ep">Event Collector / Event Processor</h3>
 <p>Use these roles when the deployment separates log collection from event processing and Console management. Assign the intended role and confirm the host's required sizing, licensing, network reachability, and managed-host design.</p>
