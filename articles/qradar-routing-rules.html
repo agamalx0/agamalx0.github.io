@@ -31,15 +31,14 @@
 <header class="hero wrap">
 <div class="eyebrow">Part 9 · Data routing · IBM QRadar</div>
 <h1>QRadar routing rules:<br><span class="gradient">what you need to know</span></h1>
-<p class="lede">Routing Rules control what QRadar does with selected events and flows: forward them, drop them, or change how they are processed. Here is the practical version, without turning it into a long manual.</p>
+<p class="lede">Routing Rules apply filters to events or flows, then determine whether QRadar forwards, drops, stores, or bypasses correlation for the matching data.</p>
 <div class="meta"><span>By Ashraf Gamal</span><span>Updated 12 October 2026</span><span class="pill">Practical guide</span><span>Approx. 5 min read</span></div>
 </header>
 <div class="wrap layout">
-<aside class="toc"><strong>On this page</strong><a href="#purpose">1. What Routing Rules do</a><a href="#modes">2. Online vs Offline</a><a href="#options">3. Routing options</a><a href="#configure">4. Create a rule</a><a href="#check">5. Common mistakes</a><a href="#references">IBM references</a></aside>
+<aside class="toc"><strong>On this page</strong><a href="#purpose">1. Routing Rule behavior</a><a href="#modes">2. Online vs Offline</a><a href="#options">3. Routing options</a><a href="#configure">4. Create a rule</a><a href="#check">5. Common mistakes</a><a href="#references">IBM references</a></aside>
 <article class="content">
-<p class="personal-note"><strong>Personal note:</strong> This article reflects my experience and is for educational purposes only—not official vendor guidance. Always verify procedures against current vendor documentation.</p>
 <div class="callout"><strong>First, know the difference:</strong> Routing Rules are for routing and handling event/flow data. They are not the same as Custom Rules Engine (CRE) rules that detect activity and can generate offenses.</div>
-<h2 id="purpose">1. What do Routing Rules do?</h2>
+<h2 id="purpose">1. Routing Rule behavior</h2>
 <p>A Routing Rule applies filters to incoming or stored event/flow data, then applies a selected routing action. Typical uses are sending a filtered copy of logs to another platform, reducing real-time correlation for selected data, or deliberately excluding data that has no retention or detection value.</p>
 <p>To forward data, you need a configured <strong>Forwarding Destination</strong> as well as a Routing Rule that selects the data and destination. Creating a destination alone does not start forwarding. <a href="https://www.ibm.com/docs/en/qsip/7.5.0?topic=administration-forward-data-other-systems" target="_blank" rel="noopener noreferrer">IBM documents this two-part setup.</a></p>
 <h2 id="modes">2. Online vs Offline: choose based on delivery needs</h2>
@@ -83,11 +82,10 @@
 <li><a href="https://www.ibm.com/docs/en/qsip/7.4?topic=systems-configuring-routing-rules-forward-data" target="_blank" rel="noopener noreferrer">Configuring Routing Rules to forward data — QRadar 7.4</a></li>
 <li><a href="https://robertrojek.pl/qradars-routing-rules/" target="_blank" rel="noopener noreferrer">Robert Rojek — QRadar’s Routing Rules (reference article)</a></li>
 </ul>
-<p class="subtle">This article summarizes the core concepts rather than covering every release-specific field. QRadar Cloud, licensing, and appliance type can affect which options are available; confirm the current IBM documentation for your deployment before enabling Drop or Log Only in production.</p>
+<p class="subtle">Routing fields and options vary by QRadar release, hosting model, and entitlement. Check IBM documentation for your deployment before enabling Drop or Log Only in production.</p>
 <div class="contact-hook">
-<span class="hook-kicker">Need help with your environment?</span>
-<p class="hook-title">Not sure whether to forward, drop, or bypass correlation? Let’s review your routing use case before a rule affects live security data.</p>
-<p>For a technical inquiry or service request, reach out through the channel that works best for you.</p>
+<span class="hook-kicker">IBM QRadar SIEM</span>
+<p class="hook-title">Before enabling a routing rule, confirm whether the selected events or flows must be forwarded, retained, correlated in real time, or excluded from analytics.</p>
 <div class="contact-links"><a href="mailto:as.ga2019@gmail.com?subject=QRadar%20Routing%20Rules%20inquiry&amp;body=Hi%20Ashraf%2C%0A%0AI%20read%20your%20QRadar%20Routing%20Rules%20article%20and%20would%20like%20to%20discuss%20a%20routing%20or%20event-handling%20use%20case.%0A%0ABest%20regards%2C">Email me ↗</a><a href="https://wa.me/966598243358?text=Hi%20Ashraf%2C%20I%20read%20your%20QRadar%20Routing%20Rules%20article%20and%20would%20like%20to%20discuss%20a%20routing%20or%20event-handling%20use%20case." target="_blank" rel="noopener noreferrer">WhatsApp ↗</a><a href="https://www.linkedin.com/in/1elrawy/" target="_blank" rel="noopener noreferrer">LinkedIn ↗</a></div>
 </div>
 <div class="related"><a href="/articles/qradar-migration-guide.html"><small>PART 8 · PREVIOUS</small><strong>← QRadar migration guide</strong></a><a href="/#articles"><small>ARTICLE LIBRARY</small><strong>Back to all articles →</strong></a></div>
