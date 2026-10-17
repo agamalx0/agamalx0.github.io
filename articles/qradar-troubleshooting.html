@@ -37,7 +37,6 @@
 <div class="wrap layout">
 <aside class="toc"><strong>In this guide</strong><a href="#before">Before you troubleshoot</a><a href="#baseline">1. Capture the baseline</a><a href="#toolbox">3. Support tools</a><a href="#ssh">4. Connectivity and services</a><a href="#disk">5. Disk space</a><a href="#deployment">6. Deployment consistency</a><a href="#logs">7. Logs and evidence</a><a href="#applications">8. Apps and WinCollect</a><a href="#pipeline">9. Event pipeline</a><a href="#avoid">10. Commands to treat carefully</a><a href="#references">11. References</a></aside>
 <article class="content">
-<p class="personal-note"><strong>Personal note:</strong> This article reflects my experience and is for educational purposes only—not official vendor guidance. Always verify procedures against current vendor documentation.</p>
 <div class="callout"><strong>Operational safety first</strong><p style="margin:6px 0 0">These are diagnostic starting points, not a substitute for the procedure that matches your QRadar release. Use an approved account, record the time and host where each command runs, and avoid restarting services, deleting files, editing deployment data, or running database updates just to see whether the issue clears.</p></div>
 <h2 id="before">1. Start with the symptom and scope</h2>
 <p>Before using a support script, define what is failing: SSH access, managed-host communication, a failed deploy, an application, missing events, high event rates, or a patch/upgrade. Note when it began, which hosts are affected, recent changes, and the exact error from the UI or logs.</p>
@@ -110,7 +109,7 @@ df -h /storetmp /var/log</code></pre>
 <pre class="code"><code>/opt/qradar/support/WinCollectHealthCheck.sh -h</code></pre>
 <p>Utility availability and options vary by release and deployment model. Use the help output and current IBM instructions before running the check.</p>
 <h2 id="pipeline">9. Event pipeline and EPS symptoms</h2>
-<p>When events appear delayed or missing, separate three questions: are sources sending data, is QRadar receiving it, and is the expected data searchable? Check the affected log source's status in the UI, the source/network path, relevant QRadar messages around the symptom, and the event pipeline metrics that IBM documents for your release.</p>
+<p>For delayed or missing events, isolate three stages: source transmission, QRadar receipt, and searchability. Check the affected log source in the UI, the source-to-QRadar network path, QRadar messages around the incident, and the event-pipeline metrics documented for your release.</p>
 <p>Some older troubleshooting notes use direct JMX commands, hard-coded ports, or service-specific query strings to inspect EPS and event ingress. Those commands can be version- and service-dependent; the one-line command in the original note also combined two commands incorrectly. Do not paste it into production unchanged. Use the IBM support-tool reference or a version-specific support procedure to identify the correct diagnostic for the host and service under investigation.</p>
 <p>For network-related managed-host problems, use supported interface and connection checks and follow the appropriate IBM networking guidance rather than assuming every symptom is an EPS issue.</p>
 <h2 id="avoid">10. Commands from older notes that need special handling</h2>
@@ -123,11 +122,10 @@ df -h /storetmp /var/log</code></pre>
 <li><a href="https://www.ibm.com/support/pages/cli-commands-ip-ethtool-netstat-traceroute-arping-troubleshooting-qradar-network-interface-and-connection-issues" target="_blank" rel="noopener noreferrer">IBM Support: QRadar network troubleshooting commands</a></li>
 <li><a href="https://www.ibm.com/docs/en/qsip/7.5.0?topic=upgrading-preparation-checklist-qradar-upgrades" target="_blank" rel="noopener noreferrer">IBM QRadar: upgrade preparation checklist</a></li>
 </ul>
-<p class="note">This is a practical checklist, not a guarantee that all commands or paths apply to every QRadar release. Confirm compatibility and procedures for your exact version. In a production outage or during patching, preserve evidence and use your approved change process or IBM Support guidance.</p>
+<p class="note">Command availability and paths vary by QRadar release. During production outages or patching, preserve evidence and follow the approved change process or IBM Support procedure.</p>
 <div class="contact-hook">
-<span class="hook-kicker">Need help with your environment?</span>
-<p class="hook-title">Stuck with missing events, a failed deployment, or a QRadar performance issue? Share the symptom and let’s discuss the safest next steps.</p>
-<p>For a technical inquiry or service request, reach out through the channel that works best for you.</p>
+<span class="hook-kicker">IBM QRadar SIEM</span>
+<p class="hook-title">For missing events, failed deployments, or QRadar performance issues, share the symptom, affected host role, QRadar version, and evidence collected so far.</p>
 <div class="contact-links"><a href="mailto:as.ga2019@gmail.com?subject=QRadar%20troubleshooting%20inquiry&amp;body=Hi%20Ashraf%2C%0A%0AI%20read%20your%20QRadar%20troubleshooting%20guide%20and%20would%20like%20to%20discuss%20an%20issue%20in%20my%20environment.%0A%0ABest%20regards%2C">Email me ↗</a><a href="https://wa.me/966598243358?text=Hi%20Ashraf%2C%20I%20read%20your%20QRadar%20troubleshooting%20guide%20and%20would%20like%20to%20discuss%20an%20issue%20in%20my%20environment." target="_blank" rel="noopener noreferrer">WhatsApp ↗</a><a href="https://www.linkedin.com/in/1elrawy/" target="_blank" rel="noopener noreferrer">LinkedIn ↗</a></div>
 </div>
 <div class="related"><a href="/articles/qradar-health-check.html"><small>PART 3</small><strong>← QRadar health check</strong></a><a href="/articles/qradar-operations-essentials.html"><small>PART 5 · NEXT</small><strong>Operations essentials →</strong></a></div>
