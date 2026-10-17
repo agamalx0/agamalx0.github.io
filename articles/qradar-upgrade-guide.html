@@ -37,7 +37,6 @@
 <div class="wrap layout">
 <aside class="toc"><strong>On this page</strong><a href="#scope">Scope and safety</a><a href="#path">1. Confirm the upgrade path</a><a href="#media">2. ISO or SFS?</a><a href="#planning">3. Plan the change</a><a href="#prechecks">4. Pre-upgrade checklist</a><a href="#backup">5. Backup and recovery</a><a href="#deployment">6. HA and managed hosts</a><a href="#download">7. Download and validate media</a><a href="#execute">8. Execute the update</a><a href="#monitor">9. Monitor the upgrade</a><a href="#post">10. Post-upgrade validation</a><a href="#failure">11. If an upgrade fails</a><a href="#checklist">12. Change checklist</a><a href="#references">Official references</a></aside>
 <article class="content">
-<p class="personal-note"><strong>Personal note:</strong> This article reflects my experience and is for educational purposes only—not official vendor guidance. Always verify procedures against current vendor documentation.</p>
 <div class="callout"><strong>Read this first: there is no universal QRadar upgrade path.</strong><p style="margin:6px 0 0">Always identify the exact source version, fix pack/update package, interim fix, deployment model, and target release. Then follow IBM's supported path for that precise combination. Do not assume that the newest SFS can upgrade every earlier version, or that a successful upgrade on one host makes an out-of-sync deployment supported.</p></div>
 <h2 id="scope">Scope and safety</h2>
 <p>This article is a planning and validation runbook for administrators upgrading an existing IBM QRadar SIEM deployment. It is not a substitute for the release-specific IBM Upgrade Guide, SFS/ISO release notes, or the applicable support advisories. File names, command options, minimum source levels, required free space, installer menus, and known issues vary by release.</p>
@@ -172,9 +171,8 @@ mount -o loop /storetmp/&lt;exact-target-file&gt;.sfs /media/updates
 </ul>
 <p class="subtle">This guide was reviewed on 11 October 2026. IBM can add, replace, or withdraw release packages and upgrade paths. Re-check the currently published release notes and Fix Central package prerequisites immediately before performing an upgrade.</p>
 <div class="contact-hook">
-<span class="hook-kicker">Need help with your environment?</span>
-<p class="hook-title">Planning a QRadar upgrade and want a safer path from pre-checks to post-upgrade validation? Contact me to discuss upgrade readiness and planning.</p>
-<p>For a technical inquiry or service request, reach out through the channel that works best for you.</p>
+<span class="hook-kicker">IBM QRadar SIEM</span>
+<p class="hook-title">For QRadar upgrade planning, readiness checks, and post-upgrade validation, contact me with the source and target versions and deployment topology.</p>
 <div class="contact-links"><a href="mailto:as.ga2019@gmail.com?subject=QRadar%20upgrade%20planning&amp;body=Hi%20Ashraf%2C%0A%0AI%20read%20your%20QRadar%20upgrade%20guide%20and%20would%20like%20to%20discuss%20upgrade%20readiness%20or%20planning%20support.%0A%0ABest%20regards%2C">Email me ↗</a><a href="https://wa.me/966598243358?text=Hi%20Ashraf%2C%20I%20read%20your%20QRadar%20upgrade%20guide%20and%20would%20like%20to%20discuss%20upgrade%20readiness%20or%20planning%20support." target="_blank" rel="noopener noreferrer">WhatsApp ↗</a><a href="https://www.linkedin.com/in/1elrawy/" target="_blank" rel="noopener noreferrer">LinkedIn ↗</a></div>
 </div>
 <div class="related"><a href="/articles/qradar-operations-essentials.html"><small>PART 5 · PREVIOUS</small><strong>← QRadar operations essentials</strong></a><a href="/articles/qradar-high-availability.html"><small>PART 7 · NEXT</small><strong>QRadar high availability →</strong></a></div>
