@@ -37,7 +37,6 @@
 <div class="wrap layout">
 <aside class="toc"><strong>In this guide</strong><a href="#before-starting">Before you start</a><a href="#choose-path">Choose an installation path</a><a href="#appliance">Appliance installation</a><a href="#software">Software installation</a><a href="#roles">Appliance roles</a><a href="#validation">Post-install checks</a><a href="#references">References</a></aside>
 <article class="content">
-<p class="personal-note"><strong>Personal note:</strong> This article reflects my experience and is for educational purposes only—not official vendor guidance. Always verify procedures against current vendor documentation.</p>
 <div class="callout"><strong>Important version note</strong><p style="margin:6px 0 0">The original 2024 notes mapped RHEL 7.6/7.7/7.9 to QRadar 7.3/7.4/7.5. That table is historical, not a safe baseline for a new deployment. Select the QRadar release and update package first, then follow the exact IBM compatibility matrix and hardware requirements for that target.</p></div>
 <h2 id="before-starting">1. Before you start</h2>
 <p>QRadar deployment planning begins with the target release, supported operating system, intended appliance role, and license entitlement. Do not start from a generic RHEL version recommendation or a hardware size copied from an unrelated deployment.</p>
@@ -101,11 +100,10 @@ mount -o loop /root/qradar.iso /media/cdrom</code></pre>
 <li><a href="https://www.ibm.com/docs/en/qsip/7.5.0?topic=installations-qradar-software" target="_blank" rel="noopener noreferrer">QRadar software installations</a></li>
 <li><a href="https://www.ibm.com/docs/en/qsip/7.5.0?topic=installations-virtual-appliance" target="_blank" rel="noopener noreferrer">Virtual appliance installations</a></li>
 </ul>
-<p class="note">Technical note: IBM's supported release matrix can change. This guide is an educational summary, not a substitute for the installation guide and release notes for the exact QRadar version you plan to deploy. Never apply these steps to a production system without an approved change plan and backup.</p>
+<p class="note">IBM's supported release matrix can change. Before deployment, verify the target release against its installation guide and release notes. For production, use an approved change plan and a verified backup.</p>
 <div class="contact-hook">
-<span class="hook-kicker">Need help with your environment?</span>
-<p class="hook-title">Planning a QRadar deployment? Reach out to discuss architecture, installation readiness, or implementation support before you start.</p>
-<p>For a technical inquiry or service request, reach out through the channel that works best for you.</p>
+<span class="hook-kicker">IBM QRadar SIEM</span>
+<p class="hook-title">For QRadar deployment planning, architecture review, or installation readiness, contact me before the change window.</p>
 <div class="contact-links"><a href="mailto:as.ga2019@gmail.com?subject=QRadar%20installation%20inquiry&amp;body=Hi%20Ashraf%2C%0A%0AI%20read%20your%20QRadar%20installation%20guide%20and%20would%20like%20to%20discuss%20a%20deployment%20or%20implementation%20requirement.%0A%0ABest%20regards%2C">Email me ↗</a><a href="https://wa.me/966598243358?text=Hi%20Ashraf%2C%20I%20read%20your%20QRadar%20installation%20guide%20and%20would%20like%20to%20discuss%20deployment%20or%20implementation%20support." target="_blank" rel="noopener noreferrer">WhatsApp ↗</a><a href="https://www.linkedin.com/in/1elrawy/" target="_blank" rel="noopener noreferrer">LinkedIn ↗</a></div>
 </div>
 <div class="related"><a href="/#articles"><small>PORTFOLIO</small><strong>← Back to the article library</strong></a><a href="/articles/qradar-health-check.html"><small>PART 3 · NEXT GUIDE</small><strong>QRadar health checks →</strong></a></div>
