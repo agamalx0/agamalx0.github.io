@@ -77,13 +77,26 @@ mount -o loop /root/qradar.iso /media/cdrom</code></pre>
 <p>Reference: <a href="https://www.ibm.com/docs/en/qsip/7.5.0?topic=qsi-installing-qradar-after-rhel-installation" target="_blank" rel="noopener noreferrer">Installing QRadar after the RHEL installation</a>.</p>
 <h2 id="roles">5. Select the right appliance role</h2>
 <p>QRadar deployments can include a Console, Event Collector, Event Processor, App Host, and other specialized roles or managed hosts. High availability (HA) is an architecture decision, not just a checkbox: determine which host is the Console, document the intended active/standby roles, and follow the matching HA requirements.</p>
-<ul>
-<li><strong>Console / all-in-one:</strong> commonly used for a lab or smaller deployment when supported sizing and licensing permit it.</li>
-<li><strong>Event Collector / Event Processor:</strong> distributed roles used when log ingestion and event processing need to be separated from the Console.</li>
-<li><strong>App Host:</strong> provides application workload capacity where the deployment design and application requirements call for it.</li>
-<li><strong>HA:</strong> requires the supported pairing, networking, storage, and configuration steps for the selected release.</li>
-</ul>
-<p>Do not assume every role is available for every license or release. Check the deployment guide and entitlement before selecting it.</p>
+<h3 id="role-console">Console / All-in-One</h3>
+<p>Select <strong>All-In-One Console</strong> when the supported design places the Console and event-processing functions on the same host. Confirm that the hardware sizing, license entitlement, and target QRadar release support this deployment model. The installer screenshots for this path will be shown here as a numbered sequence once the image files are uploaded.</p>
+
+<h3 id="role-ec-ep">Event Collector / Event Processor</h3>
+<p>Use these roles when the deployment separates log collection from event processing and Console management. Assign the intended role and confirm the host's required sizing, licensing, network reachability, and managed-host design.</p>
+<div class="note"><strong>Continuation note:</strong> After completing the role-specific assignment screens, continue with the common installation steps described for Console installations where the prompts are shared. Keep role-specific network, licensing, and managed-host requirements aligned with the target QRadar release; do not configure a distributed host as an All-in-One Console.</div>
+
+<h3 id="role-app-host">App Host</h3>
+<p>An App Host supplies application workload capacity separate from the Console. Select this role only when it matches the deployment plan and application requirements.</p>
+<div class="note"><strong>Continuation note:</strong> Complete the App Host role assignment first, then follow the shared installer steps used for Console installations where applicable. Apply the release-specific App Host prerequisites and validate application workloads on the correct host after installation.</div>
+
+<h3 id="role-ha">High Availability (HA)</h3>
+<p>HA is a paired deployment, not a standalone appliance role. The primary and secondary systems must satisfy the supported version, activation-key, resource, network, and storage requirements for the target release.</p>
+<div class="note"><strong>Continuation note:</strong> Follow the common installer sequence only where the HA installation workflow shares the same prompts as a Console installation. Then complete the required HA pairing, synchronization, and Active/Standby validation using the matching IBM High Availability Guide. Do not treat an HA install as complete after the Console-style setup alone.</div>
+
+<h3 id="role-qrm">QRM</h3>
+<p>Select the QRM role only when QRM is part of the planned and licensed QRadar architecture. Confirm the exact role name and prerequisites shown by the installer for your release.</p>
+<div class="note"><strong>Continuation note:</strong> After the QRM-specific assignment, continue with the common Console installation steps where the prompts are the same, then complete QRM-specific configuration and validation required by the installed release.</div>
+
+<p>Role availability and exact installer screens vary by QRadar release, license, and appliance type. Confirm the role and entitlement before proceeding, and use the matching IBM installation guide for any role-specific steps.</p>
 <h2 id="validation">6. Post-install validation</h2>
 <ol>
 <li>Confirm that the installed release and update package match the planned version on each host.</li>
