@@ -33,6 +33,7 @@ The focus is on reproducible procedures and field-oriented lessons: what to chec
 | [QRadar Health Check](https://agamalx0.github.io/articles/qradar-health-check.html) | Using DrQ, Recon, and Cliniq where supported, and understanding what the results prove. |
 | [QRadar Troubleshooting Checklist](https://agamalx0.github.io/articles/qradar-troubleshooting.html) | Structured triage for services, managed hosts, deployment, storage, and ingestion symptoms. |
 | [Ariel Proxy Search Failure](https://agamalx0.github.io/articles/qradar-ariel-proxy-search-failure.html) | Investigating filtered Log Activity searches and TCP port 32011. |
+| [App Host API Certificate Recovery](https://agamalx0.github.io/articles/qradar-apphost-api-certificate-troubleshooting.html) | Troubleshooting x509 trust failures between the QRadar Console API and App Host application runtime. |
 | [QRadar High Availability](https://agamalx0.github.io/articles/qradar-high-availability.html) | HA roles, failover readiness, state validation, and recovery considerations. |
 | [QRadar Console Migration](https://agamalx0.github.io/articles/qradar-migration-guide.html) | Planning same-IP and new-IP Console replacement scenarios. |
 | [QRadar Routing Rules](https://agamalx0.github.io/articles/qradar-routing-rules.html) | Forward, Drop, Bypass Correlation, and Log Only behavior and trade-offs. |
