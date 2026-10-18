@@ -45,6 +45,12 @@ The focus is on reproducible procedures and field-oriented lessons: what to chec
 | [Wazuh Distributed Architecture](https://agamalx0.github.io/articles/wazuh-distributed-architecture.html) | Roles and design considerations for a distributed Wazuh deployment. |
 | [Wazuh MSSP Multi-Tenant Architecture](https://agamalx0.github.io/articles/wazuh-mssp-multi-tenant-architecture.html) | Tenant access design using identity integration, RBAC, and data-level controls. |
 
+### Splunk Enterprise
+
+| Topic | What it covers |
+|---|---|
+| [Install Splunk Enterprise on Ubuntu 24.04 LTS](https://agamalx0.github.io/articles/splunk-enterprise-installation-ubuntu-24-04.html) | Single-server lab installation, systemd boot-start troubleshooting, and Enterprise Trial-to-Free license considerations. |
+
 Browse the full, current collection on the [portfolio homepage](https://agamalx0.github.io/#articles).
 
 ## Technical focus
