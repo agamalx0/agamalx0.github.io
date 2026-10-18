@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en" class="dark">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#080a12">
+<meta name="description" content="Troubleshoot IBM QRadar App Host API communication failures caused by TLS certificate trust or hostname verification problems after a certificate update.">
+<title>QRadar App Host API Failure: Certificate Trust and Recovery | Ashraf Gamal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&amp;display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/terminal-design.css">
+<style>
+.apphost-figure{margin:18px 0 26px;overflow:hidden}
+.apphost-figure>a{display:block;background:#080a12;line-height:0}
+.apphost-figure img{display:block;width:100%;height:auto;max-height:680px;object-fit:contain;object-position:center}
+.apphost-figure figcaption{padding:11px 13px;color:var(--muted);font-size:12px;line-height:1.65;border-top:1px solid var(--line)}
+.apphost-figure figcaption strong{display:block;color:var(--text);font-size:12px;margin-bottom:4px}
+.apphost-figure--result img{max-height:720px}
+</style>
+</head>
+<body>
+<header class="topbar"><nav class="nav wrap"><a class="brand" href="/">AG <span class="gradient">/ Notes</span></a><a class="back" href="/#articles">← Back to technical notes</a></nav></header>
+<header class="hero wrap">
+<div class="eyebrow">IBM QRadar SIEM · App Host Troubleshooting</div>
+<h1>App Host API failure:<br><span class="gradient">TLS trust and certificate recovery</span></h1>
+<p class="lede">A field troubleshooting note for the <code>Unable to communicate with API</code> error seen in <code>recon ps</code> when the Console API certificate cannot be verified by the QRadar application infrastructure on an App Host.</p>
+<div class="meta"><span>By Ashraf Gamal</span><span>Updated 19 October 2026</span><span class="pill">Certificate troubleshooting</span><span>Approx. 7 min read</span></div>
+</header>
+<div class="wrap layout">
+<aside class="toc"><strong>In this guide</strong>
+<a href="#symptom">Observed error</a><a href="#cause">TLS trust path</a><a href="#triage">Read-only checks</a><a href="#recovery">Certificate recovery</a><a href="#restart">Reload App Host runtime</a><a href="#verify">Validate the result</a><a href="#references">IBM references</a><a href="#resolved">Resolved-state evidence</a>
+</aside>
+<article class="content">
+<h2 id="symptom">1. The issue: Recon cannot communicate with the API</h2>
+<figure class="figure apphost-figure">
+<a href="/assets/images/qradar/Screenshot%202026-10-19%20013640.png" target="_blank" rel="noopener noreferrer"><img src="/assets/images/qradar/Screenshot%202026-10-19%20013640.png" alt="QRadar App Host recon ps output showing Unable to communicate with API and an x509 certificate verification error for QRadar Local CA" loading="lazy"></a>
+<figcaption><strong>Observed failure — 19 October 2026</strong><code>recon ps</code> reports <code>Unable to communicate with API</code>. The request to <code>https://qradarprimary.local/api/gui_app_framework/applications</code> fails with an x509 verification error while checking the candidate authority certificate “QRadar Local CA.” The screenshot is the incident evidence, not a claim that every application status field is failing. Select the image to open it at full size.</figcaption>
+</figure>
+<p>The important signal is the certificate verification error returned by the Console API request. The application table is incomplete because Recon cannot retrieve the expected application metadata from the API. Treat this first as a TLS trust-path problem, then validate the certificate identity and service health before changing the App Host.</p>
+<div class="callout"><strong>Production safety</strong><p style="margin:6px 0 0">Certificate replacement and App Host service restarts can interrupt QRadar UI access, application functions, and potentially event/flow collection during related service restarts. Back up the current certificates and keys, confirm the actual certificate chain, schedule an approved change window, and follow the procedure for the installed QRadar release. Do not paste the entire recovery sequence into production without validating each path and service name.</p></div>
+
+<h2 id="cause">2. What the error points to</h2>
+<p>The error indicates that the App Host's application request could not establish trust in the certificate authority presented along the Console API path. In this case, the message names <code>QRadar Local CA</code>. A certificate update can expose this mismatch when the Console certificate or CA chain changes but the corresponding trust on the App Host is stale or incomplete.</p>
+<ul>
+<li><strong>Trust-chain mismatch:</strong> the App Host does not trust the CA that issued the Console certificate, or the required intermediate certificate is missing.</li>
+<li><strong>Hostname mismatch:</strong> the hostname used in the API URL is not listed in the certificate's Subject Alternative Name (SAN). Modern TLS clients should not rely on a legacy Common Name alone.</li>
+<li><strong>Incorrect certificate material:</strong> the certificate and private key do not match, the certificate is expired, its format is wrong, or the wrong certificate has been installed as a trust anchor.</li>
+<li><strong>Stale runtime trust:</strong> the host's trust store may have been updated while the application runtime or proxy still needs to reload the certificate state.</li>
+</ul>
+<p>QRadar 7.5.0 UP8 and later uses Podman for the application container runtime. IBM's certificate-installation guidance specifically calls out restarting Podman on the host running applications after a certificate change. The Console-to-App Host path also uses QRadar's application services and proxy components, so confirm the actual version and topology before applying a restart.</p>
+
+<h2 id="triage">3. Start with read-only checks</h2>
+<p>Record the QRadar version, hostnames, certificate update time, and whether the issue affects all apps or only one. Use the exact FQDN configured in your environment in place of <code>qradarprimary.local</code> if different.</p>
+<pre class="code"><code># Record the installed QRadar version
+/opt/qradar/bin/myver -v
+
+# Confirm that the Console hostname resolves as expected
+getent hosts qradarprimary.local
+
+# Inspect the certificate presented by the Console
+openssl s_client -connect qradarprimary.local:443 \
+  -servername qradarprimary.local -showcerts &lt;/dev/null 2&gt;/dev/null \
+  | openssl x509 -noout -subject -issuer -dates -ext subjectAltName</code></pre>
+<p>Check that the certificate is currently valid, its issuer is expected, and the SAN contains the hostname actually used by the API request. The command above displays the server-presented leaf certificate; it does <strong>not</strong> prove that the leaf certificate is a root CA. Obtain the actual root and any intermediate CA certificates from the correct source before adding trust anchors.</p>
+<p>On the App Host, use the certificate-verification procedure documented by IBM Support for your exact QRadar release. For QRadar 7.5.0 UP8 and later, IBM provides a certificate audit of files under <code>/etc/conman/tls</code>, <code>/etc/traefik/tls</code>, <code>/etc/podman/tls</code>, <code>/etc/httpd/conf/certs</code>, and the system trust anchors. Preserve the output and compare the reported failures with the Console's actual certificate chain; do not delete files just because they appear in the audit.</p>
+<div class="info"><strong>Separate identity from trust</strong><p style="margin:6px 0 0">A certificate can be signed by a trusted CA and still fail hostname verification if the hostname is missing from its SAN. Conversely, a SAN-correct certificate can fail if the App Host does not trust its issuing CA. Validate both conditions.</p></div>
+
+<h2 id="recovery">4. Correct the certificate and trust chain</h2>
+<p>Use the option that matches the certificate model in your deployment. The following is the controlled recovery approach; the precise certificate files and prompts depend on whether the Console uses the QRadar Local CA, an internal CA, or a public CA.</p>
+<ol>
+<li><strong>Back up before changing anything.</strong> Preserve the current Console certificate, private key, CA/intermediate certificates, relevant App Host TLS files, and their permissions in an approved backup location. Do not overwrite the only copy of the working or previous certificate material.</li>
+<li><strong>Confirm the server certificate.</strong> It must be valid for the Console FQDN used by the API. Ensure its SAN contains the required DNS name (and IP address only if clients actually connect by IP). Confirm the certificate and private key are a matching pair.</li>
+<li><strong>Install using QRadar's supported tool.</strong> IBM documents <code>/opt/qradar/bin/install-ssl-cert.sh</code> for installing the Console certificate. Follow its prompts and release-specific instructions; use the documented intermediate-chain option when required.</li>
+<li><strong>Trust the issuing CA on the App Host.</strong> Copy the correct root CA and any required intermediate CA certificates to the approved trust locations and run <code>update-ca-trust</code> as directed by IBM. Repeat trust updates on the hosts that need to validate the certificate. Do not treat a normal server/leaf certificate as a CA trust anchor unless it is intentionally a self-signed CA and that trust model is explicitly approved.</li>
+<li><strong>Remove stale material only when identified.</strong> If an obsolete cached certificate is blocking verification, confirm its exact path and role, preserve a backup, then follow the approved IBM procedure for removing or replacing it. Avoid broad wildcards or moving certificates without first identifying their purpose.</li>
+</ol>
+<p>For a custom certificate generated in-house, include the correct SAN extension and use a suitable certificate chain for your organization's trust model. The self-signed certificate-generation commands from one environment should not be copied as a universal production fix; use the certificate process approved for your deployment.</p>
+
+<h2 id="restart">5. Reload the App Host runtime only after trust is corrected</h2>
+<p>Once the Console certificate and App Host trust store are correct, reload the runtime according to the supported procedure for the installed QRadar release. IBM documents the following Podman restart on the host running applications after certificate changes:</p>
+<pre class="code"><code>systemctl restart podman</code></pre>
+<p>This restarts the application container runtime and can temporarily affect applications on that host. Schedule it, confirm the host role, and follow IBM's guidance for your exact version.</p>
+<p>In the incident documented here, the team also recycled the App Host's runtime/proxy services after updating certificate trust. The wider sequence below is <strong>case-specific</strong>; do not use it as a generic first-line command block or assume those services have identical dependencies in every deployment.</p>
+<pre class="code"><code># Case-specific sequence used after certificate/trust repair
+# Run only if confirmed for the installed release and approved change window
+systemctl stop traefik conman podman podman.socket
+
+# Start in the approved sequence for this host
+systemctl start podman conman traefik</code></pre>
+<div class="callout"><strong>Do not restart before the trust fix</strong><p style="margin:6px 0 0">Recycling services does not repair an invalid certificate, missing CA, or hostname/SAN mismatch. If the trust chain is still wrong, the API error can return after the restart.</p></div>
+
+<h2 id="verify">6. Verify the API and application state</h2>
+<p>After the services settle, run Recon again on the Console or App Host as supported by your deployment:</p>
+<pre class="code"><code>/opt/qradar/support/recon ps</code></pre>
+<p>Confirm all three outcomes:</p>
+<ul>
+<li>The output no longer starts with <code>Unable to communicate with API</code> and no longer reports the x509 “QRadar Local CA” verification error.</li>
+<li>Application names and IDs populate normally, rather than leaving the metadata columns blank.</li>
+<li>The service, container, and port status markers are positive for the applications expected to be running. Investigate any individual failures separately; an API recovery does not prove every app is healthy.</li>
+</ul>
+<p>If the same error remains, preserve the full Recon output and the version-appropriate certificate-verification results from the App Host. Collect the application logs specified by IBM Support and escalate rather than repeating certificate deletion or runtime restarts.</p>
+
+<h2 id="references">7. IBM references</h2>
+<ul>
+<li><a href="https://www.ibm.com/docs/en/qsip/7.5.0?topic=certificates-installing-new-ssl-certificate" target="_blank" rel="noopener noreferrer">IBM Documentation — Installing a new SSL certificate in QRadar</a></li>
+<li><a href="https://www.ibm.com/docs/en/qsip/7.4.0?topic=sc-creating-multi-domain-san-ssl-certificate-signing-request" target="_blank" rel="noopener noreferrer">IBM Documentation — Creating a multi-domain SAN certificate signing request</a></li>
+<li><a href="https://www.ibm.com/support/pages/how-can-i-collect-getlogssh-and-required-application-logs-qradar-support-cases" target="_blank" rel="noopener noreferrer">IBM Support — Collecting QRadar logs and verifying application certificates</a></li>
+<li><a href="https://www.ibm.com/docs/en/qsip/7.5.0?topic=qradar-port-usage" target="_blank" rel="noopener noreferrer">IBM Documentation — QRadar port usage (Console and App Host application traffic)</a></li>
+<li><a href="https://www.ibm.com/community/101/qradar/applications/" target="_blank" rel="noopener noreferrer">IBM QRadar 101 — Application troubleshooting and certificate guidance</a></li>
+</ul>
+<p class="note">This write-up records one resolved environment and a diagnostic pattern, not a universal certificate runbook. Certificate paths, service topology, and supported recovery steps can vary by QRadar version and deployment. Follow the current IBM procedure and your change-control process before making production changes.</p>
+
+<div class="contact-hook">
+<span class="hook-kicker">IBM QRadar SIEM</span>
+<p class="hook-title">App Host API errors, TLS trust, and QRadar application recovery</p>
+<p>For technical discussion about QRadar certificate validation and App Host troubleshooting, contact me using one of the options below.</p>
+<div class="contact-links"><a href="mailto:as.ga2019@gmail.com?subject=QRadar%20App%20Host%20API%20TLS%20issue">Email ↗</a><a href="https://wa.me/966598243358?text=Hi%20Ashraf%2C%20I%20read%20your%20QRadar%20App%20Host%20API%20TLS%20troubleshooting%20note." target="_blank" rel="noopener noreferrer">WhatsApp ↗</a><a href="https://www.linkedin.com/in/1elrawy/" target="_blank" rel="noopener noreferrer">LinkedIn ↗</a></div>
+</div>
+<div class="related"><a href="/articles/qradar-ariel-proxy-search-failure.html"><small>RELATED GUIDE</small><strong>← Ariel Proxy search failure</strong></a><a href="/articles/qradar-health-check.html"><small>RELATED GUIDE</small><strong>QRadar health checks →</strong></a></div>
+
+<h2 id="resolved">8. Resolution: Recon output after recovery</h2>
+<figure class="figure apphost-figure apphost-figure--result">
+<a href="/assets/images/qradar/Screenshot%202026-10-19%20013524.png" target="_blank" rel="noopener noreferrer"><img src="/assets/images/qradar/Screenshot%202026-10-19%20013524.png" alt="Recovered QRadar App Host recon ps output showing application names and IDs populated with positive service, container, and port status markers" loading="lazy"></a>
+<figcaption><strong>After recovery — API communication restored</strong>The API error is no longer present, application names and IDs are populated, and the screenshot shows positive status markers across the displayed application checks. Use the full output and your own acceptance checks to confirm expected applications are running. Select the image to open it at full size.</figcaption>
+</figure>
+</article>
+</div>
+<footer class="footer"><div class="wrap footerinner"><span>© <span id="year">2026</span> Ashraf Gamal · Technical notes</span><a href="/">Home</a></div></footer>
+<script>document.getElementById('year').textContent=new Date().getFullYear();</script>
+<script src="/assets/js/terminal-design.js"></script>
+</body>
+</html>
