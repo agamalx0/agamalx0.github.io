@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en" class="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#080a12">
+<meta name="description" content="Install Splunk Enterprise on Ubuntu 24.04 LTS for a small home lab, configure systemd startup, validate access, and understand the 60-day trial to Free license transition.">
+<meta name="keywords" content="Splunk Enterprise, Splunk SIEM, Ubuntu 24.04, installation, systemd, Enterprise Trial, Splunk Free, home lab">
+<title>Install Splunk Enterprise on Ubuntu 24.04 LTS | Ashraf Gamal</title>
+<style>
+:root{color-scheme:dark;--bg:#080a12;--panel:#111528;--text:#f4f6ff;--muted:#a3abc4;--line:rgba(177,190,255,.15);--cyan:#39e7ff;--purple:#9a66ff;--pink:#ff4fd8;--amber:#ffc879}
+*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:90px}body{margin:0;min-width:320px;color:var(--text);background:radial-gradient(ellipse at 6% 0,rgba(57,231,255,.09),transparent 32rem),radial-gradient(ellipse at 96% 12%,rgba(255,79,216,.08),transparent 28rem),var(--bg);font:16px/1.78 "Space Grotesk",Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}a{color:var(--cyan);text-decoration:none}a:hover{text-decoration:underline}.wrap{width:min(920px,calc(100% - 34px));margin:auto}.topbar{position:sticky;top:0;z-index:10;background:rgba(8,10,18,.86);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}.nav{min-height:68px;display:flex;align-items:center;justify-content:space-between;gap:18px}.brand{color:var(--text);font-weight:750;letter-spacing:-.02em}.back{font-size:13px;color:var(--muted)}.hero{padding:67px 0 35px}.eyebrow,.kicker{font-size:11px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:var(--cyan)}h1{font-size:clamp(36px,6vw,60px);line-height:1.08;letter-spacing:-.06em;margin:15px 0}.gradient{color:transparent;background:linear-gradient(100deg,var(--cyan),#9a8bff 55%,var(--pink));-webkit-background-clip:text;background-clip:text}.lede{font-size:18px;line-height:1.7;color:#c0c8df;max-width:770px}.meta{display:flex;flex-wrap:wrap;gap:10px 18px;font-size:12px;color:var(--muted);margin-top:24px}.pill{border:1px solid rgba(57,231,255,.24);background:rgba(57,231,255,.06);padding:4px 9px;border-radius:99px;color:#d9fbff}.layout{display:grid;grid-template-columns:220px minmax(0,1fr);gap:35px;padding:20px 0 85px}.toc{align-self:start;position:sticky;top:90px;padding:18px;border:1px solid var(--line);border-radius:16px;background:rgba(17,21,40,.6)}.toc strong{font-size:12px}.toc a{display:block;color:var(--muted);font-size:12px;padding:7px 0;line-height:1.4}.content{min-width:0}.content h2{font-size:27px;line-height:1.25;letter-spacing:-.04em;margin:42px 0 13px}.content h3{font-size:18px;margin:26px 0 8px}.content p,.content li{color:#c0c8df}.content li{padding-left:3px;margin:7px 0}.content ul,.content ol{padding-left:22px}.callout{padding:18px 20px;border:1px solid rgba(255,200,121,.28);border-left:3px solid var(--amber);border-radius:13px;background:rgba(255,200,121,.055);margin:22px 0}.callout strong{color:#ffe2b3}.info{padding:17px 20px;border:1px solid rgba(57,231,255,.22);border-radius:13px;background:rgba(57,231,255,.045);margin:20px 0}.info strong{color:#c9faff}code,pre{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}code{font-size:.92em;color:#d7e9ff}.code{overflow:auto;margin:15px 0;padding:17px;border-radius:12px;border:1px solid var(--line);background:#070a12;color:#dbe6ff;font-size:13px;line-height:1.7}.table-wrap{overflow-x:auto;margin:20px 0;border:1px solid var(--line);border-radius:12px}table{width:100%;border-collapse:collapse;min-width:460px;font-size:13px}th,td{text-align:left;vertical-align:top;padding:12px 14px;border-bottom:1px solid var(--line)}th{color:#e9edff;background:rgba(154,102,255,.08)}td{color:#c0c8df}tr:last-child td{border-bottom:0}.related{display:grid;grid-template-columns:1fr;gap:12px;margin-top:36px}.related a{border:1px solid var(--line);border-radius:13px;padding:15px;color:var(--text);background:rgba(255,255,255,.025)}.related small{display:block;color:var(--muted);font-size:11px}.related strong{display:block;margin-top:5px;font-size:13px}.footer{border-top:1px solid var(--line);padding:23px 0;color:var(--muted);font-size:12px}.footerinner{display:flex;justify-content:space-between;gap:15px;flex-wrap:wrap}.contact-hook{margin:30px 0 0;padding:22px 24px;border:1px solid rgba(57,231,255,.23);border-radius:15px;background:linear-gradient(120deg,rgba(57,231,255,.055),rgba(154,102,255,.065),rgba(255,79,216,.04))}.contact-hook .hook-kicker{display:block;color:var(--cyan);font-size:10px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;margin-bottom:8px}.contact-hook .hook-title{color:var(--text);font-size:19px;line-height:1.45;letter-spacing:-.025em;margin:0}.contact-hook p{color:#c0c8df;margin:8px 0 0}.contact-links{display:flex;flex-wrap:wrap;gap:9px;margin-top:15px}.contact-links a{display:inline-flex;align-items:center;justify-content:center;padding:8px 12px;border:1px solid rgba(177,190,255,.18);border-radius:9px;background:rgba(255,255,255,.025);color:#e4edff;font-size:12px;font-weight:700}.contact-links a:hover{border-color:rgba(57,231,255,.5);background:rgba(57,231,255,.07);color:var(--cyan);text-decoration:none}.personal-note{margin:0 0 22px;padding:11px 14px;border:1px solid rgba(177,190,255,.13);border-radius:10px;background:rgba(255,255,255,.025);color:#a3abc4;font-size:12px;line-height:1.65}.personal-note strong{color:#dce5ff;font-weight:700}.note{color:var(--muted);font-size:13px}@media(max-width:760px){.layout{grid-template-columns:1fr;gap:10px}.toc{position:static;display:grid;grid-template-columns:1fr 1fr;gap:0 14px}.toc strong{grid-column:1/-1}.hero{padding-top:45px}.content h2{margin-top:32px}}@media(max-width:480px){.contact-hook{padding:18px}.contact-hook .hook-title{font-size:17px}}@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&amp;display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/terminal-design.css">
+</head>
+<body>
+<header class="topbar"><nav class="nav wrap"><a class="brand" href="/">AG <span class="gradient">/ Notes</span></a><a class="back" href="/#articles">← Back to all articles</a></nav></header>
+<header class="hero wrap">
+<div class="eyebrow">Deployment guide · Splunk Enterprise</div>
+<h1>Install Splunk Enterprise on Ubuntu 24.04 LTS</h1>
+<p class="lede">A practical, single-server Splunk lab installation for two Windows endpoints, one Linux host, and one FortiGate firewall—with systemd startup, installation validation, and the Enterprise Trial to Free license path.</p>
+<div class="meta"><span>By Ashraf Gamal</span><span>Published 18 October 2026</span><span class="pill">Splunk Enterprise 10.6.x · Ubuntu 24.04 LTS</span><span>Approx. 6 min read</span></div>
+</header>
+<div class="wrap layout">
+<aside class="toc"><strong>In this guide</strong><a href="#objective">Objective and architecture</a><a href="#prerequisites">Prerequisites</a><a href="#download">Download the installer</a><a href="#install">Install and first start</a><a href="#systemd">Configure systemd</a><a href="#troubleshooting">Known issues and troubleshooting</a><a href="#licensing">Trial and Free licensing</a><a href="#ingestion">Next: onboard lab sources</a><a href="#references">Official references</a></aside>
+<article class="content">
+<p class="personal-note"><strong>Personal note:</strong> This article reflects my experience and is for educational purposes only—not official vendor guidance. Always verify procedures against current vendor documentation.</p>
+<div class="info"><strong>Version note:</strong> This article was prepared in October 2026. Splunk Enterprise 10.6 documentation lists Ubuntu 24.04 x86-64 as supported. This is a lab guide, not a vendor certification of every possible package or environment combination. Use the installer package currently offered by Splunk for your account and verify the matching release notes before deployment.</div>
+
+<h2 id="objective">1. Objective and single-server architecture</h2>
+<p>The goal is to run <strong>Splunk Enterprise only</strong> on one Ubuntu VM. Splunk Enterprise provides the collection, indexing, search, and dashboard platform. Splunk Enterprise Security (ES) is a separate premium application and is <strong>not</strong> part of this build.</p>
+<p>The lab data sources are two Windows machines, one Linux machine, and one FortiGate firewall. For this footprint, start with a single instance and expand only if measured performance or a new use case justifies it.</p>
+<div class="table-wrap"><table><thead><tr><th>Setting</th><th>Practical lab starting point</th></tr></thead><tbody><tr><td>Operating system</td><td>Ubuntu Server 24.04 LTS, x86-64</td></tr><tr><td>CPU</td><td>8 vCPU (adjust to observed workload)</td></tr><tr><td>Memory</td><td>16 GB RAM as an initial lab target, not an official minimum</td></tr><tr><td>Storage</td><td>150 GB SSD, subject to retention and event volume</td></tr><tr><td>Deployment</td><td>One Splunk Enterprise instance</td></tr><tr><td>License target</td><td>60-day Enterprise Trial, then optionally Splunk Free</td></tr></tbody></table></div>
+<p class="note">Hardware figures are pragmatic starting points for a small lab, not guaranteed sizing. Search workload, parsing, data-model apps, disk speed, and ingestion volume affect performance.</p>
+
+<h2 id="prerequisites">2. Prerequisites</h2>
+<ul>
+<li>Ubuntu Server 24.04 LTS on a 64-bit x86-64 system. Current Splunk Enterprise 10.6 system requirements list Ubuntu 24.04 x86-64 as a supported platform; ARM is not supported for Splunk Enterprise.</li>
+<li>A Splunk.com account with access to the Enterprise download. The first launch activates the Enterprise Trial license by default.</li>
+<li>SSH or console access with sudo privileges, a stable IP address, and adequate free disk space.</li>
+<li>Network rules that allow only trusted lab clients to access Splunk Web and required ingestion ports. Do not expose management interfaces to the public internet.</li>
+</ul>
+<pre class="code"><code>sudo apt update
+sudo apt install -y wget ca-certificates
+uname -m
+lsb_release -a
+free -h
+df -h /</code></pre>
+<p>Confirm <code>uname -m</code> returns <code>x86_64</code>. Record available disk and memory before installing.</p>
+
+<h2 id="download">3. Download the installer package</h2>
+<p>Use the official <a href="https://www.splunk.com/en_us/download/splunk-enterprise.html" target="_blank" rel="noopener noreferrer">Splunk Enterprise download page</a> to select the current Linux x86-64 package. Depending on the download option provided for the selected release, you may obtain a Debian <code>.deb</code> package or a compressed archive. Sign in if the download requires it.</p>
+<p>For the Debian package, transfer it to the Ubuntu host (for example, into <code>/tmp</code>) and install using its exact downloaded filename. The example below deliberately uses a placeholder: release URLs and filenames change, so do not copy an old version-specific URL blindly.</p>
+<pre class="code"><code># Example after copying the downloaded .deb to /tmp:
+sudo dpkg -i /tmp/splunk-ENTER-YOUR-DOWNLOADED-VERSION-linux-amd64.deb
+
+# If dpkg reports missing package dependencies:
+sudo apt-get -f install</code></pre>
+<p>If you select the <code>.tgz</code> package instead, follow Splunk's official Linux installation instructions for the archive method. Do not mix instructions from different package types.</p>
+
+<h2 id="install">4. First start and initial setup</h2>
+<p>After installation, Splunk is normally located at <code>/opt/splunk</code>. Start it once and follow the prompts to accept the license and create the local administrator account:</p>
+<pre class="code"><code>sudo /opt/splunk/bin/splunk start --accept-license</code></pre>
+<p>The commands used in this lab set the service account to <code>splunk</code>. Before applying ownership changes, first determine which account owns the existing installation and running process. Avoid recursively changing ownership while Splunk is running.</p>
+<pre class="code"><code>ps -eo user,pid,args | grep '[s]plunkd'
+stat -c '%U:%G %n' /opt/splunk
+getent passwd splunk</code></pre>
+<p>If you intentionally installed Splunk to run as a dedicated <code>splunk</code> account, use that account consistently for the service, files, and startup configuration. On a fresh lab install, ownership can be set before starting Splunk; for an already running installation, plan a controlled stop before changing ownership.</p>
+<p>Open <code>http://&lt;UBUNTU_SERVER_IP&gt;:8000</code> from a trusted lab workstation and sign in using the administrator credentials created at first start.</p>
+
+<h2 id="systemd">5. Configure systemd to start Splunk at boot</h2>
+<p>One issue observed during this lab was that <code>systemctl status Splunkd.service</code> returned “Unit Splunkd.service could not be found”, while the attempt to run <code>enable boot-start</code> said Splunk was still running. The missing unit file was consistent with boot-start not yet having been configured. Splunk documents that you must stop <code>splunkd</code> before running the systemd boot-start setup.</p>
+<p>First stop the currently running service using the same OS account that manages the instance. If Splunk is run by the <code>splunk</code> account:</p>
+<pre class="code"><code>sudo -u splunk /opt/splunk/bin/splunk stop</code></pre>
+<p>Then create the systemd unit. Run the command with sudo because it writes the unit under <code>/etc/systemd/system</code>:</p>
+<pre class="code"><code>sudo /opt/splunk/bin/splunk enable boot-start \
+  -systemd-managed 1 \
+  -user splunk \
+  -group splunk</code></pre>
+<p>Splunk's current documentation says this creates <code>/etc/systemd/system/Splunkd.service</code> by default. Then reload systemd and enable the service:</p>
+<pre class="code"><code>sudo systemctl daemon-reload
+sudo systemctl enable --now Splunkd.service
+sudo systemctl status Splunkd.service --no-pager</code></pre>
+<p>Expected validation: systemd reports the unit as loaded and active. If the stop command reports that the user cannot control the running instance, do not kill it immediately—inspect the process owner and use the matching OS account before retrying.</p>
+
+<h2 id="troubleshooting">6. Known issues and troubleshooting</h2>
+<h3>Issue: “please stop it before running enable/disable boot-start”</h3>
+<p><strong>Meaning:</strong> Splunk detected that its process was still running. The boot-start registration step had not completed. Stop Splunk first, then execute the enable command.</p>
+<h3>Issue: “Unit Splunkd.service could not be found”</h3>
+<p><strong>Meaning:</strong> systemd could not find a unit with that name. In the recorded sequence, <code>enable boot-start</code> had exited before creating it because Splunk was running. After stopping Splunk and successfully completing boot-start, reload systemd and check the unit name and status again.</p>
+<h3>Useful checks</h3>
+<pre class="code"><code>sudo systemctl list-unit-files | grep -i splunk
+sudo journalctl -u Splunkd.service -n 100 --no-pager
+sudo -u splunk /opt/splunk/bin/splunk status
+sudo ss -lntp | grep ':8000'</code></pre>
+<p>The conversation confirms the initial error output and the identified corrective sequence. It does not include a later command output proving the service became active, so this article describes the documented fix and expected validation rather than claiming a verified final result.</p>
+
+<h2 id="licensing">7. Use the 60-day Enterprise Trial, then optionally convert to Free</h2>
+<p>A new Splunk Enterprise installation includes a 60-day Enterprise Trial by default, with an indexing allowance of up to 500 MB per day. Splunk's Free license also permits up to 500 MB/day and does not expire, but it removes important functionality.</p>
+<ol>
+<li>During the trial, use Splunk Web to explore log ingestion, searches, dashboards, and supported Enterprise features.</li>
+<li>Before or after the trial expires, open <strong>Settings → Licensing → Change License Group</strong>.</li>
+<li>Select <strong>Free license</strong>, save the change, and restart Splunk when prompted.</li>
+</ol>
+<div class="callout"><strong>Critical Free-license caveat</strong><p style="margin:6px 0 0">Splunk Free disables alerting and removes user accounts, roles, and the login screen. Anyone who can reach the web UI can gain administrator-level access. Keep it on an isolated, trusted lab network and restrict port 8000. Free is suitable for learning search and ingestion, but not for an alert-driven SIEM workflow. Repeated license violations can also disable search.</p></div>
+<p>For current restrictions and conversion steps, refer to Splunk's official <a href="https://help.splunk.com/en/splunk-enterprise/administer/admin-manual/10.6/configure-splunk-licenses/about-splunk-free" target="_blank" rel="noopener noreferrer">About Splunk Free</a> and <a href="https://help.splunk.com/en/splunk-enterprise/administer/admin-manual/10.6/start-splunk-enterprise-and-perform-initial-tasks/install-your-license" target="_blank" rel="noopener noreferrer">Install your license</a> documentation.</p>
+
+<h2 id="ingestion">8. Next: onboard the lab data sources</h2>
+<div class="table-wrap"><table><thead><tr><th>Source</th><th>Typical approach</th><th>Validation idea</th></tr></thead><tbody><tr><td>Windows endpoint 1 and 2</td><td>Splunk Universal Forwarder and selected Windows Event Logs</td><td>Search for the host and confirm recent security events arrive.</td></tr><tr><td>Linux host</td><td>Universal Forwarder or syslog, depending on the chosen data path</td><td>Confirm authentication and system logs are indexed.</td></tr><tr><td>FortiGate</td><td>Configure syslog forwarding to the Splunk listener or use a supported integration path</td><td>Verify source address, timestamps, and expected firewall event fields.</td></tr></tbody></table></div>
+<p>Use Splunk's official documentation to configure the receiving input and endpoint forwarding. Do not open a listener to all networks by default; allow only your lab sources. Start by keeping the overall ingestion rate below the 500 MB/day trial and Free limit.</p>
+
+<h2 id="references">9. Official references</h2>
+<ul>
+<li><a href="https://www.splunk.com/en_us/download/splunk-enterprise.html" target="_blank" rel="noopener noreferrer">Splunk Enterprise downloads</a></li>
+<li><a href="https://help.splunk.com/en/splunk-enterprise/administer/install-and-upgrade/10.6/plan-your-splunk-enterprise-installation/system-requirements-for-use-of-splunk-enterprise-on-premises" target="_blank" rel="noopener noreferrer">Splunk Enterprise 10.6 system requirements</a></li>
+<li><a href="https://help.splunk.com/en/data-management/splunk-enterprise-admin-manual/10.6/start-splunk-enterprise-and-perform-initial-tasks/run-splunk-enterprise-as-a-systemd-service" target="_blank" rel="noopener noreferrer">Run Splunk Enterprise as a systemd service</a></li>
+<li><a href="https://help.splunk.com/en/splunk-enterprise/administer/admin-manual/10.6/start-splunk-enterprise-and-perform-initial-tasks/install-your-license" target="_blank" rel="noopener noreferrer">Install your license — 60-day trial details</a></li>
+<li><a href="https://help.splunk.com/en/splunk-enterprise/administer/admin-manual/10.6/configure-splunk-licenses/about-splunk-free" target="_blank" rel="noopener noreferrer">About Splunk Free and its limitations</a></li>
+</ul>
+<p class="note">Versioned documentation and available download files can change. Verify the package filename, supported operating system, and license behavior for the exact Splunk release you install. This guide is educational and does not replace vendor documentation or a production design review.</p>
+
+<div class="contact-hook">
+<span class="hook-kicker">Discuss Splunk lab and SIEM engineering</span>
+<p class="hook-title">Building a Splunk lab or planning to onboard Windows, Linux, and FortiGate telemetry?</p>
+<p>Connect to discuss Splunk deployment, log onboarding, search validation, and practical SIEM engineering.</p>
+<div class="contact-links">
+<a href="https://www.linkedin.com/in/1elrawy/" target="_blank" rel="noopener noreferrer">LinkedIn ↗</a>
+<a href="mailto:as.ga2019@gmail.com?subject=Splunk%20Enterprise%20Lab%20and%20SIEM%20Engineering&amp;body=Hi%20Ashraf%2C%0A%0AI%20read%20your%20Splunk%20Enterprise%20on%20Ubuntu%2024.04%20lab%20guide%20and%20would%20like%20to%20discuss%20Splunk%20installation%2C%20log%20onboarding%2C%20or%20SIEM%20engineering.%0A%0ABest%20regards%2C">Email me ↗</a>
+<a href="https://wa.me/966598243358?text=Hi%20Ashraf%2C%20I%20read%20your%20Splunk%20Enterprise%20Ubuntu%20lab%20guide%20and%20would%20like%20to%20discuss%20Splunk%20installation%20or%20log%20onboarding." target="_blank" rel="noopener noreferrer">WhatsApp ↗</a>
+</div>
+</div>
+<div class="related"><a href="/#articles"><small>ARTICLE LIBRARY</small><strong>← Back to all technical notes</strong></a></div>
+</article>
+</div>
+<footer class="footer"><div class="wrap footerinner"><span>© 2026 Ashraf Gamal · Technical notes</span><a href="/#articles">Back to the article library ↑</a></div></footer>
+<script src="/assets/js/terminal-design.js"></script>
+</body>
+</html>
