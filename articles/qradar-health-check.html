@@ -19,6 +19,13 @@
 @media(max-width:480px){.contact-hook{padding:18px}.contact-hook .hook-title{font-size:17px}}
 .personal-note{margin:0 0 22px;padding:11px 14px;border:1px solid rgba(177,190,255,.13);border-radius:10px;background:rgba(255,255,255,.025);color:#a3abc4;font-size:12px;line-height:1.65}
 .personal-note strong{color:#dce5ff;font-weight:700}
+
+.healthcheck-figure{margin:20px 0;overflow:hidden}
+.healthcheck-figure>a{display:block;background:#080a12;line-height:0}
+.healthcheck-figure img{display:block;width:100%;height:auto;max-height:none;object-fit:contain;object-position:center}
+.healthcheck-figure figcaption{padding:10px 12px;color:var(--muted);font-size:12px;line-height:1.65;border-top:1px solid var(--line)}
+.healthcheck-figure figcaption strong{display:block;color:var(--text);font-size:12px;margin-bottom:4px}
+.healthcheck-gallery{display:grid;grid-template-columns:1fr;gap:14px;margin:18px 0 24px}
 </style>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -54,15 +61,38 @@
 </tbody></table></div>
 <p>For automated collection, the JSON or quiet output may be useful, but review the output format and exit behavior on the QRadar release you operate before integrating it into a script.</p>
 <div class="callout"><strong>Interpret results, don't just collect them.</strong><p style="margin:6px 0 0">A failure or warning is a starting point for investigation. Read the test name, evidence, suggested action, and applicable release notes. Do not change system files or apply a workaround solely because a health-check line looks unusual.</p></div>
+<figure class="figure healthcheck-figure">
+<a href="/assets/images/qradar/drq.png" target="_blank" rel="noopener noreferrer"><img src="/assets/images/qradar/drq.png" alt="Example output from the QRadar DrQ health-check utility showing check results and summary counts" loading="lazy"></a>
+<figcaption><strong>DrQ — example verbose checkup output</strong>This run reports 28 successful checkups, 3 failed checkups, 1 invalid file, and 2 skipped files. Review each finding and its remediation in the context of the host; do not apply suggested changes blindly. Select the image to open it at full size.</figcaption>
+</figure>
 <h2 id="recon">3. Inspect application workloads with Recon</h2>
 <p>Recon is particularly useful when troubleshooting QRadar applications. IBM documents it for QRadar 7.4.0 and later, on the Console or App Host where the applications run. The latest auto-update bundle is required, and Recon is not available for QRadar on Cloud. Confirm those prerequisites before using it.</p>
 <pre class="code"><code>/opt/qradar/support/recon ps</code></pre>
+<figure class="figure healthcheck-figure">
+<a href="/assets/images/qradar/recon%20ps.png" target="_blank" rel="noopener noreferrer"><img src="/assets/images/qradar/recon%20ps.png" alt="Example QRadar Recon ps output listing application IDs, managed host, workload, services, containers, and status markers" loading="lazy"></a>
+<figcaption><strong>Recon — application workload and container status</strong>The output shows application IDs, managed-host and workload details, service/container checks, and port checks. Use the status legend in the command output to interpret each marker. Select the image to open it at full size.</figcaption>
+</figure>
 <p>The output lists application identifiers and workload/service/container checks. IBM's documentation describes status symbols for checks such as whether a service is defined and started, whether the container exists and is running, and whether its port is responsive.</p>
 <p>Use this command when the problem involves an app that will not start, an app UI that is unavailable, or an application workload that appears unhealthy. It is not a replacement for DrQ, a full deployment check, or a log-source ingestion test.</p>
 <h2 id="cliniq">4. Use Cliniq where applicable</h2>
 <p>Cliniq is listed in IBM's QRadar support-tools reference as a health-check tool for routine checks and pre-upgrade reviews. Begin by checking the supported options:</p>
 <pre class="code"><code>/opt/qradar/support/cliniq -h</code></pre>
-<p>Then run the health-check procedure documented for your installed release. Tool availability and behavior can vary by version or patch level; a missing Cliniq binary or symbolic link has been documented as an upgrade failure condition by IBM Support.</p>
+<p>Then run the health-check procedure documented for your installed release. The screenshots below show example verbose output from a Cliniq run; results depend on the QRadar version, patch level, and host configuration.</p>
+<div class="healthcheck-gallery" aria-label="Cliniq health-check output screenshots">
+<figure class="figure healthcheck-figure">
+<a href="/assets/images/qradar/cliniq1.png" target="_blank" rel="noopener noreferrer"><img src="/assets/images/qradar/cliniq1.png" alt="First screenshot of QRadar Cliniq health-check output covering directory space, iptables, logrotate, udev, certificates, and workload checks" loading="lazy"></a>
+<figcaption><strong>Cliniq — initial checks</strong>Shows early checks including directory space, iptables files, logrotate, udev synchronization, certificate bundle, and workload checks. Select the image to open it at full size.</figcaption>
+</figure>
+<figure class="figure healthcheck-figure">
+<a href="/assets/images/qradar/cliniq2.png" target="_blank" rel="noopener noreferrer"><img src="/assets/images/qradar/cliniq2.png" alt="Second screenshot of QRadar Cliniq output continuing with Traefik configuration, available space, operating-system users, and iptables interface checks" loading="lazy"></a>
+<figcaption><strong>Cliniq — continued checks</strong>Continues the report with Traefik configuration and key/certificate checks, filesystem space, OS-user checks, and iptables interface validation. Select the image to open it at full size.</figcaption>
+</figure>
+<figure class="figure healthcheck-figure">
+<a href="/assets/images/qradar/cliniq3.png" target="_blank" rel="noopener noreferrer"><img src="/assets/images/qradar/cliniq3.png" alt="Third screenshot of QRadar Cliniq output showing IPv6 autoconfiguration, HA and heap-dump checks, GRUB checks, and a final summary" loading="lazy"></a>
+<figcaption><strong>Cliniq — final checks and summary</strong>Shows further IPv6, HA, heap-dump, and GRUB checks. This captured run ends with 16 successful checkups, 1 failed checkup, and 0 invalid files; investigate the failure rather than treating the summary as a clean pass. Select the image to open it at full size.</figcaption>
+</figure>
+</div>
+<p>Tool availability and behavior can vary by version or patch level; a missing Cliniq binary or symbolic link has been documented as an upgrade failure condition by IBM Support.</p>
 <div class="info"><strong>Do not repair the utility by guesswork.</strong><p style="margin:6px 0 0">If Cliniq is missing or fails, collect the exact error and QRadar version, then consult the matching IBM Support article or open a support case. Avoid replacing symbolic links or selecting a different binary version unless IBM's instructions for that specific issue tell you to do so.</p></div>
 <h2 id="workflow">5. A repeatable health-check workflow</h2>
 <ol>
