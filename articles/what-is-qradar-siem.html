@@ -23,6 +23,10 @@
 .qradar-login-figure{margin:0 0 28px;overflow:hidden}
 .qradar-login-figure img{display:block;width:100%;height:auto;max-height:520px;object-fit:contain;object-position:center;background:#080a12}
 .qradar-login-figure figcaption{padding:10px 12px;color:var(--site-muted);font:10px/1.7 "JetBrains Mono",monospace;border-top:1px solid var(--site-border)}
+
+.qradar-components-figure{margin:0 0 24px;overflow:hidden}
+.qradar-components-figure img{display:block;width:100%;height:auto;max-height:620px;object-fit:contain;object-position:center;background:#080a12}
+.qradar-components-figure figcaption{padding:10px 12px;color:var(--site-muted);font:10px/1.7 "JetBrains Mono",monospace;border-top:1px solid var(--site-border)}
 </style>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -51,6 +55,10 @@
 <p>QRadar collects and processes event data from log sources and can also analyze network flow data. It normalizes supported data into fields that analysts can search and correlate, then applies rules and other configured analytics to help surface activity that deserves investigation.</p>
 <p>Rather than investigating a firewall, endpoint, identity provider, and server independently, analysts can use a SIEM to bring relevant signals together, build a timeline, and assess whether separate events may be related.</p>
 <h2 id="how-it-works">2. How QRadar works</h2>
+<figure class="figure qradar-components-figure">
+<img src="/assets/images/qradar_components.webp" alt="IBM QRadar SIEM components and their relationship in the deployment architecture" loading="lazy">
+<figcaption>IBM QRadar SIEM — components and deployment architecture.</figcaption>
+</figure>
 <p>At a high level, QRadar's workflow can be understood as a pipeline:</p>
 <div class="table-wrap"><table><thead><tr><th>Stage</th><th>What happens</th></tr></thead><tbody>
 <tr><td><strong>Collect</strong></td><td>Receive security events from sources such as firewalls, servers, identity systems, endpoint products, and other supported devices. Depending on the deployment, QRadar can also collect or receive network flow data.</td></tr>
