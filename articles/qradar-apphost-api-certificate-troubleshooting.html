@@ -74,7 +74,54 @@ openssl s_client -connect qradarprimary.local:443 \
 <li><strong>Trust the issuing CA on the App Host.</strong> Copy the correct root CA and any required intermediate CA certificates to the approved trust locations and run <code>update-ca-trust</code> as directed by IBM. Repeat trust updates on the hosts that need to validate the certificate. Do not treat a normal server/leaf certificate as a CA trust anchor unless it is intentionally a self-signed CA and that trust model is explicitly approved.</li>
 <li><strong>Remove stale material only when identified.</strong> If an obsolete cached certificate is blocking verification, confirm its exact path and role, preserve a backup, then follow the approved IBM procedure for removing or replacing it. Avoid broad wildcards or moving certificates without first identifying their purpose.</li>
 </ol>
-<p>For a custom certificate generated in-house, include the correct SAN extension and use a suitable certificate chain for your organization's trust model. The self-signed certificate-generation commands from one environment should not be copied as a universal production fix; use the certificate process approved for your deployment.</p>
+<h3>Case-specific option: generate a SAN-enabled self-signed certificate</h3>
+<p>The incident notes used a locally generated certificate with the Console FQDN in its SAN. Use this path only if your organization's certificate policy explicitly permits a self-signed Console certificate. For production environments that require a CA-issued certificate, generate a SAN-enabled CSR and have it signed by the approved internal or public CA instead.</p>
+<p>Build the certificate in a staging directory rather than overwriting the live certificate files directly. Replace the example hostname with the exact FQDN used by QRadar; set the validity period to your policy.</p>
+<pre class="code"><code>mkdir -p /root/qradar-cert-recovery
+cat &gt; /tmp/qradar_san.cnf &lt;&lt;'EOF'
+[req]
+default_bits       = 2048
+distinguished_name = req_distinguished_name
+req_extensions     = v3_req
+x509_extensions    = v3_req
+prompt             = no
+
+[req_distinguished_name]
+CN = qradarprimary.local
+
+[v3_req]
+basicConstraints = critical,CA:FALSE
+keyUsage = critical,digitalSignature,keyEncipherment
+extendedKeyUsage = serverAuth
+subjectAltName = @alt_names
+
+[alt_names]
+DNS.1 = qradarprimary.local
+EOF
+
+openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+  -keyout /root/qradar-cert-recovery/cert.key \
+  -out /root/qradar-cert-recovery/cert.cert \
+  -config /tmp/qradar_san.cnf</code></pre>
+<p>Inspect the generated certificate before installing it:</p>
+<pre class="code"><code>openssl x509 -in /root/qradar-cert-recovery/cert.cert \
+  -noout -subject -issuer -dates -ext subjectAltName</code></pre>
+<p>Then use <code>/opt/qradar/bin/install-ssl-cert.sh</code> and follow the prompts for the staged certificate and key. Do not manually overwrite <code>/etc/httpd/conf/certs/</code> as a substitute for the supported installer.</p>
+<h3>Update App Host trust carefully</h3>
+<p>After the Console certificate is installed, inspect the certificate actually presented by the Console from the App Host and write it to a temporary file first:</p>
+<pre class="code"><code>openssl s_client -connect qradarprimary.local:443 \
+  -servername qradarprimary.local -showcerts &lt;/dev/null 2&gt;/dev/null \
+  | openssl x509 -outform PEM \
+  -out /tmp/qradar_console_presented.pem
+
+openssl x509 -in /tmp/qradar_console_presented.pem \
+  -noout -subject -issuer -dates -ext subjectAltName</code></pre>
+<p>If the certificate is self-signed (subject and issuer match) and this is explicitly the approved trust model, install that certificate as a trust anchor on the App Host. Otherwise, install the actual issuing root CA and any required intermediates—not the leaf/server certificate—as directed by your certificate authority and IBM's procedure.</p>
+<pre class="code"><code># Only for an approved self-signed certificate
+install -m 0644 /tmp/qradar_console_presented.pem \
+  /etc/pki/ca-trust/source/anchors/qradarprimary_actual.crt
+update-ca-trust extract</code></pre>
+<p>Back up and preserve old certificate files before retiring them. If an obsolete file such as <code>/etc/pki/tls/certs/qradarprimary.local.crt</code> is involved, confirm its purpose and follow the supported procedure before moving or removing it. Do not silently hide command failures or replace trust material based only on a filename.</p>
 
 <h2 id="restart">5. Reload the App Host runtime only after trust is corrected</h2>
 <p>Once the Console certificate and App Host trust store are correct, reload the runtime according to the supported procedure for the installed QRadar release. IBM documents the following Podman restart on the host running applications after certificate changes:</p>
