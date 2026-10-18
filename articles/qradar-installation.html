@@ -19,6 +19,15 @@
 @media(max-width:480px){.contact-hook{padding:18px}.contact-hook .hook-title{font-size:17px}}
 .personal-note{margin:0 0 22px;padding:11px 14px;border:1px solid rgba(177,190,255,.13);border-radius:10px;background:rgba(255,255,255,.025);color:#a3abc4;font-size:12px;line-height:1.65}
 .personal-note strong{color:#dce5ff;font-weight:700}
+
+/* QRadar installation screenshots */
+.qradar-image-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin:18px 0 24px}
+.qradar-image-grid figure{min-width:0;margin:0;padding:10px;border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.025)}
+.qradar-image-grid figure[hidden]{display:none!important}
+.qradar-image-grid img{display:block;width:100%;height:auto;max-height:560px;object-fit:contain;object-position:center;background:#080a12;border-radius:6px}
+.qradar-image-grid figcaption{margin-top:9px;color:var(--muted);font-size:12px;line-height:1.55}
+.qradar-image-grid figcaption strong{display:block;color:var(--text);font-size:12px;margin-bottom:3px}
+@media(max-width:540px){.qradar-image-grid{grid-template-columns:1fr;gap:12px}}
 </style>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -51,6 +60,10 @@
 <h2 id="choose-path">2. Choose the correct installation path</h2>
 <p>Do not treat an appliance installation and a software installation as interchangeable procedures.</p>
 <div class="table-wrap"><table><thead><tr><th>Path</th><th>When it applies</th><th>Key point</th></tr></thead><tbody><tr><td><strong>Appliance installation</strong></td><td>Using QRadar installation media that includes the supported operating-system image.</td><td>Boot from the correct QRadar media and follow the appliance installation workflow.</td></tr><tr><td><strong>Software installation</strong></td><td>Installing QRadar on hardware or a VM where you provide and prepare supported RHEL.</td><td>RHEL preparation, partitions, entitlement, and the QRadar software installer must match the target release.</td></tr></tbody></table></div>
+<div class="qradar-image-grid qradar-path-gallery" aria-label="QRadar installation path examples">
+<figure hidden><img src="/assets/images/qradar-install-appliance.webp" alt="QRadar appliance installation option" loading="lazy" onload="this.closest('figure').hidden=false" onerror="this.closest('figure').hidden=true"><figcaption><strong>Appliance installation</strong>QRadar installation media includes the supported operating-system image.</figcaption></figure>
+<figure hidden><img src="/assets/images/qradar-install-software.png" alt="QRadar software installation option" loading="lazy" onload="this.closest('figure').hidden=false" onerror="this.closest('figure').hidden=true"><figcaption><strong>Software installation</strong>Install QRadar on a system prepared with a supported RHEL version.</figcaption></figure>
+</div>
 <p>IBM's documentation distinguishes these paths. A software installation requires supported RHEL preparation; an appliance installation uses the RHEL version included with the QRadar ISO. Review the guide for your exact version before proceeding: <a href="https://www.ibm.com/docs/en/qsip/7.5.0?topic=installations-qradar-software" target="_blank" rel="noopener noreferrer">QRadar software installations</a> and <a href="https://www.ibm.com/docs/en/qsip/7.5.0?topic=installations-virtual-appliance" target="_blank" rel="noopener noreferrer">virtual appliance installations</a>.</p>
 <h2 id="appliance">3. Appliance installation: high-level workflow</h2>
 <ol>
@@ -79,21 +92,43 @@ mount -o loop /root/qradar.iso /media/cdrom</code></pre>
 <p>QRadar deployments can include a Console, Event Collector, Event Processor, App Host, and other specialized roles or managed hosts. High availability (HA) is an architecture decision, not just a checkbox: determine which host is the Console, document the intended active/standby roles, and follow the matching HA requirements.</p>
 <h3 id="role-console">Console / All-in-One</h3>
 <p>For the software-install path shown in the installer, choose <strong>Software Install (hardware was purchased separately)</strong>, then select <strong>All-In-One Console</strong> as the assignment. Continue through the shared installer prompts for your target QRadar release, and confirm that sizing and licensing support this deployment model.</p>
+<div class="qradar-image-grid qradar-role-gallery" aria-label="All-in-One Console installation screenshots">
+<figure hidden><img src="/assets/images/qradar-install-aio-01.webp" alt="QRadar All-in-One Console installer screen 01" loading="lazy" onload="this.closest('figure').hidden=false" onerror="this.closest('figure').hidden=true"><figcaption><strong>All-in-One Console — screen 01</strong>Installer screenshot 01 in the All-in-One sequence.</figcaption></figure>
+<figure hidden><img src="/assets/images/qradar-install-aio-02.webp" alt="QRadar All-in-One Console installer screen 02" loading="lazy" onload="this.closest('figure').hidden=false" onerror="this.closest('figure').hidden=true"><figcaption><strong>All-in-One Console — screen 02</strong>Installer screenshot 02 in the All-in-One sequence.</figcaption></figure>
+<figure hidden><img src="/assets/images/qradar-install-aio-03.webp" alt="QRadar All-in-One Console installer screen 03" loading="lazy" onload="this.closest('figure').hidden=false" onerror="this.closest('figure').hidden=true"><figcaption><strong>All-in-One Console — screen 03</strong>Installer screenshot 03 in the All-in-One sequence.</figcaption></figure>
+<figure hidden><img src="/assets/images/qradar-install-aio-04.webp" alt="QRadar All-in-One Console installer screen 04" loading="lazy" onload="this.closest('figure').hidden=false" onerror="this.closest('figure').hidden=true"><figcaption><strong>All-in-One Console — screen 04</strong>Installer screenshot 04 in the All-in-One sequence.</figcaption></figure>
+<figure hidden><img src="/assets/images/qradar-install-aio-05.webp" alt="QRadar All-in-One Console installer screen 05" loading="lazy" onload="this.closest('figure').hidden=false" onerror="this.closest('figure').hidden=true"><figcaption><strong>All-in-One Console — screen 05</strong>Installer screenshot 05 in the All-in-One sequence.</figcaption></figure>
+<figure hidden><img src="/assets/images/qradar-install-aio-06.webp" alt="QRadar All-in-One Console installer screen 06" loading="lazy" onload="this.closest('figure').hidden=false" onerror="this.closest('figure').hidden=true"><figcaption><strong>All-in-One Console — screen 06</strong>Installer screenshot 06 in the All-in-One sequence.</figcaption></figure>
+</div>
 
 <h3 id="role-ec-ep">Event Collector / Event Processor</h3>
 <p>Use these roles when the deployment separates log collection from event processing and Console management. Assign the intended role and confirm the host's required sizing, licensing, network reachability, and managed-host design.</p>
+<div class="qradar-image-grid qradar-role-gallery" aria-label="Event Collector and Event Processor role assignment screenshot">
+<figure hidden><img src="/assets/images/qradar-install-event-collector-01-role-assignment.png" alt="QRadar Event Collector role assignment installer screen" loading="lazy" onload="this.closest('figure').hidden=false" onerror="this.closest('figure').hidden=true"><figcaption><strong>Event Collector role assignment</strong>Select the role that matches the distributed deployment plan.</figcaption></figure>
+</div>
 <div class="note"><strong>Continuation note:</strong> After completing the role-specific assignment screens, continue with the common installation steps described for Console installations where the prompts are shared. Keep role-specific network, licensing, and managed-host requirements aligned with the target QRadar release; do not configure a distributed host as an All-in-One Console.</div>
 
 <h3 id="role-app-host">App Host</h3>
 <p>An App Host supplies application workload capacity separate from the Console. Select this role only when it matches the deployment plan and application requirements.</p>
+<div class="qradar-image-grid qradar-role-gallery" aria-label="App Host installation screenshots">
+<figure hidden><img src="/assets/images/qradar-install-app-host-01.webp" alt="QRadar App Host installer screen 01" loading="lazy" onload="this.closest('figure').hidden=false" onerror="this.closest('figure').hidden=true"><figcaption><strong>App Host — screen 01</strong>Installer screenshot 01 for the App Host role.</figcaption></figure>
+<figure hidden><img src="/assets/images/qradar-install-app-host-02.webp" alt="QRadar App Host installer screen 02" loading="lazy" onload="this.closest('figure').hidden=false" onerror="this.closest('figure').hidden=true"><figcaption><strong>App Host — screen 02</strong>Installer screenshot 02 for the App Host role.</figcaption></figure>
+</div>
 <div class="note"><strong>Continuation note:</strong> Complete the App Host role assignment first, then follow the shared installer steps used for Console installations where applicable. Apply the release-specific App Host prerequisites and validate application workloads on the correct host after installation.</div>
 
 <h3 id="role-ha">High Availability (HA)</h3>
 <p>HA is a paired deployment, not a standalone appliance role. The primary and secondary systems must satisfy the supported version, activation-key, resource, network, and storage requirements for the target release.</p>
+<div class="qradar-image-grid qradar-role-gallery" aria-label="High Availability installation screenshots">
+<figure hidden><img src="/assets/images/qradar-install-ha-01.webp" alt="QRadar High Availability installer screen 01" loading="lazy" onload="this.closest('figure').hidden=false" onerror="this.closest('figure').hidden=true"><figcaption><strong>High Availability — screen 01</strong>Installer screenshot 01 for the HA workflow.</figcaption></figure>
+<figure hidden><img src="/assets/images/qradar-install-ha-02.webp" alt="QRadar High Availability installer screen 02" loading="lazy" onload="this.closest('figure').hidden=false" onerror="this.closest('figure').hidden=true"><figcaption><strong>High Availability — screen 02</strong>Installer screenshot 02 for the HA workflow.</figcaption></figure>
+</div>
 <div class="note"><strong>Continuation note:</strong> Follow the common installer sequence only where the HA installation workflow shares the same prompts as a Console installation. Then complete the required HA pairing, synchronization, and Active/Standby validation using the matching IBM High Availability Guide. Do not treat an HA install as complete after the Console-style setup alone.</div>
 
 <h3 id="role-qrm">QRM</h3>
 <p>Select the QRM role only when QRM is part of the planned and licensed QRadar architecture. Confirm the exact role name and prerequisites shown by the installer for your release.</p>
+<div class="qradar-image-grid qradar-role-gallery" aria-label="QRM installer screenshot">
+<figure hidden><img src="/assets/images/qradar-install-qrm-01-role-selection.png" alt="QRadar QRM role selection installer screen" loading="lazy" onload="this.closest('figure').hidden=false" onerror="this.closest('figure').hidden=true"><figcaption><strong>QRM role selection</strong>Installer screen showing the QRM role option.</figcaption></figure>
+</div>
 <div class="note"><strong>Continuation note:</strong> After the QRM-specific assignment, continue with the common Console installation steps where the prompts are the same, then complete QRM-specific configuration and validation required by the installed release.</div>
 
 <p>Role availability and exact installer screens vary by QRadar release, license, and appliance type. Confirm the role and entitlement before proceeding, and use the matching IBM installation guide for any role-specific steps.</p>
