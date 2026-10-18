@@ -36,6 +36,8 @@
 <p class="note">Hardware figures are pragmatic starting points for a small lab, not guaranteed sizing. Search workload, parsing, data-model apps, disk speed, and ingestion volume affect performance.</p>
 
 <h2 id="prerequisites">2. Prerequisites</h2>
+<figure class="figure"><a href="/assets/images/splunk/Add%20User%20Splunk%20.png" target="_blank" rel="noopener noreferrer"><img src="/assets/images/splunk/Add%20User%20Splunk%20.png" alt="Terminal showing the Splunk operating-system user setup command." loading="lazy"></a><figcaption>Preparing the Splunk OS user before configuring service ownership.</figcaption></figure>
+
 <ul>
 <li>Ubuntu Server 24.04 LTS on a 64-bit x86-64 system. Current Splunk Enterprise 10.6 system requirements list Ubuntu 24.04 x86-64 as a supported platform; ARM is not supported for Splunk Enterprise.</li>
 <li>A Splunk.com account with access to the Enterprise download. The first launch activates the Enterprise Trial license by default.</li>
@@ -51,6 +53,8 @@ df -h /</code></pre>
 <p>Confirm <code>uname -m</code> returns <code>x86_64</code>. Record available disk and memory before installing.</p>
 
 <h2 id="download">3. Download the installer package</h2>
+<figure class="figure"><a href="/assets/images/splunk/download%20splunk%20%20deb.png" target="_blank" rel="noopener noreferrer"><img src="/assets/images/splunk/download%20splunk%20%20deb.png" alt="Ubuntu terminal showing the Splunk Enterprise Debian package download step." loading="lazy"></a><figcaption>Downloading the Splunk Enterprise Debian package to the Ubuntu lab host.</figcaption></figure>
+
 <p>Use the official <a href="https://www.splunk.com/en_us/download/splunk-enterprise.html" target="_blank" rel="noopener noreferrer">Splunk Enterprise download page</a> to select the current Linux x86-64 package. Depending on the download option provided for the selected release, you may obtain a Debian <code>.deb</code> package or a compressed archive. Sign in if the download requires it.</p>
 <p>For the Debian package, transfer it to the Ubuntu host (for example, into <code>/tmp</code>) and install using its exact downloaded filename. The example below deliberately uses a placeholder: release URLs and filenames change, so do not copy an old version-specific URL blindly.</p>
 <pre class="code"><code># Example after copying the downloaded .deb to /tmp:
@@ -61,6 +65,8 @@ sudo apt-get -f install</code></pre>
 <p>If you select the <code>.tgz</code> package instead, follow Splunk's official Linux installation instructions for the archive method. Do not mix instructions from different package types.</p>
 
 <h2 id="install">4. First start and initial setup</h2>
+<figure class="figure"><a href="/assets/images/splunk/install.png" target="_blank" rel="noopener noreferrer"><img src="/assets/images/splunk/install.png" alt="Ubuntu terminal showing Splunk Enterprise package installation output." loading="lazy"></a><figcaption>Installing the downloaded Splunk Enterprise package with dpkg.</figcaption></figure>
+
 <p>After installation, Splunk is normally located at <code>/opt/splunk</code>. Start it once and follow the prompts to accept the license and create the local administrator account:</p>
 <pre class="code"><code>sudo /opt/splunk/bin/splunk start --accept-license</code></pre>
 <p>The commands used in this lab set the service account to <code>splunk</code>. Before applying ownership changes, first determine which account owns the existing installation and running process. Avoid recursively changing ownership while Splunk is running.</p>
@@ -69,8 +75,13 @@ stat -c '%U:%G %n' /opt/splunk
 getent passwd splunk</code></pre>
 <p>If you intentionally installed Splunk to run as a dedicated <code>splunk</code> account, use that account consistently for the service, files, and startup configuration. On a fresh lab install, ownership can be set before starting Splunk; for an already running installation, plan a controlled stop before changing ownership.</p>
 <p>Open <code>http://&lt;UBUNTU_SERVER_IP&gt;:8000</code> from a trusted lab workstation and sign in using the administrator credentials created at first start.</p>
+<figure class="figure"><a href="/assets/images/splunk/Splunk%20Login.png" target="_blank" rel="noopener noreferrer"><img src="/assets/images/splunk/Splunk%20Login.png" alt="Splunk Web login screen after installation." loading="lazy"></a><figcaption>Splunk Web login page on the new lab instance.</figcaption></figure>
+<figure class="figure"><a href="/assets/images/splunk/Splunk%20Dashboard%20.png" target="_blank" rel="noopener noreferrer"><img src="/assets/images/splunk/Splunk%20Dashboard%20.png" alt="Splunk Enterprise dashboard in the browser after login." loading="lazy"></a><figcaption>Splunk Enterprise Web interface after logging in.</figcaption></figure>
 
 <h2 id="systemd">5. Configure systemd to start Splunk at boot</h2>
+<figure class="figure"><a href="/assets/images/splunk/issue1.png" target="_blank" rel="noopener noreferrer"><img src="/assets/images/splunk/issue1.png" alt="Terminal showing the Splunk boot-start configuration error while Splunk is running." loading="lazy"></a><figcaption>Boot-start setup initially fails because Splunk is still running.</figcaption></figure>
+<figure class="figure"><a href="/assets/images/splunk/issue%20resolved.png" target="_blank" rel="noopener noreferrer"><img src="/assets/images/splunk/issue%20resolved.png" alt="Terminal showing the follow-up Splunk boot-start configuration and service checks." loading="lazy"></a><figcaption>Follow-up terminal checks during boot-start configuration. Confirm the final systemd service status on your own host.</figcaption></figure>
+
 <p>One issue observed during this lab was that <code>systemctl status Splunkd.service</code> returned “Unit Splunkd.service could not be found”, while the attempt to run <code>enable boot-start</code> said Splunk was still running. The missing unit file was consistent with boot-start not yet having been configured. Splunk documents that you must stop <code>splunkd</code> before running the systemd boot-start setup.</p>
 <p>First stop the currently running service using the same OS account that manages the instance. If Splunk is run by the <code>splunk</code> account:</p>
 <pre class="code"><code>sudo -u splunk /opt/splunk/bin/splunk stop</code></pre>
@@ -98,6 +109,9 @@ sudo ss -lntp | grep ':8000'</code></pre>
 <p>The conversation confirms the initial error output and the identified corrective sequence. It does not include a later command output proving the service became active, so this article describes the documented fix and expected validation rather than claiming a verified final result.</p>
 
 <h2 id="licensing">7. Use the 60-day Enterprise Trial, then optionally convert to Free</h2>
+<figure class="figure"><a href="/assets/images/splunk/Splunk%20Start%20with%20accept%20license.png" target="_blank" rel="noopener noreferrer"><img src="/assets/images/splunk/Splunk%20Start%20with%20accept%20license.png" alt="Terminal showing the first Splunk Enterprise startup and license acceptance." loading="lazy"></a><figcaption>First startup: accept the Splunk license agreement.</figcaption></figure>
+<figure class="figure"><a href="/assets/images/splunk/Splunk%20Start%20with%20accept%20license2.png" target="_blank" rel="noopener noreferrer"><img src="/assets/images/splunk/Splunk%20Start%20with%20accept%20license2.png" alt="Terminal showing Splunk Enterprise startup after license acceptance." loading="lazy"></a><figcaption>Continuing first-start initialization after accepting the license.</figcaption></figure>
+
 <p>A new Splunk Enterprise installation includes a 60-day Enterprise Trial by default, with an indexing allowance of up to 500 MB per day. Splunk's Free license also permits up to 500 MB/day and does not expire, but it removes important functionality.</p>
 <ol>
 <li>During the trial, use Splunk Web to explore log ingestion, searches, dashboards, and supported Enterprise features.</li>
