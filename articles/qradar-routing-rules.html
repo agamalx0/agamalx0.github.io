@@ -19,6 +19,12 @@
 @media(max-width:480px){.contact-hook{padding:18px}.contact-hook .hook-title{font-size:17px}}
 .personal-note{margin:0 0 22px;padding:11px 14px;border:1px solid rgba(177,190,255,.13);border-radius:10px;background:rgba(255,255,255,.025);color:#a3abc4;font-size:12px;line-height:1.65}
 .personal-note strong{color:#dce5ff;font-weight:700}
+
+.routing-rules-figure{margin:0 auto 26px;max-width:760px;overflow:hidden;border:1px solid var(--line);border-radius:13px;background:#080a12}
+.routing-rules-figure>a{display:block;line-height:0;background:#080a12}
+.routing-rules-figure img{display:block;width:100%;height:auto;max-height:760px;object-fit:contain;object-position:center}
+.routing-rules-figure figcaption{padding:10px 13px;color:var(--muted);font-size:12px;line-height:1.6;border-top:1px solid var(--line)}
+.routing-rules-figure figcaption strong{display:block;color:var(--text);font-size:12px;margin-bottom:3px}
 </style>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -37,6 +43,10 @@
 <div class="wrap layout">
 <aside class="toc"><strong>On this page</strong><a href="#purpose">1. Routing Rule behavior</a><a href="#modes">2. Online vs Offline</a><a href="#options">3. Routing options</a><a href="#configure">4. Create a rule</a><a href="#check">5. Common mistakes</a><a href="#references">IBM references</a></aside>
 <article class="content">
+<figure class="figure routing-rules-figure">
+<a href="/assets/images/qradar/Routing%20Rules.png" target="_blank" rel="noopener noreferrer"><img src="/assets/images/qradar/Routing%20Rules.png" alt="IBM QRadar Routing Rule configuration screen showing mode, event filters, forwarding destination, and routing options" loading="lazy"></a>
+<figcaption><strong>IBM QRadar — Routing Rule configuration</strong>The rule form brings together Online/Offline mode, event or flow filters, forwarding destination, and the available routing actions. Select the image to open the full-size screenshot.</figcaption>
+</figure>
 <div class="callout"><strong>First, know the difference:</strong> Routing Rules are for routing and handling event/flow data. They are not the same as Custom Rules Engine (CRE) rules that detect activity and can generate offenses.</div>
 <h2 id="purpose">1. Routing Rule behavior</h2>
 <p>A Routing Rule applies filters to incoming or stored event/flow data, then applies a selected routing action. Typical uses are sending a filtered copy of logs to another platform, reducing real-time correlation for selected data, or deliberately excluding data that has no retention or detection value.</p>
