@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en" class="dark">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#080a12">
+<meta name="description" content="Troubleshoot IBM QRadar Extension Management when installation or removal is blocked by another preview/install/uninstall task, using the content_package status table and the documented IBM recovery procedure.">
+<title>QRadar App Installation Blocked: Stuck Preview or Install Task | Ashraf Gamal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&amp;display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/terminal-design.css">
+<style>
+.status-table td:first-child{white-space:nowrap;font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
+.status-table td:nth-child(2){font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
+</style>
+</head>
+<body>
+<header class="topbar"><nav class="nav wrap"><a class="brand" href="/">AG <span class="gradient">/ Notes</span></a><a class="back" href="/#articles">← Back to technical notes</a></nav></header>
+<header class="hero wrap">
+<div class="eyebrow">IBM QRadar SIEM · Application Troubleshooting</div>
+<h1>QRadar app operations blocked:<br><span class="gradient">stale install task state</span></h1>
+<p class="lede">How to investigate the “Another preview/install/uninstall task is currently in progress” message when no active app operation is visible in the QRadar Console.</p>
+<div class="meta"><span>By Ashraf Gamal</span><span>Updated 19 October 2026</span><span class="pill">Application troubleshooting</span><span>Approx. 6 min read</span></div>
+</header>
+<div class="wrap layout">
+<aside class="toc"><strong>In this guide</strong>
+<a href="#symptom">The error</a><a href="#cause">Why it blocks operations</a><a href="#diagnose">Find conflicting states</a><a href="#statuses">Status reference</a><a href="#backup">Back up the table</a><a href="#resolve">Reset confirmed stale rows</a><a href="#verify">Retry and verify</a><a href="#references">IBM references</a>
+</aside>
+<article class="content">
+<div class="callout"><strong>Important: this procedure changes the QRadar database.</strong><p style="margin:6px 0 0">Use the database update only when the reported task is confirmed stale and you have backed up the table. Do not use it to force an app operation that is still running. Follow IBM Support guidance and your production change process.</p></div>
+
+<h2 id="symptom">1. Identify the symptom</h2>
+<p>In QRadar Console, open <strong>Admin → Extensions Management</strong> and attempt the required application or content-pack operation. The operation is rejected with an error similar to:</p>
+<blockquote>Another preview/install/uninstall task is currently in progress. Please try again later.</blockquote>
+<p>The message can remain even when the UI does not show an active preview, install, or uninstall operation. IBM documents this failure pattern when a previous app or content-pack install/removal failed and left a conflicting entry in the content-management database.</p>
+
+<h2 id="cause">2. Why QRadar blocks the next operation</h2>
+<p>Extension Management checks the current records in the <code>content_package</code> table before starting another operation. A previously failed or interrupted task can leave a row in a state that QRadar treats as conflicting. The result is a stale task-state blocker rather than necessarily an app process that is still visibly running.</p>
+<p>Do not assume a specific status from the error text alone. Inspect the current records and compare the state with the QRadar status lookup table before making a change.</p>
+
+<h2 id="diagnose">3. Find the conflicting content-package records</h2>
+<p>SSH to the QRadar Console as <code>root</code> through your approved administration path. Run IBM's diagnostic query to return entries whose status is not one of the usual terminal states:</p>
+<pre class="code"><code>psql -U qradar -c "SELECT hub_id, content_status, id
+FROM content_package
+WHERE content_status NOT IN (3, 6, 9);"</code></pre>
+<p>Review every returned row, especially the <code>hub_id</code>, numeric status, and record <code>id</code>. More than one record can block the next operation; record each candidate ID and confirm that it belongs to a failed or abandoned task before resetting anything.</p>
+<p>To view the status names configured on the appliance, run:</p>
+<pre class="code"><code>psql -U qradar -c "SELECT * FROM content_status;"</code></pre>
+
+<h2 id="statuses">4. Interpret the status values correctly</h2>
+<p>The status codes matter here: <code>5</code> and <code>6</code> do <strong>not</strong> mean “In Progress” and “Failed.” In IBM's documented lookup, <code>5</code> is <code>INSTALL_FAILED</code> and <code>6</code> is <code>UNINSTALLED</code>.</p>
+<div class="table-wrap"><table class="status-table"><thead><tr><th>Code</th><th>Status</th><th>Meaning</th></tr></thead><tbody>
+<tr><td>1</td><td>UPLOADED</td><td>Package uploaded.</td></tr>
+<tr><td>2</td><td>UPLOADING</td><td>Upload in progress.</td></tr>
+<tr><td>3</td><td>INSTALLED</td><td>Installed; treated as a terminal state by the diagnostic query.</td></tr>
+<tr><td>4</td><td>INSTALLING</td><td>Installation state; confirm whether an operation is actually active.</td></tr>
+<tr><td>5</td><td>INSTALL_FAILED</td><td>Installation failed; investigate whether this row is the stale blocker.</td></tr>
+<tr><td>6</td><td>UNINSTALLED</td><td>Uninstalled; terminal state used by the documented recovery.</td></tr>
+<tr><td>7</td><td>UNINSTALLING</td><td>Uninstall state; confirm whether an operation is actually active.</td></tr>
+<tr><td>8</td><td>UNINSTALL_FAILED</td><td>Uninstall failed; investigate whether this row is the stale blocker.</td></tr>
+<tr><td>9</td><td>NOT_INSTALLED</td><td>Not installed; terminal state used by the diagnostic query.</td></tr>
+<tr><td>10</td><td>PREVIEWING</td><td>Preview state; verify it is stale before taking action.</td></tr>
+<tr><td>11</td><td>NONE</td><td>No content operation state set.</td></tr>
+<tr><td>12</td><td>INSTALLED_WITH_ERROR</td><td>Installed with an error; investigate app health separately.</td></tr>
+<tr><td>13</td><td>UNINSTALL_PREVIEWING</td><td>Uninstall preview state; verify it is stale before taking action.</td></tr>
+</tbody></table></div>
+<p>Use the results from your own system as the source of truth if the status lookup differs by release. Do not change rows that represent a legitimate operation in progress.</p>
+
+<h2 id="backup">5. Back up the content-package table</h2>
+<p>Before running an update, create the backup directory and export the table. Confirm that <code>/store</code> has enough space and that the resulting backup file exists.</p>
+<pre class="code"><code>mkdir -p /store/IBM_Support/
+
+pg_dump -U qradar -t content_package --inserts \
+  -f "/store/IBM_Support/content_package.sql-$(date +%F)"</code></pre>
+<p>Check the command's exit status and inspect the backup file before proceeding. If the backup fails or storage is low, stop and resolve that issue first.</p>
+
+<h2 id="resolve">6. Reset only the confirmed stale record</h2>
+<p>IBM's documented recovery sets the specific conflicting record's <code>content_status</code> to <code>6</code> (<code>UNINSTALLED</code>). Replace <code>APP_ID</code> with the ID you identified from the diagnostic query. This is a targeted database correction, not a general-purpose way to repair arbitrary app statuses.</p>
+<pre class="code"><code>psql -U qradar -c "UPDATE content_package
+SET content_status = 6
+WHERE id = 'APP_ID';"</code></pre>
+<p>For example, if IBM's diagnostic identifies the confirmed stale record with ID <code>601</code>, the update is:</p>
+<pre class="code"><code>psql -U qradar -c "UPDATE content_package
+SET content_status = 6
+WHERE id = '601';"</code></pre>
+<div class="callout"><strong>Do not update every row in the table.</strong><p style="margin:6px 0 0">Run one targeted update per confirmed stale ID. Never use an unqualified update or set every app to status 6. If the state is ambiguous, the operation may still be active, or the record is not explained by the error, stop and involve IBM Support.</p></div>
+
+<h2 id="verify">7. Verify the state and retry the operation</h2>
+<p>Repeat the diagnostic query:</p>
+<pre class="code"><code>psql -U qradar -c "SELECT hub_id, content_status, id
+FROM content_package
+WHERE content_status NOT IN (3, 6, 9);"</code></pre>
+<p>For the documented issue, no rows should remain that block the operation. If other rows are returned, inspect them individually rather than resetting them automatically.</p>
+<ol>
+<li>Clear the browser cache or open a fresh private browser session.</li>
+<li>Return to <strong>Admin → Extensions Management</strong>.</li>
+<li>Retry the required install or uninstall operation.</li>
+<li>Confirm that the operation finishes, then check the package/app state and relevant logs. A successful database update alone does not prove the application itself is healthy.</li>
+</ol>
+<p>If the error persists, preserve the query output and backup file details, collect the relevant QRadar logs, and open or continue an IBM Support case. Avoid repeating status changes without confirming the remaining blocker.</p>
+
+<h2 id="references">8. IBM references</h2>
+<ul>
+<li><a href="https://www.ibm.com/support/pages/qradar-installation-or-removal-application-fails-error-another-previewinstalluninstall-task-currently-process" target="_blank" rel="noopener noreferrer">IBM Support — Installation or removal blocked by another preview/install/uninstall task</a></li>
+<li><a href="https://www.ibm.com/support/pages/restart-qradar-apps-error-state-or-missing-ui-using-hub-app-qappmanager-cli-or-api" target="_blank" rel="noopener noreferrer">IBM Support — Troubleshooting QRadar apps in ERROR state or missing from the UI</a></li>
+<li><a href="https://www.ibm.com/support/pages/how-start-stop-delete-and-reinstall-qradar-applications-using-interactive-api-or-qappmanager-utility-opening-support-case" target="_blank" rel="noopener noreferrer">IBM Support — Managing QRadar app operations with the API or qappmanager</a></li>
+</ul>
+<p class="note">This article summarizes the documented status-table recovery for a specific Extension Management error. Direct database edits should be performed only after a successful backup, confirmation of stale records, and approval under your organization's change process.</p>
+
+<div class="contact-hook">
+<span class="hook-kicker">IBM QRadar SIEM</span>
+<p class="hook-title">QRadar app installation, Extension Management, and application recovery</p>
+<p>For technical discussion about blocked app operations or QRadar application troubleshooting, use one of the contact options below.</p>
+<div class="contact-links"><a href="mailto:as.ga2019@gmail.com?subject=QRadar%20application%20installation%20issue">Email ↗</a><a href="https://wa.me/966598243358?text=Hi%20Ashraf%2C%20I%20read%20your%20QRadar%20app%20installation%20troubleshooting%20note." target="_blank" rel="noopener noreferrer">WhatsApp ↗</a><a href="https://www.linkedin.com/in/1elrawy/" target="_blank" rel="noopener noreferrer">LinkedIn ↗</a></div>
+</div>
+<div class="related"><a href="/articles/qradar-troubleshooting.html"><small>RELATED GUIDE</small><strong>← QRadar troubleshooting checklist</strong></a><a href="/articles/qradar-operations-essentials.html"><small>RELATED GUIDE</small><strong>QRadar operations essentials →</strong></a></div>
+</article>
+</div>
+<footer class="footer"><div class="wrap footerinner"><span>© <span id="year">2026</span> Ashraf Gamal · Technical notes</span><a href="/">Home</a></div></footer>
+<script>document.getElementById('year').textContent=new Date().getFullYear();</script>
+<script src="/assets/js/terminal-design.js"></script>
+</body>
+</html>
