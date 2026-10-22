@@ -55,6 +55,12 @@ The focus is on reproducible procedures and field-oriented lessons: what to chec
 
 Browse the full, current collection on the [portfolio homepage](https://agamalx0.github.io/#articles).
 
+### Malware analysis and sandboxing
+
+| Topic | What it covers |
+|---|---|
+| [Cuckoo Sandbox with vSphere & YARA](https://agamalx0.github.io/articles/cuckoo-sandbox-vsphere-yara.html) | Legacy Cuckoo 2.0.7 lab notes covering vSphere-managed Windows guests, PCAP troubleshooting, YARA compatibility, and detection validation. |
+
 ## Technical focus
 
 - **SIEM engineering:** IBM QRadar SIEM and Wazuh deployment, administration, log-source onboarding, health checks, retention, and troubleshooting.
