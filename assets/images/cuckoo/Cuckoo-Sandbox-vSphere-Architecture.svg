@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="900" viewBox="0 0 1440 900" role="img" aria-labelledby="title desc">
+<title id="title">Cuckoo Sandbox vSphere Architecture</title>
+<desc id="desc">Cuckoo Sandbox on Linux orchestrates Windows 7 and Windows 10 analysis virtual machines through VMware vSphere, uses YARA rules, collects PCAP and behavior, and stores reports in MongoDB.</desc>
+<defs>
+ <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f8fbff"/><stop offset="1" stop-color="#edf3ff"/></linearGradient>
+ <linearGradient id="blue" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#e7f4ff"/><stop offset="1" stop-color="#dbeafe"/></linearGradient>
+ <linearGradient id="purple" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f4eaff"/><stop offset="1" stop-color="#e9ddff"/></linearGradient>
+ <linearGradient id="green" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#e3fff5"/><stop offset="1" stop-color="#d5faed"/></linearGradient>
+ <linearGradient id="amber" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff4d8"/><stop offset="1" stop-color="#ffebbd"/></linearGradient>
+ <filter id="shadow" x="-15%" y="-15%" width="130%" height="130%"><feDropShadow dx="0" dy="5" stdDeviation="7" flood-color="#24436d" flood-opacity=".13"/></filter>
+ <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#3979c8"/></marker>
+ <marker id="purpleArrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#8a4de8"/></marker>
+</defs>
+<rect width="1440" height="900" rx="28" fill="url(#bg)"/>
+<g font-family="Inter,Segoe UI,Arial,sans-serif" fill="#10264a">
+ <text x="40" y="58" font-size="36" font-weight="800">Cuckoo Sandbox Architecture</text>
+ <text x="42" y="91" font-size="18" fill="#4370ad">VMware vSphere / ESXi · Two Windows analysis VMs · YARA integration</text>
+ <rect x="32" y="130" width="220" height="220" rx="18" fill="url(#purple)" stroke="#8b45e9" stroke-width="2" filter="url(#shadow)"/>
+ <text x="52" y="168" font-size="21" font-weight="750">SOC / Analyst</text>
+ <text x="52" y="204" font-size="16">• Submit samples</text><text x="52" y="234" font-size="16">• Review reports</text><text x="52" y="264" font-size="16">• Search IOCs</text><text x="52" y="294" font-size="16">• API / automation</text>
+ <rect x="300" y="130" width="490" height="355" rx="18" fill="url(#blue)" stroke="#1697e6" stroke-width="2" filter="url(#shadow)"/>
+ <text x="324" y="170" font-size="23" font-weight="800">Cuckoo Sandbox Server</text><text x="324" y="197" font-size="15" fill="#4a6b95">Linux host · legacy Cuckoo 2.0.7 / Python 2.7</text>
+ <rect x="324" y="219" width="210" height="62" rx="11" fill="#fff" stroke="#7bb9ed"/><text x="340" y="245" font-size="17" font-weight="700">Web UI / API</text><text x="340" y="266" font-size="14">TCP 8000</text>
+ <rect x="550" y="219" width="215" height="62" rx="11" fill="#fff" stroke="#7bb9ed"/><text x="566" y="245" font-size="17" font-weight="700">Scheduler</text><text x="566" y="266" font-size="14">Task + VM selection</text>
+ <rect x="324" y="295" width="210" height="62" rx="11" fill="#fff" stroke="#7bb9ed"/><text x="340" y="321" font-size="17" font-weight="700">Processing</text><text x="340" y="342" font-size="14">Behavior / signatures</text>
+ <rect x="550" y="295" width="215" height="62" rx="11" fill="#fff" stroke="#7bb9ed"/><text x="566" y="321" font-size="17" font-weight="700">Reporting</text><text x="566" y="342" font-size="14">MongoDB / JSON</text>
+ <rect x="324" y="371" width="441" height="82" rx="11" fill="#eef2ff" stroke="#a4a8fa"/><text x="340" y="399" font-size="17" font-weight="750">Virtualization + capture</text><text x="340" y="424" font-size="15">vSphere API · snapshots · Agent · tcpdump / PCAP</text>
+ <path d="M252 240 H294" fill="none" stroke="#3979c8" stroke-width="3" marker-end="url(#arrow)"/><text x="262" y="224" font-size="13" fill="#3979c8">Submit</text>
+ <rect x="845" y="130" width="562" height="355" rx="18" fill="url(#green)" stroke="#18a879" stroke-width="2" filter="url(#shadow)"/>
+ <text x="872" y="169" font-size="23" font-weight="800">VMware vSphere / ESXi</text><text x="872" y="197" font-size="15" fill="#397b6b">Cuckoo machinery controls guest lifecycle and snapshots</text>
+ <rect x="872" y="219" width="245" height="218" rx="14" fill="#fff" stroke="#65caa9" stroke-width="1.5"/>
+ <text x="895" y="253" font-size="20" font-weight="750">Windows 7 VM</text><text x="895" y="282" font-size="15">Machine ID: win7</text><text x="895" y="309" font-size="15">10.250.50.20</text><text x="895" y="344" font-size="15">• Cuckoo Agent 0.10</text><text x="895" y="371" font-size="15">• Clean snapshot</text><text x="895" y="398" font-size="15">• Isolated analysis network</text>
+ <rect x="1134" y="219" width="245" height="218" rx="14" fill="#fff" stroke="#65caa9" stroke-width="1.5"/>
+ <text x="1157" y="253" font-size="20" font-weight="750">Windows 10 VM</text><text x="1157" y="282" font-size="15">Machine ID: win10</text><text x="1157" y="309" font-size="15">10.250.50.30</text><text x="1157" y="344" font-size="15">• Cuckoo Agent 0.10</text><text x="1157" y="371" font-size="15">• Clean snapshot</text><text x="1157" y="398" font-size="15">• Isolated analysis network</text>
+ <path d="M790 257 H836" fill="none" stroke="#3979c8" stroke-width="3" marker-end="url(#arrow)"/><text x="793" y="238" font-size="13" fill="#3979c8">vSphere API :443</text>
+ <rect x="32" y="520" width="430" height="285" rx="18" fill="url(#green)" stroke="#18b990" stroke-width="2" filter="url(#shadow)"/>
+ <text x="56" y="560" font-size="22" font-weight="800">YARA rule sources</text>
+ <rect x="56" y="583" width="380" height="72" rx="11" fill="#fff" stroke="#67cfb0"/><text x="74" y="612" font-size="18" font-weight="750">ReversingLabs</text><text x="74" y="637" font-size="14">310 rule files checked in the lab</text>
+ <rect x="56" y="670" width="380" height="72" rx="11" fill="#fff" stroke="#67cfb0"/><text x="74" y="699" font-size="18" font-weight="750">Neo23x0 Signature-Base</text><text x="74" y="724" font-size="14">718 of 750 passed the recorded CLI test</text>
+ <path d="M462 625 H505 V420 H530" fill="none" stroke="#18a879" stroke-width="3" marker-end="url(#arrow)"/>
+ <rect x="500" y="520" width="420" height="285" rx="18" fill="url(#purple)" stroke="#984ced" stroke-width="2" filter="url(#shadow)"/>
+ <text x="524" y="560" font-size="22" font-weight="800">Analysis flow</text>
+ <g font-size="15"><rect x="524" y="583" width="372" height="30" rx="7" fill="#fff"/><text x="538" y="603">1. Submit sample (Web UI / CLI)</text><rect x="524" y="619" width="372" height="30" rx="7" fill="#fff"/><text x="538" y="639">2. Select VM and revert clean snapshot</text><rect x="524" y="655" width="372" height="30" rx="7" fill="#fff"/><text x="538" y="675">3. Start guest and validate Agent</text><rect x="524" y="691" width="372" height="30" rx="7" fill="#fff"/><text x="538" y="711">4. Execute sample and collect telemetry</text><rect x="524" y="727" width="372" height="30" rx="7" fill="#fff"/><text x="538" y="747">5. Process signatures and report</text></g>
+ <path d="M920 656 H958" fill="none" stroke="#8a4de8" stroke-width="3" marker-end="url(#purpleArrow)"/>
+ <rect x="960" y="520" width="447" height="285" rx="18" fill="url(#amber)" stroke="#e8a300" stroke-width="2" filter="url(#shadow)"/>
+ <text x="985" y="560" font-size="22" font-weight="800">Analysis outputs</text><text x="985" y="600" font-size="17">• YARA match / Cuckoo signatures</text><text x="985" y="633" font-size="17">• Behavior and process evidence</text><text x="985" y="666" font-size="17">• PCAP / network metadata</text><text x="985" y="699" font-size="17">• Screenshots and logs</text><text x="985" y="732" font-size="17">• JSON / MongoDB report</text><text x="985" y="765" font-size="17">• Extracted files and IOCs</text>
+ <text x="32" y="855" font-size="13" fill="#617695">Lab-specific architecture · Isolate analysis guests and verify network segmentation before handling real samples.</text>
+</g></svg>
