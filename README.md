@@ -22,44 +22,61 @@ This repository powers my cybersecurity portfolio and technical notebook, publis
 
 The focus is on reproducible procedures and field-oriented lessons: what to check, how to collect useful evidence, where version differences matter, and how to validate that a change actually worked.
 
-## Featured technical notes
+## All technical articles
+
+Browse the complete portfolio by topic. Every HTML article in the repository is listed below and is also available from the [full article library](https://agamalx0.github.io/articles.html).
 
 ### IBM QRadar SIEM
 
-| Topic | What it covers |
+| Article | Coverage |
 |---|---|
-| [What Is IBM QRadar SIEM?](https://agamalx0.github.io/articles/what-is-qradar-siem.html) | Core components, events and flows, correlation, offenses, and investigation context. |
+| [What Is IBM QRadar SIEM?](https://agamalx0.github.io/articles/what-is-qradar-siem.html) | Components, events and flows, correlation, offenses, and investigation context. |
 | [QRadar Installation Guide](https://agamalx0.github.io/articles/qradar-installation.html) | Installation paths, appliance roles, prerequisites, and post-install validation. |
-| [QRadar Health Check](https://agamalx0.github.io/articles/qradar-health-check.html) | Using DrQ, Recon, and Cliniq where supported, and understanding what the results prove. |
-| [QRadar Troubleshooting Checklist](https://agamalx0.github.io/articles/qradar-troubleshooting.html) | Structured triage for services, managed hosts, deployment, storage, and ingestion symptoms. |
-| [Ariel Proxy Search Failure](https://agamalx0.github.io/articles/qradar-ariel-proxy-search-failure.html) | Investigating filtered Log Activity searches and TCP port 32011. |
-| [App Host API Certificate Recovery](https://agamalx0.github.io/articles/qradar-apphost-api-certificate-troubleshooting.html) | Troubleshooting x509 trust failures between the QRadar Console API and App Host application runtime. |
-| [QRadar App Installation Blocked](https://agamalx0.github.io/articles/qradar-app-install-task-stuck.html) | Diagnose stale Extension Management task states and follow the backed-up content_package recovery procedure. |
+| [QRadar Health Check](https://agamalx0.github.io/articles/qradar-health-check.html) | DrQ, Recon, Cliniq, and validation limits. |
+| [QRadar Troubleshooting Checklist](https://agamalx0.github.io/articles/qradar-troubleshooting.html) | Evidence-led triage for host, service, deployment, storage, and ingestion issues. |
+| [QRadar GUI and Tomcat Recovery](https://agamalx0.github.io/articles/qradar-tomcat-cache-ui-troubleshooting.html) | Backend checks and supported Tomcat cache recovery considerations. |
+| [Ariel Proxy Search Failure](https://agamalx0.github.io/articles/qradar-ariel-proxy-search-failure.html) | Filtered Log Activity searches, transient search data, and TCP 32011. |
+| [QRadar App Installation Blocked](https://agamalx0.github.io/articles/qradar-app-install-task-stuck.html) | Stale Extension Management task state and controlled database recovery. |
+| [QRadar App Host API Certificate Recovery](https://agamalx0.github.io/articles/qradar-apphost-api-certificate-troubleshooting.html) | TLS trust, SAN validation, and App Host API communication errors. |
+| [QRadar Operations Essentials](https://agamalx0.github.io/articles/qradar-operations-essentials.html) | Deployment, EPS/FPM, service operations, and production-safe checks. |
+| [QRadar Upgrade Guide](https://agamalx0.github.io/articles/qradar-upgrade-guide.html) | Version-path validation, preparation, change execution, and post-upgrade checks. |
 | [QRadar High Availability](https://agamalx0.github.io/articles/qradar-high-availability.html) | HA roles, failover readiness, state validation, and recovery considerations. |
-| [QRadar Console Migration](https://agamalx0.github.io/articles/qradar-migration-guide.html) | Planning same-IP and new-IP Console replacement scenarios. |
-| [QRadar Routing Rules](https://agamalx0.github.io/articles/qradar-routing-rules.html) | Forward, Drop, Bypass Correlation, and Log Only behavior and trade-offs. |
+| [QRadar Console Migration](https://agamalx0.github.io/articles/qradar-migration-guide.html) | Same-IP and new-IP Console replacement planning. |
+| [QRadar Routing Rules](https://agamalx0.github.io/articles/qradar-routing-rules.html) | Forward, Drop, Bypass Correlation, Log Only, and routing-rule validation. |
+
+### IBM QRadar SOAR
+
+| Article | Coverage |
+|---|---|
+| [IBM QRadar SOAR Upgrade Guide](https://agamalx0.github.io/articles/qradar-soar-upgrade-guide.html) | On-premises Virtual Appliance upgrade planning, execution, and validation. |
 
 ### Wazuh SIEM
 
-| Topic | What it covers |
+| Article | Coverage |
 |---|---|
-| [Wazuh All-in-One Installation](https://agamalx0.github.io/articles/wazuh-all-in-one-installation.html) | Installation workflow, configuration, and validation for an all-in-one deployment. |
-| [Wazuh Distributed Architecture](https://agamalx0.github.io/articles/wazuh-distributed-architecture.html) | Roles and design considerations for a distributed Wazuh deployment. |
-| [Wazuh MSSP Multi-Tenant Architecture](https://agamalx0.github.io/articles/wazuh-mssp-multi-tenant-architecture.html) | Tenant access design using identity integration, RBAC, and data-level controls. |
+| [Wazuh All-in-One Installation](https://agamalx0.github.io/articles/wazuh-all-in-one-installation.html) | Single-host deployment, configuration, and validation. |
+| [Wazuh Distributed Architecture](https://agamalx0.github.io/articles/wazuh-distributed-architecture.html) | Multi-node roles, networking, certificates, and load balancing. |
+| [Wazuh MSSP Multi-Tenant Architecture](https://agamalx0.github.io/articles/wazuh-mssp-multi-tenant-architecture.html) | Tenant access design, identity integration, RBAC, and data-level controls. |
+| [Wazuh SIEM with DFIR-IRIS](https://agamalx0.github.io/articles/wazuh-dfir-iris-integration.html) | Alert integration, case-management workflow, IOC mapping, and API validation. |
 
 ### Splunk Enterprise
 
-| Topic | What it covers |
+| Article | Coverage |
 |---|---|
-| [Install Splunk Enterprise on Ubuntu 24.04 LTS](https://agamalx0.github.io/articles/splunk-enterprise-installation-ubuntu-24-04.html) | Single-server lab installation, systemd boot-start troubleshooting, and Enterprise Trial-to-Free license considerations. |
+| [Install Splunk Enterprise on Ubuntu 24.04 LTS](https://agamalx0.github.io/articles/splunk-enterprise-installation-ubuntu-24-04.html) | Single-server lab installation, systemd startup, validation, and license path. |
 
-Browse the full, current collection on the [portfolio homepage](https://agamalx0.github.io/#articles).
+### Workflow automation and n8n
+
+| Article | Coverage |
+|---|---|
+| [Installing n8n for Local Workflow Automation](https://agamalx0.github.io/articles/n8n-installation-local-automation.html) | Self-hosted n8n setup, configuration persistence, and local access. |
+| [Testing n8n Webhooks Locally with curl](https://agamalx0.github.io/articles/testing-n8n-webhooks-locally-curl.html) | Test and production URLs, incoming JSON, and webhook troubleshooting. |
 
 ### Malware analysis and sandboxing
 
-| Topic | What it covers |
+| Article | Coverage |
 |---|---|
-| [Cuckoo Sandbox with vSphere & YARA](https://agamalx0.github.io/articles/cuckoo-sandbox-vsphere-yara.html) | Legacy Cuckoo 2.0.7 lab notes covering vSphere-managed Windows guests, PCAP troubleshooting, YARA compatibility, and detection validation. |
+| [Cuckoo Sandbox with vSphere & YARA](https://agamalx0.github.io/articles/cuckoo-sandbox-vsphere-yara.html) | Cuckoo lab notes covering vSphere-managed guests, PCAP troubleshooting, YARA compatibility, and detection validation. |
 
 ## Technical focus
 
