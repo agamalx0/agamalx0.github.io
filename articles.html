@@ -147,12 +147,16 @@ a:focus-visible,button:focus-visible{outline:2px solid #00f59b;outline-offset:3p
 
 <section aria-label="Article library">
 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-<div class="library-filter-row" id="library-filter-container" role="group" aria-label="Filter articles by platform">
-<button type="button" class="filter-btn active border-brand-greenDark dark:border-brand-green bg-black text-brand-green dark:bg-brand-green dark:text-black font-bold px-3 py-2 border text-xs" data-filter="wazuh" aria-pressed="true">WAZUH</button>
+<div class="library-filter-row" id="library-filter-container" role="group" aria-label="Filter articles by topic">
+<button type="button" class="filter-btn active border-brand-greenDark dark:border-brand-green bg-black text-brand-green dark:bg-brand-green dark:text-black font-bold px-3 py-2 border text-xs" data-filter="all" aria-pressed="true">ALL TECHNICAL NOTES</button>
+<button type="button" class="filter-btn border-brand-borderLight dark:border-brand-borderDark text-neutral-600 dark:text-neutral-300 hover:border-brand-greenDark dark:hover:border-brand-green px-3 py-2 border font-bold text-xs" data-filter="wazuh" aria-pressed="false">WAZUH</button>
 <button type="button" class="filter-btn border-brand-borderLight dark:border-brand-borderDark text-neutral-600 dark:text-neutral-300 hover:border-brand-greenDark dark:hover:border-brand-green px-3 py-2 border font-bold text-xs" data-filter="qradar-siem" aria-pressed="false">IBM QRADAR SIEM</button>
+<button type="button" class="filter-btn border-brand-borderLight dark:border-brand-borderDark text-neutral-600 dark:text-neutral-300 hover:border-brand-greenDark dark:hover:border-brand-green px-3 py-2 border font-bold text-xs" data-filter="qradar-soar" aria-pressed="false">IBM QRADAR SOAR</button>
+<button type="button" class="filter-btn border-brand-borderLight dark:border-brand-borderDark text-neutral-600 dark:text-neutral-300 hover:border-brand-greenDark dark:hover:border-brand-green px-3 py-2 border font-bold text-xs" data-filter="splunk" aria-pressed="false">SPLUNK</button>
+<button type="button" class="filter-btn border-brand-borderLight dark:border-brand-borderDark text-neutral-600 dark:text-neutral-300 hover:border-brand-greenDark dark:hover:border-brand-green px-3 py-2 border font-bold text-xs" data-filter="automation" aria-pressed="false">AUTOMATION / N8N</button>
 <button type="button" class="filter-btn border-brand-borderLight dark:border-brand-borderDark text-neutral-600 dark:text-neutral-300 hover:border-brand-greenDark dark:hover:border-brand-green px-3 py-2 border font-bold text-xs" data-filter="malware-analysis" aria-pressed="false">MALWARE ANALYSIS</button>
 </div>
-<div id="library-status" class="library-status" aria-live="polite">SHOWING 3 WAZUH TECHNICAL NOTES</div>
+<div id="library-status" class="library-status" aria-live="polite">SHOWING 22 OF 22 TECHNICAL NOTES</div>
 </div>
 <div id="articles-library-grid">
 <a href="/articles/wazuh-all-in-one-installation.html" class="article-item library-article has-cover block border border-brand-borderLight dark:border-brand-borderDark bg-white dark:bg-[#0c0d0e] overflow-hidden hover:border-brand-green transition-colors group" data-category="wazuh">
@@ -185,17 +189,27 @@ a:focus-visible,button:focus-visible{outline:2px solid #00f59b;outline-offset:3p
 </div>
 </a>
 
-<a href="/articles/cuckoo-sandbox-vsphere-yara.html" class="article-item library-article has-cover block border border-brand-borderLight dark:border-brand-borderDark bg-white dark:bg-[#0c0d0e] overflow-hidden hover:border-brand-green transition-colors group" data-category="malware-analysis" hidden>
-<div class="article-cover article-cover--placeholder" aria-hidden="true"><div class="cover-placeholder-content"><span class="cover-placeholder-kicker">MALWARE ANALYSIS</span><strong>CUCKOO</strong><span class="cover-placeholder-title">VSPHERE &amp; YARA</span><span class="cover-placeholder-mark">TECHNICAL NOTE / SANDBOX ENGINEERING</span></div></div>
+<a href="/articles/wazuh-dfir-iris-integration.html" class="article-item library-article has-cover block border border-brand-borderLight dark:border-brand-borderDark bg-white dark:bg-[#0c0d0e] overflow-hidden hover:border-brand-green transition-colors group" data-category="wazuh">
+<div class="article-cover article-cover--placeholder" aria-hidden="true"><div class="cover-placeholder-content"><span class="cover-placeholder-kicker">WAZUH SIEM</span><strong>DFIR-IRIS</strong><span class="cover-placeholder-title">ALERT INTEGRATION</span><span class="cover-placeholder-mark">TECHNICAL NOTE / SOC AUTOMATION</span></div></div>
 <div class="article-card-content p-5">
-<div class="flex justify-between items-center mb-3"><span class="text-[10px] text-brand-greenDark dark:text-brand-green uppercase tracking-widest border border-brand-greenDark/30 dark:border-brand-green/30 px-2 py-0.5">Malware Analysis · Cuckoo Sandbox</span><span class="text-neutral-400 group-hover:text-black dark:group-hover:text-white transition-colors">↗</span></div>
-<h3 class="font-sans font-bold text-lg text-black dark:text-white mb-2 uppercase leading-tight">Cuckoo Sandbox with vSphere &amp; YARA</h3>
-<p class="text-xs text-neutral-600 dark:text-neutral-400">A legacy lab journal covering vSphere guest orchestration, Windows analysis VMs, PCAP troubleshooting, YARA compatibility, and detection validation.</p>
+<div class="flex justify-between items-center mb-3"><span class="text-[10px] text-brand-greenDark dark:text-brand-green uppercase tracking-widest border border-brand-greenDark/30 dark:border-brand-green/30 px-2 py-0.5">Wazuh SIEM · DFIR-IRIS</span><span class="text-neutral-400 group-hover:text-black dark:group-hover:text-white transition-colors">↗</span></div>
+<h3 class="font-sans font-bold text-lg text-black dark:text-white mb-2 uppercase leading-tight">Integrating Wazuh SIEM with DFIR-IRIS</h3>
+<p class="text-xs text-neutral-600 dark:text-neutral-400">Send actionable Wazuh alerts into DFIR-IRIS with a custom integration, mapped context, IOC extraction, and API-payload validation.</p>
 <div class="mt-4 pt-3 border-t border-brand-borderLight dark:border-brand-borderDark text-[10px] text-neutral-400">OPEN TECHNICAL NOTE →</div>
 </div>
 </a>
 
-<a href="/articles/what-is-qradar-siem.html" class="article-item library-article has-cover block border border-brand-borderLight dark:border-brand-borderDark bg-white dark:bg-[#0c0d0e] overflow-hidden hover:border-brand-green transition-colors group" data-category="qradar-siem" hidden>
+<a href="/articles/cuckoo-sandbox-vsphere-yara.html" class="article-item library-article has-cover block border border-brand-borderLight dark:border-brand-borderDark bg-white dark:bg-[#0c0d0e] overflow-hidden hover:border-brand-green transition-colors group" data-category="malware-analysis">
+<div class="article-cover article-cover--placeholder" aria-hidden="true"><div class="cover-placeholder-content"><span class="cover-placeholder-kicker">MALWARE ANALYSIS</span><strong>CUCKOO</strong><span class="cover-placeholder-title">VSPHERE &amp; YARA</span><span class="cover-placeholder-mark">TECHNICAL NOTE / SANDBOX ENGINEERING</span></div></div>
+<div class="article-card-content p-5">
+<div class="flex justify-between items-center mb-3"><span class="text-[10px] text-brand-greenDark dark:text-brand-green uppercase tracking-widest border border-brand-greenDark/30 dark:border-brand-green/30 px-2 py-0.5">Malware Analysis · Cuckoo Sandbox</span><span class="text-neutral-400 group-hover:text-black dark:group-hover:text-white transition-colors">↗</span></div>
+<h3 class="font-sans font-bold text-lg text-black dark:text-white mb-2 uppercase leading-tight">Cuckoo Sandbox with vSphere &amp; YARA</h3>
+<p class="text-xs text-neutral-600 dark:text-neutral-400">Document a legacy Cuckoo 2.0.7 lab using vSphere-managed Windows guests, PCAP troubleshooting, external YARA rules, and validated detection evidence.</p>
+<div class="mt-4 pt-3 border-t border-brand-borderLight dark:border-brand-borderDark text-[10px] text-neutral-400">OPEN TECHNICAL NOTE →</div>
+</div>
+</a>
+
+<a href="/articles/what-is-qradar-siem.html" class="article-item library-article has-cover block border border-brand-borderLight dark:border-brand-borderDark bg-white dark:bg-[#0c0d0e] overflow-hidden hover:border-brand-green transition-colors group" data-category="qradar-siem">
 <div class="article-cover article-cover--placeholder" aria-hidden="true"><div class="cover-placeholder-content"><span class="cover-placeholder-kicker">IBM QRADAR SIEM</span><strong>OVERVIEW</strong><span class="cover-placeholder-title">WHAT IS QRADAR SIEM?</span><span class="cover-placeholder-mark">TECHNICAL NOTE / SIEM ENGINEERING</span></div></div>
 <div class="article-card-content p-5">
 <div class="flex justify-between items-center mb-3"><span class="text-[10px] text-brand-greenDark dark:text-brand-green uppercase tracking-widest border border-brand-greenDark/30 dark:border-brand-green/30 px-2 py-0.5">IBM QRadar SIEM · Overview</span><span class="text-neutral-400 group-hover:text-black dark:group-hover:text-white transition-colors">↗</span></div>
@@ -205,7 +219,7 @@ a:focus-visible,button:focus-visible{outline:2px solid #00f59b;outline-offset:3p
 </div>
 </a>
 
-<a href="/articles/qradar-installation.html" class="article-item library-article has-cover block border border-brand-borderLight dark:border-brand-borderDark bg-white dark:bg-[#0c0d0e] p-5 hover:border-brand-green transition-colors group" data-category="qradar-siem" hidden>
+<a href="/articles/qradar-installation.html" class="article-item library-article has-cover block border border-brand-borderLight dark:border-brand-borderDark bg-white dark:bg-[#0c0d0e] p-5 hover:border-brand-green transition-colors group" data-category="qradar-siem">
 <div class="article-cover article-cover--placeholder" aria-hidden="true"><div class="cover-placeholder-content"><span class="cover-placeholder-kicker">IBM QRADAR SIEM</span><strong>INSTALL</strong><span class="cover-placeholder-title">DEPLOYMENT GUIDE</span><span class="cover-placeholder-mark">TECHNICAL NOTE / SIEM ENGINEERING</span></div></div>
 <div class="article-card-content p-5">
 <div class="flex justify-between items-center mb-3"><span class="text-[10px] text-brand-greenDark dark:text-brand-green uppercase tracking-widest border border-brand-greenDark/30 dark:border-brand-green/30 px-2 py-0.5">IBM QRadar SIEM · Installation</span><span class="text-neutral-400 group-hover:text-black dark:group-hover:text-white transition-colors">↗</span></div>
@@ -216,7 +230,7 @@ a:focus-visible,button:focus-visible{outline:2px solid #00f59b;outline-offset:3p
 </div>
 </a>
 
-<a href="/articles/qradar-health-check.html" class="article-item library-article has-cover block border border-brand-borderLight dark:border-brand-borderDark bg-white dark:bg-[#0c0d0e] p-5 hover:border-brand-green transition-colors group" data-category="qradar-siem" hidden>
+<a href="/articles/qradar-health-check.html" class="article-item library-article has-cover block border border-brand-borderLight dark:border-brand-borderDark bg-white dark:bg-[#0c0d0e] p-5 hover:border-brand-green transition-colors group" data-category="qradar-siem">
 <div class="article-cover article-cover--placeholder" aria-hidden="true"><div class="cover-placeholder-content"><span class="cover-placeholder-kicker">IBM QRADAR SIEM</span><strong>HEALTH</strong><span class="cover-placeholder-title">HEALTH CHECK</span><span class="cover-placeholder-mark">TECHNICAL NOTE / SIEM ENGINEERING</span></div></div>
 <div class="article-card-content p-5">
 <div class="flex justify-between items-center mb-3"><span class="text-[10px] text-brand-greenDark dark:text-brand-green uppercase tracking-widest border border-brand-greenDark/30 dark:border-brand-green/30 px-2 py-0.5">IBM QRadar SIEM · Health Check</span><span class="text-neutral-400 group-hover:text-black dark:group-hover:text-white transition-colors">↗</span></div>
@@ -227,7 +241,7 @@ a:focus-visible,button:focus-visible{outline:2px solid #00f59b;outline-offset:3p
 </div>
 </a>
 
-<a href="/articles/qradar-troubleshooting.html" class="article-item library-article has-cover block border border-brand-borderLight dark:border-brand-borderDark bg-white dark:bg-[#0c0d0e] p-5 hover:border-brand-green transition-colors group" data-category="qradar-siem" hidden>
+<a href="/articles/qradar-troubleshooting.html" class="article-item library-article has-cover block border border-brand-borderLight dark:border-brand-borderDark bg-white dark:bg-[#0c0d0e] p-5 hover:border-brand-green transition-colors group" data-category="qradar-siem">
 <div class="article-cover article-cover--placeholder" aria-hidden="true"><div class="cover-placeholder-content"><span class="cover-placeholder-kicker">IBM QRADAR SIEM</span><strong>TROUBLESHOOT</strong><span class="cover-placeholder-title">TROUBLESHOOTING</span><span class="cover-placeholder-mark">TECHNICAL NOTE / SIEM ENGINEERING</span></div></div>
 <div class="article-card-content p-5">
 <div class="flex justify-between items-center mb-3"><span class="text-[10px] text-brand-greenDark dark:text-brand-green uppercase tracking-widest border border-brand-greenDark/30 dark:border-brand-green/30 px-2 py-0.5">IBM QRadar SIEM · Troubleshooting</span><span class="text-neutral-400 group-hover:text-black dark:group-hover:text-white transition-colors">↗</span></div>
@@ -238,7 +252,7 @@ a:focus-visible,button:focus-visible{outline:2px solid #00f59b;outline-offset:3p
 </div>
 </a>
 
-<a href="/articles/qradar-tomcat-cache-ui-troubleshooting.html" class="article-item library-article has-cover block border border-brand-borderLight dark:border-brand-borderDark bg-white dark:bg-[#0c0d0e] overflow-hidden hover:border-brand-green transition-colors group" data-category="qradar-siem" hidden>
+<a href="/articles/qradar-tomcat-cache-ui-troubleshooting.html" class="article-item library-article has-cover block border border-brand-borderLight dark:border-brand-borderDark bg-white dark:bg-[#0c0d0e] overflow-hidden hover:border-brand-green transition-colors group" data-category="qradar-siem">
 <div class="article-cover article-cover--placeholder" aria-hidden="true"><div class="cover-placeholder-content"><span class="cover-placeholder-kicker">IBM QRADAR SIEM</span><strong>TOMCAT</strong><span class="cover-placeholder-title">UI RECOVERY</span><span class="cover-placeholder-mark">TECHNICAL NOTE / SIEM OPERATIONS</span></div></div>
 <div class="article-card-content p-5">
 <div class="flex justify-between items-center mb-3"><span class="text-[10px] text-brand-greenDark dark:text-brand-green uppercase tracking-widest border border-brand-greenDark/30 dark:border-brand-green/30 px-2 py-0.5">IBM QRadar SIEM · UI Troubleshooting</span><span class="text-neutral-400 group-hover:text-black dark:group-hover:text-white transition-colors">↗</span></div>
@@ -248,7 +262,7 @@ a:focus-visible,button:focus-visible{outline:2px solid #00f59b;outline-offset:3p
 </div>
 </a>
 
-<a href="/articles/qradar-ariel-proxy-search-failure.html" class="article-item library-article has-cover block border border-brand-borderLight dark:border-brand-borderDark bg-white dark:bg-[#0c0d0e] overflow-hidden hover:border-brand-green transition-colors group" data-category="qradar-siem" hidden>
+<a href="/articles/qradar-ariel-proxy-search-failure.html" class="article-item library-article has-cover block border border-brand-borderLight dark:border-brand-borderDark bg-white dark:bg-[#0c0d0e] overflow-hidden hover:border-brand-green transition-colors group" data-category="qradar-siem">
 <div class="article-cover article-cover--placeholder" aria-hidden="true"><div class="cover-placeholder-content"><span class="cover-placeholder-kicker">IBM QRADAR SIEM</span><strong>ARIEL PROXY</strong><span class="cover-placeholder-title">SEARCH RECOVERY</span><span class="cover-placeholder-mark">TECHNICAL NOTE / SIEM OPERATIONS</span></div></div>
 <div class="article-card-content p-5">
 <div class="flex justify-between items-center mb-3"><span class="text-[10px] text-brand-greenDark dark:text-brand-green uppercase tracking-widest border border-brand-greenDark/30 dark:border-brand-green/30 px-2 py-0.5">IBM QRadar SIEM · Search Troubleshooting</span><span class="text-neutral-400 group-hover:text-black dark:group-hover:text-white transition-colors">↗</span></div>
@@ -258,7 +272,7 @@ a:focus-visible,button:focus-visible{outline:2px solid #00f59b;outline-offset:3p
 </div>
 </a>
 
-<a href="/articles/qradar-app-install-task-stuck.html" class="article-item library-article has-cover block border border-brand-borderLight dark:border-brand-borderDark bg-white dark:bg-[#0c0d0e] overflow-hidden hover:border-brand-green transition-colors group" data-category="qradar-siem" hidden>
+<a href="/articles/qradar-app-install-task-stuck.html" class="article-item library-article has-cover block border border-brand-borderLight dark:border-brand-borderDark bg-white dark:bg-[#0c0d0e] overflow-hidden hover:border-brand-green transition-colors group" data-category="qradar-siem">
 <div class="article-cover article-cover--placeholder" aria-hidden="true"><div class="cover-placeholder-content"><span class="cover-placeholder-kicker">IBM QRADAR SIEM</span><strong>APP TASK</strong><span class="cover-placeholder-title">INSTALL RECOVERY</span><span class="cover-placeholder-mark">TECHNICAL NOTE / EXTENSION MANAGEMENT</span></div></div>
 <div class="article-card-content p-5">
 <div class="flex justify-between items-center mb-3"><span class="text-[10px] text-brand-greenDark dark:text-brand-green uppercase tracking-widest border border-brand-greenDark/30 dark:border-brand-green/30 px-2 py-0.5">IBM QRadar SIEM · Application Issues</span><span class="text-neutral-400 group-hover:text-black dark:group-hover:text-white transition-colors">↗</span></div>
@@ -268,7 +282,7 @@ a:focus-visible,button:focus-visible{outline:2px solid #00f59b;outline-offset:3p
 </div>
 </a>
 
-<a href="/articles/qradar-apphost-api-certificate-troubleshooting.html" class="article-item library-article has-cover block border border-brand-borderLight dark:border-brand-borderDark bg-white dark:bg-[#0c0d0e] overflow-hidden hover:border-brand-green transition-colors group" data-category="qradar-siem" hidden>
+<a href="/articles/qradar-apphost-api-certificate-troubleshooting.html" class="article-item library-article has-cover block border border-brand-borderLight dark:border-brand-borderDark bg-white dark:bg-[#0c0d0e] overflow-hidden hover:border-brand-green transition-colors group" data-category="qradar-siem">
 <div class="article-cover article-cover--placeholder" aria-hidden="true"><div class="cover-placeholder-content"><span class="cover-placeholder-kicker">IBM QRADAR SIEM</span><strong>APP HOST TLS</strong><span class="cover-placeholder-title">API RECOVERY</span><span class="cover-placeholder-mark">TECHNICAL NOTE / CERTIFICATE TRUST</span></div></div>
 <div class="article-card-content p-5">
 <div class="flex justify-between items-center mb-3"><span class="text-[10px] text-brand-greenDark dark:text-brand-green uppercase tracking-widest border border-brand-greenDark/30 dark:border-brand-green/30 px-2 py-0.5">IBM QRadar SIEM · App Host TLS</span><span class="text-neutral-400 group-hover:text-black dark:group-hover:text-white transition-colors">↗</span></div>
@@ -278,7 +292,7 @@ a:focus-visible,button:focus-visible{outline:2px solid #00f59b;outline-offset:3p
 </div>
 </a>
 
-<a href="/articles/qradar-operations-essentials.html" class="article-item library-article has-cover block border border-brand-borderLight dark:border-brand-borderDark bg-white dark:bg-[#0c0d0e] p-5 hover:border-brand-green transition-colors group" data-category="qradar-siem" hidden>
+<a href="/articles/qradar-operations-essentials.html" class="article-item library-article has-cover block border border-brand-borderLight dark:border-brand-borderDark bg-white dark:bg-[#0c0d0e] p-5 hover:border-brand-green transition-colors group" data-category="qradar-siem">
 <div class="article-cover article-cover--placeholder" aria-hidden="true"><div class="cover-placeholder-content"><span class="cover-placeholder-kicker">IBM QRADAR SIEM</span><strong>OPS</strong><span class="cover-placeholder-title">OPERATIONS ESSENTIALS</span><span class="cover-placeholder-mark">TECHNICAL NOTE / SIEM ENGINEERING</span></div></div>
 <div class="article-card-content p-5">
 <div class="flex justify-between items-center mb-3"><span class="text-[10px] text-brand-greenDark dark:text-brand-green uppercase tracking-widest border border-brand-greenDark/30 dark:border-brand-green/30 px-2 py-0.5">IBM QRadar SIEM · Operations</span><span class="text-neutral-400 group-hover:text-black dark:group-hover:text-white transition-colors">↗</span></div>
@@ -289,7 +303,7 @@ a:focus-visible,button:focus-visible{outline:2px solid #00f59b;outline-offset:3p
 </div>
 </a>
 
-<a href="/articles/qradar-upgrade-guide.html" class="article-item library-article has-cover block border border-brand-borderLight dark:border-brand-borderDark bg-white dark:bg-[#0c0d0e] p-5 hover:border-brand-green transition-colors group" data-category="qradar-siem" hidden>
+<a href="/articles/qradar-upgrade-guide.html" class="article-item library-article has-cover block border border-brand-borderLight dark:border-brand-borderDark bg-white dark:bg-[#0c0d0e] p-5 hover:border-brand-green transition-colors group" data-category="qradar-siem">
 <div class="article-cover article-cover--placeholder" aria-hidden="true"><div class="cover-placeholder-content"><span class="cover-placeholder-kicker">IBM QRADAR SIEM</span><strong>UPGRADE</strong><span class="cover-placeholder-title">UPGRADE GUIDE</span><span class="cover-placeholder-mark">TECHNICAL NOTE / SIEM ENGINEERING</span></div></div>
 <div class="article-card-content p-5">
 <div class="flex justify-between items-center mb-3"><span class="text-[10px] text-brand-greenDark dark:text-brand-green uppercase tracking-widest border border-brand-greenDark/30 dark:border-brand-green/30 px-2 py-0.5">IBM QRadar SIEM · Upgrade</span><span class="text-neutral-400 group-hover:text-black dark:group-hover:text-white transition-colors">↗</span></div>
@@ -300,7 +314,7 @@ a:focus-visible,button:focus-visible{outline:2px solid #00f59b;outline-offset:3p
 </div>
 </a>
 
-<a href="/articles/qradar-high-availability.html" class="article-item library-article has-cover block border border-brand-borderLight dark:border-brand-borderDark bg-white dark:bg-[#0c0d0e] p-5 hover:border-brand-green transition-colors group" data-category="qradar-siem" hidden>
+<a href="/articles/qradar-high-availability.html" class="article-item library-article has-cover block border border-brand-borderLight dark:border-brand-borderDark bg-white dark:bg-[#0c0d0e] p-5 hover:border-brand-green transition-colors group" data-category="qradar-siem">
 <div class="article-cover article-cover--placeholder" aria-hidden="true"><div class="cover-placeholder-content"><span class="cover-placeholder-kicker">IBM QRADAR SIEM</span><strong>HA</strong><span class="cover-placeholder-title">HIGH AVAILABILITY</span><span class="cover-placeholder-mark">TECHNICAL NOTE / SIEM ENGINEERING</span></div></div>
 <div class="article-card-content p-5">
 <div class="flex justify-between items-center mb-3"><span class="text-[10px] text-brand-greenDark dark:text-brand-green uppercase tracking-widest border border-brand-greenDark/30 dark:border-brand-green/30 px-2 py-0.5">IBM QRadar SIEM · High Availability</span><span class="text-neutral-400 group-hover:text-black dark:group-hover:text-white transition-colors">↗</span></div>
@@ -311,7 +325,7 @@ a:focus-visible,button:focus-visible{outline:2px solid #00f59b;outline-offset:3p
 </div>
 </a>
 
-<a href="/articles/qradar-migration-guide.html" class="article-item library-article has-cover block border border-brand-borderLight dark:border-brand-borderDark bg-white dark:bg-[#0c0d0e] p-5 hover:border-brand-green transition-colors group" data-category="qradar-siem" hidden>
+<a href="/articles/qradar-migration-guide.html" class="article-item library-article has-cover block border border-brand-borderLight dark:border-brand-borderDark bg-white dark:bg-[#0c0d0e] p-5 hover:border-brand-green transition-colors group" data-category="qradar-siem">
 <div class="article-cover article-cover--placeholder" aria-hidden="true"><div class="cover-placeholder-content"><span class="cover-placeholder-kicker">IBM QRADAR SIEM</span><strong>MIGRATION</strong><span class="cover-placeholder-title">CONSOLE REPLACEMENT</span><span class="cover-placeholder-mark">TECHNICAL NOTE / SIEM ENGINEERING</span></div></div>
 <div class="article-card-content p-5">
 <div class="flex justify-between items-center mb-3"><span class="text-[10px] text-brand-greenDark dark:text-brand-green uppercase tracking-widest border border-brand-greenDark/30 dark:border-brand-green/30 px-2 py-0.5">IBM QRadar SIEM · Migration</span><span class="text-neutral-400 group-hover:text-black dark:group-hover:text-white transition-colors">↗</span></div>
@@ -322,7 +336,7 @@ a:focus-visible,button:focus-visible{outline:2px solid #00f59b;outline-offset:3p
 </div>
 </a>
 
-<a href="/articles/qradar-routing-rules.html" class="article-item library-article has-cover block border border-brand-borderLight dark:border-brand-borderDark bg-white dark:bg-[#0c0d0e] p-5 hover:border-brand-green transition-colors group" data-category="qradar-siem" hidden>
+<a href="/articles/qradar-routing-rules.html" class="article-item library-article has-cover block border border-brand-borderLight dark:border-brand-borderDark bg-white dark:bg-[#0c0d0e] p-5 hover:border-brand-green transition-colors group" data-category="qradar-siem">
 <div class="article-cover article-cover--placeholder" aria-hidden="true"><div class="cover-placeholder-content"><span class="cover-placeholder-kicker">IBM QRADAR SIEM</span><strong>ROUTING</strong><span class="cover-placeholder-title">ROUTING RULES</span><span class="cover-placeholder-mark">TECHNICAL NOTE / SIEM ENGINEERING</span></div></div>
 <div class="article-card-content p-5">
 <div class="flex justify-between items-center mb-3"><span class="text-[10px] text-brand-greenDark dark:text-brand-green uppercase tracking-widest border border-brand-greenDark/30 dark:border-brand-green/30 px-2 py-0.5">IBM QRadar SIEM · Routing Rules</span><span class="text-neutral-400 group-hover:text-black dark:group-hover:text-white transition-colors">↗</span></div>
@@ -330,6 +344,46 @@ a:focus-visible,button:focus-visible{outline:2px solid #00f59b;outline-offset:3p
 <p class="text-xs text-neutral-600 dark:text-neutral-400">Route, drop, or change processing for selected events and flows with practical rule configuration and validation guidance.</p>
 <div class="mt-4 pt-3 border-t border-brand-borderLight dark:border-brand-borderDark text-[10px] text-neutral-400">OPEN TECHNICAL NOTE →</div>
 
+</div>
+</a>
+
+<a href="/articles/qradar-soar-upgrade-guide.html" class="article-item library-article has-cover block border border-brand-borderLight dark:border-brand-borderDark bg-white dark:bg-[#0c0d0e] overflow-hidden hover:border-brand-green transition-colors group" data-category="qradar-soar">
+<div class="article-cover article-cover--placeholder" aria-hidden="true"><div class="cover-placeholder-content"><span class="cover-placeholder-kicker">IBM QRADAR SOAR</span><strong>UPGRADE</strong><span class="cover-placeholder-title">PREPARATION &amp; VALIDATION</span><span class="cover-placeholder-mark">TECHNICAL NOTE / SOAR OPERATIONS</span></div></div>
+<div class="article-card-content p-5">
+<div class="flex justify-between items-center mb-3"><span class="text-[10px] text-brand-greenDark dark:text-brand-green uppercase tracking-widest border border-brand-greenDark/30 dark:border-brand-green/30 px-2 py-0.5">IBM QRadar SOAR · Upgrade</span><span class="text-neutral-400 group-hover:text-black dark:group-hover:text-white transition-colors">↗</span></div>
+<h3 class="font-sans font-bold text-lg text-black dark:text-white mb-2 uppercase leading-tight">IBM QRadar SOAR Upgrade Guide</h3>
+<p class="text-xs text-neutral-600 dark:text-neutral-400">Plan an on-premises SOAR Virtual Appliance upgrade with supported-path checks, backups, maintenance preparation, and post-upgrade validation.</p>
+<div class="mt-4 pt-3 border-t border-brand-borderLight dark:border-brand-borderDark text-[10px] text-neutral-400">OPEN TECHNICAL NOTE →</div>
+</div>
+</a>
+
+<a href="/articles/splunk-enterprise-installation-ubuntu-24-04.html" class="article-item library-article has-cover block border border-brand-borderLight dark:border-brand-borderDark bg-white dark:bg-[#0c0d0e] overflow-hidden hover:border-brand-green transition-colors group" data-category="splunk">
+<div class="article-cover article-cover--placeholder" aria-hidden="true"><div class="cover-placeholder-content"><span class="cover-placeholder-kicker">SPLUNK ENTERPRISE</span><strong>SPLUNK</strong><span class="cover-placeholder-title">UBUNTU 24.04 INSTALL</span><span class="cover-placeholder-mark">TECHNICAL NOTE / SIEM LAB</span></div></div>
+<div class="article-card-content p-5">
+<div class="flex justify-between items-center mb-3"><span class="text-[10px] text-brand-greenDark dark:text-brand-green uppercase tracking-widest border border-brand-greenDark/30 dark:border-brand-green/30 px-2 py-0.5">Splunk · Installation</span><span class="text-neutral-400 group-hover:text-black dark:group-hover:text-white transition-colors">↗</span></div>
+<h3 class="font-sans font-bold text-lg text-black dark:text-white mb-2 uppercase leading-tight">Install Splunk Enterprise on Ubuntu 24.04</h3>
+<p class="text-xs text-neutral-600 dark:text-neutral-400">Build a single-server Splunk lab with systemd startup, validation, and the Enterprise Trial-to-Free license path.</p>
+<div class="mt-4 pt-3 border-t border-brand-borderLight dark:border-brand-borderDark text-[10px] text-neutral-400">OPEN TECHNICAL NOTE →</div>
+</div>
+</a>
+
+<a href="/articles/n8n-installation-local-automation.html" class="article-item library-article has-cover block border border-brand-borderLight dark:border-brand-borderDark bg-white dark:bg-[#0c0d0e] overflow-hidden hover:border-brand-green transition-colors group" data-category="automation">
+<div class="article-cover article-cover--placeholder" aria-hidden="true"><div class="cover-placeholder-content"><span class="cover-placeholder-kicker">WORKFLOW AUTOMATION</span><strong>N8N</strong><span class="cover-placeholder-title">LOCAL INSTALLATION</span><span class="cover-placeholder-mark">TECHNICAL NOTE / API AUTOMATION</span></div></div>
+<div class="article-card-content p-5">
+<div class="flex justify-between items-center mb-3"><span class="text-[10px] text-brand-greenDark dark:text-brand-green uppercase tracking-widest border border-brand-greenDark/30 dark:border-brand-green/30 px-2 py-0.5">Automation · n8n</span><span class="text-neutral-400 group-hover:text-black dark:group-hover:text-white transition-colors">↗</span></div>
+<h3 class="font-sans font-bold text-lg text-black dark:text-white mb-2 uppercase leading-tight">Installing n8n for Local Workflow Automation</h3>
+<p class="text-xs text-neutral-600 dark:text-neutral-400">Install and prepare a self-hosted n8n instance, preserve its configuration, and validate a webhook before production use.</p>
+<div class="mt-4 pt-3 border-t border-brand-borderLight dark:border-brand-borderDark text-[10px] text-neutral-400">OPEN TECHNICAL NOTE →</div>
+</div>
+</a>
+
+<a href="/articles/testing-n8n-webhooks-locally-curl.html" class="article-item library-article has-cover block border border-brand-borderLight dark:border-brand-borderDark bg-white dark:bg-[#0c0d0e] overflow-hidden hover:border-brand-green transition-colors group" data-category="automation">
+<div class="article-cover article-cover--placeholder" aria-hidden="true"><div class="cover-placeholder-content"><span class="cover-placeholder-kicker">WORKFLOW AUTOMATION</span><strong>WEBHOOKS</strong><span class="cover-placeholder-title">CURL TESTING</span><span class="cover-placeholder-mark">TECHNICAL NOTE / API VALIDATION</span></div></div>
+<div class="article-card-content p-5">
+<div class="flex justify-between items-center mb-3"><span class="text-[10px] text-brand-greenDark dark:text-brand-green uppercase tracking-widest border border-brand-greenDark/30 dark:border-brand-green/30 px-2 py-0.5">Automation · Webhooks</span><span class="text-neutral-400 group-hover:text-black dark:group-hover:text-white transition-colors">↗</span></div>
+<h3 class="font-sans font-bold text-lg text-black dark:text-white mb-2 uppercase leading-tight">Testing n8n Webhooks Locally with curl</h3>
+<p class="text-xs text-neutral-600 dark:text-neutral-400">Validate incoming webhook JSON, separate test and production URLs, and troubleshoot request failures before connecting workflows to production systems.</p>
+<div class="mt-4 pt-3 border-t border-brand-borderLight dark:border-brand-borderDark text-[10px] text-neutral-400">OPEN TECHNICAL NOTE →</div>
 </div>
 </a>
 </div>
@@ -358,10 +412,19 @@ const cards=[...document.querySelectorAll('#articles-library-grid .library-artic
 const status=document.getElementById('library-status');
 const activeClasses='filter-btn active border-brand-greenDark dark:border-brand-green bg-black text-brand-green dark:bg-brand-green dark:text-black font-bold px-3 py-2 border text-xs';
 const inactiveClasses='filter-btn border-brand-borderLight dark:border-brand-borderDark text-neutral-600 dark:text-neutral-300 hover:border-brand-greenDark dark:hover:border-brand-green px-3 py-2 border font-bold text-xs';
+const categoryLabels={
+  'all':'TECHNICAL NOTES',
+  'wazuh':'WAZUH TECHNICAL NOTES',
+  'qradar-siem':'IBM QRADAR SIEM TECHNICAL NOTES',
+  'qradar-soar':'IBM QRADAR SOAR TECHNICAL NOTES',
+  'splunk':'SPLUNK TECHNICAL NOTES',
+  'automation':'AUTOMATION / N8N NOTES',
+  'malware-analysis':'MALWARE ANALYSIS NOTES'
+};
 function applyFilter(category){
   let count=0;
   cards.forEach(card=>{
-    const show=card.dataset.category===category;
+    const show=category==='all'||card.dataset.category===category;
     card.hidden=!show;
     if(show)count++;
   });
@@ -370,14 +433,12 @@ function applyFilter(category){
     btn.className=active?activeClasses:inactiveClasses;
     btn.setAttribute('aria-pressed',String(active));
   });
-  status.textContent=category==='qradar-siem'
-    ? 'SHOWING '+count+' IBM QRADAR SIEM TECHNICAL NOTES'
-    : category==='malware-analysis'
-      ? 'SHOWING '+count+' MALWARE ANALYSIS ARTICLE'
-      : 'SHOWING '+count+' WAZUH TECHNICAL NOTES';
+  status.textContent=category==='all'
+    ? 'SHOWING '+count+' OF '+cards.length+' TECHNICAL NOTES'
+    : 'SHOWING '+count+' '+(categoryLabels[category]||'TECHNICAL NOTES');
 }
 filterBtns.forEach(btn=>btn.addEventListener('click',()=>applyFilter(btn.dataset.filter)));
-applyFilter('wazuh');
+applyFilter('all');
 </script>
 <script src="/assets/js/terminal-design.js"></script>
 </body>
