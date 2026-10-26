@@ -131,8 +131,12 @@ a:focus-visible,button:focus-visible{outline:2px solid #00f59b;outline-offset:3p
 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end border-b border-brand-borderLight dark:border-brand-borderDark pb-2 gap-4">
 <div><a href="/articles.html" aria-label="Open all field notes and technical guides" title="Browse all technical articles" class="field-notes-link inline-flex text-xs font-bold tracking-widest text-neutral-500 uppercase hover:text-brand-greenDark dark:hover:text-brand-green transition-colors">// 03 . FIELD NOTES &amp; TECHNICAL GUIDES</a><h2 id="articles-heading" class="font-sans font-bold text-2xl text-black dark:text-white uppercase mt-2">Wazuh Technical Notes</h2></div>
 <div class="flex flex-wrap gap-2 items-center text-xs" id="filter-container">
-<button class="filter-btn border px-3 py-1 font-bold" data-filter="wazuh" aria-pressed="true">WAZUH</button>
+<button class="filter-btn border px-3 py-1 font-bold" data-filter="all" aria-pressed="true">ALL TOPICS</button>
+<button class="filter-btn border px-3 py-1 font-bold" data-filter="wazuh" aria-pressed="false">WAZUH</button>
 <button class="filter-btn border px-3 py-1 font-bold" data-filter="qradar-siem" aria-pressed="false">IBM QRADAR SIEM</button>
+<button class="filter-btn border px-3 py-1 font-bold" data-filter="qradar-soar" aria-pressed="false">IBM QRADAR SOAR</button>
+<button class="filter-btn border px-3 py-1 font-bold" data-filter="splunk" aria-pressed="false">SPLUNK</button>
+<button class="filter-btn border px-3 py-1 font-bold" data-filter="automation" aria-pressed="false">AUTOMATION / N8N</button>
 <button class="filter-btn border px-3 py-1 font-bold" data-filter="malware-analysis" aria-pressed="false">MALWARE ANALYSIS</button>
 
 <span id="article-page" class="article-page-counter" aria-live="polite">01–02 / 03</span>
@@ -170,6 +174,15 @@ a:focus-visible,button:focus-visible{outline:2px solid #00f59b;outline-offset:3p
 </div>
 </a>
 
+<a href="/articles/wazuh-dfir-iris-integration.html" class="article-item has-cover block border border-brand-borderLight dark:border-brand-borderDark bg-white dark:bg-[#0c0d0e] overflow-hidden hover:border-brand-green transition-colors group" data-category="wazuh">
+<div class="article-cover article-cover--placeholder" aria-hidden="true"><div class="cover-placeholder-content"><span class="cover-placeholder-kicker">WAZUH SIEM</span><strong>DFIR-IRIS</strong><span class="cover-placeholder-title">ALERT INTEGRATION</span><span class="cover-placeholder-mark">TECHNICAL NOTE / SOC AUTOMATION</span></div></div>
+<div class="article-card-content p-5">
+<div class="flex justify-between items-center mb-3"><span class="text-[10px] text-brand-greenDark dark:text-brand-green uppercase tracking-widest border border-brand-greenDark/30 dark:border-brand-green/30 px-2 py-0.5">Wazuh SIEM · DFIR-IRIS</span><span class="text-neutral-400 group-hover:text-black dark:group-hover:text-white transition-colors">↗</span></div>
+<h3 class="font-sans font-bold text-lg text-black dark:text-white mb-2 uppercase leading-tight">Integrating Wazuh SIEM with DFIR-IRIS</h3>
+<p class="text-xs text-neutral-600 dark:text-neutral-400">Send actionable Wazuh alerts into DFIR-IRIS with a custom integration, mapped context, IOC extraction, and API-payload validation.</p>
+<div class="mt-4 pt-3 border-t border-brand-borderLight dark:border-brand-borderDark text-[10px] text-neutral-400">OPEN TECHNICAL NOTE →</div>
+</div>
+</a>
 <a href="/articles/cuckoo-sandbox-vsphere-yara.html" class="article-item has-cover block border border-brand-borderLight dark:border-brand-borderDark bg-white dark:bg-[#0c0d0e] overflow-hidden hover:border-brand-green transition-colors group" data-category="malware-analysis">
 <div class="article-cover article-cover--placeholder" aria-hidden="true"><div class="cover-placeholder-content"><span class="cover-placeholder-kicker">MALWARE ANALYSIS</span><strong>CUCKOO</strong><span class="cover-placeholder-title">VSPHERE &amp; YARA</span><span class="cover-placeholder-mark">TECHNICAL NOTE / SANDBOX ENGINEERING</span></div></div>
 <div class="article-card-content p-5">
@@ -180,7 +193,7 @@ a:focus-visible,button:focus-visible{outline:2px solid #00f59b;outline-offset:3p
 </div>
 </a>
 
-<a <a href="/articles/what-is-qradar-siem.html" class="article-item has-cover block border border-brand-borderLight dark:border-brand-borderDark bg-white dark:bg-[#0c0d0e] overflow-hidden hover:border-brand-green transition-colors group" data-category="qradar-siem">
+<a href="/articles/what-is-qradar-siem.html" class="article-item has-cover block border border-brand-borderLight dark:border-brand-borderDark bg-white dark:bg-[#0c0d0e] overflow-hidden hover:border-brand-green transition-colors group" data-category="qradar-siem">
 <div class="article-cover article-cover--placeholder" aria-hidden="true"><div class="cover-placeholder-content"><span class="cover-placeholder-kicker">IBM QRADAR SIEM</span><strong>OVERVIEW</strong><span class="cover-placeholder-title">WHAT IS QRADAR SIEM?</span><span class="cover-placeholder-mark">TECHNICAL NOTE / SIEM ENGINEERING</span></div></div>
 <div class="article-card-content p-5">
 <div class="flex justify-between items-center mb-3"><span class="text-[10px] text-brand-greenDark dark:text-brand-green uppercase tracking-widest border border-brand-greenDark/30 dark:border-brand-green/30 px-2 py-0.5">IBM QRadar SIEM · Overview</span><span class="text-neutral-400 group-hover:text-black dark:group-hover:text-white transition-colors">↗</span></div>
@@ -307,6 +320,45 @@ a:focus-visible,button:focus-visible{outline:2px solid #00f59b;outline-offset:3p
 </div>
 </a>
 
+<a href="/articles/qradar-soar-upgrade-guide.html" class="article-item has-cover block border border-brand-borderLight dark:border-brand-borderDark bg-white dark:bg-[#0c0d0e] overflow-hidden hover:border-brand-green transition-colors group" data-category="qradar-soar">
+<div class="article-cover article-cover--placeholder" aria-hidden="true"><div class="cover-placeholder-content"><span class="cover-placeholder-kicker">IBM QRADAR SOAR</span><strong>UPGRADE</strong><span class="cover-placeholder-title">PREPARATION &amp; VALIDATION</span><span class="cover-placeholder-mark">TECHNICAL NOTE / SOAR OPERATIONS</span></div></div>
+<div class="article-card-content p-5">
+<div class="flex justify-between items-center mb-3"><span class="text-[10px] text-brand-greenDark dark:text-brand-green uppercase tracking-widest border border-brand-greenDark/30 dark:border-brand-green/30 px-2 py-0.5">IBM QRadar SOAR · Upgrade</span><span class="text-neutral-400 group-hover:text-black dark:group-hover:text-white transition-colors">↗</span></div>
+<h3 class="font-sans font-bold text-lg text-black dark:text-white mb-2 uppercase leading-tight">IBM QRadar SOAR Upgrade Guide</h3>
+<p class="text-xs text-neutral-600 dark:text-neutral-400">Plan an on-premises SOAR Virtual Appliance upgrade with supported-path checks, backups, maintenance preparation, and post-upgrade validation.</p>
+<div class="mt-4 pt-3 border-t border-brand-borderLight dark:border-brand-borderDark text-[10px] text-neutral-400">OPEN TECHNICAL NOTE →</div>
+</div>
+</a>
+
+<a href="/articles/splunk-enterprise-installation-ubuntu-24-04.html" class="article-item has-cover block border border-brand-borderLight dark:border-brand-borderDark bg-white dark:bg-[#0c0d0e] overflow-hidden hover:border-brand-green transition-colors group" data-category="splunk">
+<div class="article-cover article-cover--placeholder" aria-hidden="true"><div class="cover-placeholder-content"><span class="cover-placeholder-kicker">SPLUNK ENTERPRISE</span><strong>SPLUNK</strong><span class="cover-placeholder-title">UBUNTU 24.04 INSTALL</span><span class="cover-placeholder-mark">TECHNICAL NOTE / SIEM LAB</span></div></div>
+<div class="article-card-content p-5">
+<div class="flex justify-between items-center mb-3"><span class="text-[10px] text-brand-greenDark dark:text-brand-green uppercase tracking-widest border border-brand-greenDark/30 dark:border-brand-green/30 px-2 py-0.5">Splunk · Installation</span><span class="text-neutral-400 group-hover:text-black dark:group-hover:text-white transition-colors">↗</span></div>
+<h3 class="font-sans font-bold text-lg text-black dark:text-white mb-2 uppercase leading-tight">Install Splunk Enterprise on Ubuntu 24.04</h3>
+<p class="text-xs text-neutral-600 dark:text-neutral-400">Build a single-server Splunk lab with systemd startup, validation, and the Enterprise Trial-to-Free license path.</p>
+<div class="mt-4 pt-3 border-t border-brand-borderLight dark:border-brand-borderDark text-[10px] text-neutral-400">OPEN TECHNICAL NOTE →</div>
+</div>
+</a>
+
+<a href="/articles/n8n-installation-local-automation.html" class="article-item has-cover block border border-brand-borderLight dark:border-brand-borderDark bg-white dark:bg-[#0c0d0e] overflow-hidden hover:border-brand-green transition-colors group" data-category="automation">
+<div class="article-cover article-cover--placeholder" aria-hidden="true"><div class="cover-placeholder-content"><span class="cover-placeholder-kicker">WORKFLOW AUTOMATION</span><strong>N8N</strong><span class="cover-placeholder-title">LOCAL INSTALLATION</span><span class="cover-placeholder-mark">TECHNICAL NOTE / API AUTOMATION</span></div></div>
+<div class="article-card-content p-5">
+<div class="flex justify-between items-center mb-3"><span class="text-[10px] text-brand-greenDark dark:text-brand-green uppercase tracking-widest border border-brand-greenDark/30 dark:border-brand-green/30 px-2 py-0.5">Automation · n8n</span><span class="text-neutral-400 group-hover:text-black dark:group-hover:text-white transition-colors">↗</span></div>
+<h3 class="font-sans font-bold text-lg text-black dark:text-white mb-2 uppercase leading-tight">Installing n8n for Local Workflow Automation</h3>
+<p class="text-xs text-neutral-600 dark:text-neutral-400">Install and prepare a self-hosted n8n instance, preserve its configuration, and validate a webhook before production use.</p>
+<div class="mt-4 pt-3 border-t border-brand-borderLight dark:border-brand-borderDark text-[10px] text-neutral-400">OPEN TECHNICAL NOTE →</div>
+</div>
+</a>
+
+<a href="/articles/testing-n8n-webhooks-locally-curl.html" class="article-item has-cover block border border-brand-borderLight dark:border-brand-borderDark bg-white dark:bg-[#0c0d0e] overflow-hidden hover:border-brand-green transition-colors group" data-category="automation">
+<div class="article-cover article-cover--placeholder" aria-hidden="true"><div class="cover-placeholder-content"><span class="cover-placeholder-kicker">WORKFLOW AUTOMATION</span><strong>WEBHOOKS</strong><span class="cover-placeholder-title">CURL TESTING</span><span class="cover-placeholder-mark">TECHNICAL NOTE / API VALIDATION</span></div></div>
+<div class="article-card-content p-5">
+<div class="flex justify-between items-center mb-3"><span class="text-[10px] text-brand-greenDark dark:text-brand-green uppercase tracking-widest border border-brand-greenDark/30 dark:border-brand-green/30 px-2 py-0.5">Automation · Webhooks</span><span class="text-neutral-400 group-hover:text-black dark:group-hover:text-white transition-colors">↗</span></div>
+<h3 class="font-sans font-bold text-lg text-black dark:text-white mb-2 uppercase leading-tight">Testing n8n Webhooks Locally with curl</h3>
+<p class="text-xs text-neutral-600 dark:text-neutral-400">Validate incoming webhook JSON, separate test and production URLs, and troubleshoot request failures before connecting workflows to production systems.</p>
+<div class="mt-4 pt-3 border-t border-brand-borderLight dark:border-brand-borderDark text-[10px] text-neutral-400">OPEN TECHNICAL NOTE →</div>
+</div>
+</a>
 </div>
 </div>
 
@@ -350,14 +402,14 @@ let currentPage=0;
 const activeFilterClasses='filter-btn active border-brand-greenDark dark:border-brand-green bg-black text-brand-green dark:bg-brand-green dark:text-black font-bold px-3 py-1 border';
 const inactiveFilterClasses='filter-btn border-brand-borderLight dark:border-brand-borderDark text-neutral-600 dark:text-neutral-300 hover:border-brand-greenDark dark:hover:border-brand-green px-3 py-1 border font-bold';
 const cardsPerPage=()=>window.matchMedia('(max-width: 700px)').matches?1:2;
-const visibleCards=()=>articles.filter(card=>card.dataset.category===activeCategory);
+const visibleCards=()=>activeCategory==='all'?articles:articles.filter(card=>card.dataset.category===activeCategory);
 function updateCarousel(reset=false){
  if(reset) currentPage=0;
  const visible=visibleCards();
  const perPage=cardsPerPage();
  const pageCount=Math.max(1,Math.ceil(visible.length/perPage));
  currentPage=Math.max(0,Math.min(currentPage,pageCount-1));
- articles.forEach(card=>{card.hidden=card.dataset.category!==activeCategory;});
+ articles.forEach(card=>{card.hidden=activeCategory!=='all'&&card.dataset.category!==activeCategory;});
  const first=visible[currentPage*perPage];
  const offset=first?first.offsetLeft:0;
  track.style.transform='translateX(-'+offset+'px)';
@@ -371,7 +423,8 @@ function updateCarousel(reset=false){
 }
 function applyArticleFilter(category){
  activeCategory=category;
- document.getElementById('articles-heading').textContent=category==='qradar-siem'?'IBM QRadar SIEM Technical Notes':category==='malware-analysis'?'Malware Analysis & Sandbox Notes':'Wazuh Technical Notes';
+ const headings={'all':'All Technical Notes','wazuh':'Wazuh Technical Notes','qradar-siem':'IBM QRadar SIEM Technical Notes','qradar-soar':'IBM QRadar SOAR Technical Notes','splunk':'Splunk Technical Notes','automation':'Workflow Automation & API Notes','malware-analysis':'Malware Analysis & Sandbox Notes'};
+  document.getElementById('articles-heading').textContent=headings[category]||'Technical Notes';
  filterBtns.forEach(btn=>{
   const active=btn.dataset.filter===category;
   btn.className=active?activeFilterClasses:inactiveFilterClasses;
@@ -400,7 +453,7 @@ viewport.addEventListener('touchend',event=>{
  swipeStartX=null;
 },{passive:true});
 window.addEventListener('resize',()=>updateCarousel());
-applyArticleFilter('wazuh');
+applyArticleFilter('all');
 
 // Interactive cursor spotlight
 const spotlightMedia=window.matchMedia('(hover: hover) and (pointer: fine)');
