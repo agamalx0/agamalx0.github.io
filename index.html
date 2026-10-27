@@ -128,8 +128,8 @@ a:focus-visible,button:focus-visible{outline:2px solid #00f59b;outline-offset:3p
 </section>
 
 <section id="articles" class="space-y-6">
-<div class="flex flex-col sm:flex-row justify-between items-start sm:items-end border-b border-brand-borderLight dark:border-brand-borderDark pb-2 gap-4">
-<div><a href="/articles.html" aria-label="Open all field notes and technical guides" title="Browse all technical articles" class="field-notes-link inline-flex text-xs font-bold tracking-widest text-neutral-500 uppercase hover:text-brand-greenDark dark:hover:text-brand-green transition-colors">// 03 . FIELD NOTES &amp; TECHNICAL GUIDES</a><h2 id="articles-heading" class="font-sans font-bold text-2xl text-black dark:text-white uppercase mt-2">Wazuh Technical Notes</h2></div>
+<div class="flex flex-col sm:flex-row justify-between items-start sm:items-start border-b border-brand-borderLight dark:border-brand-borderDark pb-2 gap-4">
+<div class="flex items-center min-h-[32px]"><a href="/articles.html" aria-label="Open all field notes and technical guides" title="Browse all technical articles" class="field-notes-link inline-flex text-xs font-bold tracking-widest text-neutral-500 uppercase hover:text-brand-greenDark dark:hover:text-brand-green transition-colors">// 03 . FIELD NOTES &amp; TECHNICAL GUIDES</a></div>
 <div class="flex flex-wrap gap-2 items-center text-xs" id="filter-container">
 <button class="filter-btn border px-3 py-1 font-bold" data-filter="all" aria-pressed="true">ALL TOPICS</button>
 <button class="filter-btn border px-3 py-1 font-bold" data-filter="wazuh" aria-pressed="false">WAZUH</button>
@@ -423,8 +423,6 @@ function updateCarousel(reset=false){
 }
 function applyArticleFilter(category){
  activeCategory=category;
- const headings={'all':'All Technical Notes','wazuh':'Wazuh Technical Notes','qradar-siem':'IBM QRadar SIEM Technical Notes','qradar-soar':'IBM QRadar SOAR Technical Notes','splunk':'Splunk Technical Notes','automation':'Workflow Automation & API Notes','malware-analysis':'Malware Analysis & Sandbox Notes'};
-  document.getElementById('articles-heading').textContent=headings[category]||'Technical Notes';
  filterBtns.forEach(btn=>{
   const active=btn.dataset.filter===category;
   btn.className=active?activeFilterClasses:inactiveFilterClasses;
