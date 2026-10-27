@@ -65,7 +65,7 @@
 <li>A dedicated AD test account and an IRIS account with a matching login identifier.</li>
 <li>Network access from the IRIS host and containers to the domain controller on TCP 636, plus DNS that supports both internal AD names and any required external names.</li>
 </ul>
-<p>The IRIS v3 Quick Start gives a reference sizing example of 4 CPU cores, 16 GB RAM and fast SSD storage for a typical modest installation. Actual requirements depend on cases, alerts, evidence storage, and modules. Treat that as a starting point for planning—not a universal minimum.</p>
+<p>Use the resource guidance in the Quick Start for your chosen tag, then size the host for expected analyst concurrency, case volume, evidence storage, retention, and enabled modules. Monitor CPU, RAM, disk latency, and database growth during evaluation; do not treat one lab specification as a universal production minimum.</p>
 
 <h2 id="install">4. Install DFIR-IRIS v3 with Docker Compose</h2>
 <p>For a pull-based deployment, the official Quick Start uses the umbrella <code>iris-web</code> repository and pre-built images. Initialize Git submodules only if you plan to build from source.</p>
@@ -187,7 +187,7 @@ docker compose logs --tail=150 app worker</code></pre>
 </ol>
 
 <h2 id="beta-notes">10. Beta-specific finding from this lab</h2>
-<p>During the tested <code>v3.0.0-beta.1</code> deployment, the CA-only LDAPS path required a local compatibility patch. The observed behavior was that a string-valued false setting was treated as truthy in the TLS branch and the handler attempted to access a client-certificate setting even though the directory did not require a client certificate. The working lab patch normalized environment booleans and loaded the configured CA certificate without requiring a client certificate when none was configured.</p>
+<p>During the tested <code>v3.0.0-beta.1</code> deployment, the CA-only LDAPS path required a local compatibility patch. The observed behavior was that a string-valued false setting was treated as truthy in the TLS branch and the handler attempted to access a client-certificate setting even though the directory did not require a client certificate. The working lab patch normalized environment booleans and loaded the configured CA certificate without requiring a client certificate when none was configured. In that patched lab, <code>LDAP_CUSTOM_TLS_CONFIG=True</code> was used with the custom handler that applied the CA trust settings; that value is not a drop-in recommendation for an unpatched installation. Follow the official setting <code>LDAP_CUSTOM_TLS_CONFIG=False</code> unless your exact release or a reviewed local patch requires otherwise.</p>
 <p>The patch was kept as local files and mounted read-only into the application and worker containers. This is a version-specific workaround, not an official upstream patch, and the exact change may not be needed or appropriate on a later tag.</p>
 <div class="callout"><strong>If you reproduce this failure</strong><p style="margin:6px 0 0">First confirm the exact release, inspect the traceback, and test the documented configuration on a copy or lab instance. If a patch is unavoidable, back up the original file, change only the failing TLS/boolean behavior, keep certificate validation enabled, mount the patch read-only into every service that uses the handler, and retest after each IRIS upgrade. Do not paste a v2 template patch into v3: v3 has a separate SvelteKit frontend and backend repository structure.</p></div>
 
