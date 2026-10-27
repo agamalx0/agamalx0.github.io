@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="en" class="dark">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#080a12">
+<meta name="description" content="Install DFIR-IRIS v3.0.0-beta.1 with Docker and configure Active Directory LDAP over TLS, certificate trust, user provisioning, validation, and beta-specific troubleshooting.">
+<title>DFIR-IRIS v3 with Active Directory LDAPS | Ashraf Gamal</title>
+<style>
+:root{color-scheme:dark;--bg:#080a12;--text:#f4f6ff;--muted:#a3abc4;--line:rgba(177,190,255,.15);--cyan:#39e7ff;--purple:#9a66ff;--pink:#ff4fd8;--amber:#ffc879}
+*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:90px}body{margin:0;min-width:320px;color:var(--text);background:radial-gradient(ellipse at 6% 0,rgba(57,231,255,.09),transparent 32rem),radial-gradient(ellipse at 96% 12%,rgba(255,79,216,.08),transparent 28rem),var(--bg);font:16px/1.78 "Space Grotesk",Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}a{color:var(--cyan);text-decoration:none}a:hover{text-decoration:underline}.wrap{width:min(920px,calc(100% - 34px));margin:auto}.topbar{position:sticky;top:0;z-index:10;background:rgba(8,10,18,.86);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}.nav{height:68px;display:flex;align-items:center;justify-content:space-between;gap:18px}.brand{color:var(--text);font-weight:750;letter-spacing:-.02em}.back{font-size:13px;color:var(--muted)}.hero{padding:67px 0 35px}.eyebrow,.kicker{font-size:11px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:var(--cyan)}h1{font-size:clamp(36px,6vw,60px);line-height:1.08;letter-spacing:-.06em;margin:15px 0}.gradient{color:transparent;background:linear-gradient(100deg,var(--cyan),#9a8bff 55%,var(--pink));-webkit-background-clip:text;background-clip:text}.lede{font-size:18px;line-height:1.7;color:#c0c8df;max-width:770px}.meta{display:flex;flex-wrap:wrap;gap:10px 18px;font-size:12px;color:var(--muted);margin-top:24px}.pill{border:1px solid rgba(57,231,255,.24);background:rgba(57,231,255,.06);padding:4px 9px;border-radius:99px;color:#d9fbff}.layout{display:grid;grid-template-columns:220px minmax(0,1fr);gap:35px;padding:20px 0 85px}.toc{align-self:start;position:sticky;top:90px;padding:18px;border:1px solid var(--line);border-radius:16px;background:rgba(17,21,40,.6)}.toc strong{font-size:12px}.toc a{display:block;color:var(--muted);font-size:12px;padding:7px 0;line-height:1.4}.content{min-width:0}.content h2{font-size:27px;line-height:1.25;letter-spacing:-.04em;margin:42px 0 13px}.content h3{font-size:18px;margin:26px 0 8px}.content p,.content li{color:#c0c8df}.content li{padding-left:3px;margin:7px 0}.content ul,.content ol{padding-left:22px}.callout{padding:18px 20px;border:1px solid rgba(255,200,121,.28);border-left:3px solid var(--amber);border-radius:13px;background:rgba(255,200,121,.055);margin:22px 0}.callout strong{color:#ffe2b3}.info{padding:17px 20px;border:1px solid rgba(57,231,255,.22);border-radius:13px;background:rgba(57,231,255,.045);margin:20px 0}.info strong{color:#c9faff}code,pre{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}code{font-size:.92em;color:#d7e9ff}.code{overflow:auto;margin:15px 0;padding:17px;border-radius:12px;border:1px solid var(--line);background:#070a12;color:#dbe6ff;font-size:13px;line-height:1.7}.table-wrap{overflow-x:auto;margin:20px 0;border:1px solid var(--line);border-radius:12px}table{width:100%;border-collapse:collapse;min-width:460px;font-size:13px}th,td{text-align:left;vertical-align:top;padding:12px 14px;border-bottom:1px solid var(--line)}th{color:#e9edff;background:rgba(154,102,255,.08)}td{color:#c0c8df}tr:last-child td{border-bottom:0}.related{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:36px}.related a{border:1px solid var(--line);border-radius:13px;padding:15px;color:var(--text);background:rgba(255,255,255,.025)}.related small{display:block;color:var(--muted);font-size:11px}.related strong{display:block;margin-top:5px;font-size:13px}.footer{border-top:1px solid var(--line);padding:23px 0;color:var(--muted);font-size:12px}.footerinner{display:flex;justify-content:space-between;gap:15px;flex-wrap:wrap}@media(max-width:760px){.layout{grid-template-columns:1fr;gap:10px}.toc{position:static;display:grid;grid-template-columns:1fr 1fr;gap:0 14px}.toc strong{grid-column:1/-1}.hero{padding-top:45px}.content h2{margin-top:32px}.related{grid-template-columns:1fr}}@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+.contact-hook{margin:30px 0 0;padding:22px 24px;border:1px solid rgba(57,231,255,.23);border-radius:15px;background:linear-gradient(120deg,rgba(57,231,255,.055),rgba(154,102,255,.065),rgba(255,79,216,.04))}.contact-hook .hook-kicker{display:block;color:var(--cyan);font-size:10px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;margin-bottom:8px}.contact-hook .hook-title{color:var(--text);font-size:19px;line-height:1.45;letter-spacing:-.025em;margin:0}.contact-hook p{color:#c0c8df;margin:8px 0 0}.contact-links{display:flex;flex-wrap:wrap;gap:9px;margin-top:15px}.contact-links a{display:inline-flex;align-items:center;justify-content:center;padding:8px 12px;border:1px solid rgba(177,190,255,.18);border-radius:9px;background:rgba(255,255,255,.025);color:#e4edff;font-size:12px;font-weight:700}.contact-links a:hover{border-color:rgba(57,231,255,.5);background:rgba(57,231,255,.07);color:var(--cyan);text-decoration:none}@media(max-width:480px){.contact-hook{padding:18px}.contact-hook .hook-title{font-size:17px}}.personal-note{margin:0 0 22px;padding:11px 14px;border:1px solid rgba(177,190,255,.13);border-radius:10px;background:rgba(255,255,255,.025);color:#a3abc4;font-size:12px;line-height:1.65}.personal-note strong{color:#dce5ff;font-weight:700}
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/terminal-design.css">
+</head>
+
+<body>
+<header class="topbar"><nav class="nav wrap"><a class="brand" href="/">AG <span class="gradient">/ Notes</span></a><a class="back" href="/#articles">← Back to all articles</a></nav></header>
+<header class="hero wrap">
+<div class="eyebrow">Deployment guide · DFIR-IRIS &amp; identity integration</div>
+<h1>Deploying DFIR-IRIS v3<br><span class="gradient">with Active Directory LDAPS</span></h1>
+<p class="lede">A practical Docker-based walkthrough for the v3 beta: prepare the host, deploy IRIS, trust the Active Directory certificate authority, configure secure LDAP authentication, provision IRIS users, and validate the complete login path.</p>
+<div class="meta"><span>By Ashraf Gamal</span><span>Updated 27 October 2026</span><span class="pill">DFIR-IRIS · Active Directory · LDAPS</span><span>Approx. 12 min read</span></div>
+</header>
+<div class="wrap layout">
+<aside class="toc"><strong>In this guide</strong>
+<a href="#scope">Version and scope</a>
+<a href="#architecture">Authentication flow</a>
+<a href="#prerequisites">Prerequisites</a>
+<a href="#install">Install v3</a>
+<a href="#web-tls">Web TLS</a>
+<a href="#ad-certificate">Prepare AD LDAPS</a>
+<a href="#ldap-config">Configure LDAP</a>
+<a href="#provision-users">Provision users</a>
+<a href="#validate">Validate the setup</a>
+<a href="#beta-notes">Beta-specific findings</a>
+<a href="#troubleshoot">Troubleshooting</a>
+<a href="#security">Security checklist</a>
+<a href="#references">References</a>
+</aside>
+<article class="content">
+<p class="personal-note"><strong>Field note:</strong> This article combines the official DFIR-IRIS v3 beta documentation with lessons from a working lab integration against Microsoft Active Directory. Hostnames, domains, addresses, usernames, and certificate names below are examples—replace them with values for your own environment. This is not official vendor guidance.</p>
+
+<h2 id="scope">1. Version and scope</h2>
+<p>At the time this guide was checked (27 October 2026), the DFIR-IRIS v3 documentation identifies <code>v3.0.0-beta.1</code> as the current v3 release. The project marks beta releases as <strong>not production-ready</strong>. Use this procedure for a lab, integration test, or migration rehearsal, and check the official release page before deployment.</p>
+<div class="callout"><strong>Important version note</strong><p style="margin:6px 0 0">IRIS v3 changes the deployment architecture: the web repository coordinates a separate backend and SvelteKit frontend, and the database moves to PostgreSQL 18. Do not copy v2.4.x installation commands, environment filenames, templates, or frontend patches into v3 without checking the versioned documentation.</p></div>
+<p>This walkthrough covers Docker installation, TLS for the IRIS web interface, and LDAPS authentication against Active Directory on TCP port 636. It does not configure AD as an authorization system by itself: IRIS user records and IRIS group permissions still need deliberate provisioning.</p>
+
+<h2 id="architecture">2. Authentication flow</h2>
+<div class="table-wrap"><table><thead><tr><th>Stage</th><th>What must succeed</th><th>How to validate</th></tr></thead><tbody>
+<tr><td>DNS and routing</td><td>The IRIS host and containers can resolve and reach the domain controller FQDN.</td><td>Resolve the FQDN from the host and from the app container.</td></tr>
+<tr><td>TLS trust</td><td>The LDAPS certificate chains to a CA trusted by IRIS, and its SAN matches the configured server name.</td><td>Use <code>openssl s_client</code> with the CA file and hostname verification.</td></tr>
+<tr><td>Directory bind</td><td>The account name or DN assembled by IRIS matches the real AD object and the password is accepted.</td><td>Test a bind with an approved LDAP client, prompting for the password.</td></tr>
+<tr><td>IRIS identity</td><td>The corresponding user exists in IRIS and its login identifier matches the LDAP identity used by this configuration.</td><td>Log in with a dedicated test account and inspect application logs.</td></tr>
+<tr><td>Authorization</td><td>The IRIS user belongs to the appropriate IRIS groups and has the intended permissions.</td><td>Verify allowed and denied actions with a least-privileged test user.</td></tr>
+</tbody></table></div>
+<p>DFIR-IRIS documentation states that LDAP validates the password against the LDAP server, but the user must also be declared in IRIS. A successful LDAP bind alone does not prove that an IRIS login or authorization mapping is correct.</p>
+
+<h2 id="prerequisites">3. Prerequisites</h2>
+<ul>
+<li>A supported Linux host with Docker Engine and the Docker Compose plugin installed.</li>
+<li>A DNS-resolvable Active Directory domain controller with LDAPS enabled and a certificate whose Subject Alternative Name matches its FQDN.</li>
+<li>The trusted root CA certificate (and any required intermediate CA certificates). Copy only public CA certificates to IRIS—never the CA private key.</li>
+<li>A dedicated AD test account and an IRIS account with a matching login identifier.</li>
+<li>Network access from the IRIS host and containers to the domain controller on TCP 636, plus DNS that supports both internal AD names and any required external names.</li>
+</ul>
+<p>The IRIS v3 Quick Start gives a reference sizing example of 4 CPU cores, 16 GB RAM and fast SSD storage for a typical modest installation. Actual requirements depend on cases, alerts, evidence storage, and modules. Treat that as a starting point for planning—not a universal minimum.</p>
+
+<h2 id="install">4. Install DFIR-IRIS v3 with Docker Compose</h2>
+<p>For a pull-based deployment, the official Quick Start uses the umbrella <code>iris-web</code> repository and pre-built images. Initialize Git submodules only if you plan to build from source.</p>
+<pre class="code"><code>git clone https://github.com/dfir-iris/iris-web.git
+cd iris-web
+git checkout v3.0.0-beta.1
+
+# v3 uses .env.example; v2.4.x used .env.model.
+cp .env.example .env
+
+# Edit .env and configure unique secrets before starting.
+nano .env
+
+docker compose pull
+docker compose up -d
+docker compose ps
+docker compose logs --tail=100</code></pre>
+<p>Before the first startup, review the versioned configuration guide and change the default/testing secrets, including the PostgreSQL passwords, application secret key and password salt. Do not publish the real <code>.env</code> file or paste its contents into logs or tickets.</p>
+<p>Inspect the actual services on your tagged release before assuming service names. In the lab used for this guide, the application and worker were managed through Compose services named <code>app</code> and <code>worker</code>; the names exposed by another deployment may differ.</p>
+
+<h2 id="web-tls">5. Configure TLS for the IRIS web interface</h2>
+<p>IRIS v3 Nginx reads web certificates from <code>certificates/web_certificates/</code>, using <code>CERT_FILENAME</code> and <code>KEY_FILENAME</code> from the environment file. For a local-only test, the documentation provides a self-signed example. Use a certificate issued by your internal or public CA for a real deployment, with correct SAN entries for the URL analysts will use.</p>
+<pre class="code"><code>mkdir -p certificates/web_certificates
+
+# LAB EXAMPLE ONLY. Replace the DNS name and IP with your test endpoint.
+openssl req -x509 -newkey rsa:2048 -sha256 -days 365 -nodes \
+  -keyout certificates/web_certificates/iris_dev_key.pem \
+  -out certificates/web_certificates/iris_dev_cert.pem \
+  -subj "/CN=iris.example.com" \
+  -addext "subjectAltName=DNS:iris.example.com,IP:192.0.2.10"
+
+chmod 600 certificates/web_certificates/iris_dev_key.pem</code></pre>
+<div class="info"><strong>Use the right certificate for the right service</strong><p style="margin:6px 0 0">The web certificate secures browser-to-IRIS HTTPS. The AD certificate and its issuing CA secure IRIS-to-domain-controller LDAPS. They are separate trust relationships and may use different certificates and CAs.</p></div>
+
+<h2 id="ad-certificate">6. Prepare Active Directory LDAPS and its CA certificate</h2>
+<h3>6.1 Export the CA certificate</h3>
+<p>Export the CA certificate that issued the domain controller's LDAPS certificate from your enterprise CA in Base-64 format where possible. Transfer the public CA certificate to the IRIS host, then place it under the repository's LDAP certificate directory:</p>
+<pre class="code"><code>cd /path/to/iris-web
+mkdir -p certificates/ldap
+
+# Copy your exported CA certificate here; the filename is an example.
+cp /secure/staging/corp-root-ca.pem certificates/ldap/corp-root-ca.pem
+chmod 644 certificates/ldap/corp-root-ca.pem</code></pre>
+<p>If the certificate is DER-encoded rather than PEM, convert it first:</p>
+<pre class="code"><code>openssl x509 -inform DER \
+  -in corp-root-ca.cer \
+  -out certificates/ldap/corp-root-ca.pem</code></pre>
+<p>Confirm that you copied the correct CA certificate. Do not copy the domain controller's private key, and do not treat the server certificate alone as a substitute for the issuing CA trust chain unless your PKI design explicitly requires it.</p>
+
+<h3>6.2 Verify DNS and LDAPS before changing IRIS</h3>
+<pre class="code"><code># Run on the IRIS host
+getent ahostsv4 dc1.corp.example.com
+
+# Confirm the app container can resolve the same name
+docker exec iris_app getent hosts dc1.corp.example.com
+
+# Validate the TLS chain and server hostname from the host
+openssl s_client \
+  -connect dc1.corp.example.com:636 \
+  -servername dc1.corp.example.com \
+  -CAfile certificates/ldap/corp-root-ca.pem \
+  -verify_hostname dc1.corp.example.com \
+  -verify_return_error &lt;/dev/null</code></pre>
+<p>Look for <code>Verify return code: 0 (ok)</code>. If the certificate chain fails, correct the CA bundle, certificate chain, FQDN/SAN, system time, DNS, routing or firewall rule. Do not solve certificate errors by disabling validation.</p>
+
+<h2 id="ldap-config">7. Configure LDAP authentication in the IRIS environment</h2>
+<p>Edit the root <code>.env</code> file. The exact user-prefix/suffix values depend on how the target AD users are named and where they live in the directory. The following example matches a common AD layout where the account's CN is the same as its login name and the user objects are stored in the default <code>CN=Users</code> container.</p>
+<pre class="code"><code>IRIS_AUTHENTICATION_TYPE=ldap
+
+LDAP_SERVER=dc1.corp.example.com
+LDAP_PORT=636
+LDAP_AUTHENTICATION_TYPE=SIMPLE
+LDAP_USE_SSL=True
+LDAP_VALIDATE_CERTIFICATE=True
+LDAP_TLS_VERSION=1.2
+
+# CA-only trust: follow the documented behavior for the tagged build.
+LDAP_CUSTOM_TLS_CONFIG=False
+LDAP_CA_CERTIFICATE=corp-root-ca.pem
+
+# Example DN construction for users in CN=Users.
+LDAP_USER_PREFIX=CN=
+LDAP_USER_SUFFIX=CN=Users,DC=corp,DC=example,DC=com
+
+# Present in the lab's beta configuration/patch; verify that your
+# chosen build supports these exact settings before relying on them.
+LDAP_SEARCH_DN=DC=corp,DC=example,DC=com
+LDAP_ATTRIBUTE_IDENTIFIER=sAMAccountName
+IRIS_AUTHENTICATION_CREATE_USER_IF_NOT_EXIST=False</code></pre>
+<p>With this example, a user whose account/CN is <code>analyst1</code> would typically produce a bind DN such as <code>CN=analyst1,CN=Users,DC=corp,DC=example,DC=com</code>. If the user lives under an OU, has a different CN from <code>sAMAccountName</code>, or you use UPN-style logons, change the prefix/suffix strategy to match the real directory. Do not assume one DN pattern fits every AD deployment.</p>
+<p>The upstream v3 beta authentication page also documents the alternative <code>DOMAIN\username</code> pattern for Active Directory with an empty suffix. Choose one pattern that matches the actual behavior of your tagged build and directory; do not combine incompatible patterns.</p>
+<div class="callout"><strong>CA-only LDAPS versus client-certificate authentication</strong><p style="margin:6px 0 0">For normal LDAPS server authentication, IRIS needs to trust the CA that issued the domain controller certificate. A client certificate and private key are a different configuration and should be set only if your directory specifically requires mutual TLS. Keep <code>LDAP_VALIDATE_CERTIFICATE=True</code>.</p></div>
+
+<h2 id="provision-users">8. Provision users and assign IRIS permissions</h2>
+<ol>
+<li>Create the corresponding user in IRIS first when automatic user creation is disabled. IRIS's LDAP documentation states that the user must exist in IRIS; the login identifier used in IRIS must match the LDAP identity that the authentication configuration expects.</li>
+<li>For a first-run LDAP administrator, the official documentation describes setting <code>IRIS_ADM_EMAIL</code> to the email address of the intended administrator account. This bootstrap setting does not retroactively create or rename users after IRIS has already initialized.</li>
+<li>Assign the user to the appropriate IRIS groups and grant only the permissions needed for the role. A successful AD login is not equivalent to administrator access.</li>
+<li>Keep an approved break-glass account according to your operational policy. If local fallback is enabled in your build, document who may use it, protect it, and test that it works as expected without weakening the LDAPS validation policy.</li>
+</ol>
+<p>In my lab, I also implemented an optional local group-mapping patch that reads direct AD <code>memberOf</code> values after a successful bind and maps selected AD groups to existing IRIS groups. This is a custom extension, not a behavior to assume from LDAP authentication alone. It handled direct group membership; nested AD group membership needs separate recursion logic and testing. Start with manual IRIS group assignment until your mapping is tested.</p>
+
+<h2 id="validate">9. Restart services and verify the whole path</h2>
+<p>After updating the environment file or changing a mounted local patch, recreate the affected application and worker services so both read the same configuration. Confirm the service names first if your Compose file differs.</p>
+<pre class="code"><code>docker compose config -q
+docker compose up -d --force-recreate app worker
+docker compose ps
+docker compose logs --tail=150 app worker</code></pre>
+<p>Verify the CA file is visible in the app container at the expected path. In the lab layout, the mounted certificate was accessible under <code>/iriswebapp/certificates/ldap/</code>:</p>
+<pre class="code"><code>docker exec iris_app ls -l \
+  /iriswebapp/certificates/ldap/corp-root-ca.pem</code></pre>
+<p>Then validate each layer in order:</p>
+<ol>
+<li><strong>DNS:</strong> the configured domain controller FQDN resolves on the host and inside the relevant container.</li>
+<li><strong>TLS:</strong> the certificate chain validates and the server name matches the certificate SAN.</li>
+<li><strong>Bind:</strong> an authorized LDAP client can bind using the intended DN/account and a password entered interactively (for example, <code>ldapwhoami -x -H ldaps://dc1.corp.example.com:636 -D 'CN=analyst1,CN=Users,DC=corp,DC=example,DC=com' -W</code> with the proper CA trust configured on the test machine).</li>
+<li><strong>Application login:</strong> sign in to IRIS with a dedicated AD test account whose IRIS user record exists and whose username matches the configured identity format.</li>
+<li><strong>Authorization:</strong> verify that the account can perform its expected analyst tasks and cannot perform actions outside its assigned role.</li>
+</ol>
+
+<h2 id="beta-notes">10. Beta-specific finding from this lab</h2>
+<p>During the tested <code>v3.0.0-beta.1</code> deployment, the CA-only LDAPS path required a local compatibility patch. The observed behavior was that a string-valued false setting was treated as truthy in the TLS branch and the handler attempted to access a client-certificate setting even though the directory did not require a client certificate. The working lab patch normalized environment booleans and loaded the configured CA certificate without requiring a client certificate when none was configured.</p>
+<p>The patch was kept as local files and mounted read-only into the application and worker containers. This is a version-specific workaround, not an official upstream patch, and the exact change may not be needed or appropriate on a later tag.</p>
+<div class="callout"><strong>If you reproduce this failure</strong><p style="margin:6px 0 0">First confirm the exact release, inspect the traceback, and test the documented configuration on a copy or lab instance. If a patch is unavoidable, back up the original file, change only the failing TLS/boolean behavior, keep certificate validation enabled, mount the patch read-only into every service that uses the handler, and retest after each IRIS upgrade. Do not paste a v2 template patch into v3: v3 has a separate SvelteKit frontend and backend repository structure.</p></div>
+
+<h2 id="troubleshoot">11. Troubleshooting matrix</h2>
+<div class="table-wrap"><table><thead><tr><th>Symptom</th><th>Likely cause</th><th>Check / correction</th></tr></thead><tbody>
+<tr><td><code>Can't contact LDAP server</code> or connection timeout</td><td>DNS, routing, firewall or LDAPS listener problem.</td><td>Resolve the FQDN from host and container; test TCP 636; confirm the DC is listening.</td></tr>
+<tr><td>Certificate verify failed</td><td>Wrong/missing CA, incomplete intermediate chain, hostname/SAN mismatch, or expired certificate.</td><td>Validate with <code>openssl s_client</code> and the correct CA file/FQDN. Keep verification enabled.</td></tr>
+<tr><td><code>invalidCredentials</code></td><td>Wrong password or a DN/login format that does not match the AD object.</td><td>Test an explicit bind DN interactively; verify CN, UPN, <code>sAMAccountName</code>, prefix, suffix and user OU.</td></tr>
+<tr><td>LDAP bind succeeds but IRIS login fails</td><td>The IRIS account is missing or its username differs from the login identity constructed by LDAP configuration.</td><td>Create/provision the IRIS user and compare the exact login identifiers.</td></tr>
+<tr><td>Login succeeds but user has excess/insufficient access</td><td>IRIS group assignment is separate from LDAP password validation, or custom group mapping is wrong.</td><td>Review IRIS groups; test least-privilege access. Test nested group behavior separately if using custom mapping.</td></tr>
+<tr><td>Code requests a client certificate unexpectedly</td><td>Potential beta-version TLS configuration or boolean parsing issue.</td><td>Confirm the tagged code path and logs. Fix the boolean/client-certificate logic narrowly; do not disable CA verification.</td></tr>
+</tbody></table></div>
+
+<h2 id="security">12. Security checklist</h2>
+<ul>
+<li>Use the release-specific setup instructions and remember that <code>v3.0.0-beta.1</code> is a beta, not production-ready.</li>
+<li>Change all default secrets before startup. Protect <code>.env</code> and keep it out of Git.</li>
+<li>Use LDAPS on port 636 with a trusted CA and the matching domain controller FQDN; never disable certificate validation as a workaround.</li>
+<li>Copy only public CA certificates into the IRIS certificate directory. Do not copy the CA private key.</li>
+<li>Use a dedicated test account, pre-provision IRIS users, and enforce least-privilege group membership.</li>
+<li>Keep locally patched files under version control and re-review them before every upgrade.</li>
+<li>Back up the database and persistent volumes before changing the release, schema or authentication path.</li>
+<li>Do not publish internal hostnames, internal IP addresses, usernames, API keys, passwords or private certificates in screenshots or example configuration.</li>
+</ul>
+
+<h2 id="references">13. Official references</h2>
+<ul>
+<li><a href="https://docs.dfir-iris.org/latest/getting_started/" target="_blank" rel="noopener noreferrer">DFIR-IRIS — Quick Start and v3 deployment</a></li>
+<li><a href="https://docs.dfir-iris.org/3.0.0-beta/operations/access_control/authentication/" target="_blank" rel="noopener noreferrer">DFIR-IRIS v3 beta — Authentication, Active Directory and LDAP certificates</a></li>
+<li><a href="https://docs.dfir-iris.org/3.0.0-beta/operations/configuration/" target="_blank" rel="noopener noreferrer">DFIR-IRIS v3 beta — Environment configuration and secrets</a></li>
+<li><a href="https://github.com/dfir-iris/iris-web/releases" target="_blank" rel="noopener noreferrer">DFIR-IRIS — Releases</a></li>
+<li><a href="https://github.com/dfir-iris/iris-web" target="_blank" rel="noopener noreferrer">DFIR-IRIS — iris-web repository</a></li>
+<li><a href="https://docs.docker.com/engine/install/" target="_blank" rel="noopener noreferrer">Docker — Engine installation</a></li>
+</ul>
+<p class="note">This technical note records a deployment and troubleshooting path from a lab. Verify all values and configuration options against the exact IRIS tag you are running. The optional group mapper and beta compatibility patch described here are local customizations, not official DFIR-IRIS features.</p>
+<div class="contact-hook">
+<span class="hook-kicker">Discuss DFIR and identity integration</span>
+<p class="hook-title">Building an IRIS deployment with AD authentication or troubleshooting LDAPS certificate trust?</p>
+<p>Connect to discuss incident-response engineering, SIEM/DFIR integration, identity-aware access control, and automation.</p>
+<div class="contact-links"><a href="mailto:as.ga2019@gmail.com?subject=DFIR-IRIS%20LDAP%20Integration%20Inquiry&amp;body=Hi%20Ashraf%2C%0A%0AI%20read%20your%20DFIR-IRIS%20v3%20and%20Active%20Directory%20LDAPS%20article%20and%20would%20like%20to%20discuss%20the%20deployment.%0A%0ABest%20regards%2C">Email me ↗</a><a href="https://wa.me/966598243358?text=Hi%20Ashraf%2C%20I%20read%20your%20DFIR-IRIS%20v3%20and%20Active%20Directory%20LDAPS%20article." target="_blank" rel="noopener noreferrer">WhatsApp ↗</a><a href="https://www.linkedin.com/in/1elrawy/" target="_blank" rel="noopener noreferrer">LinkedIn ↗</a></div>
+</div>
+<div class="related"><a href="/#articles"><small>ARTICLE LIBRARY</small><strong>← Back to all technical notes</strong></a><a href="/articles/wazuh-dfir-iris-integration.html"><small>RELATED GUIDE</small><strong>Integrating Wazuh SIEM with DFIR-IRIS →</strong></a></div>
+</article>
+</div>
+<footer class="footer"><div class="wrap footerinner"><span>© 2026 Ashraf Gamal · Technical notes</span><a href="/#articles">Back to the article library ↑</a></div></footer>
+<script src="/assets/js/terminal-design.js"></script>
+</body>
+</html>
