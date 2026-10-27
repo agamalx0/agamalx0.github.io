@@ -150,13 +150,14 @@ a:focus-visible,button:focus-visible{outline:2px solid #00f59b;outline-offset:3p
 <div class="library-filter-row" id="library-filter-container" role="group" aria-label="Filter articles by topic">
 <button type="button" class="filter-btn active border-brand-greenDark dark:border-brand-green bg-black text-brand-green dark:bg-brand-green dark:text-black font-bold px-3 py-2 border text-xs" data-filter="all" aria-pressed="true">ALL TECHNICAL NOTES</button>
 <button type="button" class="filter-btn border-brand-borderLight dark:border-brand-borderDark text-neutral-600 dark:text-neutral-300 hover:border-brand-greenDark dark:hover:border-brand-green px-3 py-2 border font-bold text-xs" data-filter="wazuh" aria-pressed="false">WAZUH</button>
+<button type="button" class="filter-btn border-brand-borderLight dark:border-brand-borderDark text-neutral-600 dark:text-neutral-300 hover:border-brand-greenDark dark:hover:border-brand-green px-3 py-2 border font-bold text-xs" data-filter="dfir-iris" aria-pressed="false">DFIR-IRIS</button>
 <button type="button" class="filter-btn border-brand-borderLight dark:border-brand-borderDark text-neutral-600 dark:text-neutral-300 hover:border-brand-greenDark dark:hover:border-brand-green px-3 py-2 border font-bold text-xs" data-filter="qradar-siem" aria-pressed="false">IBM QRADAR SIEM</button>
 <button type="button" class="filter-btn border-brand-borderLight dark:border-brand-borderDark text-neutral-600 dark:text-neutral-300 hover:border-brand-greenDark dark:hover:border-brand-green px-3 py-2 border font-bold text-xs" data-filter="qradar-soar" aria-pressed="false">IBM QRADAR SOAR</button>
 <button type="button" class="filter-btn border-brand-borderLight dark:border-brand-borderDark text-neutral-600 dark:text-neutral-300 hover:border-brand-greenDark dark:hover:border-brand-green px-3 py-2 border font-bold text-xs" data-filter="splunk" aria-pressed="false">SPLUNK</button>
 <button type="button" class="filter-btn border-brand-borderLight dark:border-brand-borderDark text-neutral-600 dark:text-neutral-300 hover:border-brand-greenDark dark:hover:border-brand-green px-3 py-2 border font-bold text-xs" data-filter="automation" aria-pressed="false">AUTOMATION / N8N</button>
 <button type="button" class="filter-btn border-brand-borderLight dark:border-brand-borderDark text-neutral-600 dark:text-neutral-300 hover:border-brand-greenDark dark:hover:border-brand-green px-3 py-2 border font-bold text-xs" data-filter="malware-analysis" aria-pressed="false">MALWARE ANALYSIS</button>
 </div>
-<div id="library-status" class="library-status" aria-live="polite">SHOWING 22 OF 22 TECHNICAL NOTES</div>
+<div id="library-status" class="library-status" aria-live="polite">SHOWING 23 OF 23 TECHNICAL NOTES</div>
 </div>
 <div id="articles-library-grid">
 <a href="/articles/wazuh-all-in-one-installation.html" class="article-item library-article has-cover block border border-brand-borderLight dark:border-brand-borderDark bg-white dark:bg-[#0c0d0e] overflow-hidden hover:border-brand-green transition-colors group" data-category="wazuh">
@@ -198,6 +199,17 @@ a:focus-visible,button:focus-visible{outline:2px solid #00f59b;outline-offset:3p
 <div class="mt-4 pt-3 border-t border-brand-borderLight dark:border-brand-borderDark text-[10px] text-neutral-400">OPEN TECHNICAL NOTE →</div>
 </div>
 </a>
+
+<a href="/articles/dfir-iris-v3-active-directory-ldaps.html" class="article-item library-article has-cover block border border-brand-borderLight dark:border-brand-borderDark bg-white dark:bg-[#0c0d0e] overflow-hidden hover:border-brand-green transition-colors group" data-category="dfir-iris">
+<div class="article-cover article-cover--placeholder" aria-hidden="true"><div class="cover-placeholder-content"><span class="cover-placeholder-kicker">DFIR-IRIS</span><strong>LDAPS</strong><span class="cover-placeholder-title">ACTIVE DIRECTORY AUTH</span><span class="cover-placeholder-mark">TECHNICAL NOTE / IDENTITY INTEGRATION</span></div></div>
+<div class="article-card-content p-5">
+<div class="flex justify-between items-center mb-3"><span class="text-[10px] text-brand-greenDark dark:text-brand-green uppercase tracking-widest border border-brand-greenDark/30 dark:border-brand-green/30 px-2 py-0.5">DFIR-IRIS · LDAP / AD</span><span class="text-neutral-400 group-hover:text-black dark:group-hover:text-white transition-colors">↗</span></div>
+<h3 class="font-sans font-bold text-lg text-black dark:text-white mb-2 uppercase leading-tight">DFIR-IRIS v3 with Active Directory LDAPS</h3>
+<p class="text-xs text-neutral-600 dark:text-neutral-400">Deploy the v3 beta, configure trusted LDAPS, provision IRIS identities, validate AD authentication, and troubleshoot beta-specific TLS behavior.</p>
+<div class="mt-4 pt-3 border-t border-brand-borderLight dark:border-brand-borderDark text-[10px] text-neutral-400">OPEN TECHNICAL NOTE →</div>
+</div>
+</a>
+
 
 <a href="/articles/cuckoo-sandbox-vsphere-yara.html" class="article-item library-article has-cover block border border-brand-borderLight dark:border-brand-borderDark bg-white dark:bg-[#0c0d0e] overflow-hidden hover:border-brand-green transition-colors group" data-category="malware-analysis">
 <div class="article-cover article-cover--placeholder" aria-hidden="true"><div class="cover-placeholder-content"><span class="cover-placeholder-kicker">MALWARE ANALYSIS</span><strong>CUCKOO</strong><span class="cover-placeholder-title">VSPHERE &amp; YARA</span><span class="cover-placeholder-mark">TECHNICAL NOTE / SANDBOX ENGINEERING</span></div></div>
@@ -415,6 +427,7 @@ const inactiveClasses='filter-btn border-brand-borderLight dark:border-brand-bor
 const categoryLabels={
   'all':'TECHNICAL NOTES',
   'wazuh':'WAZUH TECHNICAL NOTES',
+  'dfir-iris':'DFIR-IRIS TECHNICAL NOTES',
   'qradar-siem':'IBM QRADAR SIEM TECHNICAL NOTES',
   'qradar-soar':'IBM QRADAR SOAR TECHNICAL NOTES',
   'splunk':'SPLUNK TECHNICAL NOTES',
