@@ -1,0 +1,787 @@
+<!doctype html>
+<html lang="en" class="dark">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#080a12">
+<meta name="description" content="End-to-end DFIR-IRIS v3.0.0-beta.1 lab deployment with Docker, Active Directory LDAPS authentication, and an enhanced Wazuh SIEM integration that formats alert context and typed IOCs.">
+<title>DFIR-IRIS v3: Active Directory LDAPS + Wazuh Integration | Ashraf Gamal</title>
+<style>
+:root{color-scheme:dark;--bg:#080a12;--text:#f4f6ff;--muted:#a3abc4;--line:rgba(177,190,255,.15);--cyan:#39e7ff;--purple:#9a66ff;--pink:#ff4fd8;--amber:#ffc879}
+*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:90px}body{margin:0;min-width:320px;color:var(--text);background:radial-gradient(ellipse at 6% 0,rgba(57,231,255,.09),transparent 32rem),radial-gradient(ellipse at 96% 12%,rgba(255,79,216,.08),transparent 28rem),var(--bg);font:16px/1.78 "Space Grotesk",Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}a{color:var(--cyan);text-decoration:none}a:hover{text-decoration:underline}.wrap{width:min(920px,calc(100% - 34px));margin:auto}.topbar{position:sticky;top:0;z-index:10;background:rgba(8,10,18,.86);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}.nav{height:68px;display:flex;align-items:center;justify-content:space-between;gap:18px}.brand{color:var(--text);font-weight:750;letter-spacing:-.02em}.back{font-size:13px;color:var(--muted)}.hero{padding:67px 0 35px}.eyebrow,.kicker{font-size:11px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:var(--cyan)}h1{font-size:clamp(36px,6vw,60px);line-height:1.08;letter-spacing:-.06em;margin:15px 0}.gradient{color:transparent;background:linear-gradient(100deg,var(--cyan),#9a8bff 55%,var(--pink));-webkit-background-clip:text;background-clip:text}.lede{font-size:18px;line-height:1.7;color:#c0c8df;max-width:770px}.meta{display:flex;flex-wrap:wrap;gap:10px 18px;font-size:12px;color:var(--muted);margin-top:24px}.pill{border:1px solid rgba(57,231,255,.24);background:rgba(57,231,255,.06);padding:4px 9px;border-radius:99px;color:#d9fbff}.layout{display:grid;grid-template-columns:220px minmax(0,1fr);gap:35px;padding:20px 0 85px}.toc{align-self:start;position:sticky;top:90px;padding:18px;border:1px solid var(--line);border-radius:16px;background:rgba(17,21,40,.6)}.toc strong{font-size:12px}.toc a{display:block;color:var(--muted);font-size:12px;padding:7px 0;line-height:1.4}.content{min-width:0}.content h2{font-size:27px;line-height:1.25;letter-spacing:-.04em;margin:42px 0 13px}.content h3{font-size:18px;margin:26px 0 8px}.content p,.content li{color:#c0c8df}.content li{padding-left:3px;margin:7px 0}.content ul,.content ol{padding-left:22px}.callout{padding:18px 20px;border:1px solid rgba(255,200,121,.28);border-left:3px solid var(--amber);border-radius:13px;background:rgba(255,200,121,.055);margin:22px 0}.callout strong{color:#ffe2b3}.info{padding:17px 20px;border:1px solid rgba(57,231,255,.22);border-radius:13px;background:rgba(57,231,255,.045);margin:20px 0}.info strong{color:#c9faff}code,pre{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}code{font-size:.92em;color:#d7e9ff}.code{overflow:auto;margin:15px 0;padding:17px;border-radius:12px;border:1px solid var(--line);background:#070a12;color:#dbe6ff;font-size:13px;line-height:1.7}.table-wrap{overflow-x:auto;margin:20px 0;border:1px solid var(--line);border-radius:12px}table{width:100%;border-collapse:collapse;min-width:460px;font-size:13px}th,td{text-align:left;vertical-align:top;padding:12px 14px;border-bottom:1px solid var(--line)}th{color:#e9edff;background:rgba(154,102,255,.08)}td{color:#c0c8df}tr:last-child td{border-bottom:0}.related{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:36px}.related a{border:1px solid var(--line);border-radius:13px;padding:15px;color:var(--text);background:rgba(255,255,255,.025)}.related small{display:block;color:var(--muted);font-size:11px}.related strong{display:block;margin-top:5px;font-size:13px}.footer{border-top:1px solid var(--line);padding:23px 0;color:var(--muted);font-size:12px}.footerinner{display:flex;justify-content:space-between;gap:15px;flex-wrap:wrap}@media(max-width:760px){.layout{grid-template-columns:1fr;gap:10px}.toc{position:static;display:grid;grid-template-columns:1fr 1fr;gap:0 14px}.toc strong{grid-column:1/-1}.hero{padding-top:45px}.content h2{margin-top:32px}.related{grid-template-columns:1fr}}@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+.contact-hook{margin:30px 0 0;padding:22px 24px;border:1px solid rgba(57,231,255,.23);border-radius:15px;background:linear-gradient(120deg,rgba(57,231,255,.055),rgba(154,102,255,.065),rgba(255,79,216,.04))}.contact-hook .hook-kicker{display:block;color:var(--cyan);font-size:10px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;margin-bottom:8px}.contact-hook .hook-title{color:var(--text);font-size:19px;line-height:1.45;letter-spacing:-.025em;margin:0}.contact-hook p{color:#c0c8df;margin:8px 0 0}.contact-links{display:flex;flex-wrap:wrap;gap:9px;margin-top:15px}.contact-links a{display:inline-flex;align-items:center;justify-content:center;padding:8px 12px;border:1px solid rgba(177,190,255,.18);border-radius:9px;background:rgba(255,255,255,.025);color:#e4edff;font-size:12px;font-weight:700}.contact-links a:hover{border-color:rgba(57,231,255,.5);background:rgba(57,231,255,.07);color:var(--cyan);text-decoration:none}@media(max-width:480px){.contact-hook{padding:18px}.contact-hook .hook-title{font-size:17px}}.personal-note{margin:0 0 22px;padding:11px 14px;border:1px solid rgba(177,190,255,.13);border-radius:10px;background:rgba(255,255,255,.025);color:#a3abc4;font-size:12px;line-height:1.65}.personal-note strong{color:#dce5ff;font-weight:700}
+
+.article-figure{margin:24px 0 28px;padding:12px;border:1px solid var(--line);border-radius:14px;background:rgba(17,21,40,.42)}
+.article-figure img{display:block;width:100%;height:auto;max-width:100%;border-radius:8px;background:#070a12}
+.article-figure figcaption{margin-top:10px;color:var(--muted);font-size:12px;line-height:1.6}
+
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/terminal-design.css">
+<link rel="canonical" href="https://agamalx0.github.io/articles/dfir-iris-v3-wazuh-ad-ldaps-integration.html">
+</head>
+
+<body>
+<header class="topbar"><nav class="nav wrap"><a class="brand" href="/">AG <span class="gradient">/ Notes</span></a><a class="back" href="/#articles">← Back to all articles</a></nav></header>
+<header class="hero wrap">
+<div class="eyebrow">Deployment guide · DFIR-IRIS &amp; identity integration</div>
+<h1>DFIR-IRIS v3 Deployment<br><span class="gradient">Active Directory LDAPS + Wazuh</span></h1>
+<p class="lede">One end-to-end SOC deployment guide: install DFIR-IRIS v3, configure certificate-validated Active Directory LDAPS, then forward Wazuh alerts through an enhanced Python integration that organizes event context, preserves raw JSON, adds searchable tags, and extracts typed IOC candidates.</p>
+<div class="meta"><span>By Ashraf Gamal</span><span>Updated 27 October 2026</span><span class="pill">DFIR-IRIS · Active Directory · LDAPS · Wazuh SIEM</span><span>Approx. 20 min read</span></div>
+</header>
+<div class="wrap layout">
+<aside class="toc"><strong>In this guide</strong>
+<a href="#scope">Version and scope</a>
+<a href="#architecture">Authentication flow</a>
+<a href="#prerequisites">Prerequisites</a>
+<a href="#install">Install IRIS v3</a>
+<a href="#web-tls">Web TLS</a>
+<a href="#ad-certificate">Prepare AD LDAPS</a>
+<a href="#ldap-config">Configure LDAP</a>
+<a href="#provision-users">Provision IRIS users</a>
+<a href="#validate">Validate LDAP login</a>
+<a href="#beta-notes">Beta-specific findings</a>
+<a href="#wazuh-flow">Wazuh event flow</a>
+<a href="#api-identity">Create API identity</a>
+<a href="#wazuh-config">Configure Wazuh Integrator</a>
+<a href="#script">Enhanced integration script</a>
+<a href="#event-layout">How alert data is visualized</a>
+<a href="#validate-integration">Validate end-to-end</a>
+<a href="#troubleshoot">Troubleshooting</a>
+<a href="#security">Security checklist</a>
+<a href="#references">Official references</a>
+</aside>
+<article class="content">
+<p class="personal-note"><strong>Field note:</strong> This article combines the official DFIR-IRIS v3 beta documentation with lessons from a working lab integration against Microsoft Active Directory. Hostnames, domains, addresses, usernames, and certificate names below are examples—replace them with values for your own environment. This is not official vendor guidance.</p>
+
+<h2 id="scope">1. Version and scope</h2>
+<p>At the time this guide was checked (27 October 2026), the DFIR-IRIS v3 documentation identifies <code>v3.0.0-beta.1</code> as the current v3 release. The project marks beta releases as <strong>not production-ready</strong>. Use this procedure for a lab, integration test, or migration rehearsal, and check the official release page before deployment.</p>
+<div class="callout"><strong>Important version note</strong><p style="margin:6px 0 0">IRIS v3 changes the deployment architecture: the web repository coordinates a separate backend and SvelteKit frontend, and the database moves to PostgreSQL 18. Do not copy v2.4.x installation commands, environment filenames, templates, or frontend patches into v3 without checking the versioned documentation.</p></div>
+<p>This walkthrough covers Docker installation, TLS for the IRIS web interface, and LDAPS authentication against Active Directory on TCP port 636. It does not configure AD as an authorization system by itself: IRIS user records and IRIS group permissions still need deliberate provisioning.</p>
+
+<h2 id="architecture">2. Authentication flow</h2>
+<div class="table-wrap"><table><thead><tr><th>Stage</th><th>What must succeed</th><th>How to validate</th></tr></thead><tbody>
+<tr><td>DNS and routing</td><td>The IRIS host and containers can resolve and reach the domain controller FQDN.</td><td>Resolve the FQDN from the host and from the app container.</td></tr>
+<tr><td>TLS trust</td><td>The LDAPS certificate chains to a CA trusted by IRIS, and its SAN matches the configured server name.</td><td>Use <code>openssl s_client</code> with the CA file and hostname verification.</td></tr>
+<tr><td>Directory bind</td><td>The account name or DN assembled by IRIS matches the real AD object and the password is accepted.</td><td>Test a bind with an approved LDAP client, prompting for the password.</td></tr>
+<tr><td>IRIS identity</td><td>The corresponding user exists in IRIS and its login identifier matches the LDAP identity used by this configuration.</td><td>Log in with a dedicated test account and inspect application logs.</td></tr>
+<tr><td>Authorization</td><td>The IRIS user belongs to the appropriate IRIS groups and has the intended permissions.</td><td>Verify allowed and denied actions with a least-privileged test user.</td></tr>
+</tbody></table></div>
+<p>DFIR-IRIS documentation states that LDAP validates the password against the LDAP server, but the user must also be declared in IRIS. A successful LDAP bind alone does not prove that an IRIS login or authorization mapping is correct.</p>
+
+<h2 id="prerequisites">3. Prerequisites</h2>
+<ul>
+<li>A supported Linux host with Docker Engine and the Docker Compose plugin installed.</li>
+<li>A DNS-resolvable Active Directory domain controller with LDAPS enabled and a certificate whose Subject Alternative Name matches its FQDN.</li>
+<li>The trusted root CA certificate (and any required intermediate CA certificates). Copy only public CA certificates to IRIS—never the CA private key.</li>
+<li>A dedicated AD test account and an IRIS account with a matching login identifier.</li>
+<li>Network access from the IRIS host and containers to the domain controller on TCP 636, plus DNS that supports both internal AD names and any required external names.</li>
+</ul>
+<p>Use the resource guidance in the Quick Start for your chosen tag, then size the host for expected analyst concurrency, case volume, evidence storage, retention, and enabled modules. Monitor CPU, RAM, disk latency, and database growth during evaluation; do not treat one lab specification as a universal production minimum.</p>
+
+<h2 id="install">4. Install DFIR-IRIS v3 with Docker Compose</h2>
+<p>For a pull-based deployment, the official Quick Start uses the umbrella <code>iris-web</code> repository and pre-built images. Initialize Git submodules only if you plan to build from source.</p>
+<pre class="code"><code>git clone https://github.com/dfir-iris/iris-web.git
+cd iris-web
+git checkout v3.0.0-beta.1
+
+# v3 uses .env.example; v2.4.x used .env.model.
+cp .env.example .env
+
+# Edit .env and configure unique secrets before starting.
+nano .env
+
+docker compose pull
+docker compose up -d
+docker compose ps
+docker compose logs --tail=100</code></pre>
+<p>Before the first startup, review the versioned configuration guide and change the default/testing secrets, including the PostgreSQL passwords, application secret key and password salt. Do not publish the real <code>.env</code> file or paste its contents into logs or tickets.</p>
+<p>Inspect the actual services on your tagged release before assuming service names. In the lab used for this guide, the application and worker were managed through Compose services named <code>app</code> and <code>worker</code>; the names exposed by another deployment may differ.</p>
+
+<h2 id="web-tls">5. Configure TLS for the IRIS web interface</h2>
+<p>IRIS v3 Nginx reads web certificates from <code>certificates/web_certificates/</code>, using <code>CERT_FILENAME</code> and <code>KEY_FILENAME</code> from the environment file. For a local-only test, the documentation provides a self-signed example. Use a certificate issued by your internal or public CA for a real deployment, with correct SAN entries for the URL analysts will use.</p>
+<pre class="code"><code>mkdir -p certificates/web_certificates
+
+# LAB EXAMPLE ONLY. Replace the DNS name and IP with your test endpoint.
+openssl req -x509 -newkey rsa:2048 -sha256 -days 365 -nodes \
+  -keyout certificates/web_certificates/iris_dev_key.pem \
+  -out certificates/web_certificates/iris_dev_cert.pem \
+  -subj "/CN=iris.example.com" \
+  -addext "subjectAltName=DNS:iris.example.com,IP:192.0.2.10"
+
+chmod 600 certificates/web_certificates/iris_dev_key.pem</code></pre>
+<div class="info"><strong>Use the right certificate for the right service</strong><p style="margin:6px 0 0">The web certificate secures browser-to-IRIS HTTPS. The AD certificate and its issuing CA secure IRIS-to-domain-controller LDAPS. They are separate trust relationships and may use different certificates and CAs.</p></div>
+
+<h2 id="ad-certificate">6. Prepare Active Directory LDAPS and its CA certificate</h2>
+<h3>6.1 Export the CA certificate</h3>
+<p>Export the CA certificate that issued the domain controller's LDAPS certificate from your enterprise CA in Base-64 format where possible. Transfer the public CA certificate to the IRIS host, then place it under the repository's LDAP certificate directory:</p>
+<pre class="code"><code>cd /path/to/iris-web
+mkdir -p certificates/ldap
+
+# Copy your exported CA certificate here; the filename is an example.
+cp /secure/staging/corp-root-ca.pem certificates/ldap/corp-root-ca.pem
+chmod 644 certificates/ldap/corp-root-ca.pem</code></pre>
+<p>If the certificate is DER-encoded rather than PEM, convert it first:</p>
+<pre class="code"><code>openssl x509 -inform DER \
+  -in corp-root-ca.cer \
+  -out certificates/ldap/corp-root-ca.pem</code></pre>
+<p>Confirm that you copied the correct CA certificate. Do not copy the domain controller's private key, and do not treat the server certificate alone as a substitute for the issuing CA trust chain unless your PKI design explicitly requires it.</p>
+
+<h3>6.2 Verify DNS and LDAPS before changing IRIS</h3>
+<pre class="code"><code># Run on the IRIS host
+getent ahostsv4 dc1.corp.example.com
+
+# Confirm the app container can resolve the same name
+docker exec iris_app getent hosts dc1.corp.example.com
+
+# Validate the TLS chain and server hostname from the host
+openssl s_client \
+  -connect dc1.corp.example.com:636 \
+  -servername dc1.corp.example.com \
+  -CAfile certificates/ldap/corp-root-ca.pem \
+  -verify_hostname dc1.corp.example.com \
+  -verify_return_error &lt;/dev/null</code></pre>
+<p>Look for <code>Verify return code: 0 (ok)</code>. If the certificate chain fails, correct the CA bundle, certificate chain, FQDN/SAN, system time, DNS, routing or firewall rule. Do not solve certificate errors by disabling validation.</p>
+
+<h2 id="ldap-config">7. Configure LDAP authentication in the IRIS environment</h2>
+<p>Edit the root <code>.env</code> file. The exact user-prefix/suffix values depend on how the target AD users are named and where they live in the directory. The following example matches a common AD layout where the account's CN is the same as its login name and the user objects are stored in the default <code>CN=Users</code> container.</p>
+<pre class="code"><code>IRIS_AUTHENTICATION_TYPE=ldap
+
+LDAP_SERVER=dc1.corp.example.com
+LDAP_PORT=636
+LDAP_AUTHENTICATION_TYPE=SIMPLE
+LDAP_USE_SSL=True
+LDAP_VALIDATE_CERTIFICATE=True
+LDAP_TLS_VERSION=1.2
+
+# CA-only trust: follow the documented behavior for the tagged build.
+LDAP_CUSTOM_TLS_CONFIG=False
+LDAP_CA_CERTIFICATE=corp-root-ca.pem
+
+# Example DN construction for users in CN=Users.
+LDAP_USER_PREFIX=CN=
+LDAP_USER_SUFFIX=CN=Users,DC=corp,DC=example,DC=com
+
+# Present in the lab's beta configuration/patch; verify that your
+# chosen build supports these exact settings before relying on them.
+LDAP_SEARCH_DN=DC=corp,DC=example,DC=com
+LDAP_ATTRIBUTE_IDENTIFIER=sAMAccountName
+IRIS_AUTHENTICATION_CREATE_USER_IF_NOT_EXIST=False</code></pre>
+<p>With this example, a user whose account/CN is <code>analyst1</code> would typically produce a bind DN such as <code>CN=analyst1,CN=Users,DC=corp,DC=example,DC=com</code>. If the user lives under an OU, has a different CN from <code>sAMAccountName</code>, or you use UPN-style logons, change the prefix/suffix strategy to match the real directory. Do not assume one DN pattern fits every AD deployment.</p>
+
+<figure class="article-figure">
+  <img src="/assets/images/dfir-iris-ldaps/01-ad-user-validation.webp" alt="Sanitized Active Directory account lookup showing the account name, user principal name, enabled state, and distinguished name fields." loading="lazy" width="895" height="90">
+  <figcaption><strong>Figure 1 — Verify the directory identity.</strong> Example Active Directory lookup fields used to confirm the user identifier, account state, and DN format. Values are generalized for publication.</figcaption>
+</figure>
+
+
+<figure class="article-figure">
+  <img src="/assets/images/dfir-iris-ldaps/02-ad-group-membership.webp" alt="PowerShell example listing Active Directory group membership for a test account, with directory distinguished names redacted." loading="lazy" width="897" height="124">
+  <figcaption><strong>Figure 2 — Check AD group membership.</strong> A directory membership query can validate the direct <code>memberOf</code> values that an optional custom mapping may read. Keep internal distinguished names and identity details out of public screenshots.</figcaption>
+</figure>
+
+<p>The upstream v3 beta authentication page also documents the alternative <code>DOMAIN\username</code> pattern for Active Directory with an empty suffix. Choose one pattern that matches the actual behavior of your tagged build and directory; do not combine incompatible patterns.</p>
+<div class="callout"><strong>CA-only LDAPS versus client-certificate authentication</strong><p style="margin:6px 0 0">For normal LDAPS server authentication, IRIS needs to trust the CA that issued the domain controller certificate. A client certificate and private key are a different configuration and should be set only if your directory specifically requires mutual TLS. Keep <code>LDAP_VALIDATE_CERTIFICATE=True</code>.</p></div>
+
+<h2 id="provision-users">8. Provision users and assign IRIS permissions</h2>
+<ol>
+<li>Create the corresponding user in IRIS first when automatic user creation is disabled. IRIS's LDAP documentation states that the user must exist in IRIS; the login identifier used in IRIS must match the LDAP identity that the authentication configuration expects.</li>
+<li>For a first-run LDAP administrator, the official documentation describes setting <code>IRIS_ADM_EMAIL</code> to the email address of the intended administrator account. This bootstrap setting does not retroactively create or rename users after IRIS has already initialized.</li>
+<li>Assign the user to the appropriate IRIS groups and grant only the permissions needed for the role. A successful AD login is not equivalent to administrator access.</li>
+<li>Keep an approved break-glass account according to your operational policy. If local fallback is enabled in your build, document who may use it, protect it, and test that it works as expected without weakening the LDAPS validation policy.</li>
+</ol>
+<p>In my lab, I also implemented an optional local group-mapping patch that reads direct AD <code>memberOf</code> values after a successful bind and maps selected AD groups to existing IRIS groups. This is a custom extension, not a behavior to assume from LDAP authentication alone. It handled direct group membership; nested AD group membership needs separate recursion logic and testing. Start with manual IRIS group assignment until your mapping is tested.</p>
+
+<figure class="article-figure">
+  <img src="/assets/images/dfir-iris-ldaps/03-iris-access-control-groups.webp" alt="DFIR-IRIS Access Control groups page showing Administrators and Analysts groups and their permissions, with member identities redacted." loading="lazy" width="900" height="405">
+  <figcaption><strong>Figure 3 — Validate IRIS authorization separately.</strong> The Access Control view shows that authentication and IRIS permissions are separate checks. Group names and permission sets are examples from the lab; assign the least privilege required for each role.</figcaption>
+</figure>
+
+
+<h2 id="validate">9. Validate the LDAP authentication path</h2>
+<p>After updating the environment file or changing a mounted local patch, recreate the affected application and worker services so both read the same configuration. Confirm the service names first if your Compose file differs. The steps below validate AD authentication; Wazuh-to-IRIS alert delivery is validated separately in Section 16.</p>
+<pre class="code"><code>docker compose config -q
+docker compose up -d --force-recreate app worker
+docker compose ps
+docker compose logs --tail=150 app worker</code></pre>
+<p>Verify the CA file is visible in the app container at the expected path. In the lab layout, the mounted certificate was accessible under <code>/iriswebapp/certificates/ldap/</code>:</p>
+<pre class="code"><code>docker exec iris_app ls -l \
+  /iriswebapp/certificates/ldap/corp-root-ca.pem</code></pre>
+<p>Then validate each layer in order:</p>
+<ol>
+<li><strong>DNS:</strong> the configured domain controller FQDN resolves on the host and inside the relevant container.</li>
+<li><strong>TLS:</strong> the certificate chain validates and the server name matches the certificate SAN.</li>
+<li><strong>Bind:</strong> an authorized LDAP client can bind using the intended DN/account and a password entered interactively (for example, <code>ldapwhoami -x -H ldaps://dc1.corp.example.com:636 -D 'CN=analyst1,CN=Users,DC=corp,DC=example,DC=com' -W</code> with the proper CA trust configured on the test machine).</li>
+<li><strong>Application login:</strong> sign in to IRIS with a dedicated AD test account whose IRIS user record exists and whose username matches the configured identity format.</li>
+<li><strong>Authorization:</strong> verify that the account can perform its expected analyst tasks and cannot perform actions outside its assigned role.</li>
+</ol>
+
+<h2 id="beta-notes">10. Beta-specific finding from this lab</h2>
+<p>During the tested <code>v3.0.0-beta.1</code> deployment, the CA-only LDAPS path required a local compatibility patch. The observed behavior was that a string-valued false setting was treated as truthy in the TLS branch and the handler attempted to access a client-certificate setting even though the directory did not require a client certificate. The working lab patch normalized environment booleans and loaded the configured CA certificate without requiring a client certificate when none was configured. In that patched lab, <code>LDAP_CUSTOM_TLS_CONFIG=True</code> was used with the custom handler that applied the CA trust settings; that value is not a drop-in recommendation for an unpatched installation. Follow the official setting <code>LDAP_CUSTOM_TLS_CONFIG=False</code> unless your exact release or a reviewed local patch requires otherwise.</p>
+<p>The patch was kept as local files and mounted read-only into the application and worker containers. This is a version-specific workaround, not an official upstream patch, and the exact change may not be needed or appropriate on a later tag.</p>
+<div class="callout"><strong>If you reproduce this failure</strong><p style="margin:6px 0 0">First confirm the exact release, inspect the traceback, and test the documented configuration on a copy or lab instance. If a patch is unavoidable, back up the original file, change only the failing TLS/boolean behavior, keep certificate validation enabled, mount the patch read-only into every service that uses the handler, and retest after each IRIS upgrade. Do not paste a v2 template patch into v3: v3 has a separate SvelteKit frontend and backend repository structure.</p></div>
+
+
+<h2 id="wazuh-flow">11. Wazuh-to-IRIS integration architecture</h2>
+<p>Once IRIS and AD authentication are stable, add Wazuh as an alert source. The integration uses Wazuh's Integrator process to pass a JSON alert file, API key, and target URL to a custom Python script. The script posts the normalized alert to the supported IRIS v3 API surface at <code>/api/v2/alerts</code>.</p>
+<div class="table-wrap"><table><thead><tr><th>Stage</th><th>Responsibility</th><th>Result in IRIS</th></tr></thead><tbody>
+<tr><td>1. Wazuh Manager</td><td>Matches a rule and emits the alert JSON. The integration threshold controls which events are forwarded.</td><td>Original event, rule metadata, agent information, and timestamp enter the script.</td></tr>
+<tr><td>2. Enhanced Python integration</td><td>Builds concise alert metadata, a key/value context map, searchable tags, and typed IOC candidates while retaining the original JSON.</td><td>Analysts see a structured event rather than one large, difficult-to-read text blob.</td></tr>
+<tr><td>3. IRIS API</td><td>Receives the alert over HTTPS with Bearer-token authentication.</td><td>A Wazuh-sourced alert appears in **Alerts**.</td></tr>
+<tr><td>4. IRIS investigation</td><td>An analyst opens and triages the alert, checks the Context and IOC views, and promotes it into a case when appropriate.</td><td>Alert triage and case creation remain controlled by IRIS permissions and analyst workflow.</td></tr>
+</tbody></table></div>
+<div class="info"><strong>v3 API compatibility matters</strong><p style="margin:6px 0 0">Use <code>https://IRIS_HOST/api/v2/alerts</code> for the v3 API. DFIR-IRIS v3 routes API requests through <code>/api/v2</code>; legacy paths such as <code>/alerts/add</code> are no longer the supported v3 integration route. This guide's script uses the current versioned API path.</p></div>
+<p>This creates an IRIS alert; it does <strong>not</strong> automatically create a case for every Wazuh event. Analysts can review the alert, correlate it, and promote it to a case in line with the SOC's triage policy.</p>
+
+<h2 id="api-identity">12. Create an IRIS API identity and validate access</h2>
+<h3>12.1 Create a dedicated service account</h3>
+<ol>
+<li>In IRIS, open <strong>Advanced → Access Control → Users</strong> and create a dedicated account such as <code>wazuh_svc</code>. Enable the service-account option if available in your tagged release.</li>
+<li>Grant only the API permissions the integration needs. The documented alert workflow uses <code>alerts_read</code> and <code>alerts_write</code>; do not use the IRIS administrator's token for routine alert ingestion.</li>
+<li>Open the service account's user settings and copy or generate its API key. Store it only in the protected Wazuh Integrator configuration—never in the Python source or a public repository.</li>
+<li>Confirm that the service account is permitted to write alerts to the target customer. Case access, alert permissions, and customer association are separate access-control considerations.</li>
+</ol>
+<h3>12.2 Test the API from the Wazuh Manager</h3>
+<p>Use the exact HTTPS host and certificate chain that the Wazuh manager will trust. A successful TCP connection alone is not enough; test Bearer authentication against a read endpoint and check its HTTP status. For a private CA, point <code>--cacert</code> to the CA certificate or bundle that validates the IRIS web certificate.</p>
+<pre class="code"><code>IRIS_URL="https://iris.example.com"
+read -rsp "IRIS API key: " IRIS_API_KEY
+printf '\\n'
+
+curl --silent --show-error --fail-with-body \\
+  --cacert /path/to/iris-web-ca.pem \\
+  -H "Authorization: Bearer \${IRIS_API_KEY}" \\
+  -H "Accept: application/json" \\
+  "${IRIS_URL}/api/v2/alerts?page=1&per_page=1"
+
+unset IRIS_API_KEY</code></pre>
+<p>If the IRIS web certificate is signed by a CA already trusted by the Wazuh host, the explicit <code>--cacert</code> option may be omitted. Do not replace it with <code>-k</code> or disable verification. Expect an authenticated success response; HTTP 401 suggests a missing/invalid token, while HTTP 403 commonly indicates insufficient permissions.</p>
+
+<h2 id="wazuh-config">13. Configure the Wazuh Integrator</h2>
+<p>Place the downloaded script at <code>/var/ossec/integrations/custom-wazuh_iris.py</code> on the Wazuh Manager. The integration name in <code>ossec.conf</code> must match the script basename so Wazuh can locate and invoke it.</p>
+<pre class="code"><code># Copy the script onto the Wazuh Manager first, then set ownership/mode.
+sudo install -o root -g wazuh -m 0750 \\
+  custom-wazuh_iris.py \\
+  /var/ossec/integrations/custom-wazuh_iris.py
+
+# Confirm the Wazuh-bundled Python can import requests.
+sudo /var/ossec/framework/python/bin/python3 -c \\
+  'import requests; print("requests", requests.__version__)'</code></pre>
+<p>Edit <code>/var/ossec/etc/ossec.conf</code> on the Wazuh Manager and add the following block inside the existing <code>&lt;ossec_config&gt;</code> element. Replace both placeholders locally with the real HTTPS base URL and service-account API key.</p>
+<pre class="code"><code>&lt;integration&gt;
+  &lt;name&gt;custom-wazuh_iris.py&lt;/name&gt;
+  &lt;hook_url&gt;https://iris.example.com/api/v2/alerts&lt;/hook_url&gt;
+  &lt;api_key&gt;REPLACE_WITH_IRIS_SERVICE_ACCOUNT_KEY&lt;/api_key&gt;
+  &lt;level&gt;7&lt;/level&gt;
+  &lt;alert_format&gt;json&lt;/alert_format&gt;
+  &lt;timeout&gt;20&lt;/timeout&gt;
+  &lt;retries&gt;3&lt;/retries&gt;
+&lt;/integration&gt;</code></pre>
+<ul>
+<li><code>level</code> forwards rule-level 7 or higher. Adjust the threshold to match your operational noise and response capacity.</li>
+<li><code>alert_format</code> must be <code>json</code> for this script.</li>
+<li>The script also excludes exact rule-group names <code>cis</code> and <code>sca</code> and checks its own level threshold. Remove or change these exclusions if your policy differs.</li>
+<li>Protect <code>ossec.conf</code>, because the API key is a secret in that file. Do not put the real configuration into GitHub or screenshots.</li>
+</ul>
+<p>Before restarting the manager, validate the XML structure and ensure the <code>custom-wazuh_iris.py</code> script is executable. Then restart Wazuh Manager using the service method supported by your installation.</p>
+<pre class="code"><code>sudo systemctl restart wazuh-manager
+sudo tail -f /var/ossec/logs/integrations.log
+# In another terminal:
+sudo tail -f /var/ossec/logs/ossec.log</code></pre>
+<p>If IRIS uses a private web CA, the script supports an optional <code>IRIS_CA_BUNDLE</code> setting near the top of the file. Set it to the appropriate PEM CA bundle or install the CA in the trust store used by the Wazuh Python runtime. TLS verification remains enabled by default.</p>
+
+<h2 id="script">14. Enhanced integration script</h2>
+<p>The integration script is based on the enhanced version from the original Wazuh-to-IRIS article and is included as a standalone file so it can be reviewed, tested, and version-controlled separately from the article.</p>
+<p><a href="/downloads/custom-wazuh_iris.py" download><strong>Download custom-wazuh_iris.py ↗</strong></a></p>
+<p>Visual-data improvements in this version:</p>
+<ul>
+<li><strong>Readable Context table:</strong> rule ID/level/description, timestamp, agent name/ID/IP, manager, decoder, rule groups, and MITRE metadata are placed first.</li>
+<li><strong>Nested event fields:</strong> selected <code>data</code>, <code>syscheck</code>, and vulnerability fields are flattened into bounded key/value entries; sensitive-looking field names are omitted from this derived context.</li>
+<li><strong>Raw alert preservation:</strong> <code>alert_source_content</code> retains the original Wazuh alert JSON for later investigation.</li>
+<li><strong>Useful triage metadata:</strong> tags include Wazuh, rule ID, agent, and MITRE values. The alert description includes a concise rule/agent/MITRE summary.</li>
+<li><strong>Typed IOC candidates:</strong> IPv4, domains, URLs, hashes, filenames, and email addresses are sent as structured IOC objects—not as one comma-separated tag.</li>
+<li><strong>Safer request handling:</strong> HTTPS is required, certificate verification remains enabled, the HTTP timeout is bounded, and failure logs avoid dumping response bodies.</li>
+</ul>
+<p><strong>Configuration you must review:</strong> set <code>CUSTOMER_ID</code> and <code>WAZUH_DASHBOARD_URL</code> in the script for your environment. Confirm the new-alert status ID, severity IDs, TLP ID, and each IOC type ID against the taxonomy on your own IRIS instance. The numeric IDs below are values seen in the original lab; they are not universal IDs across all installations or custom taxonomies.</p>
+<pre class="code"><code>#!/var/ossec/framework/python/bin/python3
+import hashlib
+import ipaddress
+import json
+import logging
+import os
+import re
+import sys
+from urllib.parse import urlsplit
+
+import requests
+
+LOG_FILE = "/var/ossec/logs/integrations.log"
+LEVEL_THRESHOLD = 7
+CUSTOMER_ID = 1  # Set to the customer ID from your IRIS instance.
+STATUS_ID_NEW = 2  # Verify against your installed IRIS taxonomy.
+WAZUH_DASHBOARD_URL = "https://WAZUH_DASHBOARD_HOST/app/wz-home"
+# Optional: set to the PEM CA bundle used to verify the IRIS HTTPS certificate.
+# Keep TLS verification enabled. None uses the Python/OS default trust store.
+IRIS_CA_BUNDLE = None
+
+# These IDs came from the IRIS IOC taxonomy inspected in the lab.
+# Reconfirm them after upgrades or any taxonomy customization.
+IOC_TYPE_IDS = {
+    "ip-any": 76,
+    "domain": 20,
+    "url": 141,
+    "md5": 90,
+    "sha1": 111,
+    "sha256": 113,
+    "filename": 37,
+    "email": 22,
+}
+
+logging.basicConfig(
+    filename=LOG_FILE,
+    level=logging.INFO,
+    format="%(asctime)s %(levelname)s %(message)s",
+)
+
+FILE_EXTENSIONS = {
+    ".exe", ".dll", ".sys", ".bat", ".cmd", ".ps1", ".vbs",
+    ".js", ".hta", ".scr", ".msi", ".jar", ".sh", ".py",
+}
+
+
+def flatten_for_context(value, prefix="", max_items=40):
+    """Flatten nested event data into readable, bounded key/value pairs."""
+    result = {}
+    sensitive_fragments = ("password", "secret", "api_key", "token", "authorization", "credential")
+
+    def walk(node, path):
+        if len(result) &gt;= max_items or not path:
+            return
+        if isinstance(node, dict):
+            for key, child in node.items():
+                if any(fragment in str(key).lower() for fragment in sensitive_fragments):
+                    continue
+                child_path = f"{path}.{key}" if path else str(key)
+                walk(child, child_path)
+                if len(result) &gt;= max_items:
+                    break
+        elif isinstance(node, list):
+            if all(not isinstance(item, (dict, list)) for item in node):
+                value_text = ", ".join(str(item) for item in node if item is not None)
+                if value_text:
+                    result[path] = value_text[:1000]
+            else:
+                for index, child in enumerate(node):
+                    walk(child, f"{path}[{index}]")
+                    if len(result) &gt;= max_items:
+                        break
+        elif node is not None:
+            value_text = str(node).replace("\r", " ").replace("\n", " ").strip()
+            if value_text:
+                result[path] = value_text[:1000]
+
+    walk(value, prefix)
+    return result
+
+
+def build_context(alert):
+    """Build a human-readable summary first, then add bounded nested event fields."""
+    rule = alert.get("rule", {}) if isinstance(alert.get("rule"), dict) else {}
+    agent = alert.get("agent", {}) if isinstance(alert.get("agent"), dict) else {}
+    manager = alert.get("manager", {}) if isinstance(alert.get("manager"), dict) else {}
+    decoder = alert.get("decoder", {}) if isinstance(alert.get("decoder"), dict) else {}
+    mitre = rule.get("mitre", {}) if isinstance(rule.get("mitre"), dict) else {}
+
+    context = {}
+
+    def add(label, value, max_length=1000):
+        if value is None or value == "":
+            return
+        if isinstance(value, list):
+            value = ", ".join(str(item) for item in value if item not in (None, ""))
+        elif isinstance(value, dict):
+            value = json.dumps(value, ensure_ascii=False, sort_keys=True)
+        value = str(value).replace("\r", " ").replace("\n", " ").strip()
+        if value:
+            context[label] = value[:max_length]
+
+    add("Timestamp", alert.get("timestamp"))
+    add("Wazuh Alert ID", alert.get("id"))
+    add("Rule ID", rule.get("id"))
+    add("Rule Level", rule.get("level"))
+    add("Rule Description", rule.get("description"))
+    add("Rule Groups", rule.get("groups"))
+    add("Agent Name", agent.get("name"))
+    add("Agent ID", agent.get("id"))
+    add("Agent IP", agent.get("ip"))
+    add("Manager", manager.get("name"))
+    add("Decoder", decoder.get("name"))
+    add("Event Location", alert.get("location"))
+    add("MITRE Technique IDs", mitre.get("id"))
+    add("MITRE Tactics", mitre.get("tactic"))
+    add("MITRE Techniques", mitre.get("technique"))
+    add("Full Log", alert.get("full_log"), max_length=1800)
+
+    # Place event-specific fields in the Context table, not in an HTML blob.
+    for section_name in ("data", "syscheck", "vulnerability"):
+        section = alert.get(section_name)
+        if isinstance(section, (dict, list)):
+            for key, value in flatten_for_context(section, prefix=section_name, max_items=40).items():
+                if len(context) &gt;= 65:
+                    break
+                if key not in context:
+                    context[key] = value
+        if len(context) &gt;= 65:
+            break
+
+    return context
+
+
+def is_valid_ipv4(value):
+    try:
+        return isinstance(ipaddress.ip_address(value), ipaddress.IPv4Address)
+    except ValueError:
+        return False
+
+
+def add_ioc(items, value, type_name, description):
+    value = str(value).strip().rstrip(".,;)")
+    if not value:
+        return
+    type_id = IOC_TYPE_IDS.get(type_name)
+    if type_id is None:
+        return
+    items[(value.lower(), type_id)] = {
+        "ioc_value": value,
+        "ioc_description": description,
+        "ioc_tlp_id": 1,  # Confirm TLP ID in your IRIS environment.
+        "ioc_type_id": type_id,
+        "ioc_tags": "wazuh",
+    }
+
+
+def extract_iocs(alert):
+    """Prefer structured event fields, then scan selected text values."""
+    found = {}
+
+    data = alert.get("data", {})
+    win = data.get("win", {}) if isinstance(data, dict) else {}
+    eventdata = win.get("eventdata", {}) if isinstance(win, dict) else {}
+
+    # Pull known structured fields first; file paths remain filenames, not domains.
+    structured_candidates = []
+    for field in ("image", "targetFilename", "ParentImage", "filePath", "filename"):
+        candidate = eventdata.get(field)
+        if isinstance(candidate, str) and candidate.strip():
+            structured_candidates.append(candidate.strip())
+
+    # Scan all string-valued fields to catch other telemetry, but classify by syntax.
+    searchable = list(structured_candidates)
+
+    def collect_strings(obj):
+        if isinstance(obj, dict):
+            for val in obj.values():
+                collect_strings(val)
+        elif isinstance(obj, list):
+            for val in obj:
+                collect_strings(val)
+        elif isinstance(obj, str):
+            searchable.append(obj)
+
+    collect_strings(alert)
+
+    seen_texts = set()
+    for text in searchable:
+        if text in seen_texts:
+            continue
+        seen_texts.add(text)
+
+        # URLs first; strip common trailing punctuation.
+        for match in re.findall(r"https?://[^\s\"'&lt;&gt;]+", text, flags=re.IGNORECASE):
+            url = match.rstrip(".,;)]}")
+            add_ioc(found, url, "url", "Extracted from Wazuh alert")
+
+        # IPv4: validate each candidate instead of accepting 999.999.999.999.
+        for match in re.findall(r"\b(?:\d{1,3}\.){3}\d{1,3}\b", text):
+            if is_valid_ipv4(match):
+                add_ioc(found, match, "ip-any", "Extracted from Wazuh alert")
+
+        # Hashes are matched by length.
+        for match in re.findall(r"\b[a-fA-F0-9]{64}\b", text):
+            add_ioc(found, match, "sha256", "SHA-256 candidate extracted from Wazuh alert")
+        for match in re.findall(r"\b[a-fA-F0-9]{40}\b", text):
+            add_ioc(found, match, "sha1", "SHA-1 candidate extracted from Wazuh alert")
+        for match in re.findall(r"\b[a-fA-F0-9]{32}\b", text):
+            add_ioc(found, match, "md5", "MD5 candidate extracted from Wazuh alert")
+
+        # Extract complete filenames. Non-capturing groups keep the full match.
+        for match in re.findall(
+            r"(?i)(?&lt;![A-Za-z0-9_.-])[A-Za-z0-9_.$@!~() -]+\.(?:exe|dll|sys|bat|cmd|ps1|vbs|js|hta|scr|msi|jar|sh|py)\b",
+            text,
+        ):
+            filename = match.strip().strip('"')
+            if filename:
+                add_ioc(found, filename, "filename", "Filename candidate extracted from Wazuh alert")
+
+        # Domain candidates: require a dotted hostname-like token and exclude file extensions.
+        file_extensions = {ext.lstrip(".") for ext in FILE_EXTENSIONS}
+        for match in re.findall(
+            r"(?i)(?&lt;![A-Za-z0-9_-])(?:[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?\.)+[A-Za-z]{2,63}\b",
+            text,
+        ):
+            domain = match.rstrip(".")
+            tld = domain.rsplit(".", 1)[-1].lower()
+            if tld not in file_extensions and not is_valid_ipv4(domain):
+                add_ioc(found, domain, "domain", "Domain candidate extracted from Wazuh alert")
+
+        # Email addresses
+        for match in re.findall(
+            r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,63}\b",
+            text,
+        ):
+            add_ioc(found, match, "email", "Email address candidate extracted from Wazuh alert")
+
+    return list(found.values())[:50]
+
+
+def normalize_list(value):
+    if value is None:
+        return []
+    if isinstance(value, list):
+        return [str(item) for item in value if item not in (None, "")]
+    return [str(value)] if value != "" else []
+
+
+def build_tags(alert):
+    rule = alert.get("rule", {})
+    agent = alert.get("agent", {})
+    mitre = rule.get("mitre", {})
+
+    raw_tags = [
+        "wazuh",
+        f"rule_{rule.get('id', 'unknown')}",
+        str(agent.get("name", "unknown")),
+        str(agent.get("ip", "unknown")),
+    ]
+    raw_tags += normalize_list(mitre.get("id"))
+    raw_tags += normalize_list(mitre.get("tactic"))
+    raw_tags += normalize_list(mitre.get("technique"))
+
+    # IRIS alert_tags is a comma-separated string.
+    return ",".join(
+        tag.strip().replace(",", "_").replace(" ", "_")
+        for tag in raw_tags if tag and tag.strip()
+    )
+
+
+def main():
+    # Wazuh passes: alert_file, api_key, hook_url. For an interactive manual test,
+    # an API key can instead be read from the temporary IRIS_API_KEY environment variable.
+    if len(sys.argv) &gt;= 4:
+        alert_file, api_key, hook_url = sys.argv[1:4]
+    elif len(sys.argv) == 3 and os.environ.get("IRIS_API_KEY"):
+        alert_file, hook_url = sys.argv[1:3]
+        api_key = os.environ["IRIS_API_KEY"]
+    else:
+        logging.error("Expected Wazuh arguments: alert_file api_key hook_url; manual mode supports alert_file hook_url plus IRIS_API_KEY")
+        return 2
+
+    if not api_key or not hook_url:
+        logging.error("Missing IRIS API key or hook URL argument")
+        return 2
+
+    parsed_url = urlsplit(hook_url)
+    if parsed_url.scheme.lower() != "https" or not parsed_url.hostname:
+        logging.error("IRIS hook URL must be an absolute HTTPS URL")
+        return 2
+
+    try:
+        with open(alert_file, "r", encoding="utf-8") as handle:
+            alert = json.load(handle)
+    except (OSError, json.JSONDecodeError) as exc:
+        logging.error("Could not read Wazuh JSON alert: %s", exc)
+        return 2
+
+    rule = alert.get("rule", {})
+    if not isinstance(rule, dict):
+        rule = {}
+
+    groups = normalize_list(rule.get("groups"))
+    if any(group.lower() in {"cis", "sca"} for group in groups):
+        logging.info("Skipping alert because rule group is excluded: %s", groups)
+        return 0
+
+    try:
+        level = int(rule.get("level", 0))
+    except (TypeError, ValueError):
+        level = 0
+    if level &lt; LEVEL_THRESHOLD:
+        return 0
+
+    title = str(rule.get("description") or "Wazuh Alert")
+    agent = alert.get("agent", {}) if isinstance(alert.get("agent"), dict) else {}
+    mitre = rule.get("mitre", {}) if isinstance(rule.get("mitre"), dict) else {}
+    summary_parts = [f"Rule ID: {rule.get('id', 'unknown')}", f"Level: {level}"]
+    if agent.get("name"):
+        summary_parts.append(f"Agent: {agent.get('name')}")
+    if agent.get("ip"):
+        summary_parts.append(f"Agent IP: {agent.get('ip')}")
+    mitre_ids = normalize_list(mitre.get("id"))
+    if mitre_ids:
+        summary_parts.append("MITRE: " + ", ".join(mitre_ids))
+    description_summary = " | ".join(summary_parts)[:1800]
+
+    source_ref = alert.get("id")
+    if not source_ref:
+        stable_source = json.dumps(alert, sort_keys=True, ensure_ascii=False, separators=(",", ":"), default=str)
+        source_ref = hashlib.sha256(stable_source.encode("utf-8")).hexdigest()[:32]
+
+    severity_id = 6 if level &gt;= 13 else 5 if level &gt;= 10 else 4 if level &gt;= 7 else 3
+
+    payload = {
+        "alert_title": title,
+        "alert_description": description_summary,
+        "alert_source": "Wazuh",
+        "alert_source_ref": str(source_ref),
+        "alert_source_link": WAZUH_DASHBOARD_URL,
+        "alert_severity_id": severity_id,
+        "alert_status_id": STATUS_ID_NEW,
+        "alert_source_event_time": alert.get("timestamp"),
+        "alert_note": "",
+        "alert_tags": build_tags(alert),
+        "alert_customer_id": CUSTOMER_ID,
+        "alert_context": build_context(alert),
+        "alert_iocs": extract_iocs(alert),
+        "alert_source_content": alert,
+    }
+
+    try:
+        response = requests.post(
+            hook_url,
+            json=payload,
+            headers={
+                "Authorization": f"Bearer {api_key}",
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+            },
+            timeout=(5, 20),
+            verify=IRIS_CA_BUNDLE or True,
+        )
+        if response.status_code in (200, 201, 202, 204):
+            logging.info(
+                "Sent Wazuh rule=%s level=%s IOC_count=%s HTTP=%s",
+                rule.get("id"), level, len(payload["alert_iocs"]), response.status_code,
+            )
+            return 0
+
+        # Avoid logging credentials. Response bodies may contain internal details.
+        # Avoid logging response bodies, which can contain case, identity, or event data.
+        logging.error("IRIS API rejected alert: HTTP %s", response.status_code)
+        return 1
+
+    except requests.RequestException as exc:
+        logging.error("IRIS request failed: %s", exc)
+        return 1
+
+
+if __name__ == "__main__":
+    sys.exit(main())</code></pre>
+
+<h2 id="event-layout">15. How Wazuh event data appears in IRIS</h2>
+<p>After a successful API call, open <strong>IRIS → Alerts</strong> and select the Wazuh alert. Review each section separately:</p>
+<div class="table-wrap"><table><thead><tr><th>IRIS field / view</th><th>What the script sends</th><th>Analyst benefit</th></tr></thead><tbody>
+<tr><td>Title</td><td>The Wazuh rule description.</td><td>Quickly identifies the detection.</td></tr>
+<tr><td>Description</td><td>A concise Rule ID, level, agent, IP, and MITRE summary.</td><td>Gives useful triage context without opening the raw event.</td></tr>
+<tr><td>Context</td><td>A key/value object with timestamp, rule metadata, agent details, decoder, location, MITRE metadata, full log excerpt, and bounded nested event fields.</td><td>Human-readable details are separated into fields rather than shown as a single large JSON string.</td></tr>
+<tr><td>Tags</td><td>Source label, Wazuh rule ID, agent name/IP, and MITRE IDs/tactics/techniques.</td><td>Provides searchable labels and triage clues; tags do not replace typed IOCs.</td></tr>
+<tr><td>IOCs</td><td>Structured candidates with an IOC value, description, TLP ID, type ID, and tag.</td><td>Indicators appear as typed objects when the API schema and taxonomy IDs match.</td></tr>
+<tr><td>Source content / raw alert</td><td>The original JSON payload from Wazuh.</td><td>Preserves the underlying event for validation and deeper investigation.</td></tr>
+</tbody></table></div>
+<p>IOC extraction uses pattern matching and field heuristics. An IP, domain, filename, or hash candidate is not automatically malicious. Analysts must verify context and reputation before treating an extracted value as a confirmed indicator.</p>
+
+<h2 id="validate-integration">16. Validate the Wazuh-to-IRIS path end to end</h2>
+<ol>
+<li>Verify the IRIS API key using the read request in Section 12 and confirm the certificate is trusted from the Wazuh Manager.</li>
+<li>Check script syntax with the same Python runtime configured in the shebang.</li>
+<li>Test with a saved, redacted Wazuh JSON alert and a non-production IRIS customer before enabling broad alert forwarding.</li>
+<li>Restart the Wazuh Manager after modifying <code>ossec.conf</code>, then generate or wait for a controlled event at the configured level.</li>
+<li>Inspect <code>/var/ossec/logs/integrations.log</code> for a success status and IOC count, and inspect the Wazuh manager logs for invocation errors.</li>
+<li>Open the resulting alert in IRIS and verify the title, description, context object, source content, tags, and IOCs individually. Promote one test alert to a case and validate the follow-on analyst workflow.</li>
+</ol>
+<pre class="code"><code># Compile check; no output means syntax passed.
+sudo /var/ossec/framework/python/bin/python3 -m py_compile \\
+  /var/ossec/integrations/custom-wazuh_iris.py
+
+# Inspect integration logs and file ownership.
+sudo tail -n 100 /var/ossec/logs/integrations.log
+sudo tail -n 100 /var/ossec/logs/ossec.log
+sudo stat /var/ossec/integrations/custom-wazuh_iris.py</code></pre>
+<p>For a manual test without placing the key into shell history or the process argument list, run the script in a temporary root shell with the key supplied as an environment variable. The script supports this manual mode; Wazuh itself still passes the key through the Integrator argument as documented.</p>
+<pre class="code"><code>read -rsp "IRIS API key: " IRIS_API_KEY
+export IRIS_API_KEY
+printf '\\n'
+
+/var/ossec/framework/python/bin/python3 \\
+  /var/ossec/integrations/custom-wazuh_iris.py \\
+  /path/to/redacted-wazuh-alert.json \\
+  "https://iris.example.com/api/v2/alerts"
+
+unset IRIS_API_KEY</code></pre>
+<p>Run this only from a shell with permission to execute the integration and write its log. The example assumes the current shell is appropriately privileged. Use a test alert first; do not replay sensitive production events into a test IRIS customer without authorization.</p>
+
+
+<h2 id="troubleshoot">17. Troubleshooting matrix</h2>
+<div class="table-wrap"><table><thead><tr><th>Symptom</th><th>Likely cause</th><th>Check / correction</th></tr></thead><tbody>
+<tr><td><code>Can't contact LDAP server</code> or connection timeout</td><td>DNS, routing, firewall or LDAPS listener problem.</td><td>Resolve the FQDN from host and container; test TCP 636; confirm the DC is listening.</td></tr>
+<tr><td>Certificate verify failed</td><td>Wrong/missing CA, incomplete intermediate chain, hostname/SAN mismatch, or expired certificate.</td><td>Validate with <code>openssl s_client</code> and the correct CA file/FQDN. Keep verification enabled.</td></tr>
+<tr><td><code>invalidCredentials</code></td><td>Wrong password or a DN/login format that does not match the AD object.</td><td>Test an explicit bind DN interactively; verify CN, UPN, <code>sAMAccountName</code>, prefix, suffix and user OU.</td></tr>
+<tr><td>LDAP bind succeeds but IRIS login fails</td><td>The IRIS account is missing or its username differs from the login identity constructed by LDAP configuration.</td><td>Create/provision the IRIS user and compare the exact login identifiers.</td></tr>
+<tr><td>Login succeeds but user has excess/insufficient access</td><td>IRIS group assignment is separate from LDAP password validation, or custom group mapping is wrong.</td><td>Review IRIS groups; test least-privilege access. Test nested group behavior separately if using custom mapping.</td></tr>
+<tr><td>Code requests a client certificate unexpectedly</td><td>Potential beta-version TLS configuration or boolean parsing issue.</td><td>Confirm the tagged code path and logs. Fix the boolean/client-certificate logic narrowly; do not disable CA verification.</td></tr>
+<tr><td>HTTP 404 from the IRIS integration</td><td>A legacy IRIS route such as <code>/alerts/add</code> was used against v3.</td><td>Use the supported <code>/api/v2/alerts</code> API route and verify the endpoint against your tagged release's API reference.</td></tr>
+<tr><td>HTTP 401 or 403</td><td>Expired/wrong token, missing permissions, or service account access restrictions.</td><td>Regenerate the API key if exposed; grant the minimum required <code>alerts_read</code>/<code>alerts_write</code> permissions and confirm customer access.</td></tr>
+<tr><td>HTTP 400 mentions an IOC type</td><td>The hard-coded IOC type ID does not match the taxonomy on this IRIS instance.</td><td>Inspect the local IOC taxonomy and update <code>IOC_TYPE_IDS</code>. Do not copy IDs blindly from another instance.</td></tr>
+<tr><td>No alert reaches IRIS</td><td>The integration name does not match the script filename, permissions are wrong, Python dependencies are missing, or the level filter excludes the event.</td><td>Check the exact script path/name, <code>chmod 750</code>, Wazuh Python imports, rule level, and both integration/Wazuh logs.</td></tr>
+<tr><td>Context table contains too much or unexpected data</td><td>Alert data varies by decoder and event source; generic flattening is a candidate presentation, not a schema-specific parser.</td><td>Customize the core context fields and nested sections for your log sources; preserve <code>alert_source_content</code> for the complete source event.</td></tr>
+<tr><td>Extracted IOCs contain benign/private values</td><td>Syntax-based extraction finds candidates, not verdicts.</td><td>Use local policy to exclude known infrastructure fields, apply enrichment/reputation checks, and require analyst review before classifying an IOC as malicious.</td></tr>
+</tbody></table></div>
+
+<h2 id="security">18. Security checklist</h2>
+<ul>
+<li>Use the release-specific setup instructions and remember that <code>v3.0.0-beta.1</code> is a beta, not production-ready.</li>
+<li>Change all default secrets before startup. Protect <code>.env</code> and keep it out of Git.</li>
+<li>Use LDAPS on port 636 with a trusted CA and the matching domain controller FQDN; never disable certificate validation as a workaround.</li>
+<li>Copy only public CA certificates into the IRIS certificate directory. Do not copy the CA private key.</li>
+<li>Use a dedicated test account, pre-provision IRIS users, and enforce least-privilege group membership.</li>
+<li>Keep locally patched files under version control and re-review them before every upgrade.</li>
+<li>Back up the database and persistent volumes before changing the release, schema or authentication path.</li>
+<li>Do not publish internal hostnames, internal IP addresses, usernames, API keys, passwords or private certificates in screenshots or example configuration.</li>
+</ul>
+
+<h2 id="references">19. Official references</h2>
+<ul>
+<li><a href="https://docs.dfir-iris.org/latest/getting_started/" target="_blank" rel="noopener noreferrer">DFIR-IRIS — Quick Start and v3 deployment</a></li>
+<li><a href="https://docs.dfir-iris.org/3.0.0-beta/operations/access_control/authentication/" target="_blank" rel="noopener noreferrer">DFIR-IRIS v3 beta — Authentication, Active Directory and LDAP certificates</a></li>
+<li><a href="https://docs.dfir-iris.org/3.0.0-beta/operations/configuration/" target="_blank" rel="noopener noreferrer">DFIR-IRIS v3 beta — Environment configuration and secrets</a></li>
+<li><a href="https://github.com/dfir-iris/iris-web/releases" target="_blank" rel="noopener noreferrer">DFIR-IRIS — Releases</a></li>
+<li><a href="https://github.com/dfir-iris/iris-web" target="_blank" rel="noopener noreferrer">DFIR-IRIS — iris-web repository</a></li>
+<li><a href="https://docs.docker.com/engine/install/" target="_blank" rel="noopener noreferrer">Docker — Engine installation</a></li>
+<li><a href="https://docs.dfir-iris.org/3.0.0-beta/operations/api/" target="_blank" rel="noopener noreferrer">DFIR-IRIS v3 beta — API documentation</a></li>
+<li><a href="https://docs.dfir-iris.org/3.0.0-beta/operations/access_control/users/" target="_blank" rel="noopener noreferrer">DFIR-IRIS v3 beta — User and service-account management</a></li>
+<li><a href="https://docs.dfir-iris.org/3.0.0-beta/operations/upgrades/migrate_to_v3/" target="_blank" rel="noopener noreferrer">DFIR-IRIS v3 — API migration notes</a></li>
+<li><a href="https://documentation.wazuh.com/current/user-manual/manager/integration-with-external-apis.html" target="_blank" rel="noopener noreferrer">Wazuh — External API integration</a></li>
+<li><a href="https://documentation.wazuh.com/current/user-manual/reference/ossec-conf/integration.html" target="_blank" rel="noopener noreferrer">Wazuh — Integrator configuration reference</a></li>
+</ul>
+<p class="note">This technical note records a deployment and troubleshooting path from a lab. Verify all values and configuration options against the exact IRIS tag you are running. The optional group mapper and beta compatibility patch described here are local customizations, not official DFIR-IRIS features. The Wazuh integration script is an example implementation; validate its payload schema, API permissions, customer ID, status/severity IDs, IOC type IDs, certificate trust, filters, and data-handling policy in a non-production environment before enabling it broadly.</p>
+<div class="contact-hook">
+<span class="hook-kicker">Discuss DFIR and identity integration</span>
+<p class="hook-title">Building an IRIS deployment with AD authentication and Wazuh alert integration?</p>
+<p>Connect to discuss incident-response engineering, SIEM/DFIR integration, identity-aware access control, and automation.</p>
+<div class="contact-links"><a href="mailto:as.ga2019@gmail.com?subject=DFIR-IRIS%20LDAP%20Integration%20Inquiry&amp;body=Hi%20Ashraf%2C%0A%0AI%20read%20your%20DFIR-IRIS%20v3%2C%20Active%20Directory%20LDAPS%2C%20and%20Wazuh%20integration%20article%20and%20would%20like%20to%20discuss%20the%20deployment.%0A%0ABest%20regards%2C">Email me ↗</a><a href="https://wa.me/966598243358?text=Hi%20Ashraf%2C%20I%20read%20your%20DFIR-IRIS%20v3%2C%20Active%20Directory%20LDAPS%2C%20and%20Wazuh%20integration%20article." target="_blank" rel="noopener noreferrer">WhatsApp ↗</a><a href="https://www.linkedin.com/in/1elrawy/" target="_blank" rel="noopener noreferrer">LinkedIn ↗</a></div>
+</div>
+<div class="related"><a href="/#articles"><small>ARTICLE LIBRARY</small><strong>← Back to all technical notes</strong></a><a href="https://documentation.wazuh.com/current/user-manual/manager/integration-with-external-apis.html" target="_blank" rel="noopener noreferrer"><small>OFFICIAL REFERENCE</small><strong>Wazuh External API Integration ↗</strong></a></div>
+</article>
+</div>
+<footer class="footer"><div class="wrap footerinner"><span>© 2026 Ashraf Gamal · Technical notes</span><a href="/#articles">Back to the article library ↑</a></div></footer>
+<script src="/assets/js/terminal-design.js"></script>
+</body>
+</html>

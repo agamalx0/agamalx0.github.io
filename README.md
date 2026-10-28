@@ -69,7 +69,6 @@ Browse the complete portfolio by topic. Every HTML article in the repository is 
 
 | Article | Coverage |
 |---|---|
-| [Automated Wazuh Daily Healthcheck with n8n](https://agamalx0.github.io/articles/wazuh-daily-healthcheck-n8n-email-report.html) | Daily SSH-based checks, warning summaries, HTML-to-PDF report generation, Gotenberg conversion, and automated email delivery. |
 | [Installing n8n for Local Workflow Automation](https://agamalx0.github.io/articles/n8n-installation-local-automation.html) | Self-hosted n8n setup, configuration persistence, and local access. |
 | [Testing n8n Webhooks Locally with curl](https://agamalx0.github.io/articles/testing-n8n-webhooks-locally-curl.html) | Test and production URLs, incoming JSON, and webhook troubleshooting. |
 
