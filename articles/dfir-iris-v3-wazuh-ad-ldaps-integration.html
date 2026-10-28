@@ -245,12 +245,12 @@ docker compose logs --tail=150 app worker</code></pre>
 <p>Use the exact HTTPS host and certificate chain that the Wazuh manager will trust. A successful TCP connection alone is not enough; test Bearer authentication against a read endpoint and check its HTTP status. For a private CA, point <code>--cacert</code> to the CA certificate or bundle that validates the IRIS web certificate.</p>
 <pre class="code"><code>IRIS_URL="https://iris.example.com"
 read -rsp "IRIS API key: " IRIS_API_KEY
-printf '\\n'
+printf '\n'
 
-curl --silent --show-error --fail-with-body \\
-  --cacert /path/to/iris-web-ca.pem \\
-  -H "Authorization: Bearer \${IRIS_API_KEY}" \\
-  -H "Accept: application/json" \\
+curl --silent --show-error --fail-with-body \
+  --cacert /path/to/iris-web-ca.pem \
+  -H "Authorization: Bearer ${IRIS_API_KEY}" \
+  -H "Accept: application/json" \
   "${IRIS_URL}/api/v2/alerts?page=1&per_page=1"
 
 unset IRIS_API_KEY</code></pre>
@@ -259,12 +259,12 @@ unset IRIS_API_KEY</code></pre>
 <h2 id="wazuh-config">13. Configure the Wazuh Integrator</h2>
 <p>Place the downloaded script at <code>/var/ossec/integrations/custom-wazuh_iris.py</code> on the Wazuh Manager. The integration name in <code>ossec.conf</code> must match the script basename so Wazuh can locate and invoke it.</p>
 <pre class="code"><code># Copy the script onto the Wazuh Manager first, then set ownership/mode.
-sudo install -o root -g wazuh -m 0750 \\
-  custom-wazuh_iris.py \\
+sudo install -o root -g wazuh -m 0750 \
+  custom-wazuh_iris.py \
   /var/ossec/integrations/custom-wazuh_iris.py
 
 # Confirm the Wazuh-bundled Python can import requests.
-sudo /var/ossec/framework/python/bin/python3 -c \\
+sudo /var/ossec/framework/python/bin/python3 -c \
   'import requests; print("requests", requests.__version__)'</code></pre>
 <p>Edit <code>/var/ossec/etc/ossec.conf</code> on the Wazuh Manager and add the following block inside the existing <code>&lt;ossec_config&gt;</code> element. Replace both placeholders locally with the real HTTPS base URL and service-account API key.</p>
 <pre class="code"><code>&lt;integration&gt;
@@ -708,7 +708,7 @@ if __name__ == "__main__":
 <li>Open the resulting alert in IRIS and verify the title, description, context object, source content, tags, and IOCs individually. Promote one test alert to a case and validate the follow-on analyst workflow.</li>
 </ol>
 <pre class="code"><code># Compile check; no output means syntax passed.
-sudo /var/ossec/framework/python/bin/python3 -m py_compile \\
+sudo /var/ossec/framework/python/bin/python3 -m py_compile \
   /var/ossec/integrations/custom-wazuh_iris.py
 
 # Inspect integration logs and file ownership.
@@ -718,11 +718,11 @@ sudo stat /var/ossec/integrations/custom-wazuh_iris.py</code></pre>
 <p>For a manual test without placing the key into shell history or the process argument list, run the script in a temporary root shell with the key supplied as an environment variable. The script supports this manual mode; Wazuh itself still passes the key through the Integrator argument as documented.</p>
 <pre class="code"><code>read -rsp "IRIS API key: " IRIS_API_KEY
 export IRIS_API_KEY
-printf '\\n'
+printf '\n'
 
-/var/ossec/framework/python/bin/python3 \\
-  /var/ossec/integrations/custom-wazuh_iris.py \\
-  /path/to/redacted-wazuh-alert.json \\
+/var/ossec/framework/python/bin/python3 \
+  /var/ossec/integrations/custom-wazuh_iris.py \
+  /path/to/redacted-wazuh-alert.json \
   "https://iris.example.com/api/v2/alerts"
 
 unset IRIS_API_KEY</code></pre>
