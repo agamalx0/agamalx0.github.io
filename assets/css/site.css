@@ -264,3 +264,7 @@ img,svg{max-width:100%}
 .sp-inline-i9u6j8{font-size:clamp(38px,5vw,58px) !important;margin:16px 0 6px !important}
 .sp-inline-kquu35{font-size:13px !important;margin:0 !important}
 .sp-inline-anfrlg{font-size:11px !important;margin:9px 0 0 !important}
+
+/* Keep analytics text readable in both the legacy GoatCounter and Spectrum themes. */
+.site-visits::before,.site-visits-widget{color:#2dff8f!important}
+.note-topic.topic-malware-analysis{color:#b45cff!important}
