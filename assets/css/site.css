@@ -275,7 +275,7 @@ img,svg{max-width:100%}
 /* GoatCounter native TOTAL.svg counter image */
 .site-visits-counter{display:block;width:112px;height:34px;max-width:100%;object-fit:contain;object-position:left center;border:0;vertical-align:middle}
 
-/* Show only the numeric portion of GoatCounter's native TOTAL.svg badge. */
+/* Show a larger, number-only GoatCounter total with no visible SVG panel. */
 .site-visits-counter{
   display:block!important;
   width:72px!important;
@@ -285,7 +285,10 @@ img,svg{max-width:100%}
   object-position:center calc(100% + 4px)!important;
   clip-path:inset(0)!important;
   filter:invert(1)!important;
-  mix-blend-mode:screen!important;
+  mix-blend-mode:lighten!important;
+  transform:scale(1.4)!important;
+  transform-origin:left center!important;
+  margin-right:28px!important;
   border:0!important;
   vertical-align:middle!important;
 }
