@@ -4,12 +4,7 @@
   const endpoint = 'https://agamalx0.goatcounter.com/count';
   const localTracker = '/assets/js/goatcounter-count.js';
   const widgetId = 'site-visits-widget';
-  const svgStyle = [
-    '#gcvc-border{fill:transparent;stroke:transparent}',
-    '#gcvc{font-family:"JetBrains Mono",monospace;fill:#2dff8f}',
-    '#gcvc-for,#gcvc-by{display:none}',
-    '#gcvc-views{font-size:34px;fill:#2dff8f}'
-  ].join('');
+  const imageUrl = 'https://agamalx0.goatcounter.com/counter/TOTAL.svg?no_branding=1';
 
   function getWidget() {
     let widget = document.getElementById(widgetId);
@@ -30,95 +25,61 @@
     return document.getElementById(widgetId);
   }
 
-  function renderDirectImage(widget) {
+  function renderCounter(widget) {
     if (!widget || widget.dataset.counterRendered === 'true') return;
+
     const image = document.createElement('img');
     image.className = 'site-visits-counter';
-    image.alt = 'Total site pageviews';
-    image.width = 86;
+    image.alt = 'GoatCounter total site pageviews';
+    image.width = 112;
     image.height = 34;
-    image.loading = 'lazy';
+    image.loading = 'eager';
     image.decoding = 'async';
-    image.src = 'https://agamalx0.goatcounter.com/counter/TOTAL.svg?no_branding=1&style=' + encodeURIComponent(svgStyle);
+    image.referrerPolicy = 'no-referrer';
+    image.src = imageUrl;
+
+    image.addEventListener('load', () => {
+      if (image.naturalWidth > 0) {
+        widget.title = 'Total site pageviews';
+        widget.dataset.counterStatus = 'loaded';
+      } else {
+        widget.textContent = '—';
+        widget.title = 'GoatCounter returned an unreadable counter image';
+        widget.dataset.counterStatus = 'invalid-image';
+      }
+    }, { once: true });
+
     image.addEventListener('error', () => {
       widget.textContent = '—';
-      widget.title = 'Visitor count unavailable';
+      widget.title = 'GoatCounter counter image could not be loaded';
+      widget.dataset.counterStatus = 'load-error';
     }, { once: true });
+
     widget.replaceChildren(image);
     widget.dataset.counterRendered = 'true';
-    widget.title = 'Total site pageviews';
   }
 
-  function renderWithGoatCounter(widget) {
-    if (!widget || widget.dataset.counterRendered === 'true') return;
-    const gc = window.goatcounter;
-    if (!gc || typeof gc.visit_count !== 'function') {
-      renderDirectImage(widget);
-      return;
-    }
+  function loadTracker() {
+    const existing = document.querySelector('script[data-goatcounter]');
+    if (existing && existing.src.includes('/assets/js/goatcounter-count.js')) return;
 
-    try {
-      widget.replaceChildren();
-      gc.visit_count({
-        append: '#' + widgetId,
-        path: 'TOTAL',
-        type: 'svg',
-        no_branding: true,
-        style: svgStyle,
-        attr: {
-          width: '86',
-          height: '34',
-          alt: 'Total site pageviews',
-          class: 'site-visits-counter',
-          loading: 'lazy'
-        }
-      });
-      widget.dataset.counterRendered = 'true';
-      widget.title = 'Total site pageviews';
-    } catch (error) {
-      if (window.console && console.warn) console.warn('[site-visits] GoatCounter visitor embed failed:', error);
-      renderDirectImage(widget);
-    }
-  }
+    if (existing) existing.remove();
 
-  function loadTracker(widget) {
-    if (window.goatcounter && typeof window.goatcounter.visit_count === 'function') {
-      renderWithGoatCounter(widget);
-      return;
-    }
-
-    let script = document.querySelector('script[data-goatcounter]');
-    if (script && !script.src.includes('/assets/js/goatcounter-count.js')) {
-      script.remove();
-      script = null;
-    }
-
-    if (!script) {
-      script = document.createElement('script');
-      script.async = true;
-      script.src = localTracker;
-      script.setAttribute('data-goatcounter', endpoint);
-      script.addEventListener('load', () => renderWithGoatCounter(widget), { once: true });
-      script.addEventListener('error', () => {
-        if (window.console && console.warn) console.warn('[site-visits] Self-hosted GoatCounter script failed to load.');
-        renderDirectImage(widget);
-      }, { once: true });
-      document.head.appendChild(script);
-      return;
-    }
-
-    if (window.goatcounter && typeof window.goatcounter.visit_count === 'function') {
-      renderWithGoatCounter(widget);
-    } else {
-      script.addEventListener('load', () => renderWithGoatCounter(widget), { once: true });
-      script.addEventListener('error', () => renderDirectImage(widget), { once: true });
-    }
+    const script = document.createElement('script');
+    script.async = true;
+    script.src = localTracker;
+    script.setAttribute('data-goatcounter', endpoint);
+    script.addEventListener('error', () => {
+      if (window.console && console.warn) console.warn('[site-visits] Self-hosted GoatCounter tracking script failed to load.');
+    }, { once: true });
+    document.head.appendChild(script);
   }
 
   function init() {
     const widget = getWidget();
     if (widget) {
-      loadTracker(widget);
+      renderCounter(widget);
+      loadTracker();
       return;
     }
 
@@ -126,7 +87,8 @@
       const mounted = getWidget();
       if (!mounted) return;
       observer.disconnect();
-      loadTracker(mounted);
+      renderCounter(mounted);
+      loadTracker();
     });
     observer.observe(document.documentElement, { childList: true, subtree: true });
     window.setTimeout(() => observer.disconnect(), 10000);

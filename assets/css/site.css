@@ -271,3 +271,6 @@ img,svg{max-width:100%}
 
 /* Topic filters: ensure hidden cards stay out of the grid despite .note-card display:flex. */
 .note-card[hidden]{display:none!important}
+
+/* GoatCounter native TOTAL.svg counter image */
+.site-visits-counter{display:block;width:112px;height:34px;max-width:100%;object-fit:contain;object-position:left center;border:0;vertical-align:middle}
