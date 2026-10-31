@@ -3,37 +3,65 @@
 
   const endpoint = 'https://agamalx0.goatcounter.com/count';
   const totalUrl = 'https://agamalx0.goatcounter.com/counter/TOTAL.json';
-  const scriptSelector = 'script[data-goatcounter="https://agamalx0.goatcounter.com/count"]';
+  const scriptSelector = 'script[data-goatcounter="' + endpoint + '"]';
+
+  function addStyles() {
+    if (document.getElementById('site-visits-styles')) return;
+    const style = document.createElement('style');
+    style.id = 'site-visits-styles';
+    style.textContent = [
+      '.site-visits{display:inline-flex;align-items:center;gap:9px;white-space:nowrap;align-self:center;font:10px/1.6 "JetBrains Mono",monospace;letter-spacing:.06em;text-transform:uppercase;color:#737985}',
+      '.site-visits:before{content:"//";color:#059669}',
+      '.site-visits-label{color:#737985}',
+      '.site-visits-widget{display:inline-block;min-width:2ch;color:#059669;font:700 11px/1.4 "JetBrains Mono",monospace;font-variant-numeric:tabular-nums}',
+      '.dark .site-visits:before,.dark .site-visits-widget{color:#00f59b}'
+    ].join('');
+    document.head.appendChild(style);
+  }
 
   function mountCounter() {
     const footer = document.querySelector('footer');
-    if (!footer || document.getElementById('site-visits')) return;
+    if (!footer) return null;
 
-    const counter = document.createElement('span');
-    counter.className = 'site-visits';
-    counter.id = 'site-visits';
-    counter.setAttribute('aria-label', 'Total site visits');
-    counter.innerHTML =
-      '<span class="site-visits-label">SITE VISITS</span>' +
-      '<span class="site-visits-widget" id="site-visits-widget" aria-live="polite">…</span>';
+    let counter = document.getElementById('site-visits');
+    if (!counter) {
+      counter = document.createElement('span');
+      counter.className = 'site-visits';
+      counter.id = 'site-visits';
+      counter.setAttribute('aria-label', 'Total site visits');
+      counter.innerHTML = '<span class="site-visits-label">SITE VISITS</span><span class="site-visits-widget" id="site-visits-widget" aria-live="polite">…</span>';
 
-    const footerInner = footer.querySelector('.footerinner');
-    if (footerInner) {
-      const homeLink = footerInner.querySelector('a');
-      if (homeLink) footerInner.insertBefore(counter, homeLink);
-      else footerInner.appendChild(counter);
-    } else {
-      const footerLinks = footer.children.length > 1 ? footer.children[1] : null;
-      if (footerLinks) footer.insertBefore(counter, footerLinks);
-      else footer.appendChild(counter);
+      const footerInner = footer.querySelector('.footerinner');
+      if (footerInner) {
+        const link = footerInner.querySelector('a');
+        if (link) footerInner.insertBefore(counter, link);
+        else footerInner.appendChild(counter);
+      } else {
+        const footerLinks = footer.children.length > 1 ? footer.children[1] : null;
+        if (footerLinks) footer.insertBefore(counter, footerLinks);
+        else footer.appendChild(counter);
+      }
     }
+
+    let widget = document.getElementById('site-visits-widget');
+    if (!widget) {
+      widget = document.createElement('span');
+      widget.className = 'site-visits-widget';
+      widget.id = 'site-visits-widget';
+      widget.setAttribute('aria-live', 'polite');
+      widget.textContent = '…';
+      counter.appendChild(widget);
+    }
+
+    addStyles();
+    return widget;
   }
 
-  function showFallback() {
-    const widget = document.getElementById('site-visits-widget');
-    if (!widget) return;
+  function updateCounter(widget) {
+    if (!widget || widget.dataset.loading === 'true') return;
+    widget.dataset.loading = 'true';
 
-    fetch(totalUrl, { mode: 'cors', credentials: 'omit', cache: 'no-store' })
+    fetch(totalUrl, { credentials: 'omit', cache: 'no-store' })
       .then((response) => {
         if (!response.ok) throw new Error('GoatCounter returned HTTP ' + response.status);
         return response.json();
@@ -43,79 +71,49 @@
           throw new Error('GoatCounter response did not contain a count');
         }
         widget.textContent = String(data.count);
-        widget.title = 'Total site visits';
+        widget.title = 'Total site pageviews';
       })
       .catch((error) => {
         widget.textContent = '—';
-        widget.title = 'Visitor count unavailable. Check the GoatCounter public-counter setting or whether a browser extension blocks GoatCounter.';
-        if (window.console && console.warn) console.warn('[site-visits] Counter fallback failed:', error);
+        widget.title = 'Visitor count unavailable';
+        if (window.console && console.warn) console.warn('[site-visits] Could not load the public counter:', error);
+      })
+      .finally(() => {
+        widget.dataset.loading = 'false';
       });
   }
 
-  function renderOfficialCounter() {
-    const widget = document.getElementById('site-visits-widget');
-    if (!widget || widget.dataset.rendered === 'true') return;
-
-    if (!window.goatcounter || typeof window.goatcounter.visit_count !== 'function') {
-      showFallback();
-      return;
-    }
-
-    try {
-      widget.dataset.rendered = 'true';
-      window.goatcounter.visit_count({
-        append: '#site-visits-widget',
-        path: 'TOTAL',
-        type: 'html',
-        no_branding: true,
-        attr: {
-          width: '92',
-          height: '24',
-          title: 'Total site visits',
-          loading: 'lazy'
-        },
-        style: [
-          'body { margin:0 !important; padding:0 !important; background:transparent !important; }',
-          'div { box-sizing:border-box !important; width:88px !important; height:24px !important; margin:0 !important; padding:0 !important; border:0 !important; border-radius:0 !important; background:transparent !important; color:#00f59b !important; font-family:monospace !important; font-size:11px !important; line-height:24px !important; text-align:left !important; overflow:hidden !important; }',
-          'br { display:none !important; }',
-          '#gcvc-for { display:none !important; }',
-          '#gcvc-views { display:inline !important; color:#00f59b !important; font-family:monospace !important; font-size:11px !important; font-weight:700 !important; line-height:24px !important; }',
-          '#gcvc-by { display:none !important; }'
-        ].join(' ')
-      });
-    } catch (error) {
-      widget.dataset.rendered = 'false';
-      if (window.console && console.warn) console.warn('[site-visits] GoatCounter display failed:', error);
-      showFallback();
-    }
-  }
-
-  function loadGoatCounter() {
-    if (window.goatcounter && typeof window.goatcounter.visit_count === 'function') {
-      renderOfficialCounter();
-      return;
-    }
-
-    const existing = document.querySelector(scriptSelector);
-    if (existing) {
-      existing.addEventListener('load', renderOfficialCounter, { once: true });
-      existing.addEventListener('error', showFallback, { once: true });
-      if (window.goatcounter && typeof window.goatcounter.visit_count === 'function') renderOfficialCounter();
-      return;
-    }
+  function loadTrackingScript() {
+    if (document.querySelector(scriptSelector)) return;
 
     const script = document.createElement('script');
     script.async = true;
     script.src = 'https://gc.zgo.at/count.js';
     script.setAttribute('data-goatcounter', endpoint);
-    script.addEventListener('load', renderOfficialCounter, { once: true });
-    script.addEventListener('error', showFallback, { once: true });
+    script.addEventListener('error', () => {
+      if (window.console && console.warn) console.warn('[site-visits] GoatCounter tracking script was blocked or failed to load.');
+    }, { once: true });
     document.head.appendChild(script);
   }
 
   function init() {
-    mountCounter();
-    loadGoatCounter();
+    loadTrackingScript();
+
+    const widget = mountCounter();
+    if (widget) {
+      updateCounter(widget);
+      return;
+    }
+
+    const observer = new MutationObserver(() => {
+      const mountedWidget = mountCounter();
+      if (mountedWidget) {
+        observer.disconnect();
+        updateCounter(mountedWidget);
+      }
+    });
+    observer.observe(document.documentElement, { childList: true, subtree: true });
+    window.setTimeout(() => observer.disconnect(), 10000);
   }
 
   if (document.readyState === 'loading') {
