@@ -226,13 +226,13 @@
     window.addEventListener('scroll', () => { if (!pending) { pending = true; window.requestAnimationFrame(updateProgress); } }, { passive: true });
     window.addEventListener('resize', updateProgress, { passive: true });
     updateProgress();
-    const footer = document.querySelector('footer');
-    if (footer) footer.classList.add('site-footer');
-    else {
-      const foot = document.createElement('footer'); foot.className = 'site-container site-footer';
-      foot.innerHTML = '<span>ASHRAF GAMAL · SOC ENGINEER &amp; SOC ANALYST L2</span><a href="#">↑ TOP</a>';
-      document.body.appendChild(foot);
-    }
+    const footerMarkup = '<span>ASHRAF GAMAL · SOC ENGINEER &amp; SOC ANALYST L2</span>' +
+      '<span class="site-visits" id="site-visits" aria-label="Total site visits"><span class="site-visits-label">SITE VISITS</span><span class="site-visits-widget" id="site-visits-widget" aria-live="polite">…</span></span>' +
+      '<a href="#">↑ TOP</a>';
+    let footer = document.querySelector('footer');
+    if (!footer) { footer = document.createElement('footer'); document.body.appendChild(footer); }
+    footer.className = 'site-container site-footer';
+    footer.innerHTML = footerMarkup;
     if (!document.querySelector('script[src="/assets/js/site-visits.js"]')) {
       const script = document.createElement('script'); script.src = '/assets/js/site-visits.js'; script.defer = true; document.head.appendChild(script);
     }

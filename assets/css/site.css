@@ -231,3 +231,5 @@ img,svg{max-width:100%}
 .site-visits-widget{display:inline-flex;min-width:2ch;color:#2dff8f;font:700 11px/1.4 var(--font-body);font-variant-numeric:tabular-nums}
 .article-page .site-footer{min-height:60px}
 @media(max-width:700px){.article-page .site-nav{width:calc(100% - 32px)}.article-page .site-nav nav{gap:10px 14px}.article-page .site-nav nav a{font-size:9px}.article-page .site-article-hero{padding-top:32px}.article-page .site-article-hero .meta{font-size:9px}}
+
+.section-anchor{display:block;height:0;scroll-margin-top:100px}
