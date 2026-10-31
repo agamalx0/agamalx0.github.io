@@ -61,7 +61,7 @@
   }
   function makeToc(toc, content) {
     if (!toc || !content) return;
-    const headings = Array.from(content.querySelectorAll('h2,h3'));
+    const headings = Array.from(content.querySelectorAll('h2,h3')).filter(heading => !heading.closest('.more-topic'));
     let used = new Set();
     headings.forEach((heading) => {
       if (!heading.id) heading.id = slug(heading.textContent);
@@ -190,10 +190,12 @@
         if (h1) hero.insertBefore(topic, h1);
         const meta = hero.querySelector('.meta');
         if (meta) {
-          const date = meta.querySelector('[data-article-date]') || document.createElement('span');
-          date.dataset.articleDate = 'true'; date.textContent = 'Updated ' + note.date;
-          const reading = meta.querySelector('[data-reading-time]') || document.createElement('span');
-          reading.dataset.readingTime = 'true'; reading.textContent = note.readingTime;
+          const spans = Array.from(meta.querySelectorAll('span'));
+          const date = meta.querySelector('[data-article-date]') || spans.find(span => /^(Updated|Published)\\b/i.test(span.textContent.trim())) || document.createElement('span');
+          const datePrefix = /^Published\\b/i.test(date.textContent.trim()) ? 'Published ' : 'Updated ';
+          date.dataset.articleDate = 'true'; date.textContent = datePrefix + note.date;
+          const reading = meta.querySelector('[data-reading-time]') || spans.find(span => /Approx\\.|min read/i.test(span.textContent)) || document.createElement('span');
+          reading.dataset.readingTime = 'true'; reading.textContent = 'Approx. ' + note.readingTime;
           if (!date.parentNode) meta.appendChild(date);
           if (!reading.parentNode) meta.appendChild(reading);
         }
