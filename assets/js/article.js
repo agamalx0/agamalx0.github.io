@@ -250,8 +250,19 @@
     if (!footer) { footer = document.createElement('footer'); document.body.appendChild(footer); }
     footer.className = 'site-container site-footer';
     footer.innerHTML = footerMarkup;
-    if (!document.querySelector('script[src="/assets/js/site-visits.js"]')) {
-      const script = document.createElement('script'); script.src = '/assets/js/site-visits.js'; script.defer = true; document.head.appendChild(script);
+    // Replace any cached legacy counter loader with the versioned implementation.
+    document.querySelectorAll('script[src*="site-visits.js"]').forEach((oldScript) => oldScript.remove());
+    const visitWidget = document.getElementById('site-visits-widget');
+    if (visitWidget) {
+      visitWidget.replaceChildren();
+      delete visitWidget.dataset.counterRendered;
+      delete visitWidget.dataset.counterStatus;
+    }
+    if (!document.querySelector('script[src*="/assets/js/site-visits.v2.js"]')) {
+      const script = document.createElement('script');
+      script.src = '/assets/js/site-visits.v2.js';
+      script.async = true;
+      document.head.appendChild(script);
     }
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init, { once: true });
