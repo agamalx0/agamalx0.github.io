@@ -207,3 +207,27 @@ img,svg{max-width:100%}
 @media(max-width:700px){.w{width:min(100% - 36px,1280px)}.site-nav{min-height:66px;align-items:flex-start;padding:16px 0;flex-direction:column}.site-nav nav{gap:10px 16px}.site-nav nav a{font-size:10px}.site-nav nav .nav-cta{margin-left:0}.pg section+section{padding-top:48px}.section-pad{padding-bottom:52px}.three,.lanes-grid,.expertise-grid,.engagements,.credential-grid{grid-template-columns:1fr}.four,.notes-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.six,.stats-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.hero-title{font-size:clamp(44px,12vw,60px)}.sec{font-size:10px;letter-spacing:.15em}.hero-copy{font-size:14px}.card{padding:21px}.notes-head{align-items:flex-start}.connect-card{padding:45px 20px}.tool-track .chip{padding:9px 16px}.article-page .site-container,.article-page .layout,.site-article-hero,.article-page .site-footer{width:calc(100% - 32px)}.site-article-hero{padding:34px 0 25px}.site-article-hero h1{font-size:clamp(32px,9vw,44px)}.article-page .layout{padding-top:10px}.article-page .toc{padding:13px}.article-page .content{font-size:16px;line-height:1.75}.article-page .content h2{margin-top:34px}.article-page .content .evidence-grid{grid-template-columns:1fr}.article-page .content .flow{grid-template-columns:repeat(2,minmax(0,1fr))}.more-topic-grid{grid-template-columns:1fr 1fr}}
 @media(max-width:480px){.w{width:calc(100% - 28px)}.hero-grid{padding-top:32px;padding-bottom:46px}.four,.notes-grid{grid-template-columns:1fr}.tool-marquee{mask-image:none;-webkit-mask-image:none}.site-nav nav{gap:8px 13px}.site-brand{font-size:18px}.article-pagination{grid-template-columns:1fr}.more-topic-grid{grid-template-columns:1fr}.article-toc-nav{grid-template-columns:1fr}.site-article-hero .lede{font-size:14px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto!important}*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}.card:hover{transform:none}.tool-track{animation:none!important}.ring1,.ring2{animation:none!important}.pg:before,.pg:after{animation:none!important}}
+
+/* Article-only interaction and shared footer additions */
+.article-page .topbar{display:block}
+.article-page .site-nav{width:min(1160px,calc(100% - 48px));margin:0 auto}
+.article-page .site-nav nav{display:flex;align-items:center;flex-wrap:wrap;gap:22px}
+.article-page .site-nav nav a{color:var(--muted);font-size:10px;letter-spacing:.12em}
+.article-page .site-nav nav a:hover{color:#fff}
+.article-page .site-nav nav .nav-cta{color:var(--bg)}
+.article-page .hero{max-width:1080px}
+.article-page .content .figure{max-width:100%;overflow:hidden}
+.article-page .content .code{margin:0;padding:0;border:0;background:transparent;overflow:visible}
+.article-page .content .table-wrap{min-width:0}
+.article-page .content img:focus-visible{outline:2px solid var(--accent);outline-offset:4px}
+.image-zoom{position:fixed;max-width:min(94vw,1300px);max-height:94vh;padding:46px 18px 18px;border:1px solid #3a4256;border-radius:12px;background:#0a0b0d;color:var(--text)}
+.image-zoom::backdrop{background:#030509dd;backdrop-filter:blur(5px)}
+.image-zoom img{display:block;max-width:90vw;max-height:78vh;width:auto;height:auto;object-fit:contain}
+.image-zoom p{margin:10px 0 0;color:var(--muted);font-size:11px}
+.image-zoom-close{position:absolute;right:14px;top:12px;border:1px solid var(--border);border-radius:6px;padding:6px 10px;background:transparent;color:var(--text);font:10px var(--font-body);cursor:pointer}
+.image-zoom-close:hover{border-color:var(--accent)}
+.site-visits{display:inline-flex;align-items:center;gap:8px;white-space:nowrap;color:var(--muted);font:10px/1.6 var(--font-body);letter-spacing:.06em;text-transform:uppercase}
+.site-visits::before{content:"//";color:#2dff8f}
+.site-visits-widget{display:inline-flex;min-width:2ch;color:#2dff8f;font:700 11px/1.4 var(--font-body);font-variant-numeric:tabular-nums}
+.article-page .site-footer{min-height:60px}
+@media(max-width:700px){.article-page .site-nav{width:calc(100% - 32px)}.article-page .site-nav nav{gap:10px 14px}.article-page .site-nav nav a{font-size:9px}.article-page .site-article-hero{padding-top:32px}.article-page .site-article-hero .meta{font-size:9px}}
