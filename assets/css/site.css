@@ -268,3 +268,6 @@ img,svg{max-width:100%}
 /* Keep analytics text readable in both the legacy GoatCounter and Spectrum themes. */
 .site-visits::before,.site-visits-widget{color:#2dff8f!important}
 .note-topic.topic-malware-analysis{color:#b45cff!important}
+
+/* Topic filters: ensure hidden cards stay out of the grid despite .note-card display:flex. */
+.note-card[hidden]{display:none!important}
