@@ -2,7 +2,7 @@
   'use strict';
 
   const endpoint = 'https://agamalx0.goatcounter.com/count';
-  const localTracker = '/assets/js/goatcounter-count.js?v=20261031-2046';
+  const localTracker = '/assets/js/goatcounter-count.js?v=20261031-2320';
   const widgetId = 'site-visits-widget';
   const imageUrl = 'https://agamalx0.goatcounter.com/counter/TOTAL.svg?no_branding=1';
 
@@ -26,7 +26,12 @@
   }
 
   function renderCounter(widget) {
-    if (!widget || widget.dataset.counterRendered === 'true') return;
+    if (!widget) return;
+    const current = widget.querySelector('img.site-visits-counter');
+    if (current && current.getAttribute('src') === imageUrl) {
+      widget.dataset.counterVersion = '2';
+      return;
+    }
 
     const image = document.createElement('img');
     image.className = 'site-visits-counter';
@@ -36,7 +41,6 @@
     image.loading = 'eager';
     image.decoding = 'async';
     image.referrerPolicy = 'no-referrer';
-    image.src = imageUrl;
 
     image.addEventListener('load', () => {
       if (image.naturalWidth > 0) {
@@ -55,8 +59,20 @@
       widget.dataset.counterStatus = 'load-error';
     }, { once: true });
 
+    image.src = imageUrl;
     widget.replaceChildren(image);
     widget.dataset.counterRendered = 'true';
+    widget.dataset.counterVersion = '2';
+  }
+
+  function watchCounter(widget) {
+    if (!widget || widget.dataset.counterObserver === '2') return;
+    const observer = new MutationObserver(() => {
+      const image = widget.querySelector('img.site-visits-counter');
+      if (!image || image.getAttribute('src') !== imageUrl) renderCounter(widget);
+    });
+    observer.observe(widget, { childList: true });
+    widget.dataset.counterObserver = '2';
   }
 
   function loadTracker() {
@@ -79,6 +95,7 @@
     const widget = getWidget();
     if (widget) {
       renderCounter(widget);
+      watchCounter(widget);
       loadTracker();
       return;
     }
@@ -88,6 +105,7 @@
       if (!mounted) return;
       observer.disconnect();
       renderCounter(mounted);
+      watchCounter(mounted);
       loadTracker();
     });
     observer.observe(document.documentElement, { childList: true, subtree: true });
