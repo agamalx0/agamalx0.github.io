@@ -75,9 +75,11 @@
           loading: 'lazy'
         },
         style: [
-          'div { box-sizing:border-box !important; width:88px !important; height:24px !important; margin:0 !important; padding:0 !important; border:0 !important; border-radius:0 !important; background:transparent !important; color:#00f59b !important; font-family:monospace !important; font-size:11px !important; line-height:24px !important; overflow:hidden !important; }',
+          'body { margin:0 !important; padding:0 !important; background:transparent !important; }',
+          'div { box-sizing:border-box !important; width:88px !important; height:24px !important; margin:0 !important; padding:0 !important; border:0 !important; border-radius:0 !important; background:transparent !important; color:#00f59b !important; font-family:monospace !important; font-size:11px !important; line-height:24px !important; text-align:left !important; overflow:hidden !important; }',
+          'br { display:none !important; }',
           '#gcvc-for { display:none !important; }',
-          '#gcvc-views { color:#00f59b !important; font-family:monospace !important; font-size:11px !important; font-weight:700 !important; line-height:24px !important; }',
+          '#gcvc-views { display:inline !important; color:#00f59b !important; font-family:monospace !important; font-size:11px !important; font-weight:700 !important; line-height:24px !important; }',
           '#gcvc-by { display:none !important; }'
         ].join(' ')
       });
