@@ -194,7 +194,7 @@ IRIS_AUTHENTICATION_CREATE_USER_IF_NOT_EXIST=False</code></pre>
 <p>In my lab, I also implemented an optional local group-mapping patch that reads direct AD <code>memberOf</code> values after a successful bind and maps selected AD groups to existing IRIS groups. This is a custom extension, not a behavior to assume from LDAP authentication alone. It handled direct group membership; nested AD group membership needs separate recursion logic and testing. Start with manual IRIS group assignment until your mapping is tested.</p>
 
 <figure class="article-figure">
-  <img src="/assets/images/dfir-iris-ldaps/03-iris-access-control-groups.webp" alt="DFIR-IRIS Access Control groups page showing Administrators and Analysts groups and their permissions, with member identities redacted." loading="lazy" width="900" height="405">
+  <img src="/assets/images/Validate%20IRIS%20authorization%20separately.png" alt="DFIR-IRIS screenshot demonstrating authorization validation separately from LDAP authentication." loading="lazy" decoding="async">
   <figcaption><strong>Figure 3 — Validate IRIS authorization separately.</strong> The Access Control view shows that authentication and IRIS permissions are separate checks. Group names and permission sets are examples from the lab; assign the least privilege required for each role.</figcaption>
 </figure>
 
