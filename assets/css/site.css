@@ -233,3 +233,34 @@ img,svg{max-width:100%}
 @media(max-width:700px){.article-page .site-nav{width:calc(100% - 32px)}.article-page .site-nav nav{gap:10px 14px}.article-page .site-nav nav a{font-size:9px}.article-page .site-article-hero{padding-top:32px}.article-page .site-article-hero .meta{font-size:9px}}
 
 .section-anchor{display:block;height:0;scroll-margin-top:100px}
+
+/* Inline presentation moved from the Spectrum page markup into shared CSS. */
+.sp-inline-tb5nw3{color:#fff !important}
+.sp-inline-1b4kxeu{font-size:clamp(34px,4vw,48px) !important;margin:16px 0 12px !important;font-weight:700 !important;letter-spacing:-.025em !important}
+.sp-inline-ffuxti{max-width:600px !important;margin:0 0 36px !important}
+.sp-inline-jm24uy{margin-top:12px !important}
+.sp-inline-1ubcebo{font-size:clamp(34px,4vw,48px) !important;margin:16px 0 36px !important;font-weight:700 !important;letter-spacing:-.025em !important}
+.sp-inline-yp23d8{margin-top:36px !important}
+.sp-inline-12bzlse{margin-top:16px !important}
+.sp-inline-9l4gl1{margin-bottom:48px !important}
+.sp-inline-1ry7662{margin-top:8px !important;font-size:12px !important}
+.sp-inline-1sdxvii{letter-spacing:.1em !important}
+.sp-inline-1f5820k{font-size:25px !important;margin:4px 0 2px !important}
+.sp-inline-w2df8o{margin-bottom:10px !important}
+.sp-inline-n3c866{margin-bottom:12px !important}
+.sp-inline-15iioen{font-size:12px !important}
+.sp-inline-1w8126h{margin:66px 0 22px !important}
+.sp-inline-15p3n65{font-size:21px !important;margin:12px 0 8px !important}
+.sp-inline-15ri398{font-size:13px !important;margin-bottom:14px !important}
+.sp-inline-et2xu7{margin-top:8px !important}
+.sp-inline-114sn1y{font-size:20px !important}
+.sp-inline-3onmga{margin-bottom:16px !important}
+.sp-inline-1qhqgp7{font-size:clamp(34px,4vw,48px) !important;margin:16px 0 0 !important;font-weight:700 !important;letter-spacing:-.025em !important}
+.sp-inline-1mlm311{margin:9px 0 0 !important;font-size:12px !important}
+.sp-inline-1gcfhyk{font-size:10px !important;margin:0 0 15px !important}
+.sp-inline-6gdbvu{justify-content:center !important}
+.sp-inline-1xhfwqo{margin:20px auto 30px !important;max-width:520px !important}
+.sp-inline-1nnjk2n{padding-top:54px !important}
+.sp-inline-i9u6j8{font-size:clamp(38px,5vw,58px) !important;margin:16px 0 6px !important}
+.sp-inline-kquu35{font-size:13px !important;margin:0 !important}
+.sp-inline-anfrlg{font-size:11px !important;margin:9px 0 0 !important}
