@@ -25,11 +25,24 @@
         wrapper.appendChild(pre);
       }
       const code = pre.querySelector('code');
-      const rawLang = (pre.className + ' ' + (code ? code.className : '')).match(/(?:language-|lang-)([a-z0-9_+-]+)/i);
+      const explicitLang = (pre.className + ' ' + (code ? code.className : '') + ' ' + (pre.dataset.language || '')).match(/(?:language-|lang-)([a-z0-9_+-]+)/i);
+      const sample = (code ? code.textContent : pre.textContent).trim();
+      const detectLanguage = (value) => {
+        if (/^\\s*<\\?xml|^\\s*<[A-Za-z][\\s\\S]*>$/i.test(value)) return 'XML / HTML';
+        if (/^\\s*[{[]/.test(value) && /["'][^"']+["']\\s*:/.test(value)) return 'JSON';
+        if (/^\\s*(?:PS [A-Z]:|Get-|Set-|New-|Remove-|Invoke-|Test-|Select-Object|\\$[A-Za-z_])/mi.test(value)) return 'POWERSHELL';
+        if (/^\\s*(?:#!\\/bin\\/(?:ba)?sh|sudo |systemctl |apt(?:-get)? |docker |curl |grep |tail |chmod |chown |journalctl |kubectl )/mi.test(value)) return 'BASH';
+        if (/^\\s*(?:FROM |import |def |class |if __name__)/m.test(value)) return 'PYTHON';
+        if (/^\\s*(?:const |let |var |function |async function |export |require\\()/m.test(value)) return 'JAVASCRIPT';
+        if (/^\\s*(?:SELECT |INSERT |UPDATE |CREATE TABLE |ALTER TABLE )/mi.test(value)) return 'SQL';
+        if (/^\\s*(?:services:|version:|apiVersion:|kind:|[A-Za-z0-9_-]+:\\s*$)/m.test(value)) return 'YAML';
+        return 'COMMANDS';
+      };
+      const language = explicitLang ? explicitLang[1].toUpperCase() : detectLanguage(sample);
       const toolbar = document.createElement('div');
       toolbar.className = 'code-toolbar';
       const label = document.createElement('span');
-      label.textContent = rawLang ? rawLang[1].toUpperCase() : 'CODE';
+      label.textContent = language;
       const button = document.createElement('button');
       button.type = 'button'; button.className = 'code-copy'; button.textContent = 'COPY';
       button.addEventListener('click', async () => {
