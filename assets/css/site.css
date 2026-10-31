@@ -288,3 +288,15 @@ img,svg{max-width:100%}
   letter-spacing:.06em;
   font-variant-numeric:tabular-nums;
 }
+
+/* Hero positioning statement / notebook note */
+.hero-note{
+  max-width:600px;
+  margin:0 0 32px;
+  padding:11px 15px;
+  border-left:2px solid #6EA8FF;
+  border-radius:0 8px 8px 0;
+  background:rgba(16,19,26,.72);
+  color:var(--muted);
+  font:400 13px/1.75 var(--font-body);
+}
