@@ -146,6 +146,9 @@
       content.appendChild(section);
     }
   }
+  function normalizeFooter() {
+
+  }
   function normalizeHeader() {
     let header = document.querySelector('.topbar');
     if (!header) {
@@ -162,6 +165,7 @@
     if (document.body.classList.contains('redirect-page')) return;
     document.body.classList.add('article-page');
     normalizeHeader();
+    normalizeFooter();
     const hero = document.querySelector('.hero');
     const content = document.querySelector('article.content,.content article') || document.querySelector('.content');
     const toc = document.querySelector('.toc');
