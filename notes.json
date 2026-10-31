@@ -1,0 +1,242 @@
+[
+  {
+    "title": "Wazuh All-in-One: Installation & Validation",
+    "topic": "Wazuh",
+    "topicKey": "wazuh",
+    "summary": "Prepare a single-host deployment, validate central services, and troubleshoot an incomplete installation safely.",
+    "url": "/articles/wazuh-all-in-one-installation.html",
+    "date": "12 October 2026",
+    "dateISO": "2026-10-12",
+    "readingTime": "7 min read"
+  },
+  {
+    "title": "Wazuh Distributed Architecture",
+    "topic": "Wazuh",
+    "topicKey": "wazuh",
+    "summary": "Design and validate a multi-node deployment across indexers, managers, and dashboard, including cluster roles, certificates, network paths, and load balancing.",
+    "url": "/articles/wazuh-distributed-architecture.html",
+    "date": "12 October 2026",
+    "dateISO": "2026-10-12",
+    "readingTime": "8 min read"
+  },
+  {
+    "title": "Multi-Tenant Wazuh MSSP Architecture",
+    "topic": "Wazuh",
+    "topicKey": "wazuh",
+    "summary": "Logical customer isolation through Active Directory, LDAPS, indexer roles, document-level security, and dashboard tenants.",
+    "url": "/articles/wazuh-mssp-multi-tenant-architecture.html",
+    "date": "16 October 2026",
+    "dateISO": "2026-10-16",
+    "readingTime": "12–15 min read"
+  },
+  {
+    "title": "DFIR-IRIS v3, Active Directory LDAPS & Wazuh Integration",
+    "topic": "DFIR-IRIS",
+    "topicKey": "dfir-iris",
+    "summary": "One end-to-end guide to deploy IRIS v3, authenticate through AD/LDAPS, and ingest Wazuh alerts with readable event context and typed IOC candidates.",
+    "url": "/articles/dfir-iris-v3-wazuh-ad-ldaps-integration.html",
+    "date": "27 October 2026",
+    "dateISO": "2026-10-27",
+    "readingTime": "20 min read"
+  },
+  {
+    "title": "Integrating Wazuh SIEM with DFIR-IRIS v2",
+    "topic": "DFIR-IRIS",
+    "topicKey": "dfir-iris",
+    "summary": "The v2.x alert pipeline: API identity, Wazuh Integrator configuration, structured context, typed IOC extraction, and troubleshooting.",
+    "url": "/articles/wazuh-dfir-iris-integration.html",
+    "date": "12 October 2026",
+    "dateISO": "2026-10-12",
+    "readingTime": "12 min read"
+  },
+  {
+    "title": "Cuckoo Sandbox with vSphere & YARA",
+    "topic": "Malware Analysis",
+    "topicKey": "malware-analysis",
+    "summary": "Document a legacy Cuckoo 2.0.7 lab using vSphere-managed Windows guests, PCAP troubleshooting, external YARA rules, and validated detection evidence.",
+    "url": "/articles/cuckoo-sandbox-vsphere-yara.html",
+    "date": "12 October 2026",
+    "dateISO": "2026-10-12",
+    "readingTime": "8 min read"
+  },
+  {
+    "title": "What Is IBM QRadar SIEM?",
+    "topic": "IBM QRadar SIEM",
+    "topicKey": "qradar-siem",
+    "summary": "Understand QRadar's role in security operations, how it processes security telemetry, and how analysts use it for investigation.",
+    "url": "/articles/what-is-qradar-siem.html",
+    "date": "1 October 2026",
+    "dateISO": "2026-10-01",
+    "readingTime": "5 min read"
+  },
+  {
+    "title": "IBM QRadar Installation Guide",
+    "topic": "IBM QRadar SIEM",
+    "topicKey": "qradar-siem",
+    "summary": "Review installation paths, appliance roles, prerequisites, and validation steps without mixing procedures from different deployment types.",
+    "url": "/articles/qradar-installation.html",
+    "date": "2 October 2026",
+    "dateISO": "2026-10-02",
+    "readingTime": "7 min read"
+  },
+  {
+    "title": "QRadar Health Check",
+    "topic": "IBM QRadar SIEM",
+    "topicKey": "qradar-siem",
+    "summary": "Establish a health baseline using DrQ, Recon, Cliniq, and targeted checks before maintenance or upgrades.",
+    "url": "/articles/qradar-health-check.html",
+    "date": "4 October 2026",
+    "dateISO": "2026-10-04",
+    "readingTime": "6 min read"
+  },
+  {
+    "title": "QRadar Troubleshooting Checklist",
+    "topic": "IBM QRadar SIEM",
+    "topicKey": "qradar-siem",
+    "summary": "Collect focused evidence when a host, managed-host connection, deployment, app, or event pipeline behaves unexpectedly.",
+    "url": "/articles/qradar-troubleshooting.html",
+    "date": "5 October 2026",
+    "dateISO": "2026-10-05",
+    "readingTime": "8 min read"
+  },
+  {
+    "title": "QRadar GUI Unresponsive: Tomcat Cache & Backend Checks",
+    "topic": "IBM QRadar SIEM",
+    "topicKey": "qradar-siem",
+    "summary": "Check service state and disk space first; use IBM-guided Tomcat cache cleanup only when appropriate.",
+    "url": "/articles/qradar-tomcat-cache-ui-troubleshooting.html",
+    "date": "17 October 2026",
+    "dateISO": "2026-10-17",
+    "readingTime": "5 min read"
+  },
+  {
+    "title": "QRadar Log Activity Search Failure",
+    "topic": "IBM QRadar SIEM",
+    "topicKey": "qradar-siem",
+    "summary": "Investigate the query-server connection error by checking Ariel Proxy startup, transient search-data buildup, and TCP 32011 readiness.",
+    "url": "/articles/qradar-ariel-proxy-search-failure.html",
+    "date": "17 October 2026",
+    "dateISO": "2026-10-17",
+    "readingTime": "5 min read"
+  },
+  {
+    "title": "QRadar App Installation Blocked: Stuck Task State",
+    "topic": "IBM QRadar SIEM",
+    "topicKey": "qradar-siem",
+    "summary": "Diagnose Extension Management blockers by checking content_package states, backing up the table, and resetting only confirmed stale records.",
+    "url": "/articles/qradar-app-install-task-stuck.html",
+    "date": "19 October 2026",
+    "dateISO": "2026-10-19",
+    "readingTime": "6 min read"
+  },
+  {
+    "title": "QRadar App Host API Communication Failure",
+    "topic": "IBM QRadar SIEM",
+    "topicKey": "qradar-siem",
+    "summary": "Troubleshoot the x509 “QRadar Local CA” verification error by validating the Console certificate, SAN, CA trust chain, and App Host runtime state.",
+    "url": "/articles/qradar-apphost-api-certificate-troubleshooting.html",
+    "date": "19 October 2026",
+    "dateISO": "2026-10-19",
+    "readingTime": "7 min read"
+  },
+  {
+    "title": "QRadar Operations Essentials",
+    "topic": "IBM QRadar SIEM",
+    "topicKey": "qradar-siem",
+    "summary": "Practical guidance for configuration deployment, EPS/FPM licensing, Linux service management, and production-safe operations.",
+    "url": "/articles/qradar-operations-essentials.html",
+    "date": "7 October 2026",
+    "dateISO": "2026-10-07",
+    "readingTime": "8 min read"
+  },
+  {
+    "title": "IBM QRadar Upgrade Guide",
+    "topic": "IBM QRadar SIEM",
+    "topicKey": "qradar-siem",
+    "summary": "Plan an upgrade with version-path checks, backups, HA and distributed deployment considerations, execution, and validation.",
+    "url": "/articles/qradar-upgrade-guide.html",
+    "date": "8 October 2026",
+    "dateISO": "2026-10-08",
+    "readingTime": "15–20 min read"
+  },
+  {
+    "title": "IBM QRadar High Availability",
+    "topic": "IBM QRadar SIEM",
+    "topicKey": "qradar-siem",
+    "summary": "Understand HA pairs, primary and secondary roles, virtual IP addressing, failover validation, and recovery procedures.",
+    "url": "/articles/qradar-high-availability.html",
+    "date": "10 October 2026",
+    "dateISO": "2026-10-10",
+    "readingTime": "10 min read"
+  },
+  {
+    "title": "IBM QRadar Migration Guide",
+    "topic": "IBM QRadar SIEM",
+    "topicKey": "qradar-siem",
+    "summary": "Replace a QRadar Console while preserving configuration and data, with guidance for same-IP and new-IP migrations.",
+    "url": "/articles/qradar-migration-guide.html",
+    "date": "11 October 2026",
+    "dateISO": "2026-10-11",
+    "readingTime": "12 min read"
+  },
+  {
+    "title": "IBM QRadar Routing Rules",
+    "topic": "IBM QRadar SIEM",
+    "topicKey": "qradar-siem",
+    "summary": "Route, drop, or change processing for selected events and flows with practical rule configuration and validation guidance.",
+    "url": "/articles/qradar-routing-rules.html",
+    "date": "12 October 2026",
+    "dateISO": "2026-10-12",
+    "readingTime": "5 min read"
+  },
+  {
+    "title": "IBM QRadar SOAR Upgrade Guide",
+    "topic": "IBM QRadar SOAR",
+    "topicKey": "qradar-soar",
+    "summary": "Plan an on-premises SOAR Virtual Appliance upgrade with supported-path checks, backups, maintenance preparation, and post-upgrade validation.",
+    "url": "/articles/qradar-soar-upgrade-guide.html",
+    "date": "12 October 2026",
+    "dateISO": "2026-10-12",
+    "readingTime": "7–9 min read"
+  },
+  {
+    "title": "Install Splunk Enterprise on Ubuntu 24.04",
+    "topic": "Splunk",
+    "topicKey": "splunk",
+    "summary": "Build a single-server Splunk lab with systemd startup, validation, and the Enterprise Trial-to-Free license path.",
+    "url": "/articles/splunk-enterprise-installation-ubuntu-24-04.html",
+    "date": "18 October 2026",
+    "dateISO": "2026-10-18",
+    "readingTime": "6 min read"
+  },
+  {
+    "title": "Automated Wazuh Daily Healthcheck with n8n",
+    "topic": "Automation / n8n",
+    "topicKey": "automation",
+    "summary": "Build a repeatable daily SIEM healthcheck that collects host data, generates an HTML report, converts it to PDF, and emails the result.",
+    "url": "/articles/wazuh-daily-healthcheck-n8n-email-report.html",
+    "date": "28 October 2026",
+    "dateISO": "2026-10-28",
+    "readingTime": "8 min read"
+  },
+  {
+    "title": "Installing n8n for Local Workflow Automation",
+    "topic": "Automation / n8n",
+    "topicKey": "automation",
+    "summary": "Install and prepare a self-hosted n8n instance, preserve its configuration, and validate a webhook before production use.",
+    "url": "/articles/n8n-installation-local-automation.html",
+    "date": "12 October 2026",
+    "dateISO": "2026-10-12",
+    "readingTime": "6 min read"
+  },
+  {
+    "title": "Testing n8n Webhooks Locally with curl",
+    "topic": "Automation / n8n",
+    "topicKey": "automation",
+    "summary": "Validate incoming webhook JSON, separate test and production URLs, and troubleshoot request failures before connecting workflows to production systems.",
+    "url": "/articles/testing-n8n-webhooks-locally-curl.html",
+    "date": "12 October 2026",
+    "dateISO": "2026-10-12",
+    "readingTime": "5 min read"
+  }
+]

@@ -1,514 +1,189 @@
-<!DOCTYPE html>
-<html lang="en" class="dark">
+<!doctype html>
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#0a0b0d">
-<meta name="description" content="Ashraf Gamal — cybersecurity, SIEM engineering, detection engineering, threat hunting, incident response, and security automation.">
-<title>Ashraf Gamal | Cyber Security, SOC &amp; Blue Team</title>
+<meta name="description" content="Ashraf Gamal, SOC Engineer and SOC Analyst L2. SIEM/SOAR engineering, detection, threat hunting and incident response.">
+<meta name="author" content="Ashraf Gamal">
+<link rel="canonical" href="https://agamalx0.github.io/">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Space+Grotesk:wght@600;700;800&display=swap" rel="stylesheet">
-<script src="https://cdn.tailwindcss.com"></script>
-<script>
-tailwind.config={darkMode:'class',theme:{extend:{fontFamily:{mono:['"JetBrains Mono"','monospace'],sans:['"Space Grotesk"','sans-serif']},colors:{brand:{green:'#00f59b',greenDark:'#059669',lavender:'#a78bfa',surfaceDark:'#0a0b0d',surfaceLight:'#f8fafc',borderDark:'#1c1e24',borderLight:'#e2e8f0',textDark:'#f0f2f5',textLight:'#0f172a'}}}}};
-</script>
-<style>
-.bg-grid-dark{background-size:32px 32px;background-image:linear-gradient(to right,rgba(255,255,255,.04) 1px,transparent 1px),linear-gradient(to bottom,rgba(255,255,255,.04) 1px,transparent 1px)}
-.bg-grid-light{background-size:32px 32px;background-image:linear-gradient(to right,rgba(0,0,0,.05) 1px,transparent 1px),linear-gradient(to bottom,rgba(0,0,0,.05) 1px,transparent 1px)}
-html{scroll-behavior:smooth;scroll-padding-top:100px}
-body{font-family:"JetBrains Mono",monospace}
-::selection{background:#00f59b;color:#050706}
-::-webkit-scrollbar{width:8px}::-webkit-scrollbar-track{background:#0a0b0d}::-webkit-scrollbar-thumb{background:#3b4048}
-a:focus-visible,button:focus-visible{outline:2px solid #00f59b;outline-offset:3px}
-.article-item{min-width:0;transition:border-color .18s ease,transform .18s ease}
-.article-item:hover{transform:translateY(-2px)}
-@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
-
-/* Consistent article-cover frame. Preserve source proportions; never stretch images. */
-.article-item.has-cover{padding:0!important;display:flex;flex-direction:column;min-width:0}
-.article-cover{position:relative;width:100%;aspect-ratio:16/10;overflow:hidden;display:flex;align-items:center;justify-content:center;background:#0a0b0d;border-bottom:1px solid #24272d}
-.article-cover img{display:block;width:100%;height:100%;object-fit:contain;object-position:center;background:#0a0b0d}
-.article-cover--aio::before,.article-cover--aio::after{content:"";position:absolute;left:0;right:0;height:5%;background:#0a0b0d;z-index:1;pointer-events:none}
-.article-cover--aio::before{top:0}
-.article-cover--aio::after{bottom:0}
-.article-card-content{display:flex;flex:1;flex-direction:column}
-.article-card-content .mt-4{margin-top:auto;padding-top:14px}
-@media(max-width:640px){.article-cover{aspect-ratio:16/10}}
-
-/* Technical-note carousel: two cards per page on desktop, one on narrow screens. */
-.article-carousel-viewport{position:relative;width:100%;overflow:hidden;touch-action:pan-y pinch-zoom;outline:none}
-.article-carousel-viewport:focus-visible{outline:2px solid #00f59b;outline-offset:4px}
-#articles-grid{display:flex!important;grid-template-columns:none!important;gap:16px!important;width:100%;transition:transform .32s ease;will-change:transform;align-items:stretch}
-#articles-grid .article-item{flex:0 0 calc(50% - 8px);width:calc(50% - 8px);min-width:0}
-#articles-grid .article-item[hidden]{display:none!important}
-.article-carousel-control{width:30px;height:30px;border:1px solid #30343b;background:transparent;color:#f0f2f5;font:700 16px/1 "JetBrains Mono",monospace;cursor:pointer;display:inline-flex;align-items:center;justify-content:center}
-.article-carousel-control:hover:not(:disabled){border-color:#00f59b;color:#00f59b}
-.article-carousel-control:disabled{opacity:.28;cursor:not-allowed}
-.article-page-counter{font:10px/1.4 "JetBrains Mono",monospace;color:#838a96;min-width:70px;text-align:center;letter-spacing:.04em}
-.filter-btn{border-color:#24272d;color:#a0a6b2;transition:background-color .15s,border-color .15s,color .15s}
-.filter-btn.active{border-color:#00f59b;background:#00f59b;color:#050706}
-.article-cover{width:100%;aspect-ratio:16/10;overflow:hidden;display:flex;align-items:center;justify-content:center;background:#0a0b0d;border-bottom:1px solid #24272d}
-.article-cover img{display:block;width:100%;height:100%;object-fit:contain;object-position:center;background:#0a0b0d}
-.article-cover--placeholder{position:relative;background-color:#0a0b0d;background-image:linear-gradient(to right,rgba(255,255,255,.045) 1px,transparent 1px),linear-gradient(to bottom,rgba(255,255,255,.045) 1px,transparent 1px);background-size:24px 24px}
-.cover-placeholder-content{width:100%;height:100%;padding:7% 8%;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden}
-.cover-placeholder-content:after{content:"";position:absolute;width:36%;height:140%;top:-20%;right:-8%;border:1px solid rgba(0,245,155,.23);transform:rotate(28deg);background:linear-gradient(135deg,transparent 35%,rgba(0,245,155,.07),transparent 70%);pointer-events:none}
-.cover-placeholder-kicker{font:700 clamp(8px,1vw,11px)/1.5 "JetBrains Mono",monospace;letter-spacing:.15em;color:#00f59b;text-transform:uppercase}
-.cover-placeholder-content strong{font:800 clamp(32px,5vw,70px)/.95 "Space Grotesk",sans-serif;color:#f0f2f5;letter-spacing:-.06em}
-.cover-placeholder-title{font:700 clamp(12px,1.8vw,22px)/1.2 "Space Grotesk",sans-serif;color:#a5b4fc;text-transform:uppercase;letter-spacing:.03em}
-.cover-placeholder-mark{font:9px/1.5 "JetBrains Mono",monospace;color:#747d8b;letter-spacing:.06em;border-top:1px solid #24272d;padding-top:9px}
-.article-card-content{display:flex;flex:1;flex-direction:column;min-width:0}
-.article-card-content .mt-4{margin-top:auto;padding-top:14px}
-@media(max-width:700px){#articles-grid .article-item{flex-basis:100%;width:100%}.cover-placeholder-content strong{font-size:clamp(42px,12vw,70px)}.cover-placeholder-title{font-size:clamp(14px,4vw,22px)}}
-@media(prefers-reduced-motion:reduce){#articles-grid{transition:none}}
-
-
-/* Interactive cursor spotlight */
-#spotlight{position:fixed;inset:0;z-index:40;pointer-events:none;opacity:0;background:radial-gradient(600px circle at var(--mouse-x,50%) var(--mouse-y,50%),rgba(0,245,155,.065) 0%,rgba(167,139,250,.025) 28%,transparent 62%);mix-blend-mode:screen;transition:opacity .3s ease;will-change:opacity,background}
-#spotlight.is-visible{opacity:1}
-@media(hover:none),(pointer:coarse){#spotlight{display:none!important}}
-@media(prefers-reduced-motion:reduce){#spotlight{transition:none}}
-
-/* Footer GoatCounter metric */
-.site-visits{display:inline-flex;align-items:center;gap:9px;white-space:nowrap;align-self:center;font:10px/1.6 "JetBrains Mono",monospace;letter-spacing:.06em;text-transform:uppercase;color:#737985}
-.site-visits::before{content:"//";color:#059669}
-.site-visits-label{color:#737985}
-.site-visits .site-visits-count{color:#059669;font:700 11px/1.4 "JetBrains Mono",monospace;font-variant-numeric:tabular-nums}
-.dark .site-visits::before,.dark .site-visits .site-visits-count{color:#00f59b}
-
-/* GoatCounter iframe counter sizing */
-.site-visits-widget{display:inline-flex;align-items:center;justify-content:flex-start;width:92px;height:24px;min-width:92px;overflow:hidden;vertical-align:middle;line-height:1}
-.site-visits-widget iframe{display:block;width:92px!important;height:24px!important;min-width:92px;border:0!important;background:transparent!important;overflow:hidden}
-.site-visits-widget{font:700 11px/24px "JetBrains Mono",monospace;color:#00f59b;font-variant-numeric:tabular-nums}
-</style>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/site.css">
+<title>Ashraf Gamal | SOC Engineer &amp; SOC Analyst L2</title>
+<script defer src="/assets/js/site.js"></script>
+<script defer src="/assets/js/site-visits.js"></script>
 </head>
-<body class="font-mono bg-brand-surfaceLight dark:bg-brand-surfaceDark text-brand-textLight dark:text-brand-textDark transition-colors duration-200 antialiased selection:bg-brand-green selection:text-black">
-<div class="min-h-screen bg-grid-light dark:bg-grid-dark flex flex-col p-4 sm:p-6 lg:p-10">
-<header class="max-w-6xl w-full mx-auto flex items-center justify-between border-b border-brand-borderLight dark:border-brand-borderDark pb-4 mb-10 sticky top-0 bg-brand-surfaceLight/90 dark:bg-brand-surfaceDark/90 backdrop-blur-md z-50">
-<div class="flex items-center space-x-4">
-<div class="flex items-center space-x-2 text-xs font-bold tracking-widest uppercase"><span class="inline-block w-2 h-2 bg-brand-greenDark dark:bg-brand-green animate-pulse"></span><span>// Ashraf_Gamal</span></div>
-<nav class="hidden md:flex space-x-6 text-xs text-neutral-500 dark:text-neutral-400"><a href="#about" class="hover:text-black dark:hover:text-white transition-colors">ABOUT</a><a href="#expertise" class="hover:text-black dark:hover:text-white transition-colors">EXPERTISE</a><a href="#articles" class="hover:text-black dark:hover:text-white transition-colors">NOTES</a></nav>
-</div>
-<div class="flex items-center space-x-3 text-xs"><a href="#connect" class="hidden sm:inline-block border border-brand-borderLight dark:border-brand-borderDark px-3 py-1 hover:border-brand-greenDark dark:hover:border-brand-green transition-colors">[ CONNECT ]</a><button id="theme-toggle" class="border border-brand-borderLight dark:border-brand-borderDark px-3 py-1 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors" type="button"><span id="theme-icon">MODE: DARK</span></button></div>
+<body>
+<div class="pg" id="top">
+<header class="site-header">
+  <div class="w site-nav">
+    <a class="site-brand" href="/" aria-label="Ashraf Gamal home">Ashraf Gamal <span>/ SOC</span></a>
+    <nav aria-label="Main navigation">
+      <a href="#about">ABOUT</a><a href="#expertise">EXPERTISE</a><a href="#experience">EXPERIENCE</a><a href="#notes">NOTES</a><a class="btn p nav-cta" href="#connect">CONNECT</a>
+    </nav>
+  </div>
 </header>
-
-<main class="max-w-6xl w-full mx-auto space-y-20">
-<section id="about" class="space-y-6 pt-10">
-<div class="text-xs font-bold text-brand-greenDark dark:text-brand-green tracking-widest uppercase">// 01 . IDENTITY &amp; ARCHITECTURE</div>
-<h1 class="font-sans text-5xl sm:text-7xl lg:text-8xl font-black tracking-tighter text-black dark:text-white uppercase leading-[0.9]">FROM SIGNALS TO<br><span class="text-brand-greenDark dark:text-brand-green">DECISIVE ACTION.</span></h1>
-<div class="grid grid-cols-1 md:grid-cols-3 gap-8 pt-6">
-<div class="md:col-span-2 space-y-4">
-<p class="text-sm sm:text-base text-neutral-600 dark:text-neutral-400 leading-relaxed max-w-2xl">I'm <strong class="text-black dark:text-white">Ashraf Gamal</strong>, a cybersecurity professional who engineers SIEM platforms, builds meaningful detections, investigates threats, and automates security operations—helping teams move from alert noise to informed decisions.</p>
-<p class="text-sm text-neutral-600 dark:text-neutral-400 max-w-2xl">My work spans developing detections, improving SIEM operations, integrating security tools, and making SOC workflows more useful and repeatable. This website is my evolving technical notebook, focused on practical implementation, troubleshooting and how to validate results.</p>
-<div class="flex flex-wrap gap-4 pt-4 text-xs font-bold"><a href="#articles" class="bg-black dark:bg-white text-white dark:text-black px-6 py-3 hover:opacity-80 transition-opacity">READ TECHNICAL NOTES →</a><a href="https://www.linkedin.com/in/1elrawy/" target="_blank" rel="noopener noreferrer" class="border border-neutral-300 dark:border-neutral-700 px-6 py-3 hover:border-brand-greenDark dark:hover:border-brand-green transition-colors">LINKEDIN [↗]</a></div>
-</div>
-<div class="border border-brand-borderLight dark:border-brand-borderDark bg-white dark:bg-[#0c0d0e] p-4 h-fit">
-<div class="flex justify-between items-center text-[10px] text-neutral-400 mb-4 border-b border-brand-borderLight dark:border-brand-borderDark pb-2"><span>SYS.STATUS</span><span class="text-brand-greenDark dark:text-brand-green">● ACTIVE</span></div>
-<div class="space-y-3 text-xs">
-<div class="flex justify-between gap-4"><span class="text-neutral-500">ROLE</span><span class="text-right font-bold text-black dark:text-white">SOC Analyst L2 &amp; SOC Engineer</span></div>
-<div class="flex justify-between gap-4"><span class="text-neutral-500">FOCUS</span><span class="text-right font-bold text-black dark:text-white">Detection &amp; Response</span></div>
-<div class="flex justify-between gap-4"><span class="text-neutral-500">STACK</span><span class="text-right font-bold text-black dark:text-white">QRadar / Wazuh / Splunk</span></div>
-<div class="flex justify-between gap-4"><span class="text-neutral-500">AUTOMATION</span><span class="text-right font-bold text-black dark:text-white">n8n / APIs</span></div>
-<div class="flex justify-between gap-4"><span class="text-neutral-500">SOAR</span><span class="text-right font-bold text-black dark:text-white">IBM QRadar SOAR / DFIR-IRIS</span></div>
-<div class="flex justify-between gap-4"><span class="text-neutral-500">BASE</span><span class="text-right font-bold text-black dark:text-white">Saudi Arabia</span></div>
-</div>
-</div>
-</div>
+<main>
+<section id="about" class="w hero-grid">
+  <div>
+    <div class="sec"><i></i>01 · IDENTITY &amp; ARCHITECTURE</div>
+    <div class="role-pills"><span class="rgbb">SOC ENGINEER</span><span class="rgbb">SOC ANALYST L2</span></div>
+    <h1 class="hero-title d">From signals to <span class="rgbt">decisive action.</span></h1>
+    <p class="hero-copy">I'm <strong class="sp-inline-tb5nw3">Ashraf Gamal</strong>, a cybersecurity professional who engineers SIEM platforms, builds meaningful detections, investigates threats, and automates security operations, helping teams move from alert noise to informed decisions.</p>
+    <p class="hero-subcopy">This site is my evolving technical notebook: practical implementation, troubleshooting, and how to validate results.</p>
+    <div class="hero-actions"><a href="#notes" class="btn p">READ TECHNICAL NOTES →</a><a href="https://www.linkedin.com/in/1elrawy/" class="btn" target="_blank" rel="noopener noreferrer">LINKEDIN ↗</a></div>
+  </div>
+  <div>
+    <svg class="hero-art" viewBox="0 0 400 400" role="img" aria-label="Two linked rings: SOC Engineer builds, SOC Analyst L2 investigates">
+      <defs><linearGradient id="g1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff3355"/><stop offset=".5" stop-color="#2dff8f"/><stop offset="1" stop-color="#3d9bff"/></linearGradient><linearGradient id="g2" x1="1" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3d9bff"/><stop offset=".5" stop-color="#b45cff"/><stop offset="1" stop-color="#ff3355"/></linearGradient><filter id="gl"><feGaussianBlur stdDeviation="4"/></filter></defs>
+      <g class="ring1"><circle cx="200" cy="200" r="170" fill="none" stroke="url(#g1)" stroke-width="8" filter="url(#gl)" opacity=".7"/><circle cx="200" cy="200" r="170" fill="none" stroke="url(#g1)" stroke-width="2.5" stroke-dasharray="260 40"/></g>
+      <g class="ring2"><circle cx="200" cy="200" r="128" fill="none" stroke="url(#g2)" stroke-width="8" filter="url(#gl)" opacity=".7"/><circle cx="200" cy="200" r="128" fill="none" stroke="url(#g2)" stroke-width="2.5" stroke-dasharray="120 24"/></g>
+      <circle cx="200" cy="200" r="84" fill="#10131a" stroke="#232937"/>
+      <g font-family="Space Grotesk" text-anchor="middle" fill="#E8ECF4"><text x="200" y="186" font-size="15" font-weight="700" letter-spacing="2">ENGINEER</text><text x="200" y="206" font-size="12" fill="#8D96A8">⇅</text><text x="200" y="228" font-size="15" font-weight="700" letter-spacing="2">ANALYST L2</text></g>
+      <g font-family="JetBrains Mono" font-size="11" fill="#8D96A8" text-anchor="middle"><text x="200" y="20">BUILD · DETECT · AUTOMATE</text><text x="200" y="392">TRIAGE · HUNT · RESPOND</text></g>
+    </svg>
+  </div>
 </section>
 
-<section id="expertise" class="space-y-6">
-<div class="flex justify-between items-end border-b border-brand-borderLight dark:border-brand-borderDark pb-2"><div class="text-xs font-bold tracking-widest text-neutral-500 uppercase">// 02 . CORE EXPERTISE</div><span class="text-[10px] text-neutral-400">CAPABILITIES / 06</span></div>
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-<div class="border border-brand-borderLight dark:border-brand-borderDark bg-white/50 dark:bg-[#0c0d0e]/50 p-5 hover:border-brand-green transition-colors"><div class="text-brand-greenDark dark:text-brand-green text-xl mb-3">⌘</div><h3 class="font-sans font-bold text-lg text-black dark:text-white mb-2 uppercase">SIEM Engineering</h3><p class="text-xs text-neutral-600 dark:text-neutral-400">Log collection and parsing, custom rules, alert tuning, platform health, retention, and performance troubleshooting.</p></div>
-<div class="border border-brand-borderLight dark:border-brand-borderDark bg-white/50 dark:bg-[#0c0d0e]/50 p-5 hover:border-brand-lavender transition-colors"><div class="text-brand-lavender text-xl mb-3">⌕</div><h3 class="font-sans font-bold text-lg text-black dark:text-white mb-2 uppercase">Detection &amp; Hunting</h3><p class="text-xs text-neutral-600 dark:text-neutral-400">Detection logic, event analysis, hypothesis-driven hunting, false-positive reduction, and MITRE ATT&amp;CK mapping.</p></div>
-<div class="border border-brand-borderLight dark:border-brand-borderDark bg-white/50 dark:bg-[#0c0d0e]/50 p-5 hover:border-brand-green transition-colors"><div class="text-brand-greenDark dark:text-brand-green text-xl mb-3">⤳</div><h3 class="font-sans font-bold text-lg text-black dark:text-white mb-2 uppercase">Security Integrations</h3><p class="text-xs text-neutral-600 dark:text-neutral-400">API-driven integrations, alert normalization, case management, threat intelligence, and reliable data flow.</p></div>
-<div class="border border-brand-borderLight dark:border-brand-borderDark bg-white/50 dark:bg-[#0c0d0e]/50 p-5 hover:border-brand-green transition-colors"><div class="text-brand-greenDark dark:text-brand-green text-xl mb-3">⟲</div><h3 class="font-sans font-bold text-lg text-black dark:text-white mb-2 uppercase">SOAR &amp; Automation</h3><p class="text-xs text-neutral-600 dark:text-neutral-400">Incident workflows, enrichment, repeatable response processes, reporting, and automation using APIs and n8n.</p></div>
-<div class="border border-brand-borderLight dark:border-brand-borderDark bg-white/50 dark:bg-[#0c0d0e]/50 p-5 hover:border-red-400 transition-colors"><div class="text-red-500 text-xl mb-3">⌁</div><h3 class="font-sans font-bold text-lg text-black dark:text-white mb-2 uppercase">Incident Response</h3><p class="text-xs text-neutral-600 dark:text-neutral-400">Alert triage, investigation workflows, evidence-aware analysis, case documentation, and escalation context.</p></div>
-<div class="border border-brand-borderLight dark:border-brand-borderDark bg-white/50 dark:bg-[#0c0d0e]/50 p-5 hover:border-brand-lavender transition-colors"><div class="text-brand-lavender text-xl mb-3">▤</div><h3 class="font-sans font-bold text-lg text-black dark:text-white mb-2 uppercase">Platform Operations</h3><p class="text-xs text-neutral-600 dark:text-neutral-400">Linux and Docker operations, availability checks, storage management, cluster troubleshooting, and health checks.</p></div>
-</div>
-<div class="mt-4 border border-brand-borderLight dark:border-brand-borderDark bg-neutral-100 dark:bg-black p-4 text-xs">
-<div class="text-neutral-400 mb-2">$ cat current_stack.json</div>
-<div class="flex flex-wrap gap-2 text-brand-greenDark dark:text-brand-green"><span>"Wazuh",</span><span>"IBM QRadar SIEM",</span><span>"IBM QRadar SOAR",</span><span>"Splunk",</span><span>"MITRE ATT&amp;CK",</span><span>"DFIR-IRIS",</span><span>"OpenCTI",</span><span>"MISP",</span><span>"n8n",</span><span>"Linux",</span><span>"Docker",</span><span>"REST APIs"</span></div>
-</div>
+<section class="w section-pad" aria-label="Professional snapshot">
+  <div class="stats-grid">
+    <div class="card stat-card"><div class="tag">ROLE</div><div>SOC Analyst L2 &amp; SOC Engineer</div></div>
+    <div class="card stat-card"><div class="tag">FOCUS</div><div>Detection &amp; Response</div></div>
+    <div class="card stat-card"><div class="tag">STACK</div><div>QRadar / Wazuh / Splunk</div></div>
+    <div class="card stat-card"><div class="tag">AUTOMATION</div><div>n8n / APIs</div></div>
+    <div class="card stat-card"><div class="tag">SOAR</div><div>QRadar SOAR / DFIR-IRIS</div></div>
+    <div class="card stat-card"><div class="tag">BASE</div><div>Saudi Arabia</div></div>
+  </div>
 </section>
 
-<section id="articles" class="space-y-6">
-<div class="flex flex-col sm:flex-row justify-between items-start sm:items-start border-b border-brand-borderLight dark:border-brand-borderDark pb-2 gap-4">
-<div class="flex items-center min-h-[32px]"><a href="/articles.html" aria-label="Open all field notes and technical guides" title="Browse all technical articles" class="field-notes-link inline-flex text-xs font-bold tracking-widest text-neutral-500 uppercase hover:text-brand-greenDark dark:hover:text-brand-green transition-colors">// 03 . FIELD NOTES &amp; TECHNICAL GUIDES</a></div>
-<div class="flex flex-wrap gap-2 items-center text-xs" id="filter-container">
-<button class="filter-btn border px-3 py-1 font-bold" data-filter="all" aria-pressed="true">ALL TOPICS</button>
-<button class="filter-btn border px-3 py-1 font-bold" data-filter="wazuh" aria-pressed="false">WAZUH</button>
-<button class="filter-btn border px-3 py-1 font-bold" data-filter="dfir-iris" aria-pressed="false">DFIR-IRIS</button>
-<button class="filter-btn border px-3 py-1 font-bold" data-filter="qradar-siem" aria-pressed="false">IBM QRADAR SIEM</button>
-<button class="filter-btn border px-3 py-1 font-bold" data-filter="qradar-soar" aria-pressed="false">IBM QRADAR SOAR</button>
-<button class="filter-btn border px-3 py-1 font-bold" data-filter="splunk" aria-pressed="false">SPLUNK</button>
-<button class="filter-btn border px-3 py-1 font-bold" data-filter="automation" aria-pressed="false">AUTOMATION / N8N</button>
-<button class="filter-btn border px-3 py-1 font-bold" data-filter="malware-analysis" aria-pressed="false">MALWARE ANALYSIS</button>
-
-<span id="article-page" class="article-page-counter" aria-live="polite">01–02 / 03</span>
-<button type="button" class="article-carousel-control" id="article-prev" aria-label="Previous technical notes" disabled>←</button>
-<button type="button" class="article-carousel-control" id="article-next" aria-label="Next technical notes" disabled>→</button>
-</div>
-</div>
-<div class="article-carousel-viewport" id="article-viewport" role="region" aria-label="Technical notes carousel" tabindex="0">
-<div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="articles-grid">
-<a href="/articles/wazuh-all-in-one-installation.html" class="article-item has-cover block border border-brand-borderLight dark:border-brand-borderDark bg-white dark:bg-[#0c0d0e] overflow-hidden hover:border-brand-green transition-colors group" data-category="wazuh">
-<div class="article-cover article-cover--placeholder" aria-hidden="true"><div class="cover-placeholder-content"><span class="cover-placeholder-kicker">WAZUH SIEM</span><strong>ALL-IN-ONE</strong><span class="cover-placeholder-title">INSTALLATION &amp; VALIDATION</span><span class="cover-placeholder-mark">TECHNICAL NOTE / SIEM ENGINEERING</span></div></div>
-<div class="article-card-content p-5">
-<div class="flex justify-between items-center mb-3"><span class="text-[10px] text-brand-greenDark dark:text-brand-green uppercase tracking-widest border border-brand-greenDark/30 dark:border-brand-green/30 px-2 py-0.5">Wazuh SIEM · Deployment</span><span class="text-neutral-400 group-hover:text-black dark:group-hover:text-white transition-colors">↗</span></div>
-<h3 class="font-sans font-bold text-lg text-black dark:text-white mb-2 uppercase leading-tight">Wazuh All-in-One: Installation &amp; Validation</h3>
-<p class="text-xs text-neutral-600 dark:text-neutral-400">Prepare a single-host deployment, validate central services, and troubleshoot an incomplete installation safely.</p>
-<div class="mt-4 pt-3 border-t border-brand-borderLight dark:border-brand-borderDark text-[10px] text-neutral-400">OPEN TECHNICAL NOTE →</div>
-</div>
-</a>
-<a href="/articles/wazuh-distributed-architecture.html" class="article-item has-cover block border border-brand-borderLight dark:border-brand-borderDark bg-white dark:bg-[#0c0d0e] overflow-hidden hover:border-brand-green transition-colors group" data-category="wazuh">
-<div class="article-cover article-cover--placeholder" aria-hidden="true"><div class="cover-placeholder-content"><span class="cover-placeholder-kicker">WAZUH SIEM</span><strong>DISTRIBUTED</strong><span class="cover-placeholder-title">ARCHITECTURE</span><span class="cover-placeholder-mark">TECHNICAL NOTE / SIEM ENGINEERING</span></div></div>
-<div class="article-card-content p-5">
-<div class="flex justify-between items-center mb-3"><span class="text-[10px] text-brand-greenDark dark:text-brand-green uppercase tracking-widest border border-brand-greenDark/30 dark:border-brand-green/30 px-2 py-0.5">Wazuh SIEM · Architecture</span><span class="text-neutral-400 group-hover:text-black dark:group-hover:text-white transition-colors">↗</span></div>
-<h3 class="font-sans font-bold text-lg text-black dark:text-white mb-2 uppercase leading-tight">Wazuh Distributed Architecture</h3>
-<p class="text-xs text-neutral-600 dark:text-neutral-400">Design and validate a multi-node deployment across indexers, managers, and dashboard, including cluster roles, certificates, network paths, and load balancing.</p>
-<div class="mt-4 pt-3 border-t border-brand-borderLight dark:border-brand-borderDark text-[10px] text-neutral-400">OPEN TECHNICAL NOTE →</div>
-</div>
-</a>
-<a href="/articles/wazuh-mssp-multi-tenant-architecture.html" class="article-item has-cover block border border-brand-borderLight dark:border-brand-borderDark bg-white dark:bg-[#0c0d0e] overflow-hidden hover:border-brand-green transition-colors group" data-category="wazuh">
-<div class="article-cover article-cover--placeholder" aria-hidden="true"><div class="cover-placeholder-content"><span class="cover-placeholder-kicker">WAZUH SIEM</span><strong>MSSP</strong><span class="cover-placeholder-title">MULTI-TENANT ARCHITECTURE</span><span class="cover-placeholder-mark">TECHNICAL NOTE / SECURITY ENGINEERING</span></div></div>
-<div class="article-card-content p-5">
-<div class="flex justify-between items-center mb-3"><span class="text-[10px] text-brand-greenDark dark:text-brand-green uppercase tracking-widest border border-brand-greenDark/30 dark:border-brand-green/30 px-2 py-0.5">Wazuh SIEM · MSSP Architecture</span><span class="text-neutral-400 group-hover:text-black dark:group-hover:text-white transition-colors">↗</span></div>
-<h3 class="font-sans font-bold text-lg text-black dark:text-white mb-2 uppercase leading-tight">Multi-Tenant Wazuh MSSP Architecture</h3>
-<p class="text-xs text-neutral-600 dark:text-neutral-400">Logical customer isolation through Active Directory, LDAPS, indexer roles, document-level security, and dashboard tenants.</p>
-<div class="mt-4 pt-3 border-t border-brand-borderLight dark:border-brand-borderDark text-[10px] text-neutral-400">OPEN TECHNICAL NOTE →</div>
-</div>
-</a>
-
-
-
-<a href="/articles/dfir-iris-v3-wazuh-ad-ldaps-integration.html" class="article-item has-cover block border border-brand-borderLight dark:border-brand-borderDark bg-white dark:bg-[#0c0d0e] overflow-hidden hover:border-brand-green transition-colors group" data-category="dfir-iris">
-<div class="article-cover article-cover--placeholder" aria-hidden="true"><div class="cover-placeholder-content"><span class="cover-placeholder-kicker">DFIR-IRIS</span><strong>IRIS + WAZUH</strong><span class="cover-placeholder-title">ACTIVE DIRECTORY LDAPS</span><span class="cover-placeholder-mark">TECHNICAL NOTE / SOC INTEGRATION</span></div></div>
-<div class="article-card-content p-5">
-<div class="flex justify-between items-center mb-3"><span class="text-[10px] text-brand-greenDark dark:text-brand-green uppercase tracking-widest border border-brand-greenDark/30 dark:border-brand-green/30 px-2 py-0.5">DFIR-IRIS · Wazuh SIEM · LDAP / AD</span><span class="text-neutral-400 group-hover:text-black dark:group-hover:text-white transition-colors">↗</span></div>
-<h3 class="font-sans font-bold text-lg text-black dark:text-white mb-2 uppercase leading-tight">DFIR-IRIS v3, Active Directory LDAPS &amp; Wazuh Integration</h3>
-<p class="text-xs text-neutral-600 dark:text-neutral-400">One end-to-end guide to deploy IRIS v3, authenticate through AD/LDAPS, and ingest Wazuh alerts with readable event context and typed IOC candidates.</p>
-<div class="mt-4 pt-3 border-t border-brand-borderLight dark:border-brand-borderDark text-[10px] text-neutral-400">OPEN TECHNICAL NOTE →</div>
-</div>
-</a>
-<a href="/articles/wazuh-dfir-iris-integration.html" class="article-item has-cover block border border-brand-borderLight dark:border-brand-borderDark bg-white dark:bg-[#0c0d0e] overflow-hidden hover:border-brand-green transition-colors group" data-category="dfir-iris">
-<div class="article-cover article-cover--placeholder" aria-hidden="true"><div class="cover-placeholder-content"><span class="cover-placeholder-kicker">DFIR-IRIS V2</span><strong>WAZUH SIEM</strong><span class="cover-placeholder-title">ALERT API INTEGRATION</span><span class="cover-placeholder-mark">LEGACY INTEGRATION / V2 API</span></div></div>
-<div class="article-card-content p-5">
-<div class="flex justify-between items-center mb-3"><span class="text-[10px] text-brand-greenDark dark:text-brand-green uppercase tracking-widest border border-brand-greenDark/30 dark:border-brand-green/30 px-2 py-0.5">DFIR-IRIS v2 · Wazuh SIEM</span><span class="text-neutral-400 group-hover:text-black dark:group-hover:text-white transition-colors">↗</span></div>
-<h3 class="font-sans font-bold text-lg text-black dark:text-white mb-2 uppercase leading-tight">Integrating Wazuh SIEM with DFIR-IRIS v2</h3>
-<p class="text-xs text-neutral-600 dark:text-neutral-400">The v2.x alert pipeline: API identity, Wazuh Integrator configuration, structured context, typed IOC extraction, and troubleshooting.</p>
-<div class="mt-4 pt-3 border-t border-brand-borderLight dark:border-brand-borderDark text-[10px] text-neutral-400">OPEN V2 INTEGRATION GUIDE →</div>
-</div>
-</a>
-
-<a href="/articles/cuckoo-sandbox-vsphere-yara.html" class="article-item has-cover block border border-brand-borderLight dark:border-brand-borderDark bg-white dark:bg-[#0c0d0e] overflow-hidden hover:border-brand-green transition-colors group" data-category="malware-analysis">
-<div class="article-cover article-cover--placeholder" aria-hidden="true"><div class="cover-placeholder-content"><span class="cover-placeholder-kicker">MALWARE ANALYSIS</span><strong>CUCKOO</strong><span class="cover-placeholder-title">VSPHERE &amp; YARA</span><span class="cover-placeholder-mark">TECHNICAL NOTE / SANDBOX ENGINEERING</span></div></div>
-<div class="article-card-content p-5">
-<div class="flex justify-between items-center mb-3"><span class="text-[10px] text-brand-greenDark dark:text-brand-green uppercase tracking-widest border border-brand-greenDark/30 dark:border-brand-green/30 px-2 py-0.5">Malware Analysis · Cuckoo Sandbox</span><span class="text-neutral-400 group-hover:text-black dark:group-hover:text-white transition-colors">↗</span></div>
-<h3 class="font-sans font-bold text-lg text-black dark:text-white mb-2 uppercase leading-tight">Cuckoo Sandbox with vSphere &amp; YARA</h3>
-<p class="text-xs text-neutral-600 dark:text-neutral-400">Document a legacy Cuckoo 2.0.7 lab using vSphere-managed Windows guests, PCAP troubleshooting, external YARA rules, and validated detection evidence.</p>
-<div class="mt-4 pt-3 border-t border-brand-borderLight dark:border-brand-borderDark text-[10px] text-neutral-400">OPEN TECHNICAL NOTE →</div>
-</div>
-</a>
-
-<a href="/articles/what-is-qradar-siem.html" class="article-item has-cover block border border-brand-borderLight dark:border-brand-borderDark bg-white dark:bg-[#0c0d0e] overflow-hidden hover:border-brand-green transition-colors group" data-category="qradar-siem">
-<div class="article-cover article-cover--placeholder" aria-hidden="true"><div class="cover-placeholder-content"><span class="cover-placeholder-kicker">IBM QRADAR SIEM</span><strong>OVERVIEW</strong><span class="cover-placeholder-title">WHAT IS QRADAR SIEM?</span><span class="cover-placeholder-mark">TECHNICAL NOTE / SIEM ENGINEERING</span></div></div>
-<div class="article-card-content p-5">
-<div class="flex justify-between items-center mb-3"><span class="text-[10px] text-brand-greenDark dark:text-brand-green uppercase tracking-widest border border-brand-greenDark/30 dark:border-brand-green/30 px-2 py-0.5">IBM QRadar SIEM · Overview</span><span class="text-neutral-400 group-hover:text-black dark:group-hover:text-white transition-colors">↗</span></div>
-<h3 class="font-sans font-bold text-lg text-black dark:text-white mb-2 uppercase leading-tight">What Is IBM QRadar SIEM?</h3>
-<p class="text-xs text-neutral-600 dark:text-neutral-400">Understand QRadar's role in security operations, how it processes security telemetry, and how analysts use it for investigation.</p>
-<div class="mt-4 pt-3 border-t border-brand-borderLight dark:border-brand-borderDark text-[10px] text-neutral-400">OPEN TECHNICAL NOTE →</div>
-</div>
-</a>
-<a href="/articles/qradar-installation.html" class="article-item has-cover block border border-brand-borderLight dark:border-brand-borderDark bg-white dark:bg-[#0c0d0e] p-5 hover:border-brand-green transition-colors group" data-category="qradar-siem">
-<div class="article-cover article-cover--placeholder" aria-hidden="true"><div class="cover-placeholder-content"><span class="cover-placeholder-kicker">IBM QRADAR SIEM</span><strong>INSTALL</strong><span class="cover-placeholder-title">DEPLOYMENT GUIDE</span><span class="cover-placeholder-mark">TECHNICAL NOTE / SIEM ENGINEERING</span></div></div>
-<div class="article-card-content p-5">
-<div class="flex justify-between items-center mb-3"><span class="text-[10px] text-brand-greenDark dark:text-brand-green uppercase tracking-widest border border-brand-greenDark/30 dark:border-brand-green/30 px-2 py-0.5">IBM QRadar SIEM · Installation</span><span class="text-neutral-400 group-hover:text-black dark:group-hover:text-white transition-colors">↗</span></div>
-<h3 class="font-sans font-bold text-lg text-black dark:text-white mb-2 uppercase leading-tight">IBM QRadar Installation Guide</h3>
-<p class="text-xs text-neutral-600 dark:text-neutral-400">Review installation paths, appliance roles, prerequisites, and validation steps without mixing procedures from different deployment types.</p>
-<div class="mt-4 pt-3 border-t border-brand-borderLight dark:border-brand-borderDark text-[10px] text-neutral-400">OPEN TECHNICAL NOTE →</div>
-
-</div>
-</a>
-<a href="/articles/qradar-health-check.html" class="article-item has-cover block border border-brand-borderLight dark:border-brand-borderDark bg-white dark:bg-[#0c0d0e] p-5 hover:border-brand-green transition-colors group" data-category="qradar-siem">
-<div class="article-cover article-cover--placeholder" aria-hidden="true"><div class="cover-placeholder-content"><span class="cover-placeholder-kicker">IBM QRADAR SIEM</span><strong>HEALTH</strong><span class="cover-placeholder-title">HEALTH CHECK</span><span class="cover-placeholder-mark">TECHNICAL NOTE / SIEM ENGINEERING</span></div></div>
-<div class="article-card-content p-5">
-<div class="flex justify-between items-center mb-3"><span class="text-[10px] text-brand-greenDark dark:text-brand-green uppercase tracking-widest border border-brand-greenDark/30 dark:border-brand-green/30 px-2 py-0.5">IBM QRadar SIEM · Health Check</span><span class="text-neutral-400 group-hover:text-black dark:group-hover:text-white transition-colors">↗</span></div>
-<h3 class="font-sans font-bold text-lg text-black dark:text-white mb-2 uppercase leading-tight">QRadar Health Check</h3>
-<p class="text-xs text-neutral-600 dark:text-neutral-400">Establish a health baseline using DrQ, Recon, Cliniq, and targeted checks before maintenance or upgrades.</p>
-<div class="mt-4 pt-3 border-t border-brand-borderLight dark:border-brand-borderDark text-[10px] text-neutral-400">OPEN TECHNICAL NOTE →</div>
-
-</div>
-</a>
-<a href="/articles/qradar-troubleshooting.html" class="article-item has-cover block border border-brand-borderLight dark:border-brand-borderDark bg-white dark:bg-[#0c0d0e] p-5 hover:border-brand-green transition-colors group" data-category="qradar-siem">
-<div class="article-cover article-cover--placeholder" aria-hidden="true"><div class="cover-placeholder-content"><span class="cover-placeholder-kicker">IBM QRADAR SIEM</span><strong>TROUBLESHOOT</strong><span class="cover-placeholder-title">TROUBLESHOOTING</span><span class="cover-placeholder-mark">TECHNICAL NOTE / SIEM ENGINEERING</span></div></div>
-<div class="article-card-content p-5">
-<div class="flex justify-between items-center mb-3"><span class="text-[10px] text-brand-greenDark dark:text-brand-green uppercase tracking-widest border border-brand-greenDark/30 dark:border-brand-green/30 px-2 py-0.5">IBM QRadar SIEM · Troubleshooting</span><span class="text-neutral-400 group-hover:text-black dark:group-hover:text-white transition-colors">↗</span></div>
-<h3 class="font-sans font-bold text-lg text-black dark:text-white mb-2 uppercase leading-tight">QRadar Troubleshooting Checklist</h3>
-<p class="text-xs text-neutral-600 dark:text-neutral-400">Collect focused evidence when a host, managed-host connection, deployment, app, or event pipeline behaves unexpectedly.</p>
-<div class="mt-4 pt-3 border-t border-brand-borderLight dark:border-brand-borderDark text-[10px] text-neutral-400">OPEN TECHNICAL NOTE →</div>
-
-</div>
-</a>
-<a href="/articles/qradar-tomcat-cache-ui-troubleshooting.html" class="article-item has-cover block border border-brand-borderLight dark:border-brand-borderDark bg-white dark:bg-[#0c0d0e] overflow-hidden hover:border-brand-green transition-colors group" data-category="qradar-siem">
-<div class="article-cover article-cover--placeholder" aria-hidden="true"><div class="cover-placeholder-content"><span class="cover-placeholder-kicker">IBM QRADAR SIEM</span><strong>TOMCAT</strong><span class="cover-placeholder-title">UI RECOVERY</span><span class="cover-placeholder-mark">TECHNICAL NOTE / SIEM OPERATIONS</span></div></div>
-<div class="article-card-content p-5">
-<div class="flex justify-between items-center mb-3"><span class="text-[10px] text-brand-greenDark dark:text-brand-green uppercase tracking-widest border border-brand-greenDark/30 dark:border-brand-green/30 px-2 py-0.5">IBM QRadar SIEM · UI Troubleshooting</span><span class="text-neutral-400 group-hover:text-black dark:group-hover:text-white transition-colors">↗</span></div>
-<h3 class="font-sans font-bold text-lg text-black dark:text-white mb-2 uppercase leading-tight">QRadar GUI Unresponsive: Tomcat Cache &amp; Backend Checks</h3>
-<p class="text-xs text-neutral-600 dark:text-neutral-400">Check service state and disk space first; use IBM-guided Tomcat cache cleanup only when appropriate.</p>
-<div class="mt-4 pt-3 border-t border-brand-borderLight dark:border-brand-borderDark text-[10px] text-neutral-400">OPEN TECHNICAL NOTE →</div>
-</div>
-</a>
-<a href="/articles/qradar-ariel-proxy-search-failure.html" class="article-item has-cover block border border-brand-borderLight dark:border-brand-borderDark bg-white dark:bg-[#0c0d0e] overflow-hidden hover:border-brand-green transition-colors group" data-category="qradar-siem">
-<div class="article-cover article-cover--placeholder" aria-hidden="true"><div class="cover-placeholder-content"><span class="cover-placeholder-kicker">IBM QRADAR SIEM</span><strong>ARIEL PROXY</strong><span class="cover-placeholder-title">SEARCH RECOVERY</span><span class="cover-placeholder-mark">TECHNICAL NOTE / SIEM OPERATIONS</span></div></div>
-<div class="article-card-content p-5">
-<div class="flex justify-between items-center mb-3"><span class="text-[10px] text-brand-greenDark dark:text-brand-green uppercase tracking-widest border border-brand-greenDark/30 dark:border-brand-green/30 px-2 py-0.5">IBM QRadar SIEM · Search Troubleshooting</span><span class="text-neutral-400 group-hover:text-black dark:group-hover:text-white transition-colors">↗</span></div>
-<h3 class="font-sans font-bold text-lg text-black dark:text-white mb-2 uppercase leading-tight">QRadar Log Activity Search Failure</h3>
-<p class="text-xs text-neutral-600 dark:text-neutral-400">Investigate the query-server connection error by checking Ariel Proxy startup, transient search-data buildup, and TCP 32011 readiness.</p>
-<div class="mt-4 pt-3 border-t border-brand-borderLight dark:border-brand-borderDark text-[10px] text-neutral-400">OPEN TECHNICAL NOTE →</div>
-</div>
-</a>
-
-<a href="/articles/qradar-app-install-task-stuck.html" class="article-item has-cover block border border-brand-borderLight dark:border-brand-borderDark bg-white dark:bg-[#0c0d0e] overflow-hidden hover:border-brand-green transition-colors group" data-category="qradar-siem">
-<div class="article-cover article-cover--placeholder" aria-hidden="true"><div class="cover-placeholder-content"><span class="cover-placeholder-kicker">IBM QRADAR SIEM</span><strong>APP TASK</strong><span class="cover-placeholder-title">INSTALL RECOVERY</span><span class="cover-placeholder-mark">TECHNICAL NOTE / EXTENSION MANAGEMENT</span></div></div>
-<div class="article-card-content p-5">
-<div class="flex justify-between items-center mb-3"><span class="text-[10px] text-brand-greenDark dark:text-brand-green uppercase tracking-widest border border-brand-greenDark/30 dark:border-brand-green/30 px-2 py-0.5">IBM QRadar SIEM · Application Issues</span><span class="text-neutral-400 group-hover:text-black dark:group-hover:text-white transition-colors">↗</span></div>
-<h3 class="font-sans font-bold text-lg text-black dark:text-white mb-2 uppercase leading-tight">QRadar App Installation Blocked: Stuck Task State</h3>
-<p class="text-xs text-neutral-600 dark:text-neutral-400">Diagnose Extension Management blockers by checking content_package states, backing up the table, and resetting only confirmed stale records.</p>
-<div class="mt-4 pt-3 border-t border-brand-borderLight dark:border-brand-borderDark text-[10px] text-neutral-400">OPEN TECHNICAL NOTE →</div>
-</div>
-</a>
-<a href="/articles/qradar-apphost-api-certificate-troubleshooting.html" class="article-item has-cover block border border-brand-borderLight dark:border-brand-borderDark bg-white dark:bg-[#0c0d0e] overflow-hidden hover:border-brand-green transition-colors group" data-category="qradar-siem">
-<div class="article-cover article-cover--placeholder" aria-hidden="true"><div class="cover-placeholder-content"><span class="cover-placeholder-kicker">IBM QRADAR SIEM</span><strong>APP HOST TLS</strong><span class="cover-placeholder-title">API RECOVERY</span><span class="cover-placeholder-mark">TECHNICAL NOTE / CERTIFICATE TRUST</span></div></div>
-<div class="article-card-content p-5">
-<div class="flex justify-between items-center mb-3"><span class="text-[10px] text-brand-greenDark dark:text-brand-green uppercase tracking-widest border border-brand-greenDark/30 dark:border-brand-green/30 px-2 py-0.5">IBM QRadar SIEM · App Host TLS</span><span class="text-neutral-400 group-hover:text-black dark:group-hover:text-white transition-colors">↗</span></div>
-<h3 class="font-sans font-bold text-lg text-black dark:text-white mb-2 uppercase leading-tight">QRadar App Host API Communication Failure</h3>
-<p class="text-xs text-neutral-600 dark:text-neutral-400">Troubleshoot the x509 “QRadar Local CA” verification error by validating the Console certificate, SAN, CA trust chain, and App Host runtime state.</p>
-<div class="mt-4 pt-3 border-t border-brand-borderLight dark:border-brand-borderDark text-[10px] text-neutral-400">OPEN TECHNICAL NOTE →</div>
-</div>
-</a>
-<a href="/articles/qradar-operations-essentials.html" class="article-item has-cover block border border-brand-borderLight dark:border-brand-borderDark bg-white dark:bg-[#0c0d0e] p-5 hover:border-brand-green transition-colors group" data-category="qradar-siem">
-<div class="article-cover article-cover--placeholder" aria-hidden="true"><div class="cover-placeholder-content"><span class="cover-placeholder-kicker">IBM QRADAR SIEM</span><strong>OPS</strong><span class="cover-placeholder-title">OPERATIONS ESSENTIALS</span><span class="cover-placeholder-mark">TECHNICAL NOTE / SIEM ENGINEERING</span></div></div>
-<div class="article-card-content p-5">
-<div class="flex justify-between items-center mb-3"><span class="text-[10px] text-brand-greenDark dark:text-brand-green uppercase tracking-widest border border-brand-greenDark/30 dark:border-brand-green/30 px-2 py-0.5">IBM QRadar SIEM · Operations</span><span class="text-neutral-400 group-hover:text-black dark:group-hover:text-white transition-colors">↗</span></div>
-<h3 class="font-sans font-bold text-lg text-black dark:text-white mb-2 uppercase leading-tight">QRadar Operations Essentials</h3>
-<p class="text-xs text-neutral-600 dark:text-neutral-400">Practical guidance for configuration deployment, EPS/FPM licensing, Linux service management, and production-safe operations.</p>
-<div class="mt-4 pt-3 border-t border-brand-borderLight dark:border-brand-borderDark text-[10px] text-neutral-400">OPEN TECHNICAL NOTE →</div>
-
-</div>
-</a>
-<a href="/articles/qradar-upgrade-guide.html" class="article-item has-cover block border border-brand-borderLight dark:border-brand-borderDark bg-white dark:bg-[#0c0d0e] p-5 hover:border-brand-green transition-colors group" data-category="qradar-siem">
-<div class="article-cover article-cover--placeholder" aria-hidden="true"><div class="cover-placeholder-content"><span class="cover-placeholder-kicker">IBM QRADAR SIEM</span><strong>UPGRADE</strong><span class="cover-placeholder-title">UPGRADE GUIDE</span><span class="cover-placeholder-mark">TECHNICAL NOTE / SIEM ENGINEERING</span></div></div>
-<div class="article-card-content p-5">
-<div class="flex justify-between items-center mb-3"><span class="text-[10px] text-brand-greenDark dark:text-brand-green uppercase tracking-widest border border-brand-greenDark/30 dark:border-brand-green/30 px-2 py-0.5">IBM QRadar SIEM · Upgrade</span><span class="text-neutral-400 group-hover:text-black dark:group-hover:text-white transition-colors">↗</span></div>
-<h3 class="font-sans font-bold text-lg text-black dark:text-white mb-2 uppercase leading-tight">IBM QRadar Upgrade Guide</h3>
-<p class="text-xs text-neutral-600 dark:text-neutral-400">Plan an upgrade with version-path checks, backups, HA and distributed deployment considerations, execution, and validation.</p>
-<div class="mt-4 pt-3 border-t border-brand-borderLight dark:border-brand-borderDark text-[10px] text-neutral-400">OPEN TECHNICAL NOTE →</div>
-
-</div>
-</a>
-<a href="/articles/qradar-high-availability.html" class="article-item has-cover block border border-brand-borderLight dark:border-brand-borderDark bg-white dark:bg-[#0c0d0e] p-5 hover:border-brand-green transition-colors group" data-category="qradar-siem">
-<div class="article-cover article-cover--placeholder" aria-hidden="true"><div class="cover-placeholder-content"><span class="cover-placeholder-kicker">IBM QRADAR SIEM</span><strong>HA</strong><span class="cover-placeholder-title">HIGH AVAILABILITY</span><span class="cover-placeholder-mark">TECHNICAL NOTE / SIEM ENGINEERING</span></div></div>
-<div class="article-card-content p-5">
-<div class="flex justify-between items-center mb-3"><span class="text-[10px] text-brand-greenDark dark:text-brand-green uppercase tracking-widest border border-brand-greenDark/30 dark:border-brand-green/30 px-2 py-0.5">IBM QRadar SIEM · High Availability</span><span class="text-neutral-400 group-hover:text-black dark:group-hover:text-white transition-colors">↗</span></div>
-<h3 class="font-sans font-bold text-lg text-black dark:text-white mb-2 uppercase leading-tight">IBM QRadar High Availability</h3>
-<p class="text-xs text-neutral-600 dark:text-neutral-400">Understand HA pairs, primary and secondary roles, virtual IP addressing, failover validation, and recovery procedures.</p>
-<div class="mt-4 pt-3 border-t border-brand-borderLight dark:border-brand-borderDark text-[10px] text-neutral-400">OPEN TECHNICAL NOTE →</div>
-
-</div>
-</a>
-<a href="/articles/qradar-migration-guide.html" class="article-item has-cover block border border-brand-borderLight dark:border-brand-borderDark bg-white dark:bg-[#0c0d0e] p-5 hover:border-brand-green transition-colors group" data-category="qradar-siem">
-<div class="article-cover article-cover--placeholder" aria-hidden="true"><div class="cover-placeholder-content"><span class="cover-placeholder-kicker">IBM QRADAR SIEM</span><strong>MIGRATION</strong><span class="cover-placeholder-title">CONSOLE REPLACEMENT</span><span class="cover-placeholder-mark">TECHNICAL NOTE / SIEM ENGINEERING</span></div></div>
-<div class="article-card-content p-5">
-<div class="flex justify-between items-center mb-3"><span class="text-[10px] text-brand-greenDark dark:text-brand-green uppercase tracking-widest border border-brand-greenDark/30 dark:border-brand-green/30 px-2 py-0.5">IBM QRadar SIEM · Migration</span><span class="text-neutral-400 group-hover:text-black dark:group-hover:text-white transition-colors">↗</span></div>
-<h3 class="font-sans font-bold text-lg text-black dark:text-white mb-2 uppercase leading-tight">IBM QRadar Migration Guide</h3>
-<p class="text-xs text-neutral-600 dark:text-neutral-400">Replace a QRadar Console while preserving configuration and data, with guidance for same-IP and new-IP migrations.</p>
-<div class="mt-4 pt-3 border-t border-brand-borderLight dark:border-brand-borderDark text-[10px] text-neutral-400">OPEN TECHNICAL NOTE →</div>
-
-</div>
-</a>
-<a href="/articles/qradar-routing-rules.html" class="article-item has-cover block border border-brand-borderLight dark:border-brand-borderDark bg-white dark:bg-[#0c0d0e] p-5 hover:border-brand-green transition-colors group" data-category="qradar-siem">
-<div class="article-cover article-cover--placeholder" aria-hidden="true"><div class="cover-placeholder-content"><span class="cover-placeholder-kicker">IBM QRADAR SIEM</span><strong>ROUTING</strong><span class="cover-placeholder-title">ROUTING RULES</span><span class="cover-placeholder-mark">TECHNICAL NOTE / SIEM ENGINEERING</span></div></div>
-<div class="article-card-content p-5">
-<div class="flex justify-between items-center mb-3"><span class="text-[10px] text-brand-greenDark dark:text-brand-green uppercase tracking-widest border border-brand-greenDark/30 dark:border-brand-green/30 px-2 py-0.5">IBM QRadar SIEM · Routing Rules</span><span class="text-neutral-400 group-hover:text-black dark:group-hover:text-white transition-colors">↗</span></div>
-<h3 class="font-sans font-bold text-lg text-black dark:text-white mb-2 uppercase leading-tight">IBM QRadar Routing Rules</h3>
-<p class="text-xs text-neutral-600 dark:text-neutral-400">Route, drop, or change processing for selected events and flows with practical rule configuration and validation guidance.</p>
-<div class="mt-4 pt-3 border-t border-brand-borderLight dark:border-brand-borderDark text-[10px] text-neutral-400">OPEN TECHNICAL NOTE →</div>
-
-</div>
-</a>
-
-<a href="/articles/qradar-soar-upgrade-guide.html" class="article-item has-cover block border border-brand-borderLight dark:border-brand-borderDark bg-white dark:bg-[#0c0d0e] overflow-hidden hover:border-brand-green transition-colors group" data-category="qradar-soar">
-<div class="article-cover article-cover--placeholder" aria-hidden="true"><div class="cover-placeholder-content"><span class="cover-placeholder-kicker">IBM QRADAR SOAR</span><strong>UPGRADE</strong><span class="cover-placeholder-title">PREPARATION &amp; VALIDATION</span><span class="cover-placeholder-mark">TECHNICAL NOTE / SOAR OPERATIONS</span></div></div>
-<div class="article-card-content p-5">
-<div class="flex justify-between items-center mb-3"><span class="text-[10px] text-brand-greenDark dark:text-brand-green uppercase tracking-widest border border-brand-greenDark/30 dark:border-brand-green/30 px-2 py-0.5">IBM QRadar SOAR · Upgrade</span><span class="text-neutral-400 group-hover:text-black dark:group-hover:text-white transition-colors">↗</span></div>
-<h3 class="font-sans font-bold text-lg text-black dark:text-white mb-2 uppercase leading-tight">IBM QRadar SOAR Upgrade Guide</h3>
-<p class="text-xs text-neutral-600 dark:text-neutral-400">Plan an on-premises SOAR Virtual Appliance upgrade with supported-path checks, backups, maintenance preparation, and post-upgrade validation.</p>
-<div class="mt-4 pt-3 border-t border-brand-borderLight dark:border-brand-borderDark text-[10px] text-neutral-400">OPEN TECHNICAL NOTE →</div>
-</div>
-</a>
-
-<a href="/articles/splunk-enterprise-installation-ubuntu-24-04.html" class="article-item has-cover block border border-brand-borderLight dark:border-brand-borderDark bg-white dark:bg-[#0c0d0e] overflow-hidden hover:border-brand-green transition-colors group" data-category="splunk">
-<div class="article-cover article-cover--placeholder" aria-hidden="true"><div class="cover-placeholder-content"><span class="cover-placeholder-kicker">SPLUNK ENTERPRISE</span><strong>SPLUNK</strong><span class="cover-placeholder-title">UBUNTU 24.04 INSTALL</span><span class="cover-placeholder-mark">TECHNICAL NOTE / SIEM LAB</span></div></div>
-<div class="article-card-content p-5">
-<div class="flex justify-between items-center mb-3"><span class="text-[10px] text-brand-greenDark dark:text-brand-green uppercase tracking-widest border border-brand-greenDark/30 dark:border-brand-green/30 px-2 py-0.5">Splunk · Installation</span><span class="text-neutral-400 group-hover:text-black dark:group-hover:text-white transition-colors">↗</span></div>
-<h3 class="font-sans font-bold text-lg text-black dark:text-white mb-2 uppercase leading-tight">Install Splunk Enterprise on Ubuntu 24.04</h3>
-<p class="text-xs text-neutral-600 dark:text-neutral-400">Build a single-server Splunk lab with systemd startup, validation, and the Enterprise Trial-to-Free license path.</p>
-<div class="mt-4 pt-3 border-t border-brand-borderLight dark:border-brand-borderDark text-[10px] text-neutral-400">OPEN TECHNICAL NOTE →</div>
-</div>
-</a>
-
-<a href="/articles/wazuh-daily-healthcheck-n8n-email-report.html" class="article-item has-cover block border border-brand-borderLight dark:border-brand-borderDark bg-white dark:bg-[#0c0d0e] overflow-hidden hover:border-brand-green transition-colors group" data-category="automation">
-<div class="article-cover article-cover--placeholder" aria-hidden="true"><div class="cover-placeholder-content"><span class="cover-placeholder-kicker">WAZUH SIEM · N8N</span><strong>HEALTHCHECK</strong><span class="cover-placeholder-title">DAILY PDF REPORT</span><span class="cover-placeholder-mark">TECHNICAL NOTE / SOC AUTOMATION</span></div></div>
-<div class="article-card-content p-5">
-<div class="flex justify-between items-center mb-3"><span class="text-[10px] text-brand-greenDark dark:text-brand-green uppercase tracking-widest border border-brand-greenDark/30 dark:border-brand-green/30 px-2 py-0.5">Automation · Wazuh</span><span class="text-neutral-400 group-hover:text-black dark:group-hover:text-white transition-colors">↗</span></div>
-<h3 class="font-sans font-bold text-lg text-black dark:text-white mb-2 uppercase leading-tight">Automated Wazuh Daily Healthcheck with n8n</h3>
-<p class="text-xs text-neutral-600 dark:text-neutral-400">Build a repeatable daily SIEM healthcheck that collects host data, generates an HTML report, converts it to PDF, and emails the result.</p>
-<div class="mt-4 pt-3 border-t border-brand-borderLight dark:border-brand-borderDark text-[10px] text-neutral-400">OPEN TECHNICAL NOTE →</div>
-</div>
-</a>
-
-<a href="/articles/n8n-installation-local-automation.html" class="article-item has-cover block border border-brand-borderLight dark:border-brand-borderDark bg-white dark:bg-[#0c0d0e] overflow-hidden hover:border-brand-green transition-colors group" data-category="automation">
-<div class="article-cover article-cover--placeholder" aria-hidden="true"><div class="cover-placeholder-content"><span class="cover-placeholder-kicker">WORKFLOW AUTOMATION</span><strong>N8N</strong><span class="cover-placeholder-title">LOCAL INSTALLATION</span><span class="cover-placeholder-mark">TECHNICAL NOTE / API AUTOMATION</span></div></div>
-<div class="article-card-content p-5">
-<div class="flex justify-between items-center mb-3"><span class="text-[10px] text-brand-greenDark dark:text-brand-green uppercase tracking-widest border border-brand-greenDark/30 dark:border-brand-green/30 px-2 py-0.5">Automation · n8n</span><span class="text-neutral-400 group-hover:text-black dark:group-hover:text-white transition-colors">↗</span></div>
-<h3 class="font-sans font-bold text-lg text-black dark:text-white mb-2 uppercase leading-tight">Installing n8n for Local Workflow Automation</h3>
-<p class="text-xs text-neutral-600 dark:text-neutral-400">Install and prepare a self-hosted n8n instance, preserve its configuration, and validate a webhook before production use.</p>
-<div class="mt-4 pt-3 border-t border-brand-borderLight dark:border-brand-borderDark text-[10px] text-neutral-400">OPEN TECHNICAL NOTE →</div>
-</div>
-</a>
-
-<a href="/articles/testing-n8n-webhooks-locally-curl.html" class="article-item has-cover block border border-brand-borderLight dark:border-brand-borderDark bg-white dark:bg-[#0c0d0e] overflow-hidden hover:border-brand-green transition-colors group" data-category="automation">
-<div class="article-cover article-cover--placeholder" aria-hidden="true"><div class="cover-placeholder-content"><span class="cover-placeholder-kicker">WORKFLOW AUTOMATION</span><strong>WEBHOOKS</strong><span class="cover-placeholder-title">CURL TESTING</span><span class="cover-placeholder-mark">TECHNICAL NOTE / API VALIDATION</span></div></div>
-<div class="article-card-content p-5">
-<div class="flex justify-between items-center mb-3"><span class="text-[10px] text-brand-greenDark dark:text-brand-green uppercase tracking-widest border border-brand-greenDark/30 dark:border-brand-green/30 px-2 py-0.5">Automation · Webhooks</span><span class="text-neutral-400 group-hover:text-black dark:group-hover:text-white transition-colors">↗</span></div>
-<h3 class="font-sans font-bold text-lg text-black dark:text-white mb-2 uppercase leading-tight">Testing n8n Webhooks Locally with curl</h3>
-<p class="text-xs text-neutral-600 dark:text-neutral-400">Validate incoming webhook JSON, separate test and production URLs, and troubleshoot request failures before connecting workflows to production systems.</p>
-<div class="mt-4 pt-3 border-t border-brand-borderLight dark:border-brand-borderDark text-[10px] text-neutral-400">OPEN TECHNICAL NOTE →</div>
-</div>
-</a>
-</div>
-</div>
-
+<section class="w section-pad" aria-labelledby="work-title">
+  <div class="sec"><i></i>HOW I WORK</div>
+  <h2 id="work-title" class="d sp-inline-1b4kxeu">Two lanes, <span class="acc">one loop.</span></h2>
+  <p class="dim sp-inline-ffuxti">I build the platform the SOC relies on, then work the alerts it produces. What I learn from one feeds the other.</p>
+  <div class="g lanes-grid">
+    <div class="card">
+      <div class="tag acc">SOC ENGINEER · BUILD</div>
+      <div class="lane-step sp-inline-jm24uy"><div class="lane-number">1</div><div><div class="d">Onboard</div><div class="dim">Connect log sources and prove the events actually arrive.</div></div></div>
+      <div class="lane-step"><div class="lane-number">2</div><div><div class="d">Parse &amp; normalize</div><div class="dim">Shape fields so rules and searches can rely on them.</div></div></div>
+      <div class="lane-step"><div class="lane-number">3</div><div><div class="d">Detect &amp; tune</div><div class="dim">Write rules, map them to ATT&amp;CK, cut false positives.</div></div></div>
+      <div class="lane-step"><div class="lane-number">4</div><div><div class="d">Automate</div><div class="dim">Schedule healthchecks, enrichment and reports.</div></div></div>
+    </div>
+    <div class="card">
+      <div class="tag acc">SOC ANALYST L2 · INVESTIGATE</div>
+      <div class="lane-step sp-inline-jm24uy"><div class="lane-number">1</div><div><div class="d">Triage</div><div class="dim">Validate the alert and separate signal from noise.</div></div></div>
+      <div class="lane-step"><div class="lane-number">2</div><div><div class="d">Investigate</div><div class="dim">Pivot across logs, hosts and threat intel to build the story.</div></div></div>
+      <div class="lane-step"><div class="lane-number">3</div><div><div class="d">Contain &amp; escalate</div><div class="dim">Act within scope, or hand off with full context.</div></div></div>
+      <div class="lane-step"><div class="lane-number">4</div><div><div class="d">Document &amp; feed back</div><div class="dim">Case notes, lessons and tuning requests back to engineering.</div></div></div>
+    </div>
+  </div>
+  <div class="loop-note">↻ &nbsp;Every investigation feeds the next detection.</div>
 </section>
 
-<section id="connect" class="border border-brand-borderLight dark:border-brand-borderDark bg-white/80 dark:bg-[#0c0d0e]/80 p-8 sm:p-12 mb-20 backdrop-blur-sm relative overflow-hidden">
-<div class="absolute top-0 right-0 p-4 text-neutral-200 dark:text-neutral-800 font-sans text-9xl font-black opacity-30 select-none pointer-events-none">_</div>
-<div class="text-xs font-bold text-brand-greenDark dark:text-brand-green tracking-widest uppercase mb-4">// 04 . INITIALIZE HANDSHAKE</div>
-<h2 class="font-sans text-4xl md:text-5xl font-black text-black dark:text-white uppercase mb-4 leading-none">EXECUTE<br>COMMUNICATION.</h2>
-<p class="text-sm text-neutral-600 dark:text-neutral-400 max-w-lg mb-8">Have a cybersecurity inquiry, want to discuss an opportunity, or need my CV? Initiate a connection below.</p>
-<div class="flex flex-wrap gap-4 text-xs font-bold">
-<a href="mailto:as.ga2019@gmail.com" class="border border-black dark:border-white bg-black dark:bg-white text-white dark:text-black px-6 py-3 hover:opacity-80 transition-opacity">$ mailx --to as.ga2019@gmail.com</a>
-<a href="https://wa.me/966598243358" target="_blank" rel="noopener noreferrer" class="border border-brand-borderLight dark:border-brand-borderDark px-6 py-3 hover:border-brand-greenDark dark:hover:border-brand-green transition-colors text-black dark:text-white">WHATSAPP [↗]</a>
-<a href="https://www.linkedin.com/in/1elrawy/" target="_blank" rel="noopener noreferrer" class="border border-brand-borderLight dark:border-brand-borderDark px-6 py-3 hover:border-brand-greenDark dark:hover:border-brand-green transition-colors text-black dark:text-white">LINKEDIN [↗]</a>
-</div>
+<section id="expertise" class="w section-pad" aria-labelledby="expertise-title">
+  <div class="sec"><i></i>02 · CORE EXPERTISE</div>
+  <h2 id="expertise-title" class="d sp-inline-1ubcebo">Six disciplines behind a SOC that <span class="acc">works.</span></h2>
+  <div class="g expertise-grid">
+    <div class="card"><div class="rgbt d">⌘</div><h3 class="d">SIEM Engineering</h3><div class="dim">Log collection and parsing, custom rules, alert tuning, platform health, retention and performance troubleshooting.</div></div>
+    <div class="card"><div class="rgbt d">⌕</div><h3 class="d">Detection &amp; Hunting</h3><div class="dim">Detection logic, event analysis, hypothesis-driven hunting, false-positive reduction and MITRE ATT&amp;CK mapping.</div></div>
+    <div class="card"><div class="rgbt d">⤳</div><h3 class="d">Security Integrations</h3><div class="dim">API-driven integrations, alert normalization, case management, threat intelligence and reliable data flow.</div></div>
+    <div class="card"><div class="rgbt d">⟲</div><h3 class="d">SOAR &amp; Automation</h3><div class="dim">Incident workflows, enrichment, repeatable response, reporting and automation with APIs and n8n.</div></div>
+    <div class="card"><div class="rgbt d">⌁</div><h3 class="d">Incident Response</h3><div class="dim">Alert triage, investigation workflows, evidence-aware analysis, case documentation and escalation context.</div></div>
+    <div class="card"><div class="rgbt d">▤</div><h3 class="d">Platform Operations</h3><div class="dim">Linux and Docker operations, availability checks, storage management, cluster troubleshooting and health checks.</div></div>
+  </div>
+  <div class="sp-inline-yp23d8">
+    <div class="tool-marquee"><div class="tool-track">
+      <span class="chip">Wazuh</span><span class="chip">IBM QRadar SIEM</span><span class="chip">IBM QRadar SOAR</span><span class="chip">Splunk</span><span class="chip">MITRE ATT&amp;CK</span><span class="chip">Sigma</span><span class="chip">YARA</span><span class="chip">Sysmon</span><span class="chip">Windows Event Logs</span><span class="chip">DFIR-IRIS</span><span class="chip">OpenCTI</span><span class="chip">MISP</span>
+      <span class="chip">Wazuh</span><span class="chip">IBM QRadar SIEM</span><span class="chip">IBM QRadar SOAR</span><span class="chip">Splunk</span><span class="chip">MITRE ATT&amp;CK</span><span class="chip">Sigma</span><span class="chip">YARA</span><span class="chip">Sysmon</span><span class="chip">Windows Event Logs</span><span class="chip">DFIR-IRIS</span><span class="chip">OpenCTI</span><span class="chip">MISP</span>
+    </div></div>
+    <div class="tool-marquee sp-inline-12bzlse"><div class="tool-track reverse">
+      <span class="chip">n8n</span><span class="chip">Python</span><span class="chip">Bash</span><span class="chip">REST APIs</span><span class="chip">Linux</span><span class="chip">Docker</span><span class="chip">Windows Server</span><span class="chip">Active Directory</span><span class="chip">OpenSearch / Elasticsearch</span><span class="chip">Kibana</span><span class="chip">HAProxy</span><span class="chip">Syslog</span><span class="chip">Office 365</span><span class="chip">Google Workspace</span><span class="chip">Wireshark</span><span class="chip">Cuckoo Sandbox</span><span class="chip">Nmap</span><span class="chip">Nessus</span><span class="chip">OpenVAS</span><span class="chip">Burp Suite</span>
+      <span class="chip">n8n</span><span class="chip">Python</span><span class="chip">Bash</span><span class="chip">REST APIs</span><span class="chip">Linux</span><span class="chip">Docker</span><span class="chip">Windows Server</span><span class="chip">Active Directory</span><span class="chip">OpenSearch / Elasticsearch</span><span class="chip">Kibana</span><span class="chip">HAProxy</span><span class="chip">Syslog</span><span class="chip">Office 365</span><span class="chip">Google Workspace</span><span class="chip">Wireshark</span><span class="chip">Cuckoo Sandbox</span><span class="chip">Nmap</span><span class="chip">Nessus</span><span class="chip">OpenVAS</span><span class="chip">Burp Suite</span>
+    </div></div>
+  </div>
+</section>
+
+<section id="experience" class="w section-pad" aria-labelledby="experience-title">
+  <div class="sec"><i></i>EXPERIENCE</div>
+  <h2 id="experience-title" class="d sp-inline-1ubcebo">Four years, six client <span class="acc">engagements.</span></h2>
+  <div class="g four sp-inline-9l4gl1">
+    <div class="card"><div class="big acc">4+</div><div class="dim sp-inline-1ry7662">years in SOC operations</div></div>
+    <div class="card"><div class="big acc">6</div><div class="dim sp-inline-1ry7662">client engagements delivered</div></div>
+    <div class="card"><div class="big acc">14+</div><div class="dim sp-inline-1ry7662">branches centralised in one Wazuh deployment</div></div>
+    <div class="card"><div class="big acc">29</div><div class="dim sp-inline-1ry7662">certifications &amp; courses</div></div>
+  </div>
+  <div class="g experience-grid">
+    <div class="tl">
+      <div class="it now"><div class="mini sp-inline-1sdxvii">01/2025 – PRESENT</div><h3 class="d sp-inline-1f5820k">SOC Analyst L2 / Senior SOC Engineer</h3><div class="dim sp-inline-w2df8o">Securenas · Riyadh, Saudi Arabia</div><div class="sp-inline-n3c866">Lead escalated L2/L3 investigations and incident response, build detections and threat hunts, deliver SIEM/SOAR platforms for clients, shape MDR services and mentor junior analysts.</div><span class="chip">IBM QRadar</span><span class="chip">Wazuh</span><span class="chip">Splunk</span><span class="chip">SOAR</span><span class="chip">Threat hunting</span></div>
+      <div class="it"><div class="mini sp-inline-1sdxvii">09/2022 – 12/2024</div><h3 class="d sp-inline-1f5820k">SOC Analyst / Engineer</h3><div class="dim sp-inline-w2df8o">Securenas · Riyadh, Saudi Arabia</div><div class="sp-inline-n3c866">Monitored and triaged SIEM and EDR alerts, tuned rules, and built IBM SOAR playbooks and integrations to automate enrichment and response.</div><span class="chip">Alert triage</span><span class="chip">Rule tuning</span><span class="chip">IBM SOAR</span></div>
+      <div class="it"><div class="mini sp-inline-1sdxvii">07/2023 – 10/2023</div><h3 class="d sp-inline-1f5820k">BlueTeam Scholarship</h3><div class="dim sp-inline-w2df8o">CyberTalents · Remote</div><div class="sp-inline-n3c866">Defensive security scholarship alongside the day job.</div><span class="chip">Blue team</span></div>
+    </div>
+    <div class="card">
+      <div class="tag acc">WHAT I FOCUS ON</div>
+      <div class="sp-inline-jm24uy">
+        <div class="lane-step"><div><div class="d">Detection fidelity</div><div class="dim sp-inline-15iioen">Rules that earn their place, mapped to MITRE ATT&amp;CK.</div></div></div>
+        <div class="lane-step"><div><div class="d">Less alert fatigue</div><div class="dim sp-inline-15iioen">Tuning and enrichment so analysts see what matters.</div></div></div>
+        <div class="lane-step"><div><div class="d">Faster response</div><div class="dim sp-inline-15iioen">Lower MTTR through playbooks and automation.</div></div></div>
+        <div class="lane-step"><div><div class="d">Stronger monitoring</div><div class="dim sp-inline-15iioen">Continuously improving visibility and response capability.</div></div></div>
+      </div>
+    </div>
+  </div>
+  <div class="sec sp-inline-1w8126h"><i></i>CLIENT ENGAGEMENTS</div>
+  <div class="g engagements">
+    <div class="card"><div class="tag acc">AVIATION</div><div class="mini">01/2026 – PRESENT</div><h3 class="d sp-inline-15p3n65">Incident Response Retainer</h3><div class="dim sp-inline-15ri398">Incident Responder: triage, forensic investigation, evidence analysis, containment support and remediation recommendations.</div><span class="chip">Incident response</span><span class="chip">Forensics</span></div>
+    <div class="card"><div class="tag acc">MULTI-BRANCH ENTERPRISE</div><div class="mini">05/2026 – PRESENT</div><h3 class="d sp-inline-15p3n65">Distributed Wazuh SIEM</h3><div class="dim sp-inline-15ri398">Designed the architecture and centralised log collection from 14+ branches across Saudi Arabia, with hardening, tuning and health monitoring.</div><span class="chip">Wazuh</span><span class="chip">Cluster</span><span class="chip">Detection rules</span></div>
+    <div class="card"><div class="tag acc">GOVERNMENT OFFICE</div><div class="mini">12/2024 – PRESENT</div><h3 class="d sp-inline-15p3n65">QRadar SIEM &amp; SOAR build</h3><div class="dim sp-inline-15ri398">Platform setup, log-source onboarding, parsing, use cases, dashboards, plus SOAR workflows and playbooks for enrichment and response.</div><span class="chip">QRadar SIEM</span><span class="chip">QRadar SOAR</span></div>
+    <div class="card"><div class="tag acc">GOVERNMENT DIRECTORATE</div><div class="mini">2024 – PRESENT</div><h3 class="d sp-inline-15p3n65">QRadar SIEM &amp; SOAR build</h3><div class="dim sp-inline-15ri398">Implemented SIEM and SOAR end to end, from onboarding and correlation to automated enrichment and investigation workflows.</div><span class="chip">QRadar SIEM</span><span class="chip">QRadar SOAR</span></div>
+    <div class="card"><div class="tag acc">FINANCIAL INSTITUTION</div><div class="mini">03/2024 – 04/2026</div><h3 class="d sp-inline-15p3n65">SOC Analyst L2 &amp; SIEM/SOAR admin</h3><div class="dim sp-inline-15ri398">Advanced investigation and threat hunting, platform health checks, SOAR playbooks and ATT&amp;CK-aligned detection improvement.</div><span class="chip">Threat hunting</span><span class="chip">Health checks</span><span class="chip">SOAR</span></div>
+    <div class="card"><div class="tag acc">REGIONAL AUTHORITY</div><div class="mini">2024 – 08/2025</div><h3 class="d sp-inline-15p3n65">QRadar SIEM design, then L2 SOC</h3><div class="dim sp-inline-15ri398">Designed and tuned the SIEM, onboarded multiple sources, then served as SOC Analyst L2 for escalated incidents.</div><span class="chip">QRadar SIEM</span><span class="chip">Tuning</span></div>
+  </div>
+</section>
+
+<section class="w section-pad" aria-labelledby="credentials-title">
+  <div class="sec"><i></i>CREDENTIALS</div>
+  <h2 id="credentials-title" class="d sp-inline-1ubcebo">Proof behind the <span class="acc">work.</span></h2>
+  <div class="g credential-grid">
+    <div class="card"><div class="tag acc">KEY CERTIFICATIONS</div><div class="sp-inline-12bzlse"><span class="chip">eCTHPv2 Threat Hunting</span><span class="chip">eCIR Incident Responder</span><span class="chip">Certified in Cybersecurity (ISC)²</span><span class="chip">IBM QRadar SIEM Foundation</span><span class="chip">IBM Resilient SOAR Foundations</span><span class="chip">Splunk Security Operations &amp; Defense Analyst</span><span class="chip">Certified AppSec Practitioner</span><span class="chip">CCNA v7</span><span class="chip">Purple Teaming (CyberWarFare)</span></div><div class="mini sp-inline-et2xu7">29 certifications and courses in total</div></div>
+    <div class="card"><div class="tag acc">ACHIEVEMENTS</div><div class="sp-inline-12bzlse"><div class="d sp-inline-114sn1y">Gold Medal, Network Track</div><div class="dim sp-inline-3onmga">Huawei ICT Competition 2020</div><div class="d sp-inline-114sn1y">Top 1% on TryHackMe</div><div class="dim">Active CTF player since 2022 (THM, LetsDefend, CyberTalents, BTL, CyberDefenders)</div></div></div>
+    <div class="card"><div class="tag acc">EDUCATION</div><div class="sp-inline-12bzlse"><div class="d sp-inline-114sn1y">B.Sc. Computer Science</div><div class="dim">Faculty of Computers and Information, Luxor University</div><div class="dim">2017 – 2021 · Excellent with first honor</div></div></div>
+  </div>
+</section>
+
+<span id="articles" class="section-anchor" aria-hidden="true"></span>
+  <section id="notes" class="w section-pad" data-notes-root aria-labelledby="notes-title">
+  <div class="notes-head">
+    <div><div class="sec"><i></i>03 · FIELD NOTES &amp; TECHNICAL GUIDES</div><h2 id="notes-title" class="d sp-inline-1qhqgp7">Field-tested <span class="acc">notes.</span></h2><p class="dim sp-inline-1mlm311"><span data-count-label>24 notes</span> from hands-on SIEM, SOAR, response and automation work.</p></div>
+    <a href="/articles.html" class="btn">BROWSE ALL NOTES →</a>
+  </div>
+  <div class="filter-row" aria-label="Filter notes by topic">
+    <button class="chip on" type="button" data-topic-filter="all" aria-pressed="true">ALL TOPICS</button>
+    <button class="chip" type="button" data-topic-filter="wazuh" aria-pressed="false">WAZUH</button>
+    <button class="chip" type="button" data-topic-filter="dfir-iris" aria-pressed="false">DFIR-IRIS</button>
+    <button class="chip" type="button" data-topic-filter="qradar-siem" aria-pressed="false">IBM QRADAR SIEM</button>
+    <button class="chip" type="button" data-topic-filter="qradar-soar" aria-pressed="false">IBM QRADAR SOAR</button>
+    <button class="chip" type="button" data-topic-filter="splunk" aria-pressed="false">SPLUNK</button>
+    <button class="chip" type="button" data-topic-filter="automation" aria-pressed="false">AUTOMATION / N8N</button>
+    <button class="chip" type="button" data-topic-filter="malware-analysis" aria-pressed="false">MALWARE ANALYSIS</button>
+  </div>
+  <div class="dim sp-inline-1gcfhyk" aria-live="polite"><span data-visible-count>24 notes</span> · <span data-total-count>24</span> total</div>
+  <div id="notes-grid" class="notes-grid" aria-live="polite"><p class="note-empty">Loading technical notes…</p></div>
+</section>
+
+<section id="connect" class="w section-pad">
+  <div class="card connect-card">
+    <div class="sec sp-inline-6gdbvu"><i></i>04 · CONNECT<i></i></div>
+    <h2 class="connect-title d">Turn alert noise into <span class="acc">decisions.</span></h2>
+    <p class="dim sp-inline-1xhfwqo">Got a security challenge, an opportunity to discuss, or need my CV? Let's talk.</p>
+    <div class="hero-actions sp-inline-6gdbvu"><a href="mailto:as.ga2019@gmail.com" class="btn p">EMAIL ME</a><a href="https://www.linkedin.com/in/1elrawy/" class="btn" target="_blank" rel="noopener noreferrer">LINKEDIN ↗</a></div>
+  </div>
 </section>
 </main>
-
-<footer class="max-w-6xl w-full mx-auto border-t border-brand-borderLight dark:border-brand-borderDark pt-6 mt-12 flex flex-col sm:flex-row justify-between text-[10px] text-neutral-500 space-y-2 sm:space-y-0 tracking-widest uppercase"><div>[ <span id="year"></span> ] ASHRAF GAMAL . SYSTEM SECURE</div><div class="flex space-x-6"><a href="#about" class="hover:text-black dark:hover:text-white transition-colors">^ TOP</a><span>EOF</span></div></footer>
+<footer class="w site-footer">
+  <span>ASHRAF GAMAL · SOC ENGINEER &amp; SOC ANALYST L2</span>
+  <span class="site-visits" id="site-visits" aria-label="Total site visits"><span class="site-visits-label">SITE VISITS</span><span class="site-visits-widget" id="site-visits-widget" aria-live="polite">…</span></span>
+  <a href="#top">↑ TOP</a>
+</footer>
 </div>
-
-<script>
-document.getElementById('year').textContent=new Date().getFullYear();
-const themeToggleBtn=document.getElementById('theme-toggle');
-const themeIcon=document.getElementById('theme-icon');
-const htmlElement=document.documentElement;
-function applyTheme(isDark){if(isDark){htmlElement.classList.add('dark');themeIcon.innerText='MODE: DARK';}else{htmlElement.classList.remove('dark');themeIcon.innerText='MODE: LIGHT';}try{localStorage.setItem('theme',isDark?'dark':'light');}catch(e){}}
-let savedTheme=null;try{savedTheme=localStorage.getItem('theme');}catch(e){}
-const systemPrefersDark=window.matchMedia('(prefers-color-scheme: dark)').matches;
-applyTheme(savedTheme?savedTheme==='dark':systemPrefersDark);
-themeToggleBtn.addEventListener('click',()=>applyTheme(!htmlElement.classList.contains('dark')));
-const filterBtns=[...document.querySelectorAll('.filter-btn')];
-const articles=[...document.querySelectorAll('.article-item')];
-const track=document.getElementById('articles-grid');
-const viewport=document.getElementById('article-viewport');
-const prevButton=document.getElementById('article-prev');
-const nextButton=document.getElementById('article-next');
-const pageLabel=document.getElementById('article-page');
-let activeCategory='wazuh';
-let currentPage=0;
-const activeFilterClasses='filter-btn active border-brand-greenDark dark:border-brand-green bg-black text-brand-green dark:bg-brand-green dark:text-black font-bold px-3 py-1 border';
-const inactiveFilterClasses='filter-btn border-brand-borderLight dark:border-brand-borderDark text-neutral-600 dark:text-neutral-300 hover:border-brand-greenDark dark:hover:border-brand-green px-3 py-1 border font-bold';
-const cardsPerPage=()=>window.matchMedia('(max-width: 700px)').matches?1:2;
-const visibleCards=()=>activeCategory==='all'?articles:articles.filter(card=>card.dataset.category===activeCategory);
-function updateCarousel(reset=false){
- if(reset) currentPage=0;
- const visible=visibleCards();
- const perPage=cardsPerPage();
- const pageCount=Math.max(1,Math.ceil(visible.length/perPage));
- currentPage=Math.max(0,Math.min(currentPage,pageCount-1));
- articles.forEach(card=>{card.hidden=activeCategory!=='all'&&card.dataset.category!==activeCategory;});
- const first=visible[currentPage*perPage];
- const offset=first?first.offsetLeft:0;
- track.style.transform='translateX(-'+offset+'px)';
- const start=visible.length?currentPage*perPage+1:0;
- const end=Math.min(currentPage*perPage+perPage,visible.length);
- pageLabel.textContent=perPage===1
-  ? String(start).padStart(2,'0')+' / '+String(visible.length).padStart(2,'0')
-  : String(start).padStart(2,'0')+'–'+String(end).padStart(2,'0')+' / '+String(visible.length).padStart(2,'0');
- prevButton.disabled=currentPage===0;
- nextButton.disabled=currentPage>=pageCount-1;
-}
-function applyArticleFilter(category){
- activeCategory=category;
- filterBtns.forEach(btn=>{
-  const active=btn.dataset.filter===category;
-  btn.className=active?activeFilterClasses:inactiveFilterClasses;
-  btn.setAttribute('aria-pressed',String(active));
- });
- updateCarousel(true);
-}
-function goToPage(delta){
- const pageCount=Math.max(1,Math.ceil(visibleCards().length/cardsPerPage()));
- currentPage=Math.max(0,Math.min(currentPage+delta,pageCount-1));
- updateCarousel();
-}
-filterBtns.forEach(btn=>btn.addEventListener('click',()=>applyArticleFilter(btn.dataset.filter)));
-prevButton.addEventListener('click',()=>goToPage(-1));
-nextButton.addEventListener('click',()=>goToPage(1));
-viewport.addEventListener('keydown',event=>{
- if(event.key==='ArrowLeft'){event.preventDefault();goToPage(-1);}
- if(event.key==='ArrowRight'){event.preventDefault();goToPage(1);}
-});
-let swipeStartX=null;
-viewport.addEventListener('touchstart',event=>{swipeStartX=event.changedTouches[0].clientX;},{passive:true});
-viewport.addEventListener('touchend',event=>{
- if(swipeStartX===null)return;
- const distance=event.changedTouches[0].clientX-swipeStartX;
- if(Math.abs(distance)>45)goToPage(distance<0?1:-1);
- swipeStartX=null;
-},{passive:true});
-window.addEventListener('resize',()=>updateCarousel());
-applyArticleFilter('all');
-
-// Interactive cursor spotlight
-const spotlightMedia=window.matchMedia('(hover: hover) and (pointer: fine)');
-const reduceMotionMedia=window.matchMedia('(prefers-reduced-motion: reduce)');
-if(spotlightMedia.matches&&!reduceMotionMedia.matches){
- let spotlight=document.getElementById('spotlight');
- if(!spotlight){
-  spotlight=document.createElement('div');
-  spotlight.id='spotlight';
-  spotlight.setAttribute('aria-hidden','true');
-  document.body.prepend(spotlight);
- }
- let pointerX=0,pointerY=0,framePending=false;
- const paintSpotlight=()=>{
-  spotlight.style.setProperty('--mouse-x',pointerX+'px');
-  spotlight.style.setProperty('--mouse-y',pointerY+'px');
-  spotlight.classList.add('is-visible');
-  framePending=false;
- };
- window.addEventListener('mousemove',event=>{
-  pointerX=event.clientX;pointerY=event.clientY;
-  if(!framePending){framePending=true;window.requestAnimationFrame(paintSpotlight);}
- },{passive:true});
- window.addEventListener('mouseout',event=>{
-  if(!event.relatedTarget&&!event.toElement)spotlight.classList.remove('is-visible');
- },{passive:true});
- window.addEventListener('blur',()=>spotlight.classList.remove('is-visible'));
-}
-</script>
-<script src="/assets/js/site-visits.js"></script>
 </body>
 </html>
