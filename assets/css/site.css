@@ -228,7 +228,7 @@ img,svg{max-width:100%}
 .image-zoom-close:hover{border-color:var(--accent)}
 .site-visits{display:inline-flex;align-items:center;gap:8px;white-space:nowrap;color:var(--muted);font:10px/1.6 var(--font-body);letter-spacing:.06em;text-transform:uppercase}
 .site-visits::before{content:"//";color:#2dff8f}
-.site-visits-widget{display:inline-flex;min-width:2ch;color:#2dff8f;font:700 11px/1.4 var(--font-body);font-variant-numeric:tabular-nums}
+.site-visits-widget{display:inline-flex;align-items:center;min-width:2ch;color:#2dff8f!important;font:500 10px/1.6 var(--font-body)!important;letter-spacing:.06em;font-variant-numeric:tabular-nums}
 .article-page .site-footer{min-height:60px}
 @media(max-width:700px){.article-page .site-nav{width:calc(100% - 32px)}.article-page .site-nav nav{gap:10px 14px}.article-page .site-nav nav a{font-size:9px}.article-page .site-article-hero{padding-top:32px}.article-page .site-article-hero .meta{font-size:9px}}
 
@@ -266,29 +266,14 @@ img,svg{max-width:100%}
 .sp-inline-anfrlg{font-size:11px !important;margin:9px 0 0 !important}
 
 /* Keep analytics text readable in both the legacy GoatCounter and Spectrum themes. */
-.site-visits::before,.site-visits-widget{color:#2dff8f!important}
+.site-visits::before,.site-visits-widget{display:inline-flex;align-items:center;min-width:2ch;color:#2dff8f!important;font:500 10px/1.6 var(--font-body)!important;letter-spacing:.06em;font-variant-numeric:tabular-nums}
 .note-topic.topic-malware-analysis{color:#b45cff!important}
 
 /* Topic filters: ensure hidden cards stay out of the grid despite .note-card display:flex. */
 .note-card[hidden]{display:none!important}
 
 /* GoatCounter native TOTAL.svg counter image */
-.site-visits-counter{display:block;width:112px;height:34px;max-width:100%;object-fit:contain;object-position:left center;border:0;vertical-align:middle}
-
 /* Show a larger, number-only GoatCounter total with no visible SVG panel. */
-.site-visits-counter{
-  display:block!important;
-  width:72px!important;
-  height:28px!important;
-  max-width:none!important;
-  object-fit:none!important;
-  object-position:center calc(100% + 4px)!important;
-  clip-path:inset(0)!important;
-  filter:invert(1)!important;
-  mix-blend-mode:lighten!important;
-  transform:scale(1.4)!important;
-  transform-origin:left center!important;
-  margin-right:28px!important;
-  border:0!important;
-  vertical-align:middle!important;
-}
+
+/* Text-only GoatCounter snapshot: match the SITE VISITS label size exactly. */
+.site-visits-number{display:inline-block;color:#2dff8f;font:500 10px/1.6 var(--font-body);letter-spacing:.06em;font-variant-numeric:tabular-nums}
