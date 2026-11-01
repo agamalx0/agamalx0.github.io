@@ -244,26 +244,22 @@
     window.addEventListener('resize', updateProgress, { passive: true });
     updateProgress();
     const footerMarkup = '<span>ASHRAF GAMAL · SOC ENGINEER &amp; SOC ANALYST L2</span>' +
-      '<span class="site-visits" id="site-visits" aria-label="Total site visits"><span class="site-visits-label">SITE VISITS</span><span class="site-visits-widget" id="site-visits-widget" aria-live="polite"><span id="site-visits-counter" class="site-visits-number">—</span></span></span>' +
       '<a href="#">↑ TOP</a>';
     let footer = document.querySelector('footer');
     if (!footer) { footer = document.createElement('footer'); document.body.appendChild(footer); }
+    // Preserve the counter element authored in each article's HTML. Analytics is
+    // loaded directly by the page and must not depend on this article initializer.
+    let visitCounter = footer.querySelector('.site-visits');
+    if (!visitCounter) {
+      visitCounter = document.createElement('span');
+      visitCounter.className = 'site-visits';
+      visitCounter.id = 'site-visits';
+      visitCounter.setAttribute('aria-label', 'Total site visits');
+      visitCounter.innerHTML = '<span class="site-visits-label">SITE VISITS</span><span class="site-visits-widget" id="site-visits-widget" aria-live="polite"><span id="site-visits-counter" class="site-visits-number">—</span></span>';
+    }
     footer.className = 'site-container site-footer';
     footer.innerHTML = footerMarkup;
-    // Replace any cached legacy counter loader with the versioned implementation.
-    document.querySelectorAll('script[src*="site-visits.v3.js"]').forEach((oldScript) => oldScript.remove());
-    const visitWidget = document.getElementById('site-visits-widget');
-    if (visitWidget) {
-      visitWidget.replaceChildren();
-      delete visitWidget.dataset.counterRendered;
-      delete visitWidget.dataset.counterStatus;
-    }
-    if (!document.querySelector('script[src*="/assets/js/site-visits.v4.js"]')) {
-      const script = document.createElement('script');
-      script.src = '/assets/js/site-visits.v4.js';
-      script.async = true;
-      document.head.appendChild(script);
-    }
+    footer.insertBefore(visitCounter, footer.querySelector('a'));
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init, { once: true });
   else init();
