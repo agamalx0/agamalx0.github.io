@@ -79,24 +79,26 @@ python3 -m py_compile sigma2wazuh.py</code></pre>
 
     <h2 id="run">5. Run the per-category conversion</h2>
     <p>Before converting, identify the parent rule IDs for the PowerShell services that exist in your environment. Inspect the installed ruleset on the Wazuh Manager and validate the event path using a real event. The values below are examples only—replace them with the SIDs verified on your manager.</p>
-    <pre><code># Example only: verify these parent SIDs against your installed ruleset.
-# Do not copy the example values without checking the event path.
+    <pre><code># Set each variable only after identifying the matching parent SID locally.
+# Leave out a service mapping if that log source is not used in your deployment.
+: "${PS_SCRIPT_PARENT_SID:?Set the verified Script Block Logging parent SID}"
+: "${PS_MODULE_PARENT_SID:?Set the verified PowerShell Module Logging parent SID}"
 
-mkdir -p ~/wazuh-existing-rules
+mkdir -p "$HOME/wazuh-existing-rules"
 # Copy your existing custom rule XML files into this directory first.
 
 ./sigma2wazuh.py \
-  --input ~/sigma-wazuh-custom/sigma/rules/windows \
-  --output-dir ~/sigma-wazuh-custom/output_xml \
+  --input "$HOME/sigma-wazuh-custom/sigma/rules/windows" \
+  --output-dir "$HOME/sigma-wazuh-custom/output_xml" \
   --include powershell registry network_connection \
   --exclude process_creation file_event \
   --start-id 113000 \
   --group sigma_wazuh \
   --prefix "SN - " \
-  --parent-sid ps_script=91802 ps_module=91803 \
+  --parent-sid "ps_script=${PS_SCRIPT_PARENT_SID}" "ps_module=${PS_MODULE_PARENT_SID}" \
   --existing-xml "$HOME/sigma-wazuh-custom/output_xml/*.xml" \
                 "$HOME/wazuh-existing-rules/*.xml"</code></pre>
-    <p>The PowerShell parent values in this command are illustrative, not universal. For a deployment with only Script Block Logging, configure only the relevant service mapping. If a PowerShell service has no verified parent mapping, the converter skips those rules rather than attaching them to a generic Windows parent.</p>
+    <p>The shell variables are deliberately required so the command cannot silently use guessed PowerShell parent SIDs. Set only mappings you have verified for the actual event channel and local Wazuh ruleset; if a service has no verified parent mapping, omit it and accept that those Sigma rules will be skipped.</p>
     <p>Expected output files are separated by category:</p>
     <pre><code>output_xml/
 ├── SN_sigma_network_connection.xml
@@ -171,6 +173,7 @@ sudo systemctl is-active wazuh-manager</code></pre>
       <li><a href="https://documentation.wazuh.com/current/user-manual/capabilities/log-data-collection/configuration.html" target="_blank" rel="noopener noreferrer">Wazuh — Windows event-channel rule files and ID ranges</a></li>
       <li><a href="https://github.com/SigmaHQ/sigma" target="_blank" rel="noopener noreferrer">SigmaHQ — Official rule repository</a></li>
       <li><a href="https://github.com/SigmaHQ/sigma-specification" target="_blank" rel="noopener noreferrer">SigmaHQ — Sigma specification</a></li>
+      <li><a href="https://github.com/wazuh/wazuh-ruleset/blob/master/rules/0595-win-sysmon_rules.xml" target="_blank" rel="noopener noreferrer">Wazuh — Sysmon parent rules (inspect the version installed on your manager)</a></li>
     </ul>
 
     <div class="contact-hook">
