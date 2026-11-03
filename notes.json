@@ -1,5 +1,15 @@
 [
   {
+    "title": "Automated SigmaHQ to Wazuh XML Rule Conversion",
+    "topic": "Wazuh",
+    "topicKey": "wazuh",
+    "summary": "Build a focused Python CLI pipeline that maps selected SigmaHQ Windows detections for PowerShell, registry, and network connections into modular Wazuh XML, with persistent Rule IDs and staged validation.",
+    "url": "/articles/wazuh-sigma-xml-rule-conversion.html",
+    "date": "3 November 2026",
+    "dateISO": "2026-11-03",
+    "readingTime": "9 min read"
+  },
+  {
     "title": "Wazuh All-in-One: Installation & Validation",
     "topic": "Wazuh",
     "topicKey": "wazuh",
