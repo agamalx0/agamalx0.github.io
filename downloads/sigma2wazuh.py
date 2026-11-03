@@ -33,7 +33,8 @@ CATEGORY_BUCKET = {
 }
 
 # Verify these parent SIDs against the ruleset installed on the target manager.
-# PowerShell parents are supplied by the operator because event channels differ.
+# PowerShell channel guards are added from PARENT_FILTERS; verify channel strings locally.
+# Unmapped Windows services use the explicit runtime fallback unless disabled.
 PARENT_SIDS = {
     # Windows EventChannel channel classification parents
     ("windows", "application"): "60003",
@@ -352,18 +353,21 @@ def main():
             parent = overrides.get(category) or overrides.get(service) or overrides.get(bucket)
             parent = parent or PARENT_SIDS.get(("windows", category)) or PARENT_SIDS.get(("windows", service)) or PARENT_SIDS.get(("windows", bucket))
             parent_filter = PARENT_FILTERS.get(("windows", category)) or PARENT_FILTERS.get(("windows", service)) or PARENT_FILTERS.get(("windows", bucket))
+            used_fallback = False
             if not parent:
                 if not fallback_parent_sid:
                     skipped += 1
                     continue
                 parent = fallback_parent_sid
-                fallback_counts[bucket] += 1
+                used_fallback = True
             try:
                 branches = parse_condition(doc["detection"])
             except UnsupportedRule:
                 skipped += 1
                 continue
 
+            if used_fallback:
+                fallback_counts[bucket] += 1
             sigma_id = str(doc.get("id") or doc["title"]).strip()
             ids = id_map.get(sigma_id, [])
             if not isinstance(ids, list):
