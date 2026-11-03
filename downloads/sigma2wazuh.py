@@ -176,7 +176,8 @@ def parse_condition(detection):
         return [build_fields(selections[condition])]
     match = re.fullmatch(r"(?:1|any) of ([\w*]+)", condition)
     if match:
-        selector = "^" + re.escape(match.group(1)).replace(r"\*", ".*") + "$"
+        key = match.group(1)
+        selector = "^.*$" if key == "them" else "^" + re.escape(key).replace(r"\*", ".*") + "$"
         names = [n for n in selections if re.match(selector, n)]
         if not names:
             raise UnsupportedRule("1 of condition matched no selections")
