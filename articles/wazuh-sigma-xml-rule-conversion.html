@@ -79,10 +79,10 @@ python3 -m py_compile sigma2wazuh.py</code></pre>
 
     <h2 id="run">5. Run the per-category conversion</h2>
     <p>Before converting, identify the parent rule IDs for the PowerShell services that exist in your environment. Inspect the installed ruleset on the Wazuh Manager and validate the event path using a real event. The values below are examples only—replace them with the SIDs verified on your manager.</p>
-    <pre><code># Set each variable only after identifying the matching parent SID locally.
-# Leave out a service mapping if that log source is not used in your deployment.
-: "${PS_SCRIPT_PARENT_SID:?Set the verified Script Block Logging parent SID}"
-: "${PS_MODULE_PARENT_SID:?Set the verified PowerShell Module Logging parent SID}"
+    <pre><code># Keep the array empty until you have verified a PowerShell parent SID locally.
+PARENT_ARGS=()
+# Example only: uncomment and replace with the SID(s) verified on your manager.
+# PARENT_ARGS=(--parent-sid "ps_script=<VERIFIED_SID>" "ps_module=<VERIFIED_SID>")
 
 mkdir -p "$HOME/wazuh-existing-rules"
 # Copy your existing custom rule XML files into this directory first.
@@ -95,10 +95,10 @@ mkdir -p "$HOME/wazuh-existing-rules"
   --start-id 113000 \
   --group sigma_wazuh \
   --prefix "SN - " \
-  --parent-sid "ps_script=${PS_SCRIPT_PARENT_SID}" "ps_module=${PS_MODULE_PARENT_SID}" \
+  "${PARENT_ARGS[@]}" \
   --existing-xml "$HOME/sigma-wazuh-custom/output_xml/*.xml" \
                 "$HOME/wazuh-existing-rules/*.xml"</code></pre>
-    <p>The shell variables are deliberately required so the command cannot silently use guessed PowerShell parent SIDs. Set only mappings you have verified for the actual event channel and local Wazuh ruleset; if a service has no verified parent mapping, omit it and accept that those Sigma rules will be skipped.</p>
+    <p>The parent-argument array is empty by default, so the converter will skip PowerShell rules until you add verified mappings. Configure only the services that exist in your environment; registry and network-connection rules can still be processed without PowerShell overrides.</p>
     <p>Expected output files are separated by category:</p>
     <pre><code>output_xml/
 ├── SN_sigma_network_connection.xml
