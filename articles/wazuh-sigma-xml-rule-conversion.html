@@ -33,10 +33,10 @@
     <p>SigmaHQ provides vendor-neutral detection rules in YAML. Wazuh evaluates native XML rules against decoded event fields. A useful conversion workflow therefore needs more than a text substitution: it must map fields, preserve selection logic where supported, chain rules to the correct Wazuh parent rule, and assign IDs that remain stable across conversion runs.</p>
     <p>The converter now scans the complete <code>sigma/rules/windows</code> tree by default. It discovers each rule's <code>logsource.category</code> or <code>logsource.service</code>, normalizes related values into an output bucket, and writes one file per discovered bucket. It does not rely on a three-category allowlist.</p>
     <div class="table-wrap"><table><thead><tr><th>Logsource examples</th><th>Output bucket</th><th>Output file</th></tr></thead><tbody>
-      <tr><td><code>ps_script</code>, <code>ps_module</code>, classic PowerShell services</td><td>PowerShell</td><td><code>SN_sigma_powershell.xml</code></td></tr>
-      <tr><td><code>registry_event</code>, <code>registry_add</code>, <code>registry_delete</code>, <code>registry_set</code>, <code>registry_rename</code></td><td>Registry</td><td><code>SN_sigma_registry.xml</code></td></tr>
-      <tr><td><code>network_connection</code>, <code>create_remote_thread</code>, <code>pipe_created</code>, <code>wmi_event</code></td><td>Separate per-category files</td><td><code>SN_sigma_network_connection.xml</code>, etc.</td></tr>
-      <tr><td>Other discovered Windows categories and services</td><td>Separate per-category files</td><td><code>SN_sigma_&lt;bucket&gt;.xml</code></td></tr>
+      <tr><td><code>ps_script</code>, <code>ps_module</code>, classic PowerShell services</td><td>PowerShell</td><td><code>sigma_powershell.xml</code></td></tr>
+      <tr><td><code>registry_event</code>, <code>registry_add</code>, <code>registry_delete</code>, <code>registry_set</code>, <code>registry_rename</code></td><td>Registry</td><td><code>sigma_registry.xml</code></td></tr>
+      <tr><td><code>network_connection</code>, <code>create_remote_thread</code>, <code>pipe_created</code>, <code>wmi_event</code></td><td>Separate per-category files</td><td><code>sigma_network_connection.xml</code>, etc.</td></tr>
+      <tr><td>Other discovered Windows categories and services</td><td>Separate per-category files</td><td><code>sigma_&lt;bucket&gt;.xml</code></td></tr>
     </tbody></table></div>
     <p>The only category folders intentionally excluded by the default run are <code>process_creation</code> and <code>file_event</code>. The terminal output you shared shows roughly 45–49 category XML files; the exact number is determined dynamically by the SigmaHQ checkout and its available logsource values. Rules with unsupported fields, modifiers, or condition syntax are still skipped and counted for manual review.</p>
 
@@ -93,54 +93,54 @@ python3 -m py_compile sigma2wazuh.py</code></pre>
   --fallback-parent-sid 60000 \
   --existing-xml "$HOME/sigma-wazuh-custom/output_xml/*.xml" \
                 "$HOME/wazuh-existing-rules/*.xml"</code></pre>
-    <p>The script groups PowerShell variants into <code>SN_sigma_powershell.xml</code> and registry variants into <code>SN_sigma_registry.xml</code>; other categories/services retain their own output file. Known Sysmon and Windows-channel parents are applied from the mapping table. Unmapped services use the configured fallback parent and are flagged in the console summary. You can override a specific category with <code>--parent-sid CATEGORY=SID</code>, or disable generic fallback with <code>--no-fallback-parent</code>.</p>
+    <p>The script groups PowerShell variants into <code>sigma_powershell.xml</code> and registry variants into <code>sigma_registry.xml</code>; other categories/services retain their own output file. Known Sysmon and Windows-channel parents are applied from the mapping table. Unmapped services use the configured fallback parent and are flagged in the console summary. You can override a specific category with <code>--parent-sid CATEGORY=SID</code>, or disable generic fallback with <code>--no-fallback-parent</code>.</p>
     <p>The following names are representative of the category files visible in your terminal output. The exact set can change when SigmaHQ adds, removes, or reorganizes Windows logsource categories and services:</p>
     <pre><code>output_xml/
-├── SN_sigma_application.xml
-├── SN_sigma_appmodel.xml
-├── SN_sigma_appxdeployment_server.xml
-├── SN_sigma_appxpackaging_om.xml
-├── SN_sigma_bits_client.xml
-├── SN_sigma_capi2.xml
-├── SN_sigma_certificateservicesclient_lifecycle_system.xml
-├── SN_sigma_codeintegrity_operational.xml
-├── SN_sigma_create_remote_thread.xml
-├── SN_sigma_create_stream_hash.xml
-├── SN_sigma_diagnosis_scripted.xml
-├── SN_sigma_dns_client.xml
-├── SN_sigma_dns_query.xml
-├── SN_sigma_dns_server.xml
-├── SN_sigma_driver_framework.xml
-├── SN_sigma_driver_load.xml
-├── SN_sigma_file_access.xml
-├── SN_sigma_file_change.xml
-├── SN_sigma_file_delete.xml
-├── SN_sigma_file_executable_detected.xml
-├── SN_sigma_firewall_as.xml
-├── SN_sigma_lsa_configuration.xml
-├── SN_sigma_lsa_server.xml
-├── SN_sigma_microsoft_servicebus_client.xml
-├── SN_sigma_msexchange_management.xml
-├── SN_sigma_network_connection.xml
-├── SN_sigma_ntlm.xml
-├── SN_sigma_openssh.xml
-├── SN_sigma_pipe_created.xml
-├── SN_sigma_powershell.xml
-├── SN_sigma_process_access.xml
-├── SN_sigma_registry.xml
-├── SN_sigma_security_mitigations.xml
-├── SN_sigma_security.xml
-├── SN_sigma_shell_core.xml
-├── SN_sigma_smbclient_security.xml
-├── SN_sigma_sysmon_error.xml
-├── SN_sigma_sysmon.xml
-├── SN_sigma_system.xml
-├── SN_sigma_taskscheduler.xml
-├── SN_sigma_terminalservices_localsessionmanager.xml
-├── SN_sigma_windefend.xml
-├── SN_sigma_windows.xml
-├── SN_sigma_wmi_event.xml
-└── SN_sigma_winrm.xml
+├── sigma_application.xml
+├── sigma_appmodel.xml
+├── sigma_appxdeployment_server.xml
+├── sigma_appxpackaging_om.xml
+├── sigma_bits_client.xml
+├── sigma_capi2.xml
+├── sigma_certificateservicesclient_lifecycle_system.xml
+├── sigma_codeintegrity_operational.xml
+├── sigma_create_remote_thread.xml
+├── sigma_create_stream_hash.xml
+├── sigma_diagnosis_scripted.xml
+├── sigma_dns_client.xml
+├── sigma_dns_query.xml
+├── sigma_dns_server.xml
+├── sigma_driver_framework.xml
+├── sigma_driver_load.xml
+├── sigma_file_access.xml
+├── sigma_file_change.xml
+├── sigma_file_delete.xml
+├── sigma_file_executable_detected.xml
+├── sigma_firewall_as.xml
+├── sigma_lsa_configuration.xml
+├── sigma_lsa_server.xml
+├── sigma_microsoft_servicebus_client.xml
+├── sigma_msexchange_management.xml
+├── sigma_network_connection.xml
+├── sigma_ntlm.xml
+├── sigma_openssh.xml
+├── sigma_pipe_created.xml
+├── sigma_powershell.xml
+├── sigma_process_access.xml
+├── sigma_registry.xml
+├── sigma_security_mitigations.xml
+├── sigma_security.xml
+├── sigma_shell_core.xml
+├── sigma_smbclient_security.xml
+├── sigma_sysmon_error.xml
+├── sigma_sysmon.xml
+├── sigma_system.xml
+├── sigma_taskscheduler.xml
+├── sigma_terminalservices_localsessionmanager.xml
+├── sigma_windefend.xml
+├── sigma_windows.xml
+├── sigma_wmi_event.xml
+└── sigma_winrm.xml
 
 sigma_rule_ids.json</code></pre>
     <p>The converter also writes an XML file for a discovered bucket even if all rules in that bucket are skipped as unsupported. In that case, the file contains an empty Wazuh group and the console shows <code>0 rules</code>; file presence means the category was discovered, not that detections were translated.</p>
@@ -149,7 +149,7 @@ sigma_rule_ids.json</code></pre>
     <h2 id="local-validation">6. Validate generated XML locally</h2>
     <p>Validate every generated file before copying anything to the Wazuh Manager:</p>
     <pre><code>set -e
-for file in ~/sigma-wazuh-custom/output_xml/SN_sigma_*.xml; do
+for file in ~/sigma-wazuh-custom/output_xml/sigma_*.xml; do
   xmllint --noout "$file"
   printf '[OK] %s\n' "$(basename "$file")"
 done</code></pre>
@@ -158,12 +158,12 @@ done</code></pre>
     <h2 id="deploy">7. Stage and validate on Wazuh Manager</h2>
     <p>Back up the existing rules and transfer the candidate files to the manager. Use a staging directory first, then install the files under the custom rules directory:</p>
     <pre><code># On the build workstation
-scp ~/sigma-wazuh-custom/output_xml/SN_sigma_*.xml \
+scp ~/sigma-wazuh-custom/output_xml/sigma_*.xml \
   user@&lt;WAZUH_MANAGER_IP&gt;:/tmp/
 
 # On the Wazuh Manager
 sudo install -o wazuh -g wazuh -m 660 \
-  /tmp/SN_sigma_*.xml /var/ossec/etc/rules/</code></pre>
+  /tmp/sigma_*.xml /var/ossec/etc/rules/</code></pre>
     <p>Run the Wazuh rule-engine configuration test before restarting the manager:</p>
     <pre><code>sudo /var/ossec/bin/wazuh-analysisd -t</code></pre>
     <p>If compilation fails, do not restart the manager. Review the reported file and line, correct the candidate XML, and repeat the test. Only restart after the analysis daemon test completes successfully:</p>
