@@ -420,7 +420,7 @@ def main():
             *rules,
             "</group>",
         ]
-        (output / f"SN_sigma_{bucket}.xml").write_text("\n".join(lines) + "\n", encoding="utf-8")
+        (output / f"sigma_{bucket}.xml").write_text("\n".join(lines) + "\n", encoding="utf-8")
     map_path.parent.mkdir(parents=True, exist_ok=True)
     map_path.write_text(json.dumps(id_map, indent=2) + "\n", encoding="utf-8")
     print("[+] All-category conversion run complete")
@@ -432,7 +432,7 @@ def main():
     print(f"    Output directory          : {output.resolve()}")
     print("\n[+] Generated category XML files:")
     for bucket in sorted(discovered_buckets):
-        print(f"    - {f'SN_sigma_{bucket}.xml':<55} ({counts.get(bucket, 0)} rules)")
+        print(f"    - {f'sigma_{bucket}.xml':<55} ({counts.get(bucket, 0)} rules)")
         if fallback_counts.get(bucket):
             print(f"      [!] {fallback_counts[bucket]} rule(s) use fallback parent SID {fallback_parent_sid}")
     print("\n[!] File creation does not mean every Sigma rule in that category was translated.")
