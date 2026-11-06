@@ -455,3 +455,12 @@ img,svg{max-width:100%}
 .hero-actions .contact-icon{
   width:14px;height:14px;flex:0 0 14px;fill:currentColor;vertical-align:middle
 }
+
+/* Keep homepage contact buttons equally sized and their labels on one line. */
+#connect .hero-actions{justify-content:center;gap:12px}
+#connect .hero-actions>.btn{flex:0 0 172px;min-width:172px;min-height:56px;padding:12px 18px;white-space:nowrap}
+#connect .hero-actions>.btn .contact-icon{width:16px;height:16px;flex:0 0 16px}
+@media(max-width:420px){
+  #connect .hero-actions{gap:8px}
+  #connect .hero-actions>.btn{flex-basis:calc(50% - 4px);min-width:0;padding:10px 8px;font-size:10px}
+}
