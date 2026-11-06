@@ -300,3 +300,48 @@ img,svg{max-width:100%}
   color:var(--muted);
   font:400 13px/1.75 var(--font-body);
 }
+
+/* Related guide cards: keep labels and titles clearly separated across every article. */
+.article-page .content .related{
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:12px!important;
+  margin:28px 0 0!important;
+  padding:0!important;
+  border:0!important;
+}
+.article-page .content .related>a{
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:flex-start!important;
+  gap:7px!important;
+  min-width:0!important;
+  padding:16px 18px!important;
+  border:1px solid var(--site-border)!important;
+  border-radius:10px!important;
+  background:var(--site-surface-2)!important;
+  text-decoration:none!important;
+  overflow-wrap:anywhere!important;
+  transition:border-color .18s ease,background-color .18s ease!important;
+}
+.article-page .content .related>a:hover{
+  border-color:var(--site-green)!important;
+  background:color-mix(in srgb,var(--site-green) 5%,var(--site-surface-2))!important;
+  text-decoration:none!important;
+}
+.article-page .content .related small{
+  display:block!important;
+  margin:0!important;
+  color:var(--site-green)!important;
+  font:700 9px/1.5 "JetBrains Mono",monospace!important;
+  letter-spacing:.12em!important;
+}
+.article-page .content .related strong{
+  display:block!important;
+  margin:0!important;
+  color:var(--site-text)!important;
+  font:700 15px/1.45 "Space Grotesk",sans-serif!important;
+}
+@media(max-width:600px){
+  .article-page .content .related{grid-template-columns:1fr!important}
+}
