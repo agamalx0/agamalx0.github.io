@@ -345,3 +345,71 @@ img,svg{max-width:100%}
 @media(max-width:600px){
   .article-page .content .related{grid-template-columns:1fr!important}
 }
+
+/* Contact panel: compact, site-matched callout with clear icon links. */
+.article-page .content .contact-hook{
+  position:relative!important;
+  margin:32px 0 0!important;
+  padding:24px!important;
+  border:1px solid var(--site-border)!important;
+  border-left:3px solid var(--site-green)!important;
+  border-radius:8px!important;
+  background:var(--site-surface)!important;
+  box-shadow:none!important;
+}
+.article-page .content .contact-hook::before{
+  content:"// CONNECT"!important;
+  display:block!important;
+  margin:0 0 12px!important;
+  color:var(--site-green)!important;
+  font:700 10px/1.5 "JetBrains Mono",monospace!important;
+  letter-spacing:.12em!important;
+}
+.article-page .content .contact-hook .hook-kicker{display:none!important}
+.article-page .content .contact-hook .hook-title{
+  margin:0 0 10px!important;
+  color:var(--site-text)!important;
+  font:700 clamp(18px,2.4vw,23px)/1.3 "Space Grotesk",sans-serif!important;
+  letter-spacing:-.025em!important;
+  text-transform:none!important;
+}
+.article-page .content .contact-hook>p:not(.hook-title){
+  max-width:760px!important;
+  margin:0!important;
+  color:var(--site-muted)!important;
+  font:12px/1.8 "JetBrains Mono",monospace!important;
+}
+.article-page .content .contact-links{
+  display:flex!important;
+  flex-wrap:wrap!important;
+  gap:10px!important;
+  margin:18px 0 0!important;
+}
+.article-page .content .contact-links>a{
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:8px!important;
+  min-height:40px!important;
+  padding:9px 13px!important;
+  border:1px solid var(--site-border)!important;
+  border-radius:5px!important;
+  background:var(--site-surface-2)!important;
+  color:var(--site-text)!important;
+  font:600 11px/1.4 "JetBrains Mono",monospace!important;
+  text-decoration:none!important;
+  text-transform:none!important;
+  transition:border-color .18s ease,color .18s ease,background-color .18s ease!important;
+}
+.article-page .content .contact-links>a:hover{
+  border-color:var(--site-green)!important;
+  background:color-mix(in srgb,var(--site-green) 7%,var(--site-surface-2))!important;
+  color:var(--site-green)!important;
+}
+.article-page .content .contact-icon{
+  width:15px!important;height:15px!important;flex:0 0 15px!important;
+  fill:currentColor!important;vertical-align:middle!important;
+}
+@media(max-width:540px){
+  .article-page .content .contact-hook{padding:18px!important}
+}
