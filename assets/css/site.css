@@ -413,3 +413,45 @@ img,svg{max-width:100%}
 @media(max-width:540px){
   .article-page .content .contact-hook{padding:18px!important}
 }
+
+/* Compact visitor badge in the footer, aligned with the site's terminal palette. */
+.site-visits{
+  display:inline-flex!important;
+  align-items:center!important;
+  gap:9px!important;
+  padding:7px 10px!important;
+  border:1px solid var(--border)!important;
+  border-radius:6px!important;
+  background:var(--surface)!important;
+  color:var(--muted)!important;
+  font:700 9px/1.4 var(--font-body)!important;
+  letter-spacing:.12em!important;
+  text-transform:uppercase!important;
+}
+.site-visits::before{
+  content:""!important;
+  display:inline-block!important;
+  width:6px!important;height:6px!important;flex:0 0 6px!important;
+  border-radius:50%!important;
+  background:#2dff8f!important;
+  box-shadow:0 0 8px #2dff8f88!important;
+}
+.site-visits-label{color:var(--muted)!important}
+.site-visits-widget{
+  min-width:0!important;
+  margin-left:2px!important;
+  padding:3px 7px!important;
+  border:1px solid color-mix(in srgb,#2dff8f 30%,var(--border))!important;
+  border-radius:4px!important;
+  background:color-mix(in srgb,#2dff8f 7%,var(--surface))!important;
+  color:#2dff8f!important;
+  font:700 10px/1.4 var(--font-body)!important;
+}
+.site-visits-number{
+  color:#2dff8f!important;
+  font:700 10px/1.4 var(--font-body)!important;
+  letter-spacing:.04em!important;
+}
+.hero-actions .contact-icon{
+  width:14px;height:14px;flex:0 0 14px;fill:currentColor;vertical-align:middle
+}
