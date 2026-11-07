@@ -178,6 +178,12 @@
     if (document.body.classList.contains('redirect-page')) return;
     document.body.classList.add('article-page');
     normalizeHeader();
+    const header = document.querySelector('.site-header');
+    if (header) {
+      const measure = () => document.documentElement.style.setProperty('--header-offset', Math.ceil(header.getBoundingClientRect().height + 16) + 'px');
+      measure();
+      if (window.ResizeObserver) new ResizeObserver(measure).observe(header);
+    }
     normalizeFooter();
     const hero = document.querySelector('.hero');
     const content = document.querySelector('article.content,.content article') || document.querySelector('.content');
@@ -208,10 +214,10 @@
         const meta = hero.querySelector('.meta');
         if (meta) {
           const spans = Array.from(meta.querySelectorAll('span'));
-          const date = meta.querySelector('[data-article-date]') || spans.find(span => /^(Updated|Published)\\b/i.test(span.textContent.trim())) || document.createElement('span');
-          const datePrefix = /^Published\\b/i.test(date.textContent.trim()) ? 'Published ' : 'Updated ';
+          const date = meta.querySelector('[data-article-date]') || spans.find(span => /^(Updated|Published)\b/i.test(span.textContent.trim())) || document.createElement('span');
+          const datePrefix = /^Published\b/i.test(date.textContent.trim()) ? 'Published ' : 'Updated ';
           date.dataset.articleDate = 'true'; date.textContent = datePrefix + note.date;
-          const reading = meta.querySelector('[data-reading-time]') || spans.find(span => /Approx\\.|min read/i.test(span.textContent)) || document.createElement('span');
+          const reading = meta.querySelector('[data-reading-time]') || spans.find(span => /Approx\.|min read/i.test(span.textContent)) || document.createElement('span');
           reading.dataset.readingTime = 'true'; reading.textContent = 'Approx. ' + note.readingTime;
           if (!date.parentNode) meta.appendChild(date);
           if (!reading.parentNode) meta.appendChild(reading);

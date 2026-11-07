@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://agamalx0.github.io/</loc></url>
+  <url><loc>https://agamalx0.github.io/articles.html</loc></url>
+  <url><loc>https://agamalx0.github.io/articles/wazuh-sigma-xml-rule-conversion.html</loc><lastmod>2026-11-03</lastmod></url>
+  <url><loc>https://agamalx0.github.io/articles/wazuh-all-in-one-installation.html</loc><lastmod>2026-10-12</lastmod></url>
+  <url><loc>https://agamalx0.github.io/articles/wazuh-distributed-architecture.html</loc><lastmod>2026-10-12</lastmod></url>
+  <url><loc>https://agamalx0.github.io/articles/wazuh-mssp-multi-tenant-architecture.html</loc><lastmod>2026-10-16</lastmod></url>
+  <url><loc>https://agamalx0.github.io/articles/dfir-iris-v3-wazuh-ad-ldaps-integration.html</loc><lastmod>2026-10-27</lastmod></url>
+  <url><loc>https://agamalx0.github.io/articles/wazuh-dfir-iris-integration.html</loc><lastmod>2026-10-12</lastmod></url>
+  <url><loc>https://agamalx0.github.io/articles/cuckoo-sandbox-vsphere-yara.html</loc><lastmod>2026-10-12</lastmod></url>
+  <url><loc>https://agamalx0.github.io/articles/what-is-qradar-siem.html</loc><lastmod>2026-10-01</lastmod></url>
+  <url><loc>https://agamalx0.github.io/articles/qradar-installation.html</loc><lastmod>2026-10-02</lastmod></url>
+  <url><loc>https://agamalx0.github.io/articles/qradar-health-check.html</loc><lastmod>2026-10-04</lastmod></url>
+  <url><loc>https://agamalx0.github.io/articles/qradar-troubleshooting.html</loc><lastmod>2026-10-05</lastmod></url>
+  <url><loc>https://agamalx0.github.io/articles/qradar-tomcat-cache-ui-troubleshooting.html</loc><lastmod>2026-10-17</lastmod></url>
+  <url><loc>https://agamalx0.github.io/articles/qradar-ariel-proxy-search-failure.html</loc><lastmod>2026-10-17</lastmod></url>
+  <url><loc>https://agamalx0.github.io/articles/qradar-app-install-task-stuck.html</loc><lastmod>2026-10-19</lastmod></url>
+  <url><loc>https://agamalx0.github.io/articles/qradar-apphost-api-certificate-troubleshooting.html</loc><lastmod>2026-10-19</lastmod></url>
+  <url><loc>https://agamalx0.github.io/articles/qradar-operations-essentials.html</loc><lastmod>2026-10-07</lastmod></url>
+  <url><loc>https://agamalx0.github.io/articles/qradar-upgrade-guide.html</loc><lastmod>2026-10-08</lastmod></url>
+  <url><loc>https://agamalx0.github.io/articles/qradar-high-availability.html</loc><lastmod>2026-10-10</lastmod></url>
+  <url><loc>https://agamalx0.github.io/articles/qradar-migration-guide.html</loc><lastmod>2026-10-11</lastmod></url>
+  <url><loc>https://agamalx0.github.io/articles/qradar-routing-rules.html</loc><lastmod>2026-10-12</lastmod></url>
+  <url><loc>https://agamalx0.github.io/articles/qradar-soar-upgrade-guide.html</loc><lastmod>2026-10-12</lastmod></url>
+  <url><loc>https://agamalx0.github.io/articles/splunk-enterprise-installation-ubuntu-24-04.html</loc><lastmod>2026-10-18</lastmod></url>
+  <url><loc>https://agamalx0.github.io/articles/wazuh-daily-healthcheck-n8n-email-report.html</loc><lastmod>2026-10-28</lastmod></url>
+  <url><loc>https://agamalx0.github.io/articles/n8n-installation-local-automation.html</loc><lastmod>2026-10-12</lastmod></url>
+  <url><loc>https://agamalx0.github.io/articles/testing-n8n-webhooks-locally-curl.html</loc><lastmod>2026-10-12</lastmod></url>
+</urlset>

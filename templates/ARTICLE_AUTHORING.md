@@ -18,3 +18,6 @@ The portfolio is static GitHub Pages HTML. There is no build step.
 6. Check the new article and `/articles.html` at mobile and desktop widths, then verify all internal links and screenshot paths before merging.
 
 Topic filters and topic colours are in `assets/css/site.css`. The `notes.json` data is shared by the homepage, library and article navigation.
+
+
+After adding or editing a note in notes.json, run `node scripts/build-site.mjs` and `node scripts/check-site.mjs` from the repository root. Commit the regenerated homepage, library, article metadata and sitemap together. This preserves the complete notes index without JavaScript and keeps social cards and structured data current. The generator also versions shared CSS and article/library scripts by content hash so visitors receive updates. Dates in notes.json describe the article update date; do not invent publication dates.
