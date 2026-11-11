@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en" class="dark">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0a0b0d">
+<meta name="description" content="Enroll a Windows agent, validate manager connectivity, configure Windows EventChannel collection, and verify event delivery with practical troubleshooting checks.">
+<title>Connecting a Windows Endpoint to Wazuh | Ashraf Gamal</title>
+
+
+
+
+
+<link rel="canonical" href="https://agamalx0.github.io/articles/connecting-windows-endpoint-to-wazuh.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/site.css?v=af31cb7f630b">
+<script defer src="/assets/js/article.v4.js?v=f74850cf0021"></script>
+<script defer src="/assets/js/site-visits.v4.js?v=20261101"></script>
+<!-- BEGIN GENERATED METADATA -->
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Ashraf Gamal | SOC Engineering">
+<meta property="og:locale" content="en_US">
+<meta property="og:title" content="Connecting a Windows Endpoint to Wazuh | Ashraf Gamal">
+<meta property="og:description" content="Enroll a Windows agent, validate manager connectivity, configure Windows EventChannel collection, and verify event delivery with practical troubleshooting checks.">
+<meta property="og:url" content="https://agamalx0.github.io/articles/connecting-windows-endpoint-to-wazuh.html">
+<meta property="og:image" content="https://agamalx0.github.io/ashraf-avatar.jpg">
+<meta property="og:image:alt" content="Ashraf Gamal">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Connecting a Windows Endpoint to Wazuh | Ashraf Gamal">
+<meta name="twitter:description" content="Enroll a Windows agent, validate manager connectivity, configure Windows EventChannel collection, and verify event delivery with practical troubleshooting checks.">
+<meta name="twitter:image" content="https://agamalx0.github.io/ashraf-avatar.jpg">
+<meta name="twitter:image:alt" content="Ashraf Gamal">
+<meta property="article:modified_time" content="2026-11-12">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"Connecting a Windows Endpoint to Wazuh","description":"Enroll a Windows agent, validate manager connectivity, configure Windows EventChannel collection, and verify event delivery with practical troubleshooting checks.","dateModified":"2026-11-12","author":{"@type":"Person","name":"Ashraf Gamal","url":"https://agamalx0.github.io/"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://agamalx0.github.io/articles/connecting-windows-endpoint-to-wazuh.html"},"image":"https://agamalx0.github.io/ashraf-avatar.jpg","inLanguage":"en"}</script>
+<!-- END GENERATED METADATA -->
+</head>
+<body class="article-page">
+<header class="topbar"><nav class="nav wrap"><a class="brand" href="/">AG <span class="gradient">/ Notes</span></a><a class="back" href="/articles.html">← Back to all technical notes</a></nav></header>
+<header class="hero wrap">
+<h1>Connecting a Windows endpoint<br> <span class="gradient">to Wazuh</span></h1>
+<p class="lede">Deploy the Windows agent, establish the manager connection, and validate the complete path from a local EventChannel record to centrally received telemetry.</p>
+<div class="meta"><span>By Ashraf Gamal</span><span data-article-date>Updated 12 November 2026</span><span class="pill">Windows · Wazuh 4.x</span><span data-reading-time>Approx. 10 min read</span></div>
+</header>
+<div class="wrap layout"><aside class="toc"><strong>In this guide</strong><a href="#scope">Scope and telemetry path</a><a href="#prerequisites">Prerequisites and ports</a><a href="#network">Validate connectivity</a><a href="#install">Install the Windows agent</a><a href="#enrollment">Verify enrollment</a><a href="#collection">Inspect event collection</a><a href="#validation">Prove event delivery</a><a href="#troubleshooting">Troubleshooting</a><a href="#references">References</a></aside>
+<article class="content">
+<div class="callout"><strong>Validation has three separate stages</strong><p>Confirm network reachability, confirm an enrolled and connected agent, then confirm delivery of a known event. A successful ping, a running service, or an active dashboard entry alone does not establish end-to-end collection.</p></div>
+<h2 id="scope">1. Scope and telemetry path</h2>
+<p>This guide covers onboarding a Windows workstation or server to an existing Wazuh manager. For the central platform setup, start with <a href="/articles/wazuh-all-in-one-installation.html">Wazuh all-in-one installation and validation</a>. The same agent workflow applies when the manager runs in Docker, provided its ports are reachable from the endpoint.</p>
+<pre class="code"><code class="language-text">Windows Event Log → Wazuh agent → Wazuh manager
+                                      ├─ Rules → alerts → Filebeat → indexer → dashboard
+                                      └─ Archives (optional) → received-event evidence</code></pre>
+<p>EventChannel collection covers Windows logs. File integrity monitoring, additional application logs, and Sysmon require their own configuration and validation; installing the agent does not automatically provide every telemetry source.</p>
+<h2 id="prerequisites">2. Prerequisites and network ports</h2>
+<ul><li>A supported Windows endpoint and an elevated PowerShell session.</li><li>A working manager, indexer, and dashboard with sufficient capacity and synchronized clocks.</li><li>A stable manager IP address or resolvable DNS name and a unique endpoint identity.</li><li>A Windows agent release compatible with the manager. The manager must be the same version as or newer than the agent; do not install the newest MSI blindly on an older manager.</li><li>Access to the official Wazuh installer and your environment's enrollment policy, including any password or certificate requirements.</li></ul>
+<div class="table-wrap"><table><thead><tr><th>Connection</th><th>Default destination</th><th>Purpose</th></tr></thead><tbody>
+<tr><td>Windows → manager</td><td>TCP 1514</td><td>Ongoing agent communication and telemetry.</td></tr>
+<tr><td>Windows → enrollment service</td><td>TCP 1515</td><td>Initial agent enrollment using the workflow below.</td></tr>
+<tr><td>Analyst browser → dashboard</td><td>HTTPS, typically TCP 443</td><td>Operator access; use the published port in Docker.</td></tr>
+</tbody></table></div>
+<p>TCP 55000 is the Wazuh API and is used by API-based enrollment workflows. It is not the event transport port and is not needed from the endpoint for the default 1515 enrollment procedure shown here. Restrict agent ports to the intended endpoint networks.</p>
+<h2 id="network">3. Validate the path to the manager</h2>
+<p>For a VirtualBox lab, place both VMs on the same host-only network. An optional second NAT adapter provides Internet access. Use the manager host's reachable host-only address, not a Docker-internal address or an isolated NAT address. These adapters are a lab choice, not a Wazuh requirement.</p>
+<pre class="code"><code class="language-powershell"># Example lab address: replace with your reachable manager IP or DNS name.
+$Manager = "192.168.56.101"
+Test-NetConnection -ComputerName $Manager -Port 1514
+Test-NetConnection -ComputerName $Manager -Port 1515</code></pre>
+<p>Both checks should report <code>TcpTestSucceeded : True</code> before initial enrollment. A ping can help diagnose routing, but ICMP may be blocked independently of TCP. An open TCP port proves a listener is reachable, not that enrollment credentials or event ingestion are working.</p>
+<h3>When the manager runs in Docker</h3>
+<p>On the Docker host, inspect the active Compose deployment:</p>
+<pre class="code"><code class="language-bash">docker compose ps
+docker compose port wazuh.manager 1514
+docker compose port wazuh.manager 1515</code></pre>
+<p>These commands assume the official Compose service name <code>wazuh.manager</code>; substitute your service name if different. Confirm TCP 1514 and 1515 are published on a host interface reachable by Windows, and that host and network firewalls allow the connections. Container listeners alone do not establish access from another VM.</p>
+<h2 id="install">4. Install the Windows agent</h2>
+<p>Download the compatible MSI from the <a href="https://documentation.wazuh.com/current/installation-guide/wazuh-agent/wazuh-agent-package-windows.html" target="_blank" rel="noopener noreferrer">official Windows agent installation page</a>. The example uses a local file so the package version is an explicit deployment choice. Replace the filename placeholder and run in elevated PowerShell.</p>
+<pre class="code"><code class="language-powershell">$Manager = "192.168.56.101"
+$Msi = Join-Path $env:USERPROFILE 'Downloads\wazuh-agent-&lt;version&gt;-1.msi'
+$InstallLog = Join-Path $env:TEMP 'wazuh-agent-install.log'
+if (-not (Test-Path -LiteralPath $Msi)) {
+    throw "Set the exact downloaded MSI path before continuing."
+}
+$Signature = Get-AuthenticodeSignature -FilePath $Msi
+$Signature | Format-List Status, StatusMessage, SignerCertificate
+if ($Signature.Status -ne 'Valid') {
+    throw "Installer signature validation failed. Review the package source."
+}
+# Verify the displayed signer against the expected vendor before proceeding.
+$MsiArgs = @(
+    '/i', ('"{0}"' -f $Msi), '/qn', '/norestart',
+    ('WAZUH_MANAGER="{0}"' -f $Manager),
+    ('WAZUH_REGISTRATION_SERVER="{0}"' -f $Manager),
+    ('WAZUH_AGENT_NAME="{0}"' -f $env:COMPUTERNAME),
+    '/L*v', ('"{0}"' -f $InstallLog)
+)
+$Install = Start-Process -FilePath 'msiexec.exe' -ArgumentList $MsiArgs -Wait -PassThru
+if ($Install.ExitCode -notin @(0, 3010)) {
+    throw "MSI failed with exit code $($Install.ExitCode). Inspect $InstallLog"
+}
+if ($Install.ExitCode -eq 3010) {
+    Write-Warning 'Windows Installer requests a restart; schedule it before final validation.'
+}
+Start-Service -Name WazuhSvc
+Get-Service -Name WazuhSvc</code></pre>
+<p><code>/qn</code> selects silent installation, <code>/norestart</code> prevents an automatic reboot, and <code>-Wait</code> avoids racing the installer with service startup. The MSI log is saved locally for diagnostics. Treat logs as operational data and redact environment details before sharing.</p>
+<p><code>WAZUH_MANAGER</code> selects the event destination. <code>WAZUH_REGISTRATION_SERVER</code> selects the enrollment endpoint; the default is the manager when omitted. This example uses one server for both. If your enrollment policy requires a password or certificate verification, use the corresponding <a href="https://documentation.wazuh.com/current/user-manual/agent/agent-enrollment/deployment-variables/deployment-variables-windows.html" target="_blank" rel="noopener noreferrer">documented deployment variables</a> and approved secret handling rather than weakening the manager policy.</p>
+<h2 id="enrollment">5. Verify service health and enrollment</h2>
+<p>On a standard 64-bit Windows installation, inspect the service, agent diagnostics, and transport connection:</p>
+<pre class="code"><code class="language-powershell">$AgentRoot = Join-Path ${env:ProgramFiles(x86)} 'ossec-agent'
+Get-Service -Name WazuhSvc
+Get-Content -LiteralPath (Join-Path $AgentRoot 'ossec.log') -Tail 80
+Get-NetTCPConnection -RemotePort 1514 -State Established -ErrorAction SilentlyContinue |
+    Select-Object LocalAddress, RemoteAddress, RemotePort, State</code></pre>
+<p>Adjust the installation path if necessary. Check that the connection's remote address matches the intended manager. Read <code>ossec.log</code> for enrollment acceptance, connection establishment, and configuration errors. Do not copy or publish <code>client.keys</code>: it contains the agent's authentication material.</p>
+<p>In the dashboard agent inventory, locate the endpoint by its configured name, record its agent ID, and confirm an <strong>active</strong> status and recent keepalive. On a package-installed manager, you can cross-check with:</p>
+<pre class="code"><code class="language-bash">sudo /var/ossec/bin/agent_control -l
+sudo tail -n 80 /var/ossec/logs/ossec.log</code></pre>
+<p>For the official Docker deployment, run the manager check inside its container:</p>
+<pre class="code"><code class="language-bash">docker compose exec wazuh.manager /var/ossec/bin/agent_control -l</code></pre>
+<p>An active agent confirms the control/communication path. Continue with a known event to validate log collection.</p>
+<h2 id="collection">6. Inspect Windows EventChannel collection</h2>
+<p>Wazuh's default Windows configuration collects the Application, Security, and System channels. Inspect <code>ossec.conf</code> in the agent installation directory and any centrally assigned group configuration before making changes.</p>
+<pre class="code"><code class="language-powershell">Select-String -LiteralPath (Join-Path $AgentRoot 'ossec.conf') -Pattern 'eventchannel' -Context 2, 3</code></pre>
+<p>The relevant blocks inside <code>&lt;ossec_config&gt;</code> use this structure. These are reference examples: keep existing channel filters and do not paste duplicate blocks into an already configured agent.</p>
+<pre class="code"><code class="language-xml">&lt;localfile&gt;
+  &lt;location&gt;Application&lt;/location&gt;
+  &lt;log_format&gt;eventchannel&lt;/log_format&gt;
+&lt;/localfile&gt;
+&lt;localfile&gt;
+  &lt;location&gt;Security&lt;/location&gt;
+  &lt;log_format&gt;eventchannel&lt;/log_format&gt;
+&lt;/localfile&gt;
+&lt;localfile&gt;
+  &lt;location&gt;System&lt;/location&gt;
+  &lt;log_format&gt;eventchannel&lt;/log_format&gt;
+&lt;/localfile&gt;</code></pre>
+<p>If you change the local configuration, retain a backup, validate the XML, restart <code>WazuhSvc</code>, and check the agent log immediately. Security events also depend on Windows audit policy; a collector cannot forward an event the OS never generated. Sysmon requires a separate installation, configuration, and collection of <code>Microsoft-Windows-Sysmon/Operational</code>.</p>
+<h2 id="validation">7. Prove delivery with a known event</h2>
+<h3>Create and identify the local record</h3>
+<p>Run this harmless informational event test in elevated PowerShell. The timestamped marker makes the test distinguishable from older records:</p>
+<pre class="code"><code class="language-powershell">$Marker = 'Wazuh-Onboarding-' + (Get-Date -Format 'yyyyMMdd-HHmmss')
+eventcreate /L APPLICATION /T INFORMATION /SO WazuhConnectivityTest /ID 100 /D "$Marker"
+Get-WinEvent -FilterHashtable @{
+    LogName = 'Application'
+    ProviderName = 'WazuhConnectivityTest'
+    Id = 100
+    StartTime = (Get-Date).AddMinutes(-5)
+} | Select-Object TimeCreated, Id, ProviderName, Message</code></pre>
+<p>Record the marker, endpoint name, agent ID, and timestamp. Confirm the event exists locally before troubleshooting Wazuh. This is a collection test; it is not a simulated attack and may not match an alert-generating rule.</p>
+<h3>Distinguish received events from alerts</h3>
+<p>The usual <code>wazuh-alerts-*</code> view contains alerts, not every collected Windows event. Start by filtering the correct agent and time window. If the marker is absent, that alone does not prove a collection failure.</p>
+<p>For a controlled lab, JSON archives can provide direct evidence of received events. They are disabled by default. To enable them temporarily, set <code>&lt;logall_json&gt;yes&lt;/logall_json&gt;</code> in the manager's existing <code>&lt;global&gt;</code> block in <code>/var/ossec/etc/ossec.conf</code>, then restart the manager. In Docker, edit the persistent configuration used by your deployment, not an ephemeral copy. Archive retention consumes disk space and can include sensitive event content; size and restrict it before enabling.</p>
+<pre class="code"><code class="language-bash"># Package-installed manager; restart after updating the existing configuration.
+sudo systemctl restart wazuh-manager
+# Generate the Windows test event AFTER the manager is ready.
+# Replace this example with the exact marker printed on Windows.
+sudo grep -F 'Wazuh-Onboarding-20261112-140000' /var/ossec/logs/archives/archives.json</code></pre>
+<p>Check that the matching archive record has the expected <code>agent.id</code>, <code>agent.name</code>, timestamp, provider, and event ID. For Docker, inspect the same archive path inside the manager container. If archive forwarding is already configured, search <code>wazuh-archives-*</code> in the dashboard instead. Enabling manager archives alone does not enable dashboard archive indexing; Filebeat archive forwarding and an appropriate data view are also required.</p>
+<p>A matching archive record proves Windows-to-manager delivery. A corresponding alert in <code>wazuh-alerts-*</code> proves the detection and alert-indexing path only when an applicable rule fires. Use an approved detection test for that separate check. After temporary archive validation, restore the previous logging setting and restart the manager if continuous archiving is not part of the deployment.</p>
+<h2 id="troubleshooting">8. Troubleshoot the failing stage</h2>
+<div class="table-wrap"><table><thead><tr><th>Symptom</th><th>Check next</th></tr></thead><tbody>
+<tr><td>TCP 1515 unreachable</td><td>Enrollment listener, host-only routing, firewall policy, and Docker port publication. An already enrolled agent normally does not need a new enrollment on every reconnect.</td></tr>
+<tr><td>Enrollment rejected</td><td>Agent and manager logs, duplicate agent name, enrollment password/certificate policy, and version compatibility. Resolve identity conflicts before replacing an existing registration.</td></tr>
+<tr><td>Service runs, agent disconnected</td><td>Configured manager address, TCP 1514, client/server protocol agreement, DNS, and agent authentication. Do not infer connection health from service state.</td></tr>
+<tr><td>Agent active, test missing locally</td><td>Elevated event creation, Application log, provider name, and the exact timestamp/marker.</td></tr>
+<tr><td>Local event exists, no archive match</td><td>Archive enablement before the test, channel/query configuration, group policy, agent collection errors, and the manager actually receiving this agent.</td></tr>
+<tr><td>Archive match, no alert</td><td>Rule conditions and alert thresholds. An informational marker is not guaranteed to produce an alert.</td></tr>
+<tr><td>Alert on manager, absent in dashboard</td><td>Filebeat health, indexer ingestion, selected data view, agent filter, time range, and timezone.</td></tr>
+</tbody></table></div>
+<p>Keep a small onboarding record: manager and agent versions, agent ID, service state, connectivity results, and a timestamped received-event sample. Document which stage was actually validated instead of treating an active badge as proof of all monitoring capabilities.</p>
+<h2 id="references">9. References and source note</h2>
+<ul>
+<li><a href="https://documentation.wazuh.com/current/installation-guide/wazuh-agent/wazuh-agent-package-windows.html" target="_blank" rel="noopener noreferrer">Wazuh — Windows agent installation</a></li>
+<li><a href="https://documentation.wazuh.com/current/user-manual/agent/agent-enrollment/deployment-variables/deployment-variables-windows.html" target="_blank" rel="noopener noreferrer">Wazuh — Windows deployment variables</a></li>
+<li><a href="https://documentation.wazuh.com/current/upgrade-guide/index.html" target="_blank" rel="noopener noreferrer">Wazuh — component version compatibility</a></li>
+<li><a href="https://documentation.wazuh.com/current/user-manual/agent/agent-management/agent-connection.html" target="_blank" rel="noopener noreferrer">Wazuh — agent connection checks</a></li>
+<li><a href="https://documentation.wazuh.com/current/deployment-options/docker/container-usage.html" target="_blank" rel="noopener noreferrer">Wazuh — Docker deployment utilities</a></li>
+<li><a href="https://documentation.wazuh.com/current/user-manual/capabilities/log-data-collection/configuration.html" target="_blank" rel="noopener noreferrer">Wazuh — Windows EventChannel configuration</a></li>
+<li><a href="https://documentation.wazuh.com/current/user-manual/manager/event-logging.html" target="_blank" rel="noopener noreferrer">Wazuh — event archives and indexing</a></li>
+<li><a href="https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/eventcreate" target="_blank" rel="noopener noreferrer">Microsoft — eventcreate command reference</a></li>
+</ul>
+<p class="note">Adapted and expanded from <a href="https://infosecwriteups.com/connecting-a-windows-endpoint-to-wazuh-e4b21e941f3e" target="_blank" rel="noopener noreferrer">Connecting a Windows Endpoint to Wazuh</a>. Commands and validation guidance were rewritten against official documentation. The steps describe a reproducible procedure rather than a claim of a newly executed endpoint deployment.</p>
+<div class="contact-hook">
+<span class="hook-kicker">Discuss Windows telemetry</span>
+<p class="hook-title">Onboarding Windows endpoints or investigating missing security events?</p>
+<p>Contact me to discuss Wazuh agent deployment, Windows log collection, and SIEM ingestion troubleshooting.</p>
+<div class="contact-links"><a href="mailto:as.ga2019@gmail.com?subject=Windows%20Wazuh%20Agent%20Inquiry"><svg class="contact-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 4h20a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Zm10 8.2L21.2 6H2.8L12 12.2Zm0 2.4L2 8v10h20V8l-10 6.6Z"/></svg>Email me ↗</a><a href="https://www.linkedin.com/in/1elrawy/" target="_blank" rel="noopener noreferrer"><svg class="contact-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.13 1.44-2.13 2.94v5.67H9.35V9h3.42v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.26 2.37 4.26 5.45v6.29ZM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12ZM7.12 20.45H3.56V9h3.56v11.45ZM22.22 0H1.77C.79 0 0 .77 0 1.72v20.56C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.72V1.72C24 .77 23.2 0 22.22 0Z"/></svg>LinkedIn ↗</a></div>
+</div>
+</article></div>
+<footer class="footer"><div class="wrap footerinner"><span>© 2026 Ashraf Gamal · Technical notes</span><a href="/articles.html">Back to the article library ↑</a></div><span class="site-visits" id="site-visits" aria-label="Total site visits"><span class="site-visits-label">SITE VISITS</span><span class="site-visits-widget" id="site-visits-widget" aria-live="polite"><span id="site-visits-counter" class="site-visits-number">—</span></span></span>
+</footer>
+<script src="/assets/js/terminal-design.v2.js?v=b4ab5178cb38"></script>
+</body>
+</html>
+

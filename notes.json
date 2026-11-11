@@ -20,6 +20,16 @@
     "readingTime": "7 min read"
   },
   {
+    "title": "Connecting a Windows Endpoint to Wazuh",
+    "topic": "Wazuh",
+    "topicKey": "wazuh",
+    "summary": "Enroll a Windows agent, validate manager connectivity, configure Windows EventChannel collection, and verify event delivery with practical troubleshooting checks.",
+    "url": "/articles/connecting-windows-endpoint-to-wazuh.html",
+    "date": "12 November 2026",
+    "dateISO": "2026-11-12",
+    "readingTime": "10 min read"
+  },
+  {
     "title": "Wazuh Distributed Architecture",
     "topic": "Wazuh",
     "topicKey": "wazuh",
