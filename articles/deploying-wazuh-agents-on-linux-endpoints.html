@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en" class="dark">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0a0b0d">
+<meta name="description" content="Deploy Wazuh agents with APT or DNF, control package versions, validate enrollment, and trace Linux logs from the endpoint to the manager.">
+<title>Deploying Wazuh agents on Linux endpoints | Ashraf Gamal</title>
+
+
+
+
+
+<link rel="canonical" href="https://agamalx0.github.io/articles/deploying-wazuh-agents-on-linux-endpoints.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/site.css?v=af31cb7f630b">
+<script defer src="/assets/js/article.v4.js?v=f74850cf0021"></script>
+<script defer src="/assets/js/site-visits.v4.js?v=20261101"></script>
+<!-- BEGIN GENERATED METADATA -->
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Ashraf Gamal | SOC Engineering">
+<meta property="og:locale" content="en_US">
+<meta property="og:title" content="Deploying Wazuh agents on Linux endpoints | Ashraf Gamal">
+<meta property="og:description" content="Deploy Wazuh agents with APT or DNF, control package versions, validate enrollment, and trace Linux logs from the endpoint to the manager.">
+<meta property="og:url" content="https://agamalx0.github.io/articles/deploying-wazuh-agents-on-linux-endpoints.html">
+<meta property="og:image" content="https://agamalx0.github.io/ashraf-avatar.jpg">
+<meta property="og:image:alt" content="Ashraf Gamal">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Deploying Wazuh agents on Linux endpoints | Ashraf Gamal">
+<meta name="twitter:description" content="Deploy Wazuh agents with APT or DNF, control package versions, validate enrollment, and trace Linux logs from the endpoint to the manager.">
+<meta name="twitter:image" content="https://agamalx0.github.io/ashraf-avatar.jpg">
+<meta name="twitter:image:alt" content="Ashraf Gamal">
+<meta property="article:modified_time" content="2026-11-12">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"Deploying Wazuh agents on Linux endpoints","description":"Deploy Wazuh agents with APT or DNF, control package versions, validate enrollment, and trace Linux logs from the endpoint to the manager.","dateModified":"2026-11-12","author":{"@type":"Person","name":"Ashraf Gamal","url":"https://agamalx0.github.io/"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://agamalx0.github.io/articles/deploying-wazuh-agents-on-linux-endpoints.html"},"image":"https://agamalx0.github.io/ashraf-avatar.jpg","inLanguage":"en"}</script>
+<!-- END GENERATED METADATA -->
+</head>
+<body class="article-page">
+<header class="topbar"><nav class="nav wrap"><a class="brand" href="/">AG <span class="gradient">/ Notes</span></a><a class="back" href="/articles.html">← Back to all technical notes</a></nav></header>
+<header class="hero wrap"><h1>Deploying Wazuh agents<br> <span class="gradient">on Linux endpoints</span></h1>
+<p class="lede">Install a compatible agent, enroll the endpoint, and verify Linux telemetry at each stage: local log generation, agent collection, manager receipt, and alert indexing.</p>
+<div class="meta"><span>By Ashraf Gamal</span><span data-article-date>Updated 12 November 2026</span><span class="pill">Linux · APT / DNF</span><span data-reading-time>Approx. 10 min read</span></div></header>
+<div class="wrap layout"><aside class="toc"><strong>In this guide</strong><a href="#scope">Scope and prerequisites</a><a href="#network">Check connectivity</a><a href="#apt">APT deployment</a><a href="#dnf">DNF deployment</a><a href="#service">Start and verify the agent</a><a href="#collection">Configure log collection</a><a href="#validation">Validate event delivery</a><a href="#troubleshooting">Troubleshooting</a><a href="#references">Official references</a></aside><article class="content">
+<div class="callout"><strong>Choose one installation path</strong><p>Use the APT section for supported Debian/Ubuntu systems or the DNF section for supported RPM-based systems. Both paths join at service validation. These commands target a new agent installation on a systemd host.</p></div>
+<h2 id="scope">1. Scope and prerequisites</h2>
+<p>The Linux agent runs on the monitored endpoint and sends telemetry to an existing Wazuh manager. It is separate from the central manager, indexer, and dashboard. If those components are not ready, begin with <a href="/articles/wazuh-all-in-one-installation.html">Wazuh all-in-one installation and validation</a>. For Windows hosts, use <a href="/articles/connecting-windows-endpoint-to-wazuh.html">Deploying Wazuh agents on Windows endpoints</a>.</p>
+<p>Verify the selected Wazuh release supports the distribution, release, and CPU architecture. The package examples below deliberately require an explicit version: the manager must be the same version as or newer than the agent. Repository availability alone does not establish compatibility.</p>
+<pre class="code"><code class="language-bash">cat /etc/os-release
+uname -m
+hostname
+timedatectl status</code></pre>
+<p>Use a unique endpoint name and synchronized clocks. Confirm you have administrative access, outbound access to the Wazuh package service, and the enrollment settings for the intended manager. For an existing agent, use the vendor upgrade procedure and preserve its identity and configuration instead of treating it as a fresh installation.</p>
+<h2 id="network">2. Check connectivity before installation</h2>
+<div class="table-wrap"><table><thead><tr><th>Destination</th><th>Default port</th><th>When required</th></tr></thead><tbody>
+<tr><td>Wazuh manager</td><td>TCP 1514</td><td>Persistent agent communication and telemetry.</td></tr>
+<tr><td>Enrollment service</td><td>TCP 1515</td><td>Initial enrollment using the package-variable workflow.</td></tr>
+<tr><td>Package repository</td><td>HTTPS / TCP 443</td><td>Repository metadata, signing key, and package download.</td></tr>
+</tbody></table></div>
+<p>From the Linux endpoint, substitute the reachable manager address. The following checks use netcat (<code>nc</code>); install the distribution's netcat package if it is unavailable.</p>
+<pre class="code"><code class="language-bash">MANAGER="192.168.56.101"
+nc -vz -w 5 "$MANAGER" 1514
+nc -vz -w 5 "$MANAGER" 1515</code></pre>
+<p>Use the host's published address when the manager runs in Docker, and verify the container publishes both ports on an accessible interface. An open port proves network reachability, not successful authentication. TCP 55000 is used for API-based enrollment and management; it is not necessary for the default 1515 enrollment flow here. Do not point the agent at the dashboard or indexer port.</p>
+<h2 id="apt">3. Deploy on Debian or Ubuntu with APT</h2>
+<p>Run this section in a Bash root shell. Check existing repository entries before writing the dedicated Wazuh source file; keep one active entry for this repository.</p>
+<pre class="code"><code class="language-bash">sudo -i
+apt-get update
+apt-get install -y ca-certificates curl gnupg
+install -d -m 0755 /usr/share/keyrings
+curl --fail --show-error --silent --location \
+  https://packages.wazuh.com/key/GPG-KEY-WAZUH \
+  --output /tmp/wazuh-repository-key.asc
+gpg --batch --yes --dearmor \
+  --output /usr/share/keyrings/wazuh.gpg /tmp/wazuh-repository-key.asc
+chmod 0644 /usr/share/keyrings/wazuh.gpg
+printf '%s\n' 'deb [signed-by=/usr/share/keyrings/wazuh.gpg] https://packages.wazuh.com/4.x/apt/ stable main' \
+  &gt; /etc/apt/sources.list.d/wazuh.list
+apt-get update
+apt-cache madison wazuh-agent</code></pre>
+<p>Stop if key retrieval or repository refresh fails. Select an available version compatible with your manager; replace the version placeholder with the exact APT version string listed above.</p>
+<pre class="code"><code class="language-bash">MANAGER="192.168.56.101"
+AGENT_NAME="linux-lab-01"
+AGENT_VERSION='REPLACE_WITH_APT_VERSION'
+
+env WAZUH_MANAGER="$MANAGER" \
+    WAZUH_REGISTRATION_SERVER="$MANAGER" \
+    WAZUH_AGENT_NAME="$AGENT_NAME" \
+    apt-get install -y "wazuh-agent=$AGENT_VERSION"
+
+dpkg-query -W -f='${Package} ${Version}\n' wazuh-agent
+apt-mark hold wazuh-agent</code></pre>
+<p>Check the package manager exit status and installed version before continuing. The hold prevents routine APT upgrades from advancing this agent unexpectedly. For a planned upgrade, review manager compatibility, unhold the package, install the approved version, and hold it again. Exit the root shell before moving to the shared validation commands.</p>
+<h2 id="dnf">4. Deploy on an RPM-based system with DNF</h2>
+<p>Use this alternative on a supported DNF-based distribution. The examples use a repository that is disabled by default and explicitly enabled for the selected install transaction.</p>
+<pre class="code"><code class="language-bash">sudo -i
+rpm --import https://packages.wazuh.com/key/GPG-KEY-WAZUH
+cat &gt; /etc/yum.repos.d/wazuh.repo &lt;&lt;'EOF'
+[wazuh]
+name=Wazuh agent packages
+baseurl=https://packages.wazuh.com/4.x/yum/
+enabled=0
+gpgcheck=1
+gpgkey=https://packages.wazuh.com/key/GPG-KEY-WAZUH
+protect=1
+EOF
+dnf --enablerepo=wazuh --showduplicates list wazuh-agent</code></pre>
+<p>Do not continue after a signing-key import or repository error. Set the exact version-release string displayed for your architecture, then install:</p>
+<pre class="code"><code class="language-bash">MANAGER="192.168.56.101"
+AGENT_NAME="linux-lab-01"
+AGENT_VERSION='REPLACE_WITH_RPM_VERSION_RELEASE'
+
+env WAZUH_MANAGER="$MANAGER" \
+    WAZUH_REGISTRATION_SERVER="$MANAGER" \
+    WAZUH_AGENT_NAME="$AGENT_NAME" \
+    dnf --enablerepo=wazuh install -y "wazuh-agent-$AGENT_VERSION"
+
+rpm -q wazuh-agent</code></pre>
+<p>The repository remains disabled for later routine DNF transactions. Ensure no second enabled Wazuh repository bypasses that control. For Yum, ZYpp/SUSE, or non-systemd systems, follow the matching branch of the <a href="https://documentation.wazuh.com/current/installation-guide/wazuh-agent/wazuh-agent-package-linux.html" target="_blank" rel="noopener noreferrer">official Linux installation guide</a>. Exit the root shell when the installation completes.</p>
+<h3>Enrollment settings shared by both package paths</h3>
+<p><code>WAZUH_MANAGER</code> identifies the telemetry destination; <code>WAZUH_REGISTRATION_SERVER</code> identifies the enrollment service. They can be different hosts. <code>WAZUH_AGENT_NAME</code> supplies the endpoint identity. Add group, password, CA, or client-certificate settings only as required by your manager's policy, using the <a href="https://documentation.wazuh.com/current/user-manual/agent/agent-enrollment/deployment-variables/deployment-variables-linux.html" target="_blank" rel="noopener noreferrer">Linux deployment-variable reference</a>. Avoid placing enrollment secrets into shared scripts or shell history.</p>
+<h2 id="service">5. Start the service and verify enrollment</h2>
+<pre class="code"><code class="language-bash">sudo systemctl daemon-reload
+sudo systemctl enable --now wazuh-agent
+sudo systemctl --no-pager --full status wazuh-agent
+sudo journalctl -u wazuh-agent -n 50 --no-pager
+sudo tail -n 80 /var/ossec/logs/ossec.log
+sudo grep ^status /var/ossec/var/run/wazuh-agentd.state</code></pre>
+<p>Expect an active service and <code>status='connected'</code> after successful communication with the manager. The state file may not exist before the first connection; inspect <code>ossec.log</code> rather than assuming installation failed. Check the configured destination and active TCP sessions:</p>
+<pre class="code"><code class="language-bash">sudo sed -n '/&lt;client&gt;/,/&lt;\/client&gt;/p' /var/ossec/etc/ossec.conf
+sudo ss -ntp | grep ':1514'</code></pre>
+<p>Correlate the remote address with your manager. In the dashboard agent inventory, match the configured name, agent ID, active state, and recent keepalive. On the manager, <code>sudo /var/ossec/bin/agent_control -l</code> provides a second view. For Docker, run the command inside the manager container. Keep <code>/var/ossec/etc/client.keys</code> private; it contains agent authentication material.</p>
+<h2 id="collection">6. Inspect the Linux log sources</h2>
+<p>Linux telemetry depends on how the distribution routes logs. Some hosts use journald directly; others also write syslog files. Inspect the existing <code>/var/ossec/etc/ossec.conf</code> and assigned group configuration before adding collectors. Avoid collecting the same stream twice.</p>
+<h3>Systemd journal</h3>
+<p>On agent versions that support journald collection, this block selects the journal. Current documentation describes it as enabled by default; check the actual deployed configuration and release.</p>
+<pre class="code"><code class="language-xml">&lt;localfile&gt;
+  &lt;location&gt;journald&lt;/location&gt;
+  &lt;log_format&gt;journald&lt;/log_format&gt;
+&lt;/localfile&gt;</code></pre>
+<h3>File-based syslog</h3>
+<p>If your host writes <code>/var/log/syslog</code>, the corresponding collector is:</p>
+<pre class="code"><code class="language-xml">&lt;localfile&gt;
+  &lt;location&gt;/var/log/syslog&lt;/location&gt;
+  &lt;log_format&gt;syslog&lt;/log_format&gt;
+&lt;/localfile&gt;</code></pre>
+<p>RPM-based distributions may use <code>/var/log/messages</code> and <code>/var/log/secure</code>; Debian-family authentication records may appear in <code>/var/log/auth.log</code>. These files are not universal. Confirm they exist and receive events before referencing them. Keep blocks inside the existing <code>&lt;ossec_config&gt;</code> element. If a local edit is necessary, back up the file, restart the agent, and inspect its diagnostics for syntax, path, and permission errors.</p>
+<h2 id="validation">7. Validate event delivery</h2>
+<h3>Generate a traceable event on the endpoint</h3>
+<p>Create a unique marker on the monitored Linux machine, then confirm it exists locally:</p>
+<pre class="code"><code class="language-bash">MARKER="Wazuh-Onboarding-$(date -u +%Y%m%dT%H%M%SZ)"
+logger -p user.notice -t wazuh-onboarding -- "$MARKER"
+printf 'Test marker: %s\n' "$MARKER"
+sudo journalctl -t wazuh-onboarding --since '5 minutes ago' --no-pager</code></pre>
+<p>On a file-based host, search the configured syslog file for the exact marker instead. If the event is absent locally, investigate local logging first. If journal filters restrict collection to particular units or priorities, confirm this test falls within the collected stream.</p>
+<h3>Verify manager receipt separately from alert generation</h3>
+<p>A harmless syslog marker may not trigger an alert. The <code>wazuh-alerts-*</code> view therefore cannot serve as a complete received-event ledger. When JSON archiving is enabled, search the manager's <code>/var/ossec/logs/archives/archives.json</code> for the exact marker and match the agent ID and timestamp.</p>
+<pre class="code"><code class="language-bash"># On the manager: replace this example with the endpoint's exact marker.
+sudo grep -F 'Wazuh-Onboarding-20261112T140000Z' \
+  /var/ossec/logs/archives/archives.json</code></pre>
+<p>Archives are disabled by default. In a controlled validation window, enable <code>&lt;logall_json&gt;yes&lt;/logall_json&gt;</code> in the existing manager <code>&lt;global&gt;</code> configuration and restart the manager <em>before</em> generating a new marker. For Docker, update the persistent manager configuration and inspect the archive inside the container. Plan storage and access controls, then restore the previous setting after a temporary test.</p>
+<p>Dashboard archive searches additionally require Filebeat archive forwarding and a <code>wazuh-archives-*</code> data view. A matching archive record proves endpoint-to-manager delivery. To validate detection and alert indexing, use a separate approved test expected to match an enabled rule and find its resulting alert in the dashboard. Preserve the agent ID, marker, UTC timestamp, and receiving-stage evidence in the onboarding record.</p>
+<h2 id="troubleshooting">8. Troubleshoot by stage</h2>
+<div class="table-wrap"><table><thead><tr><th>Symptom</th><th>Next check</th></tr></thead><tbody>
+<tr><td>Repository or signature error</td><td>System time, proxy/TLS trust, signing key, repository configuration, distribution support, and selected package version. Keep signature verification enabled.</td></tr>
+<tr><td>Agent installs but enrollment fails</td><td>TCP 1515, manager enrollment policy, duplicate name, deployment variables, and agent/manager logs.</td></tr>
+<tr><td>Service active but agent disconnected</td><td>TCP 1514, configured manager address, authentication state, and version compatibility.</td></tr>
+<tr><td>Connected but no local marker</td><td>Where <code>logger</code> writes on this host, journal availability, and local syslog routing.</td></tr>
+<tr><td>Local marker exists but is not received</td><td>Collector path, journal filters, group configuration, file permissions, and whether manager archiving was enabled before the test.</td></tr>
+<tr><td>Archive contains the marker but alerts do not</td><td>Rule matching and alert thresholds. Receipt does not guarantee an informational event produces an alert.</td></tr>
+<tr><td>Manager alert exists but dashboard is empty</td><td>Filebeat, indexer health, selected agent/data view, and time range.</td></tr>
+</tbody></table></div>
+<h2 id="references">9. Official references</h2>
+<ul>
+<li><a href="https://documentation.wazuh.com/current/installation-guide/wazuh-agent/wazuh-agent-package-linux.html" target="_blank" rel="noopener noreferrer">Wazuh — deploying agents on Linux endpoints</a></li>
+<li><a href="https://documentation.wazuh.com/current/user-manual/agent/agent-enrollment/deployment-variables/deployment-variables-linux.html" target="_blank" rel="noopener noreferrer">Wazuh — Linux deployment variables</a></li>
+<li><a href="https://documentation.wazuh.com/current/user-manual/agent/agent-enrollment/troubleshooting.html" target="_blank" rel="noopener noreferrer">Wazuh — enrollment troubleshooting</a></li>
+<li><a href="https://documentation.wazuh.com/current/user-manual/agent/agent-management/agent-connection.html" target="_blank" rel="noopener noreferrer">Wazuh — agent connection validation</a></li>
+<li><a href="https://documentation.wazuh.com/current/user-manual/reference/ossec-conf/localfile.html" target="_blank" rel="noopener noreferrer">Wazuh — localfile configuration</a></li>
+<li><a href="https://documentation.wazuh.com/current/user-manual/capabilities/log-data-collection/journald.html" target="_blank" rel="noopener noreferrer">Wazuh — journald collection</a></li>
+<li><a href="https://documentation.wazuh.com/current/user-manual/manager/event-logging.html" target="_blank" rel="noopener noreferrer">Wazuh — archives and event logging</a></li>
+<li><a href="https://man7.org/linux/man-pages/man1/logger.1.html" target="_blank" rel="noopener noreferrer">Linux manual — logger command</a></li>
+</ul>
+<p class="note">This technical procedure is based on the vendor documentation and includes explicit verification steps. It does not claim a new deployment was executed on a Linux endpoint. Validate commands against the selected release and local configuration.</p>
+<div class="contact-hook">
+<span class="hook-kicker">Discuss Linux telemetry</span>
+<p class="hook-title">Deploying Linux agents or investigating a gap in endpoint telemetry?</p>
+<p>Contact me to discuss Wazuh agent deployment, Linux log collection, and SIEM ingestion troubleshooting.</p>
+<div class="contact-links"><a href="mailto:as.ga2019@gmail.com?subject=Linux%20Wazuh%20Agent%20Inquiry"><svg class="contact-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 4h20a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Zm10 8.2L21.2 6H2.8L12 12.2Zm0 2.4L2 8v10h20V8l-10 6.6Z"/></svg>Email me ↗</a><a href="https://www.linkedin.com/in/1elrawy/" target="_blank" rel="noopener noreferrer"><svg class="contact-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.13 1.44-2.13 2.94v5.67H9.35V9h3.42v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.26 2.37 4.26 5.45v6.29ZM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12ZM7.12 20.45H3.56V9h3.56v11.45ZM22.22 0H1.77C.79 0 0 .77 0 1.72v20.56C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.72V1.72C24 .77 23.2 0 22.22 0Z"/></svg>LinkedIn ↗</a></div>
+</div>
+</article></div><footer class="footer"><div class="wrap footerinner"><span>© 2026 Ashraf Gamal · Technical notes</span><a href="/articles.html">Back to the article library ↑</a></div><span class="site-visits" id="site-visits" aria-label="Total site visits"><span class="site-visits-label">SITE VISITS</span><span class="site-visits-widget" id="site-visits-widget" aria-live="polite"><span id="site-visits-counter" class="site-visits-number">—</span></span></span>
+</footer>
+<script src="/assets/js/terminal-design.v2.js?v=b4ab5178cb38"></script>
+</body>
+</html>
+

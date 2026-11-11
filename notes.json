@@ -20,11 +20,21 @@
     "readingTime": "7 min read"
   },
   {
-    "title": "Connecting a Windows Endpoint to Wazuh",
+    "title": "Deploying Wazuh agents on Windows endpoints",
     "topic": "Wazuh",
     "topicKey": "wazuh",
     "summary": "Enroll a Windows agent, validate manager connectivity, configure Windows EventChannel collection, and verify event delivery with practical troubleshooting checks.",
     "url": "/articles/connecting-windows-endpoint-to-wazuh.html",
+    "date": "12 November 2026",
+    "dateISO": "2026-11-12",
+    "readingTime": "10 min read"
+  },
+  {
+    "title": "Deploying Wazuh agents on Linux endpoints",
+    "topic": "Wazuh",
+    "topicKey": "wazuh",
+    "summary": "Deploy Wazuh agents with APT or DNF, control package versions, validate enrollment, and trace Linux logs from the endpoint to the manager.",
+    "url": "/articles/deploying-wazuh-agents-on-linux-endpoints.html",
     "date": "12 November 2026",
     "dateISO": "2026-11-12",
     "readingTime": "10 min read"
