@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en" class="dark">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0a0b0d">
+<meta name="description" content="Collect Windows Event Logs and Sysmon from a workstation and an Active Directory domain controller, then validate forwarding and field extraction.">
+<title>Onboarding Windows Endpoints into Splunk | Ashraf Gamal</title>
+
+
+
+
+
+<link rel="canonical" href="https://agamalx0.github.io/articles/splunk-windows-endpoints-ad-sysmon.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/site.css?v=af31cb7f630b">
+<script defer src="/assets/js/article.v4.js?v=f74850cf0021"></script>
+<script defer src="/assets/js/site-visits.v4.js?v=20261101"></script>
+<!-- BEGIN GENERATED METADATA -->
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Ashraf Gamal | SOC Engineering">
+<meta property="og:locale" content="en_US">
+<meta property="og:title" content="Onboarding Windows Endpoints into Splunk | Ashraf Gamal">
+<meta property="og:description" content="Collect Windows Event Logs and Sysmon from a workstation and an Active Directory domain controller, then validate forwarding and field extraction.">
+<meta property="og:url" content="https://agamalx0.github.io/articles/splunk-windows-endpoints-ad-sysmon.html">
+<meta property="og:image" content="https://agamalx0.github.io/ashraf-avatar.jpg">
+<meta property="og:image:alt" content="Ashraf Gamal">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Onboarding Windows Endpoints into Splunk | Ashraf Gamal">
+<meta name="twitter:description" content="Collect Windows Event Logs and Sysmon from a workstation and an Active Directory domain controller, then validate forwarding and field extraction.">
+<meta name="twitter:image" content="https://agamalx0.github.io/ashraf-avatar.jpg">
+<meta name="twitter:image:alt" content="Ashraf Gamal">
+<meta property="article:modified_time" content="2026-11-12">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"Onboarding Windows Endpoints into Splunk","description":"Collect Windows Event Logs and Sysmon from a workstation and an Active Directory domain controller, then validate forwarding and field extraction.","dateModified":"2026-11-12","author":{"@type":"Person","name":"Ashraf Gamal","url":"https://agamalx0.github.io/"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://agamalx0.github.io/articles/splunk-windows-endpoints-ad-sysmon.html"},"image":"https://agamalx0.github.io/ashraf-avatar.jpg","inLanguage":"en"}</script>
+<!-- END GENERATED METADATA -->
+</head>
+<body class="article-page">
+<header class="topbar"><nav class="nav wrap"><a class="brand" href="/">AG <span class="gradient">/ Notes</span></a><a class="back" href="/articles.html">← Back to all technical notes</a></nav></header>
+<header class="hero wrap"><h1>Onboarding<br> <span class="gradient">Windows Endpoints into Splunk</span></h1><p class="lede">Collect Windows Event Logs and Sysmon from a workstation and an Active Directory domain controller, then validate forwarding and field extraction.</p><div class="meta"><span>By Ashraf Gamal</span><span data-article-date>Updated 12 November 2026</span><span class="pill">Splunk · Engineering lab</span><span data-reading-time>Approx. 8 min read</span></div></header>
+<div class="wrap layout"><aside class="toc"><strong>In this guide</strong><a href="#scope">1. Lab scope and architecture</a><a href="#receiver">2. Prepare the receiver and destination index</a><a href="#forwarders">3. Configure both Windows forwarders</a><a href="#validation">4. Validate configuration and source coverage</a><a href="#ad">5. Domain controller coverage and recorded outcome</a><a href="#troubleshooting">6. Diagnose missing Windows data</a><a href="#references">7. References and next steps</a></aside><article class="content"><div class="callout"><strong>Evidence boundary</strong><p>The lab handover records successful onboarding. It does not include raw event samples, event counts, or full version output. Configuration below reflects that record; verification searches are provided for reproducing the checks, not presented as captured results.</p></div><h2 id="scope">1. Lab scope and architecture</h2><p>This lab used a single Linux-hosted Splunk Enterprise instance on a Dell PowerEdge R720. It combined receiving, indexing, and search roles. The examples replace the recorded backend address with <code>192.0.2.10</code>, a documentation-only address; substitute your reachable receiver. Splunk, forwarder, and add-on versions were not retained in the handover.</p><p>Two Windows sources were onboarded: a workstation and an Active Directory domain controller. Both used the same Universal Forwarder inputs for Application, Security, System, and Sysmon. This baseline collects operating-system telemetry from the domain controller; it is not a complete Active Directory monitoring configuration.</p><pre class="code"><code class="language-text">Windows Event Logs + Sysmon → Universal Forwarder
+                           → TCP 9997 → single-node Splunk Enterprise</code></pre><p>The recorded transport was non-TLS TCP. The Windows and Sysmon add-ons were installed on the combined backend. Sysmon was already installed on both endpoints; its installation commands, configuration policy, and event filtering were not recorded.</p><h2 id="receiver">2. Prepare the receiver and destination index</h2><p>The lab enabled the receiving input in <code>/opt/splunk/etc/system/local/inputs.conf</code>:</p><pre class="code"><code class="language-ini">[splunktcp://9997]
+disabled = 0</code></pre><p>The destination was defined in <code>/opt/splunk/etc/system/local/indexes.conf</code>:</p><pre class="code"><code class="language-ini">[wineventlog]
+coldPath = $SPLUNK_DB/wineventlog/colddb
+homePath = $SPLUNK_DB/wineventlog/db
+thawedPath = $SPLUNK_DB/wineventlog/thaweddb</code></pre><p>These are the recorded lab paths. Merge stanzas into existing files rather than replacing unrelated settings. A managed deployment can package the same configuration in a dedicated app. Restart the backend using its configured service mechanism after checking configuration; ensure the host/network firewall permits TCP 9997 from the forwarders.</p><h2 id="forwarders">3. Configure both Windows forwarders</h2><p>On each endpoint, the recorded <code>C:\Program Files\SplunkUniversalForwarder\etc\system\local\outputs.conf</code> selected the single receiver:</p><pre class="code"><code class="language-ini">[tcpout]
+defaultGroup = default-autolb-group
+
+[tcpout:default-autolb-group]
+server = 192.0.2.10:9997</code></pre><p>The group name is a label: with one configured server, this lab did not provide receiver redundancy. The following input configuration was applied to both machines in the corresponding <code>inputs.conf</code>:</p><pre class="code"><code class="language-ini">[WinEventLog://Application]
+disabled = 0
+index = wineventlog
+
+[WinEventLog://Security]
+disabled = 0
+index = wineventlog
+
+[WinEventLog://System]
+disabled = 0
+index = wineventlog
+
+[WinEventLog://Microsoft-Windows-Sysmon/Operational]
+disabled = 0
+index = wineventlog
+renderXml = 1
+sourcetype = xmlwineventlog</code></pre><p>The lowercase <code>xmlwineventlog</code> value is preserved from this lab, not asserted as the required sourcetype for every Sysmon add-on. Verify the effective sourcetype and installed add-on mappings before reusing it. <code>renderXml = 1</code> changes the event representation; successful extraction of fields such as <code>Image</code> and <code>CommandLine</code> still needs a search-level check.</p><h2 id="validation">4. Validate configuration and source coverage</h2><p>The handover records restarting the Windows SplunkForwarder service. The following elevated PowerShell checks are a reproducible verification sequence; their output was not supplied with the handover:</p><pre class="code"><code class="language-powershell">$Splunk = 'C:\Program Files\SplunkUniversalForwarder\bin\splunk.exe'
+&amp; $Splunk btool inputs list --debug
+&amp; $Splunk btool outputs list --debug
+Get-Service SplunkForwarder
+Test-NetConnection 192.0.2.10 -Port 9997
+# After reviewing and applying the intended configuration:
+Restart-Service SplunkForwarder</code></pre><p>Run the inventory search below and compare the observed hosts with the expected workstation and domain controller. Inspect channel coverage on each host rather than treating an aggregate count as proof that both are complete.</p><pre class="code"><code class="language-spl">index=wineventlog earliest=-24h latest=now
+| stats count latest(_time) AS last_event by host source sourcetype
+| convert ctime(last_event)</code></pre><p>The recorded <code>sysmon_data</code> macro expands to <code>index=wineventlog sourcetype=xmlwineventlog</code>. This equivalent query avoids depending on the macro when validating another environment:</p><pre class="code"><code class="language-spl">index=wineventlog sourcetype=xmlwineventlog earliest=-24h latest=now
+| table _time host source sourcetype EventCode Image CommandLine _raw
+| head 20</code></pre><p>Some fields apply only to particular Sysmon event types. If process fields are missing, inspect the raw XML, event ID, add-on configuration, and actual source type before changing regexes. Check timestamps against the source record and timezone; search-time field extraction does not establish correct index-time timestamp recognition.</p><h2 id="ad">5. Domain controller coverage and recorded outcome</h2><p>The handover reports both Windows machines onboarded. No distinct AD input set, Directory Service channel, DNS Server collection, advanced audit policy, or Sysmon policy was supplied. Security events depend on the effective Windows audit policy; installing a forwarder cannot create missing source events.</p><p>No Windows-specific failure-and-fix sequence was recorded. The useful next evidence is an inventory row for each host/channel, one sanitized XML event, installed versions, and the effective audit/Sysmon policy. Do not interpret the absence of those artifacts as a failure; it limits the specificity of the published result.</p><h2 id="troubleshooting">6. Diagnose missing Windows data</h2><div class="table-wrap"><table><thead><tr><th>Observation</th><th>Next check</th></tr></thead><tbody><tr><td>Forwarder running, no events</td><td>Effective inputs/outputs, receiver access, index existence, local channel contents, and forwarder diagnostics.</td></tr><tr><td>Only one machine appears</td><td>Distinct host identity, service state, configuration, and connectivity on each endpoint.</td></tr><tr><td>Sysmon events present, expected fields absent</td><td>Raw XML, event type, effective sourcetype, add-on mappings, and search context.</td></tr><tr><td>AD activity missing</td><td>Relevant channels and audit policy, followed by a known authorized event.</td></tr></tbody></table></div><h2 id="references">7. References and next steps</h2><ul><li><a href="https://help.splunk.com/en/splunk-enterprise/get-data-in/get-started-with-getting-data-in/9.0/get-windows-data/monitor-windows-event-log-data-with-splunk-enterprise" target="_blank" rel="noopener noreferrer">Splunk — Windows event log collection</a></li><li><a href="https://help.splunk.com/en/splunk-enterprise/forward-and-process-data/forwarding-and-receiving-data/9.4/configure-forwarders/configure-forwarding-with-outputs.conf" target="_blank" rel="noopener noreferrer">Splunk — forwarding configuration</a></li><li><a href="https://help.splunk.com/en/splunk-enterprise/administer/troubleshoot/10.4/first-steps/use-btool-to-troubleshoot-configurations" target="_blank" rel="noopener noreferrer">Splunk — inspecting merged configuration</a></li></ul><p>The documentation links support the configuration explanation; they do not establish the unrecorded software versions used in this lab. Continue with <a href="/articles/splunk-kali-linux-onboarding.html">Kali Linux onboarding</a> and <a href="/articles/splunk-fortigate-syslog-onboarding.html">FortiGate syslog onboarding</a>.</p><div class="contact-hook">
+<span class="hook-kicker">Discuss Splunk onboarding</span>
+<p class="hook-title">Onboarding new sources or troubleshooting Splunk ingestion?</p>
+<p>Contact me to discuss Splunk data onboarding, source validation, and SIEM engineering.</p>
+<div class="contact-links"><a href="mailto:as.ga2019@gmail.com?subject=Splunk%20Onboarding%20Inquiry"><svg class="contact-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 4h20a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Zm10 8.2L21.2 6H2.8L12 12.2Zm0 2.4L2 8v10h20V8l-10 6.6Z"/></svg>Email me ↗</a><a href="https://www.linkedin.com/in/1elrawy/" target="_blank" rel="noopener noreferrer"><svg class="contact-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.13 1.44-2.13 2.94v5.67H9.35V9h3.42v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.26 2.37 4.26 5.45v6.29ZM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12ZM7.12 20.45H3.56V9h3.56v11.45ZM22.22 0H1.77C.79 0 0 .77 0 1.72v20.56C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.72V1.72C24 .77 23.2 0 22.22 0Z"/></svg>LinkedIn ↗</a></div>
+</div>
+</article></div><footer class="footer"><div class="wrap footerinner"><span>© 2026 Ashraf Gamal · Technical notes</span><a href="/articles.html">Back to the article library ↑</a></div><span class="site-visits" id="site-visits" aria-label="Total site visits"><span class="site-visits-label">SITE VISITS</span><span class="site-visits-widget" id="site-visits-widget" aria-live="polite"><span id="site-visits-counter" class="site-visits-number">—</span></span></span>
+</footer>
+<script src="/assets/js/terminal-design.v2.js?v=b4ab5178cb38"></script>
+</body>
+</html>
+

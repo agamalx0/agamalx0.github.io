@@ -250,6 +250,36 @@
     "readingTime": "6 min read"
   },
   {
+    "title": "Onboarding Windows Endpoints into Splunk",
+    "topic": "Splunk",
+    "topicKey": "splunk",
+    "summary": "Collect Windows Event Logs and Sysmon from a workstation and an Active Directory domain controller, then validate forwarding and field extraction.",
+    "url": "/articles/splunk-windows-endpoints-ad-sysmon.html",
+    "date": "12 November 2026",
+    "dateISO": "2026-11-12",
+    "readingTime": "8 min read"
+  },
+  {
+    "title": "Onboarding Kali Linux into Splunk",
+    "topic": "Splunk",
+    "topicKey": "splunk",
+    "summary": "Forward Kali system and authentication logs, resolve missing syslog files, and distinguish receiver connectivity from actual collection.",
+    "url": "/articles/splunk-kali-linux-onboarding.html",
+    "date": "12 November 2026",
+    "dateISO": "2026-11-12",
+    "readingTime": "7 min read"
+  },
+  {
+    "title": "Onboarding FortiGate Syslog into Splunk",
+    "topic": "Splunk",
+    "topicKey": "splunk",
+    "summary": "Receive FortiGate logs on UDP 5514, validate source typing and field extraction, and enrich traffic with asset inventory context.",
+    "url": "/articles/splunk-fortigate-syslog-onboarding.html",
+    "date": "12 November 2026",
+    "dateISO": "2026-11-12",
+    "readingTime": "8 min read"
+  },
+  {
     "title": "Automated Wazuh Daily Healthcheck with n8n",
     "topic": "Automation / n8n",
     "topicKey": "automation",

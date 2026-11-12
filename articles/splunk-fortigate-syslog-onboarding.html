@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en" class="dark">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0a0b0d">
+<meta name="description" content="Receive FortiGate logs on UDP 5514, validate source typing and field extraction, and enrich traffic with asset inventory context.">
+<title>Onboarding FortiGate Syslog into Splunk | Ashraf Gamal</title>
+
+
+
+
+
+<link rel="canonical" href="https://agamalx0.github.io/articles/splunk-fortigate-syslog-onboarding.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/site.css?v=af31cb7f630b">
+<script defer src="/assets/js/article.v4.js?v=f74850cf0021"></script>
+<script defer src="/assets/js/site-visits.v4.js?v=20261101"></script>
+<!-- BEGIN GENERATED METADATA -->
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Ashraf Gamal | SOC Engineering">
+<meta property="og:locale" content="en_US">
+<meta property="og:title" content="Onboarding FortiGate Syslog into Splunk | Ashraf Gamal">
+<meta property="og:description" content="Receive FortiGate logs on UDP 5514, validate source typing and field extraction, and enrich traffic with asset inventory context.">
+<meta property="og:url" content="https://agamalx0.github.io/articles/splunk-fortigate-syslog-onboarding.html">
+<meta property="og:image" content="https://agamalx0.github.io/ashraf-avatar.jpg">
+<meta property="og:image:alt" content="Ashraf Gamal">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Onboarding FortiGate Syslog into Splunk | Ashraf Gamal">
+<meta name="twitter:description" content="Receive FortiGate logs on UDP 5514, validate source typing and field extraction, and enrich traffic with asset inventory context.">
+<meta name="twitter:image" content="https://agamalx0.github.io/ashraf-avatar.jpg">
+<meta name="twitter:image:alt" content="Ashraf Gamal">
+<meta property="article:modified_time" content="2026-11-12">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"Onboarding FortiGate Syslog into Splunk","description":"Receive FortiGate logs on UDP 5514, validate source typing and field extraction, and enrich traffic with asset inventory context.","dateModified":"2026-11-12","author":{"@type":"Person","name":"Ashraf Gamal","url":"https://agamalx0.github.io/"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://agamalx0.github.io/articles/splunk-fortigate-syslog-onboarding.html"},"image":"https://agamalx0.github.io/ashraf-avatar.jpg","inLanguage":"en"}</script>
+<!-- END GENERATED METADATA -->
+</head>
+<body class="article-page">
+<header class="topbar"><nav class="nav wrap"><a class="brand" href="/">AG <span class="gradient">/ Notes</span></a><a class="back" href="/articles.html">← Back to all technical notes</a></nav></header>
+<header class="hero wrap"><h1>Onboarding<br> <span class="gradient">FortiGate Syslog into Splunk</span></h1><p class="lede">Receive FortiGate logs on UDP 5514, validate source typing and field extraction, and enrich traffic with asset inventory context.</p><div class="meta"><span>By Ashraf Gamal</span><span data-article-date>Updated 12 November 2026</span><span class="pill">Splunk · Engineering lab</span><span data-reading-time>Approx. 8 min read</span></div></header>
+<div class="wrap layout"><aside class="toc"><strong>In this guide</strong><a href="#scope">1. Lab architecture and collection choice</a><a href="#splunk">2. Configure the Splunk input and index</a><a href="#fortigate">3. Configure FortiGate forwarding</a><a href="#validation">4. Verify transport, events, and extracted fields</a><a href="#lookup">5. Enrich source addresses with asset context</a><a href="#operations">6. Reliability and troubleshooting</a><a href="#outcome">7. Outcome, limits, and references</a></aside><article class="content"><div class="callout"><strong>Evidence boundary</strong><p>The lab handover records successful onboarding. It does not include raw event samples, event counts, or full version output. Configuration below reflects that record; verification searches are provided for reproducing the checks, not presented as captured results.</p></div><h2 id="scope">1. Lab architecture and collection choice</h2><p>This lab used a single Linux-hosted Splunk Enterprise instance on a Dell PowerEdge R720. It combined receiving, indexing, and search roles. The examples replace the recorded backend address with <code>192.0.2.10</code>, a documentation-only address; substitute your reachable receiver. Splunk, forwarder, and add-on versions were not retained in the handover.</p><pre class="code"><code class="language-text">FortiGate → UDP 5514 → Splunk network input → index=network
+          → recorded sourcetype=fgt_log → asset_inventory lookup</code></pre><p>This implementation used direct UDP ingestion, without rsyslog, syslog-ng, or SC4S. Port 5514 avoided the privileged-port binding requirement associated with port 514. It did not add authentication, encryption, buffering, or delivery guarantees.</p><p>The handover reports a Fortinet add-on on the combined backend, but does not retain its exact package name/version. Keep <code>fgt_log</code> as the recorded lab assignment; inspect the installed add-on before assuming that value activates the correct parsing or CIM mappings in another deployment.</p><h2 id="splunk">2. Configure the Splunk input and index</h2><p>The recorded <code>/opt/splunk/etc/system/local/inputs.conf</code> contained:</p><pre class="code"><code class="language-ini">[udp://5514]
+connection_host = ip
+sourcetype = fgt_log
+index = network</code></pre><p>The backend’s <code>indexes.conf</code> defined:</p><pre class="code"><code class="language-ini">[network]
+coldPath = $SPLUNK_DB/network/colddb
+homePath = $SPLUNK_DB/network/db
+thawedPath = $SPLUNK_DB/network/thaweddb</code></pre><p>The lab restarted Splunk after these changes. Merge into existing configuration, verify the destination index, and restrict the UDP input to expected firewall senders using network/host controls. <code>connection_host = ip</code> derives host identity from the observed sender address, which may be a translated or relay address.</p><pre class="code"><code class="language-bash">sudo /opt/splunk/bin/splunk btool inputs list --debug
+sudo /opt/splunk/bin/splunk btool indexes list --debug
+sudo ss -lunp | grep ":5514"</code></pre><h2 id="fortigate">3. Configure FortiGate forwarding</h2><p>The handover records the following destination settings, with only the receiver address substituted for publication:</p><pre class="code"><code class="language-text">config log syslogd setting
+    set status enable
+    set server "192.0.2.10"
+    set port 5514
+    set facility local7
+    set format default
+end</code></pre><p>The recorded architecture identifies UDP, but the saved command block does not explicitly set transport mode. Verify the effective configuration on the appliance. On releases exposing the option, <code>set mode udp</code> makes the intended transport explicit; it is an editorial completion, not claimed as an executed lab command.</p><p>The handover also records enabling forward and local traffic filters. It includes <code>set traffic enable</code>, but the FortiOS version and accepted command output are absent. Do not treat that line as portable syntax. The following is a version-dependent reference block for supported releases:</p><pre class="code"><code class="language-text">config log syslogd filter
+    set forward-traffic enable
+    set local-traffic enable
+end
+
+show full-configuration log syslogd setting
+show full-configuration log syslogd filter</code></pre><p>Inspect CLI help and the applicable FortiOS reference before changing filters. Confirm the correct VDOM and existing logging destinations. Relevant firewall policies must generate traffic records; enabling forwarding alone does not enable every policy or security-profile log. Policy-level settings, severity filters, VDOM/HA details, and categories beyond basic traffic were not preserved in this lab record.</p><h2 id="validation">4. Verify transport, events, and extracted fields</h2><p>Use a short packet capture on the receiver while generating a known, authorized firewall event. This supplemental diagnostic establishes arrival at the host, not successful indexing:</p><pre class="code"><code class="language-bash">sudo tcpdump -ni any -c 10 -s 0 -A 'udp dst port 5514'</code></pre><p>Search the recorded destination and inspect the actual host/source metadata:</p><pre class="code"><code class="language-spl">index=network sourcetype=fgt_log earliest=-24h latest=now
+| stats count latest(_time) AS last_event by host source sourcetype
+| convert ctime(last_event)</code></pre><pre class="code"><code class="language-spl">index=network sourcetype=fgt_log earliest=-24h latest=now
+| table _time host source sourcetype srcip dstip action _raw
+| head 20</code></pre><p>Compare each extracted value with its raw key-value record. A named sourcetype or installed add-on is not evidence that extraction succeeded. When fields are absent, inspect the effective parsing and search-time configuration:</p><pre class="code"><code class="language-bash">sudo /opt/splunk/bin/splunk btool props list fgt_log --debug
+sudo /opt/splunk/bin/splunk btool transforms list --debug</code></pre><p>If the first query returns nothing, widen to <code>index=network</code> and inspect actual source types before changing inputs. Verify event timezone and indexed time independently; the handover’s general description of automatic timestamp handling does not establish that every FortiGate timestamp was validated.</p><h2 id="lookup">5. Enrich source addresses with asset context</h2><p>The lab defined <code>asset_inventory</code> using <code>lab_assets.csv</code>. The recorded search matched the lookup’s <code>ip</code> column to the event’s <code>srcip</code> field:</p><pre class="code"><code class="language-spl">index=network sourcetype=fgt_log
+| lookup asset_inventory ip AS srcip OUTPUT asset_role, priority</code></pre><p>The handover reports successful enrichment but contains no lookup rows or returned events. The lookup definition must exist, be visible to the search, and expose the expected column names. Match source identity deliberately: NAT addresses, missing <code>srcip</code>, and stale inventory can all affect the result.</p><p>For a repeatable review, this additional search preserves any existing context fields and makes unmatched rows visible:</p><pre class="code"><code class="language-spl">index=network sourcetype=fgt_log earliest=-24h latest=now
+| lookup asset_inventory ip AS srcip OUTPUTNEW asset_role priority
+| eval asset_match=if(isnotnull(asset_role), "matched", "unmatched")
+| table _time host srcip dstip action asset_role priority asset_match
+| head 50</code></pre><p><code>OUTPUT</code> can overwrite fields; <code>OUTPUTNEW</code> preserves existing values. Neither option proves the lookup’s business context is accurate. Compare a known inventory entry and an address intentionally absent from the inventory before relying on enrichment in detections.</p><h2 id="operations">6. Reliability and troubleshooting</h2><p>Direct UDP was the recorded lab implementation. Splunk recommends a dedicated syslog collection layer for syslog ingestion. UDP can lose records during receiver downtime or load; a TCP port change alone does not establish TLS or durable buffering. A future collector design needs its own transport, queue, retention, and restart validation.</p><div class="table-wrap"><table><thead><tr><th>Observation</th><th>Next check</th></tr></thead><tbody><tr><td>No UDP packets</td><td>Destination, route, transport, FortiGate log generation, and filters.</td></tr><tr><td>Packets present, no searchable events</td><td>Listener ownership, enabled input, index existence, splunkd diagnostics, and time range.</td></tr><tr><td>Events present, missing fields</td><td>Raw format, actual sourcetype, installed add-on, and props/transforms configuration.</td></tr><tr><td>Lookup fields missing</td><td>Extracted srcip, lookup visibility, CSV columns, and matching inventory entry.</td></tr></tbody></table></div><h2 id="outcome">7. Outcome, limits, and references</h2><p>The handover confirms FortiGate onboarding and asset lookup enrichment. No detailed FortiGate troubleshooting sequence, raw sample, event counts, or coverage proof for IPS, VPN, antivirus, or administrative events was supplied. Those capabilities are therefore not claimed as validated outcomes.</p><ul><li><a href="https://help.splunk.com/en/splunk-enterprise/get-data-in/get-started-with-getting-data-in/9.0/get-data-from-network-sources/get-data-from-tcp-and-udp-ports" target="_blank" rel="noopener noreferrer">Splunk — TCP/UDP inputs and syslog collection guidance</a></li><li><a href="https://help.splunk.com/en/splunk-enterprise/spl-search-reference/10.0/search-commands/lookup" target="_blank" rel="noopener noreferrer">Splunk — lookup command</a></li><li><a href="https://help.splunk.com/en/splunk-enterprise/administer/troubleshoot/10.4/first-steps/use-btool-to-troubleshoot-configurations" target="_blank" rel="noopener noreferrer">Splunk — effective configuration inspection</a></li><li><a href="https://docs.fortinet.com/document/fortigate/7.4.7/cli-reference/141516630/config-log-syslogd-setting" target="_blank" rel="noopener noreferrer">Fortinet — version-specific syslog destination settings</a></li><li><a href="https://docs.fortinet.com/document/fortigate/7.4.8/administration-guide/250999/log-settings-and-targets" target="_blank" rel="noopener noreferrer">Fortinet — log settings and targets</a></li></ul><p>Related articles: <a href="/articles/splunk-windows-endpoints-ad-sysmon.html">Windows and AD onboarding</a> and <a href="/articles/splunk-kali-linux-onboarding.html">Kali Linux onboarding</a>.</p><div class="contact-hook">
+<span class="hook-kicker">Discuss Splunk onboarding</span>
+<p class="hook-title">Onboarding new sources or troubleshooting Splunk ingestion?</p>
+<p>Contact me to discuss Splunk data onboarding, source validation, and SIEM engineering.</p>
+<div class="contact-links"><a href="mailto:as.ga2019@gmail.com?subject=Splunk%20Onboarding%20Inquiry"><svg class="contact-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 4h20a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Zm10 8.2L21.2 6H2.8L12 12.2Zm0 2.4L2 8v10h20V8l-10 6.6Z"/></svg>Email me ↗</a><a href="https://www.linkedin.com/in/1elrawy/" target="_blank" rel="noopener noreferrer"><svg class="contact-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.13 1.44-2.13 2.94v5.67H9.35V9h3.42v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.26 2.37 4.26 5.45v6.29ZM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12ZM7.12 20.45H3.56V9h3.56v11.45ZM22.22 0H1.77C.79 0 0 .77 0 1.72v20.56C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.72V1.72C24 .77 23.2 0 22.22 0Z"/></svg>LinkedIn ↗</a></div>
+</div>
+</article></div><footer class="footer"><div class="wrap footerinner"><span>© 2026 Ashraf Gamal · Technical notes</span><a href="/articles.html">Back to the article library ↑</a></div><span class="site-visits" id="site-visits" aria-label="Total site visits"><span class="site-visits-label">SITE VISITS</span><span class="site-visits-widget" id="site-visits-widget" aria-live="polite"><span id="site-visits-counter" class="site-visits-number">—</span></span></span>
+</footer>
+<script src="/assets/js/terminal-design.v2.js?v=b4ab5178cb38"></script>
+</body>
+</html>
+
