@@ -40,6 +40,16 @@
     "readingTime": "10 min read"
   },
   {
+    "title": "Fortinet FortiGate Integration with Wazuh",
+    "topic": "Wazuh",
+    "topicKey": "wazuh",
+    "summary": "Integrate FortiGate through direct syslog or a Linux collector, validate native decoding, tune detection rules, and trace events into Wazuh alerts.",
+    "url": "/articles/fortinet-fortigate-integration-with-wazuh.html",
+    "date": "12 November 2026",
+    "dateISO": "2026-11-12",
+    "readingTime": "12 min read"
+  },
+  {
     "title": "Wazuh Distributed Architecture",
     "topic": "Wazuh",
     "topicKey": "wazuh",

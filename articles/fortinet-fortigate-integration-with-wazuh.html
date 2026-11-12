@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="en" class="dark">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0a0b0d">
+<meta name="description" content="Integrate FortiGate through direct syslog or a Linux collector, validate native decoding, tune detection rules, and trace events into Wazuh alerts.">
+<title>Fortinet FortiGate Integration with Wazuh | Ashraf Gamal</title>
+
+
+
+
+
+<link rel="canonical" href="https://agamalx0.github.io/articles/fortinet-fortigate-integration-with-wazuh.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/site.css?v=af31cb7f630b">
+<script defer src="/assets/js/article.v4.js?v=f74850cf0021"></script>
+<script defer src="/assets/js/site-visits.v4.js?v=20261101"></script>
+<!-- BEGIN GENERATED METADATA -->
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Ashraf Gamal | SOC Engineering">
+<meta property="og:locale" content="en_US">
+<meta property="og:title" content="Fortinet FortiGate Integration with Wazuh | Ashraf Gamal">
+<meta property="og:description" content="Integrate FortiGate through direct syslog or a Linux collector, validate native decoding, tune detection rules, and trace events into Wazuh alerts.">
+<meta property="og:url" content="https://agamalx0.github.io/articles/fortinet-fortigate-integration-with-wazuh.html">
+<meta property="og:image" content="https://agamalx0.github.io/ashraf-avatar.jpg">
+<meta property="og:image:alt" content="Ashraf Gamal">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Fortinet FortiGate Integration with Wazuh | Ashraf Gamal">
+<meta name="twitter:description" content="Integrate FortiGate through direct syslog or a Linux collector, validate native decoding, tune detection rules, and trace events into Wazuh alerts.">
+<meta name="twitter:image" content="https://agamalx0.github.io/ashraf-avatar.jpg">
+<meta name="twitter:image:alt" content="Ashraf Gamal">
+<meta property="article:modified_time" content="2026-11-12">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"Fortinet FortiGate Integration with Wazuh","description":"Integrate FortiGate through direct syslog or a Linux collector, validate native decoding, tune detection rules, and trace events into Wazuh alerts.","dateModified":"2026-11-12","author":{"@type":"Person","name":"Ashraf Gamal","url":"https://agamalx0.github.io/"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://agamalx0.github.io/articles/fortinet-fortigate-integration-with-wazuh.html"},"image":"https://agamalx0.github.io/ashraf-avatar.jpg","inLanguage":"en"}</script>
+<!-- END GENERATED METADATA -->
+</head>
+<body class="article-page">
+<header class="topbar"><nav class="nav wrap"><a class="brand" href="/">AG <span class="gradient">/ Notes</span></a><a class="back" href="/articles.html">← Back to all technical notes</a></nav></header>
+<header class="hero wrap"><h1>Fortinet FortiGate<br> <span class="gradient">Integration with Wazuh</span></h1>
+<p class="lede">Collect firewall telemetry through syslog, inspect the fields Wazuh actually extracts, and validate the path from a FortiGate event to a searchable security alert.</p>
+<div class="meta"><span>By Ashraf Gamal</span><span data-article-date>Updated 12 November 2026</span><span class="pill">FortiOS · Syslog · Wazuh</span><span data-reading-time>Approx. 12 min read</span></div></header>
+<div class="wrap layout"><aside class="toc"><strong>In this guide</strong><a href="#architecture">Choose the collection path</a><a href="#prerequisites">Prepare the integration</a><a href="#fortigate">Configure FortiGate</a><a href="#direct">Direct Wazuh syslog</a><a href="#collector">Linux collector option</a><a href="#decoding">Validate decoding</a><a href="#rules">Tune a detection rule</a><a href="#validation">Verify events and alerts</a><a href="#troubleshooting">Troubleshooting</a><a href="#references">Sources and references</a></aside><article class="content">
+<div class="callout"><strong>Start with the existing ruleset</strong><p>Wazuh ships FortiGate decoders and rules. Capture a real event and inspect its decoder and rule match before introducing custom parsing. A packet arriving at port 514 does not prove successful decoding or indexing.</p></div>
+<h2 id="architecture">1. Choose the collection path</h2>
+<p>FortiGate can forward traffic, administrative, VPN, and security-profile events without a Wazuh agent on the firewall. This guide develops the integration approach from the <a href="https://www.opensiem-deployer.com/blog/collect-fortinet-logs-wazuh" target="_blank" rel="noopener noreferrer">OpenSIEM Deployer FortiGate collection article</a>, with configuration checks against vendor documentation.</p>
+<pre class="code"><code class="language-text">Path A: FortiGate → UDP syslog / 514 → Wazuh manager
+
+Path B: FortiGate → UDP syslog / 514 → Linux collector
+        rsyslog → local file → Wazuh agent → TCP / 1514 → manager
+
+Manager → decoding and rules → alerts → indexer → dashboard</code></pre>
+<div class="table-wrap"><table><thead><tr><th>Path</th><th>Use it when</th><th>Operational consideration</th></tr></thead><tbody>
+<tr><td>Direct syslog</td><td>A self-managed manager is reachable over a controlled network.</td><td>The manager owns the syslog listener; enforce sender restrictions.</td></tr>
+<tr><td>Linux collector</td><td>A remote or hosted manager should receive events through an enrolled agent.</td><td>The collector owns syslog reception, local storage, rotation, and agent health.</td></tr>
+</tbody></table></div>
+<p>The Wazuh agent uses its encrypted message protocol on TCP 1514 by default; this connection is <strong>not HTTPS</strong>. That encryption covers the collector-to-manager hop. UDP syslog from the firewall remains unencrypted and has no delivery acknowledgment. Use a protected network or a deliberately designed TLS-capable relay for crossings that require encryption.</p>
+<p>The examples use UDP to keep the receiver and sender aligned. If you choose TCP instead, validate FortiOS mode, receiver framing, and port configuration together. FortiOS <code>reliable</code> mode uses RFC 6587; TCP by itself does not imply TLS.</p>
+<h2 id="prerequisites">2. Prepare addresses, versions, and log scope</h2>
+<p>The example addresses below are placeholders for a private lab. Replace them consistently:</p>
+<div class="table-wrap"><table><thead><tr><th>Value</th><th>Example</th><th>Meaning</th></tr></thead><tbody>
+<tr><td>FortiGate sender</td><td><code>10.20.0.1</code></td><td>Source address observed at the receiver.</td></tr>
+<tr><td>Syslog receiver</td><td><code>10.20.0.10</code></td><td>The manager for Path A, or Linux collector for Path B.</td></tr>
+<tr><td>Syslog transport</td><td><code>514/udp</code></td><td>Allow only the intended sender addresses.</td></tr>
+</tbody></table></div>
+<p>Record FortiOS and Wazuh versions, time synchronization, VDOM/HA context, expected log categories, and retention requirements. Back up relevant configuration and inspect current syslog destinations before editing. Do not overwrite an existing logging destination used by another service; choose an available supported destination slot where necessary.</p>
+<p>The FortiOS examples follow the 7.4 CLI family; confirm available options on the exact release. For Path B, first enroll the collector using <a href="/articles/deploying-wazuh-agents-on-linux-endpoints.html">Deploying Wazuh agents on Linux endpoints</a>. For a new central platform, see <a href="/articles/wazuh-all-in-one-installation.html">Wazuh all-in-one installation and validation</a>.</p>
+<h2 id="fortigate">3. Configure FortiGate forwarding</h2>
+<p>After reviewing the existing destination and the correct VDOM context, configure native key-value output. The source IP must belong to the firewall and be routable to the receiver.</p>
+<pre class="code"><code class="language-text">config log syslogd setting
+    set status enable
+    set server "10.20.0.10"
+    set mode udp
+    set port 514
+    set facility local7
+    set source-ip "10.20.0.1"
+    set format default
+end</code></pre>
+<p>Use <code>set mode udp</code> for this example, rather than assuming an older <code>set reliable</code> option exists. Start with <code>format default</code> and the native FortiGate decoder path. CEF is an alternative format, not a guarantee of richer or correct field extraction in every Wazuh version.</p>
+<h3>Control which events are generated and forwarded</h3>
+<pre class="code"><code class="language-text">config log syslogd filter
+    set severity information
+    set forward-traffic enable
+end
+
+show full-configuration log syslogd setting
+show full-configuration log syslogd filter</code></pre>
+<p>This is a minimal forwarding filter, not a complete logging policy. It leaves other categories at their existing settings. Review event, VPN, IPS, antivirus, web-filtering, and local-traffic requirements explicitly. Severity filtering and category filtering both affect which records leave the firewall.</p>
+<p>Traffic must also be logged by the relevant firewall policy. On a selected existing policy, <code>set logtraffic all</code> enables traffic logging; apply it only where the intended coverage and volume justify it. Do not create a new allow policy merely to generate logs. Security-profile records similarly depend on the configured inspection profile and actual matching activity.</p>
+<h2 id="direct">4. Path A: receive syslog directly on Wazuh</h2>
+<p>Add the following <code>&lt;remote&gt;</code> block inside the manager's existing <code>&lt;ossec_config&gt;</code> in <code>/var/ossec/etc/ossec.conf</code>. Preserve the separate secure agent listener on port 1514.</p>
+<pre class="code"><code class="language-xml">&lt;remote&gt;
+  &lt;connection&gt;syslog&lt;/connection&gt;
+  &lt;port&gt;514&lt;/port&gt;
+  &lt;protocol&gt;udp&lt;/protocol&gt;
+  &lt;allowed-ips&gt;10.20.0.1&lt;/allowed-ips&gt;
+  &lt;local_ip&gt;10.20.0.10&lt;/local_ip&gt;
+&lt;/remote&gt;</code></pre>
+<p><code>allowed-ips</code> is mandatory for Wazuh syslog reception. Use the source address actually observed at the manager, especially if NAT, HA, or VDOM routing changes it. Bind <code>local_ip</code> to an interface address present on the manager. An IP allowlist limits accepted sources but does not authenticate UDP messages.</p>
+<pre class="code"><code class="language-bash">sudo /var/ossec/bin/wazuh-remoted -t
+sudo systemctl restart wazuh-manager
+sudo systemctl --no-pager --full status wazuh-manager
+sudo ss -lunp | grep ":514"
+sudo tail -n 60 /var/ossec/logs/ossec.log</code></pre>
+<p>Restart only after the configuration check succeeds. Confirm that Wazuh owns the expected UDP socket. An rsyslog listener already bound to that address/port will conflict; choose one receiver for this path. In Docker, publish <code>514/udp</code> explicitly and bind to an address available inside the container, not the host-only address. Keep changes in the deployment's persistent configuration.</p>
+<h2 id="collector">5. Path B: receive on a Linux collector</h2>
+<p>This alternative uses rsyslog to write a dedicated file and a Wazuh agent to forward it. The following package and ownership examples target Debian/Ubuntu; adjust them for the collector's distribution and service identity.</p>
+<pre class="code"><code class="language-bash">sudo apt-get update
+sudo apt-get install -y rsyslog
+sudo install -d -o syslog -g adm -m 0750 /var/log/fortigate</code></pre>
+<p>Create <code>/etc/rsyslog.d/30-fortigate.conf</code> after checking existing inputs. Load <code>imudp</code> only once, and avoid a second listener on the same address/port.</p>
+<pre class="code"><code class="language-text">module(load="imudp")
+
+ruleset(name="fortigate_input") {
+    if ($fromhost-ip == "10.20.0.1") then {
+        action(type="omfile"
+               file="/var/log/fortigate/firewall.log"
+               template="RSYSLOG_TraditionalFileFormat"
+               fileOwner="syslog" fileGroup="adm" fileCreateMode="0640")
+    }
+    stop
+}
+
+input(type="imudp" address="10.20.0.10" port="514"
+      ruleset="fortigate_input")</code></pre>
+<p>The dedicated ruleset writes accepted sender messages and stops further processing of that input. Restrict UDP 514 in the host/network firewall as well. Ensure the directory is writable by rsyslog and the resulting file is readable by the agent's log collector; verify permissions instead of making the file world-readable.</p>
+<pre class="code"><code class="language-bash">sudo rsyslogd -N1
+sudo systemctl restart rsyslog
+sudo systemctl --no-pager --full status rsyslog
+sudo ss -lunp | grep ":514"</code></pre>
+<p>Continue only if validation succeeds. On the <strong>collector's agent</strong>, add this block to the existing <code>/var/ossec/etc/ossec.conf</code>:</p>
+<pre class="code"><code class="language-xml">&lt;localfile&gt;
+  &lt;location&gt;/var/log/fortigate/firewall.log&lt;/location&gt;
+  &lt;log_format&gt;syslog&lt;/log_format&gt;
+&lt;/localfile&gt;</code></pre>
+<pre class="code"><code class="language-bash">sudo /var/ossec/bin/wazuh-logcollector -t
+sudo systemctl restart wazuh-agent
+sudo tail -n 60 /var/ossec/logs/ossec.log
+sudo grep ^status /var/ossec/var/run/wazuh-agentd.state</code></pre>
+<p>Configure log rotation and retention before sustained ingestion, and verify rsyslog reopens the rotated file and the agent continues reading new records. A local file provides a useful diagnostic boundary, but UDP input can still lose events and a finite agent queue is not unlimited outage storage. Measure peak volume and recovery behavior.</p>
+<h2 id="decoding">6. Validate the built-in decoder with a real event</h2>
+<p>Use one complete FortiGate record from the actual ingestion path. Preserve field order, quoting, and the syslog wrapper when testing; redact sensitive values without changing their structure. On the manager, inspect the installed files and open the rule tester:</p>
+<pre class="code"><code class="language-bash">sudo ls /var/ossec/ruleset/decoders/*fortigate*
+sudo ls /var/ossec/ruleset/rules/*fortigate*
+sudo /var/ossec/bin/wazuh-logtest</code></pre>
+<p>Paste the event as a single line. Inspect preprocessing, the selected decoder, extracted fields, and the final rule. Check addresses, ports, action, user, event type/subtype, policy ID, and device identity where those fields are present. Do not assume every FortiOS log type produces the same field set.</p>
+<p>The Wazuh 4.14.0 source includes <code>0100-fortigate_decoders.xml</code> and <code>0391-fortigate_rules.xml</code>. Decoder names and rule IDs are implementation details, not FortiOS compatibility labels. A decoder with a historical version suffix may still match a newer event format; the actual test result is what matters.</p>
+<p>If parsing fails, first check output format, truncation, relay-added prefixes, and quoting. Add a local decoder only for a demonstrated gap, under <code>/var/ossec/etc/decoders/</code>, with positive and negative event samples. Do not edit packaged files under <code>/var/ossec/ruleset/</code> or import a second overlapping parent decoder without checking how it affects existing matches.</p>
+<h2 id="rules">7. Tune one detection after the baseline works</h2>
+<p>Custom rules should address an operational requirement rather than turn every traffic record into an alert. As a concrete example, the referenced Wazuh 4.14.0 ruleset uses rule <code>81606</code> for a FortiGate login failure. Only use the following child rule if <code>wazuh-logtest</code> confirms that your target event matches that parent.</p>
+<p>Choose an unused custom ID in Wazuh's <code>100000–120000</code> range. If <code>100620</code> is available, place this example in <code>/var/ossec/etc/rules/fortigate-local.xml</code>:</p>
+<pre class="code"><code class="language-xml">&lt;group name="fortigate,local,"&gt;
+  &lt;rule id="100620" level="6"&gt;
+    &lt;if_sid&gt;81606&lt;/if_sid&gt;
+    &lt;description&gt;FortiGate: failed administrative login requiring review.&lt;/description&gt;
+    &lt;group&gt;authentication_failed,&lt;/group&gt;
+  &lt;/rule&gt;
+&lt;/group&gt;</code></pre>
+<p>This raises the review priority of a known login-failure match; it is not a brute-force correlation rule. If your installed ruleset selects a different parent, adapt the rule to the verified match instead of copying the ID blindly.</p>
+<pre class="code"><code class="language-bash">sudo /var/ossec/bin/wazuh-analysisd -t
+sudo /var/ossec/bin/wazuh-logtest
+# After syntax and matching checks pass:
+sudo systemctl restart wazuh-manager</code></pre>
+<p>Test the intended failure event, a successful login, and unrelated traffic. Only the target event should select the new rule. Saved rules are available to a new logtest session; live analysis requires the manager restart. In a cluster, use the supported configuration synchronization workflow.</p>
+<h2 id="validation">8. Verify receipt, analysis, and dashboard visibility</h2>
+<h3>Observe the receiver</h3>
+<p>On whichever host receives syslog, capture a small sample while generating an approved event on the firewall:</p>
+<pre class="code"><code class="language-bash">sudo tcpdump -ni any -c 10 -s 0 -A 'src host 10.20.0.1 and udp dst port 514'
+# Path B only, after the first accepted event creates the file:
+sudo tail -n 20 /var/log/fortigate/firewall.log</code></pre>
+<p>A normal authorized administrative login/logout can validate system-event forwarding. A known permitted or denied connection through a policy with logging enabled can validate traffic records. Record the event time, device/VDOM, and expected category. Do not assume the two tests validate IPS, VPN, or antivirus coverage.</p>
+<h3>Separate received records from alerts</h3>
+<p>If packets or collector records exist but the dashboard is empty, inspect the manager's analysis results. Wazuh's alerts index is not a store of every event. For example, the referenced ruleset assigns some routine traffic matches level 1, which may fall below your configured alert threshold.</p>
+<p>JSON archives, when enabled, can show received events that produce no alert. They are disabled by default. For a controlled diagnostic window, enable <code>&lt;logall_json&gt;yes&lt;/logall_json&gt;</code> in the manager's existing <code>&lt;global&gt;</code> block, restart it, and generate a fresh event. Inspect <code>/var/ossec/logs/archives/archives.json</code>, then restore the previous setting if continuous archiving is not intended. Plan disk capacity and access controls before retaining all firewall traffic.</p>
+<h3>Find matching alerts</h3>
+<pre class="code"><code class="language-bash">sudo tail -n 100 /var/ossec/logs/alerts/alerts.json
+# Dashboard query against the alerts data view:
+# rule.groups:fortigate</code></pre>
+<p>In the dashboard, choose <code>wazuh-alerts-*</code>, a recent time range, and <code>rule.groups:fortigate</code>. Inspect the event document rather than relying only on a chart count. Direct syslog may appear under the manager's agent identity; collector ingestion uses the collector agent identity. Identify the firewall using verified device fields, sender/location, and event content.</p>
+<p>For the optional custom rule, filter <code>rule.id:100620</code>. If alerts exist in the manager file but not the dashboard, investigate Filebeat, indexer ingestion, time filters, and data-view selection. Searching <code>wazuh-archives-*</code> additionally requires archive forwarding and a configured archive data view.</p>
+<h2 id="troubleshooting">9. Troubleshoot the failing stage</h2>
+<div class="table-wrap"><table><thead><tr><th>Observation</th><th>Next checks</th></tr></thead><tbody>
+<tr><td>No packets at the receiver</td><td>FortiGate destination, source IP, route/VDOM, UDP versus TCP, network ACLs, and whether the selected event is generated and forwarded.</td></tr>
+<tr><td>Packets arrive but no receipt</td><td>Listener ownership, local bind address, Wazuh allowlist or rsyslog source filter, NAT, and Docker UDP publication.</td></tr>
+<tr><td>Collector file stays empty</td><td>Ruleset binding, observed sender, file ownership, disk space, SELinux/AppArmor policy where applicable, and rsyslog diagnostics.</td></tr>
+<tr><td>File grows but manager sees nothing</td><td>Agent connection, configured localfile path, read permissions, restart errors, rotation behavior, and queue pressure.</td></tr>
+<tr><td>Events received but fields missing</td><td>Native versus CEF output, decoder match, message truncation, quoting, and the exact event type tested.</td></tr>
+<tr><td>Fields decode but there is no alert</td><td>Final rule level, alert threshold, disabled/excluded rules, and whether the event should generate an alert at all.</td></tr>
+<tr><td>Duplicate records or excessive volume</td><td>Multiple syslog destinations, overlapping collectors, duplicated localfile entries, policy logging, filters, and retention.</td></tr>
+</tbody></table></div>
+<p>Keep one verified sample for each required category and document the receiver, decoder, final rule, and searchable fields. That evidence makes future FortiOS upgrades, decoder changes, and ingestion regressions easier to assess.</p>
+<h2 id="references">10. Sources and references</h2>
+<ul>
+<li><a href="https://www.opensiem-deployer.com/blog/collect-fortinet-logs-wazuh" target="_blank" rel="noopener noreferrer">OpenSIEM Deployer — Collect Fortinet FortiGate Logs in Wazuh</a> — source resource for this guide.</li>
+<li><a href="https://docs.fortinet.com/document/fortigate/7.4.7/cli-reference/141516630/config-log-syslogd-setting" target="_blank" rel="noopener noreferrer">Fortinet — FortiOS 7.4.7 syslog destination CLI</a></li>
+<li><a href="https://docs.fortinet.com/document/fortigate/7.4.8/administration-guide/250999/log-settings-and-targets" target="_blank" rel="noopener noreferrer">Fortinet — log settings and targets</a></li>
+<li><a href="https://docs.fortinet.com/document/fortigate/7.4.8/administration-guide/986892/sample-logs-by-log-type" target="_blank" rel="noopener noreferrer">Fortinet — log types and policy logging examples</a></li>
+<li><a href="https://documentation.wazuh.com/current/user-manual/capabilities/log-data-collection/syslog.html" target="_blank" rel="noopener noreferrer">Wazuh — syslog reception</a></li>
+<li><a href="https://documentation.wazuh.com/current/getting-started/architecture.html" target="_blank" rel="noopener noreferrer">Wazuh — architecture, ports, and transport</a></li>
+<li><a href="https://github.com/wazuh/wazuh/blob/v4.14.0/ruleset/decoders/0100-fortigate_decoders.xml" target="_blank" rel="noopener noreferrer">Wazuh 4.14.0 — packaged FortiGate decoders</a></li>
+<li><a href="https://github.com/wazuh/wazuh/blob/v4.14.0/ruleset/rules/0391-fortigate_rules.xml" target="_blank" rel="noopener noreferrer">Wazuh 4.14.0 — packaged FortiGate rules</a></li>
+<li><a href="https://documentation.wazuh.com/current/user-manual/ruleset/rules/custom.html" target="_blank" rel="noopener noreferrer">Wazuh — custom rules and validation</a></li>
+<li><a href="https://documentation.wazuh.com/current/user-manual/manager/event-logging.html" target="_blank" rel="noopener noreferrer">Wazuh — event archives</a></li>
+<li><a href="https://docs.rsyslog.com/doc/configuration/modules/imudp.html" target="_blank" rel="noopener noreferrer">rsyslog — UDP inputs and ruleset binding</a></li>
+<li><a href="https://docs.rsyslog.com/doc/configuration/modules/omfile.html" target="_blank" rel="noopener noreferrer">rsyslog — file output and permissions</a></li>
+</ul>
+<p class="note">The resource's integration workflow is expanded here with vendor-backed configuration checks. No deployment on a FortiGate appliance is claimed; validate commands and event samples against the releases and policies in your environment.</p>
+<div class="contact-hook">
+<span class="hook-kicker">Discuss firewall visibility</span>
+<p class="hook-title">Connecting FortiGate telemetry to your SOC?</p>
+<p>Contact me to discuss firewall log onboarding, Wazuh parsing, detection tuning, and SIEM ingestion troubleshooting.</p>
+<div class="contact-links"><a href="mailto:as.ga2019@gmail.com?subject=FortiGate%20Wazuh%20Integration%20Inquiry"><svg class="contact-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 4h20a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Zm10 8.2L21.2 6H2.8L12 12.2Zm0 2.4L2 8v10h20V8l-10 6.6Z"/></svg>Email me ↗</a><a href="https://www.linkedin.com/in/1elrawy/" target="_blank" rel="noopener noreferrer"><svg class="contact-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.13 1.44-2.13 2.94v5.67H9.35V9h3.42v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.26 2.37 4.26 5.45v6.29ZM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12ZM7.12 20.45H3.56V9h3.56v11.45ZM22.22 0H1.77C.79 0 0 .77 0 1.72v20.56C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.72V1.72C24 .77 23.2 0 22.22 0Z"/></svg>LinkedIn ↗</a></div>
+</div>
+</article></div><footer class="footer"><div class="wrap footerinner"><span>© 2026 Ashraf Gamal · Technical notes</span><a href="/articles.html">Back to the article library ↑</a></div><span class="site-visits" id="site-visits" aria-label="Total site visits"><span class="site-visits-label">SITE VISITS</span><span class="site-visits-widget" id="site-visits-widget" aria-live="polite"><span id="site-visits-counter" class="site-visits-number">—</span></span></span>
+</footer>
+<script src="/assets/js/terminal-design.v2.js?v=b4ab5178cb38"></script>
+</body>
+</html>
+
