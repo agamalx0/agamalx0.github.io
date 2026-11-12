@@ -4,7 +4,7 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#0a0b0d">
 <meta name="description" content="Collect Windows Event Logs and Sysmon from a workstation and an Active Directory domain controller, then validate forwarding and field extraction.">
-<title>Onboarding Windows Endpoints into Splunk | Ashraf Gamal</title>
+<title>Deploying Splunk Universal Forwarder on Windows endpoints | Ashraf Gamal</title>
 
 
 
@@ -22,23 +22,23 @@
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="Ashraf Gamal | SOC Engineering">
 <meta property="og:locale" content="en_US">
-<meta property="og:title" content="Onboarding Windows Endpoints into Splunk | Ashraf Gamal">
+<meta property="og:title" content="Deploying Splunk Universal Forwarder on Windows endpoints | Ashraf Gamal">
 <meta property="og:description" content="Collect Windows Event Logs and Sysmon from a workstation and an Active Directory domain controller, then validate forwarding and field extraction.">
 <meta property="og:url" content="https://agamalx0.github.io/articles/splunk-windows-endpoints-ad-sysmon.html">
 <meta property="og:image" content="https://agamalx0.github.io/ashraf-avatar.jpg">
 <meta property="og:image:alt" content="Ashraf Gamal">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Onboarding Windows Endpoints into Splunk | Ashraf Gamal">
+<meta name="twitter:title" content="Deploying Splunk Universal Forwarder on Windows endpoints | Ashraf Gamal">
 <meta name="twitter:description" content="Collect Windows Event Logs and Sysmon from a workstation and an Active Directory domain controller, then validate forwarding and field extraction.">
 <meta name="twitter:image" content="https://agamalx0.github.io/ashraf-avatar.jpg">
 <meta name="twitter:image:alt" content="Ashraf Gamal">
 <meta property="article:modified_time" content="2026-11-12">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"Onboarding Windows Endpoints into Splunk","description":"Collect Windows Event Logs and Sysmon from a workstation and an Active Directory domain controller, then validate forwarding and field extraction.","dateModified":"2026-11-12","author":{"@type":"Person","name":"Ashraf Gamal","url":"https://agamalx0.github.io/"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://agamalx0.github.io/articles/splunk-windows-endpoints-ad-sysmon.html"},"image":"https://agamalx0.github.io/ashraf-avatar.jpg","inLanguage":"en"}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"Deploying Splunk Universal Forwarder on Windows endpoints","description":"Collect Windows Event Logs and Sysmon from a workstation and an Active Directory domain controller, then validate forwarding and field extraction.","dateModified":"2026-11-12","author":{"@type":"Person","name":"Ashraf Gamal","url":"https://agamalx0.github.io/"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://agamalx0.github.io/articles/splunk-windows-endpoints-ad-sysmon.html"},"image":"https://agamalx0.github.io/ashraf-avatar.jpg","inLanguage":"en"}</script>
 <!-- END GENERATED METADATA -->
 </head>
 <body class="article-page">
 <header class="topbar"><nav class="nav wrap"><a class="brand" href="/">AG <span class="gradient">/ Notes</span></a><a class="back" href="/articles.html">← Back to all technical notes</a></nav></header>
-<header class="hero wrap"><h1>Onboarding<br> <span class="gradient">Windows Endpoints into Splunk</span></h1><p class="lede">Collect Windows Event Logs and Sysmon from a workstation and an Active Directory domain controller, then validate forwarding and field extraction.</p><div class="meta"><span>By Ashraf Gamal</span><span data-article-date>Updated 12 November 2026</span><span class="pill">Splunk · Engineering lab</span><span data-reading-time>Approx. 8 min read</span></div></header>
+<header class="hero wrap"><h1>Deploying Splunk Universal Forwarder<br> <span class="gradient">on Windows endpoints</span></h1><p class="lede">Collect Windows Event Logs and Sysmon from a workstation and an Active Directory domain controller, then validate forwarding and field extraction.</p><div class="meta"><span>By Ashraf Gamal</span><span data-article-date>Updated 12 November 2026</span><span class="pill">Splunk · Engineering lab</span><span data-reading-time>Approx. 8 min read</span></div></header>
 <div class="wrap layout"><aside class="toc"><strong>In this guide</strong><a href="#scope">1. Lab scope and architecture</a><a href="#receiver">2. Prepare the receiver and destination index</a><a href="#forwarders">3. Configure both Windows forwarders</a><a href="#validation">4. Validate configuration and source coverage</a><a href="#ad">5. Domain controller coverage and recorded outcome</a><a href="#troubleshooting">6. Diagnose missing Windows data</a><a href="#references">7. References and next steps</a></aside><article class="content"><div class="callout"><strong>Evidence boundary</strong><p>The lab handover records successful onboarding. It does not include raw event samples, event counts, or full version output. Configuration below reflects that record; verification searches are provided for reproducing the checks, not presented as captured results.</p></div><h2 id="scope">1. Lab scope and architecture</h2><p>This lab used a single Linux-hosted Splunk Enterprise instance on a Dell PowerEdge R720. It combined receiving, indexing, and search roles. The examples replace the recorded backend address with <code>192.0.2.10</code>, a documentation-only address; substitute your reachable receiver. Splunk, forwarder, and add-on versions were not retained in the handover.</p><p>Two Windows sources were onboarded: a workstation and an Active Directory domain controller. Both used the same Universal Forwarder inputs for Application, Security, System, and Sysmon. This baseline collects operating-system telemetry from the domain controller; it is not a complete Active Directory monitoring configuration.</p><pre class="code"><code class="language-text">Windows Event Logs + Sysmon → Universal Forwarder
                            → TCP 9997 → single-node Splunk Enterprise</code></pre><p>The recorded transport was non-TLS TCP. The Windows and Sysmon add-ons were installed on the combined backend. Sysmon was already installed on both endpoints; its installation commands, configuration policy, and event filtering were not recorded.</p><h2 id="receiver">2. Prepare the receiver and destination index</h2><p>The lab enabled the receiving input in <code>/opt/splunk/etc/system/local/inputs.conf</code>:</p><pre class="code"><code class="language-ini">[splunktcp://9997]
 disabled = 0</code></pre><p>The destination was defined in <code>/opt/splunk/etc/system/local/indexes.conf</code>:</p><pre class="code"><code class="language-ini">[wineventlog]

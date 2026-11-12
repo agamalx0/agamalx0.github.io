@@ -250,7 +250,7 @@
     "readingTime": "6 min read"
   },
   {
-    "title": "Onboarding Windows Endpoints into Splunk",
+    "title": "Deploying Splunk Universal Forwarder on Windows endpoints",
     "topic": "Splunk",
     "topicKey": "splunk",
     "summary": "Collect Windows Event Logs and Sysmon from a workstation and an Active Directory domain controller, then validate forwarding and field extraction.",
@@ -260,7 +260,7 @@
     "readingTime": "8 min read"
   },
   {
-    "title": "Onboarding Kali Linux into Splunk",
+    "title": "Deploying Splunk Universal Forwarder on Linux endpoints",
     "topic": "Splunk",
     "topicKey": "splunk",
     "summary": "Forward Kali system and authentication logs, resolve missing syslog files, and distinguish receiver connectivity from actual collection.",

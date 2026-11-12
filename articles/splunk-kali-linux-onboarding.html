@@ -4,7 +4,7 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#0a0b0d">
 <meta name="description" content="Forward Kali system and authentication logs, resolve missing syslog files, and distinguish receiver connectivity from actual collection.">
-<title>Onboarding Kali Linux into Splunk | Ashraf Gamal</title>
+<title>Deploying Splunk Universal Forwarder on Linux endpoints | Ashraf Gamal</title>
 
 
 
@@ -22,23 +22,23 @@
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="Ashraf Gamal | SOC Engineering">
 <meta property="og:locale" content="en_US">
-<meta property="og:title" content="Onboarding Kali Linux into Splunk | Ashraf Gamal">
+<meta property="og:title" content="Deploying Splunk Universal Forwarder on Linux endpoints | Ashraf Gamal">
 <meta property="og:description" content="Forward Kali system and authentication logs, resolve missing syslog files, and distinguish receiver connectivity from actual collection.">
 <meta property="og:url" content="https://agamalx0.github.io/articles/splunk-kali-linux-onboarding.html">
 <meta property="og:image" content="https://agamalx0.github.io/ashraf-avatar.jpg">
 <meta property="og:image:alt" content="Ashraf Gamal">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Onboarding Kali Linux into Splunk | Ashraf Gamal">
+<meta name="twitter:title" content="Deploying Splunk Universal Forwarder on Linux endpoints | Ashraf Gamal">
 <meta name="twitter:description" content="Forward Kali system and authentication logs, resolve missing syslog files, and distinguish receiver connectivity from actual collection.">
 <meta name="twitter:image" content="https://agamalx0.github.io/ashraf-avatar.jpg">
 <meta name="twitter:image:alt" content="Ashraf Gamal">
 <meta property="article:modified_time" content="2026-11-12">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"Onboarding Kali Linux into Splunk","description":"Forward Kali system and authentication logs, resolve missing syslog files, and distinguish receiver connectivity from actual collection.","dateModified":"2026-11-12","author":{"@type":"Person","name":"Ashraf Gamal","url":"https://agamalx0.github.io/"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://agamalx0.github.io/articles/splunk-kali-linux-onboarding.html"},"image":"https://agamalx0.github.io/ashraf-avatar.jpg","inLanguage":"en"}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"Deploying Splunk Universal Forwarder on Linux endpoints","description":"Forward Kali system and authentication logs, resolve missing syslog files, and distinguish receiver connectivity from actual collection.","dateModified":"2026-11-12","author":{"@type":"Person","name":"Ashraf Gamal","url":"https://agamalx0.github.io/"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://agamalx0.github.io/articles/splunk-kali-linux-onboarding.html"},"image":"https://agamalx0.github.io/ashraf-avatar.jpg","inLanguage":"en"}</script>
 <!-- END GENERATED METADATA -->
 </head>
 <body class="article-page">
 <header class="topbar"><nav class="nav wrap"><a class="brand" href="/">AG <span class="gradient">/ Notes</span></a><a class="back" href="/articles.html">← Back to all technical notes</a></nav></header>
-<header class="hero wrap"><h1>Onboarding<br> <span class="gradient">Kali Linux into Splunk</span></h1><p class="lede">Forward Kali system and authentication logs, resolve missing syslog files, and distinguish receiver connectivity from actual collection.</p><div class="meta"><span>By Ashraf Gamal</span><span data-article-date>Updated 12 November 2026</span><span class="pill">Splunk · Engineering lab</span><span data-reading-time>Approx. 7 min read</span></div></header>
+<header class="hero wrap"><h1>Deploying Splunk Universal Forwarder<br> <span class="gradient">on Linux endpoints</span></h1><p class="lede">Forward Kali system and authentication logs, resolve missing syslog files, and distinguish receiver connectivity from actual collection.</p><div class="meta"><span>By Ashraf Gamal</span><span data-article-date>Updated 12 November 2026</span><span class="pill">Splunk · Engineering lab</span><span data-reading-time>Approx. 7 min read</span></div></header>
 <div class="wrap layout"><aside class="toc"><strong>In this guide</strong><a href="#scope">1. Scope and data flow</a><a href="#install">2. Establish the receiver and forwarding path</a><a href="#failure">3. Field note: connected forwarder, missing source files</a><a href="#logging">4. Restore the file-based logging path</a><a href="#validate">5. Validate collection separately from connectivity</a><a href="#permissions">6. Service identity and operational limits</a><a href="#outcome">7. Recorded outcome and references</a></aside><article class="content"><div class="callout"><strong>Evidence boundary</strong><p>The lab handover records successful onboarding. It does not include raw event samples, event counts, or full version output. Configuration below reflects that record; verification searches are provided for reproducing the checks, not presented as captured results.</p></div><h2 id="scope">1. Scope and data flow</h2><p>This lab used a single Linux-hosted Splunk Enterprise instance on a Dell PowerEdge R720. It combined receiving, indexing, and search roles. The examples replace the recorded backend address with <code>192.0.2.10</code>, a documentation-only address; substitute your reachable receiver. Splunk, forwarder, and add-on versions were not retained in the handover.</p><pre class="code"><code class="language-text">Kali logging → /var/log/syslog and /var/log/auth.log
              → Universal Forwarder → TCP 9997 → index=linux</code></pre><p>The lab installed a Debian-package Universal Forwarder on Kali and the Unix and Linux add-on on the combined Splunk backend. Forwarding was non-TLS. The important troubleshooting finding was that a connected forwarder had no configured file inputs and the expected traditional log file did not exist.</p><h2 id="install">2. Establish the receiver and forwarding path</h2><p>The same TCP 9997 receiver used for Windows accepted the Kali forwarder. The <code>linux</code> index must exist on the backend before sending events to it. The handover names that index but does not preserve its creation command or configuration file; do not infer retention or storage settings from the index name.</p><p>Installation used <code>dpkg -i</code> with a Universal Forwarder <code>.deb</code> package. The exact filename, architecture, and version were not retained. Startup credentials, boot-start configuration, and the original add-forward-server command were also not preserved.</p><p>The target recorded by the handover was the same receiver on port 9997. This is an equivalent normalized configuration example, not a recovered copy of the CLI-generated <code>outputs.conf</code>:</p><pre class="code"><code class="language-ini">[tcpout]
 defaultGroup = default-autolb-group
