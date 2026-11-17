@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en" class="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0a0b0d">
+<meta name="description" content="A practical guide to Splunk field normalization, asset lookups, reusable search macros, event types, and tags, with SPL examples and validation screenshots.">
+<meta name="keywords" content="Splunk, Splunk Enterprise, CIM, field aliases, lookups, asset enrichment, search macros, event types, tags, SIEM engineering">
+<title>Splunk Knowledge Objects &amp; Data Normalization | Ashraf Gamal</title>
+<link rel="canonical" href="https://agamalx0.github.io/articles/splunk-knowledge-objects-data-normalization.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/site.css?v=af31cb7f630b">
+<script defer src="/assets/js/article.v4.js?v=f74850cf0021"></script>
+<script defer src="/assets/js/site-visits.v4.js?v=20261101"></script>
+<!-- BEGIN GENERATED METADATA -->
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Ashraf Gamal | SOC Engineering">
+<meta property="og:locale" content="en_US">
+<meta property="og:title" content="Splunk Knowledge Objects &amp; Data Normalization | Ashraf Gamal">
+<meta property="og:description" content="A practical guide to Splunk field normalization, asset lookups, reusable search macros, event types, and tags, with SPL examples and validation screenshots.">
+<meta property="og:url" content="https://agamalx0.github.io/articles/splunk-knowledge-objects-data-normalization.html">
+<meta property="og:image" content="https://agamalx0.github.io/ashraf-avatar.jpg">
+<meta property="og:image:alt" content="Ashraf Gamal">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Splunk Knowledge Objects &amp; Data Normalization | Ashraf Gamal">
+<meta name="twitter:description" content="A practical guide to Splunk field normalization, asset lookups, reusable search macros, event types, and tags, with SPL examples and validation screenshots.">
+<meta name="twitter:image" content="https://agamalx0.github.io/ashraf-avatar.jpg">
+<meta name="twitter:image:alt" content="Ashraf Gamal">
+<meta property="article:modified_time" content="2026-11-17">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"Splunk Knowledge Objects & Data Normalization","description":"A practical guide to Splunk field normalization, asset lookups, reusable search macros, event types, and tags, with SPL examples and validation screenshots.","dateModified":"2026-11-17","author":{"@type":"Person","name":"Ashraf Gamal","url":"https://agamalx0.github.io/"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://agamalx0.github.io/articles/splunk-knowledge-objects-data-normalization.html"},"image":"https://agamalx0.github.io/ashraf-avatar.jpg","inLanguage":"en"}</script>
+<!-- END GENERATED METADATA -->
+</head>
+<body class="article-page">
+<header class="topbar"><nav class="nav wrap"><a class="brand" href="/">AG <span class="gradient">/ Notes</span></a><a class="back" href="/articles.html">← Back to all technical notes</a></nav></header>
+<header class="hero wrap">
+<h1>Splunk Knowledge Objects &amp; Data Normalization</h1>
+<p class="lede">A reusable workflow for standardizing fields, enriching events with asset context, simplifying searches, and grouping related security data.</p>
+<div class="meta"><span>By Ashraf Gamal</span><span data-article-date>Updated 17 November 2026</span><span class="pill">Splunk · SIEM Engineering</span><span data-reading-time>Approx. 9 min read</span></div>
+</header>
+<div class="wrap layout">
+<aside class="toc"><strong>In this guide</strong>
+<a href="#scope">1. Confirm data and source fields</a>
+<a href="#cim">2. Normalize field names</a>
+<a href="#lookup">3. Enrich events with an asset lookup</a>
+<a href="#macros">4. Reuse searches with macros</a>
+<a href="#eventtypes">5. Classify events with event types and tags</a>
+<a href="#results">6. Validate and maintain the knowledge layer</a>
+</aside>
+<article class="content">
+<div class="callout"><strong>What you'll build</strong><p>This guide shows how to use Splunk knowledge objects to normalize field names, add asset context, standardize repeated searches, and categorize related events. The steps are reusable; the indexes, sourcetypes, fields, and object names below are examples. Confirm and substitute the values from your own environment.</p></div>
+
+<h2 id="scope">1. Confirm data and source fields</h2>
+<p>Before creating knowledge objects, confirm that the expected events are indexed and identify the fields Splunk extracts. The examples in this guide use Windows Sysmon and FortiGate traffic:</p>
+<div class="table-wrap"><table><thead><tr><th>Source</th><th>Example index</th><th>Example sourcetype</th></tr></thead><tbody>
+<tr><td>Windows Sysmon</td><td><code>wineventlog</code></td><td><code>XmlWinEventLog</code></td></tr>
+<tr><td>FortiGate traffic</td><td><code>network</code></td><td><code>fortigate_traffic</code></td></tr>
+</tbody></table></div>
+<p>Start with a narrow search and check the field names in representative events. Your environment may use different indexes, sourcetypes, add-ons, or field names, so verify these before copying a search. If no events return, check the time range, ingestion path, permissions, and event metadata first.</p>
+<p>The screenshots show particular runs of a lab dataset. Their event counts and timestamps are examples, not expected values; results will vary with data volume, retention, and the selected time range.</p>
+
+<h2 id="cim">2. Normalize field names with aliases</h2>
+<p>Source-specific add-ons may expose the same concept under different field names. A field alias can make common fields easier to use consistently in searches. In the FortiGate example, the incoming source and destination fields are <code>srcip</code> and <code>dstip</code>; the aliases map them to <code>src</code> and <code>dest</code>.</p>
+<div class="table-wrap"><table><thead><tr><th>Incoming field</th><th>Alias</th></tr></thead><tbody><tr><td><code>srcip</code></td><td><code>src</code></td></tr><tr><td><code>dstip</code></td><td><code>dest</code></td></tr></tbody></table></div>
+<p>In Splunk Web, open <strong>Settings → Fields → Field Aliases → New</strong>, then scope the alias to the relevant sourcetype and app. The example object is named <code>fortigate_cim_alias</code> and applies to <code>fortigate_traffic</code>. The configuration screenshot shows <strong>Overwrite field values</strong> selected; review existing destination fields in your own data before choosing that option.</p>
+<figure class="figure"><img src="/assets/images/splunk/01-cim-field-alias.png" alt="Splunk field alias configuration mapping srcip to src and dstip to dest for fortigate_traffic." loading="lazy"><figcaption>Example field alias: <code>srcip → src</code> and <code>dstip → dest</code>.</figcaption></figure>
+<p>Validate that the aliases are available at search time:</p>
+<pre class="code"><code class="language-spl">index=network sourcetype=fortigate_traffic earliest=-24h
+| table _time, src, dest, action, protocol
+| head 10</code></pre>
+<figure class="figure"><img src="/assets/images/splunk/02-cim-validation-results.png" alt="Splunk search results showing source and destination fields for FortiGate traffic." loading="lazy"><figcaption>Validation search returning the aliased source and destination fields.</figcaption></figure>
+<p>This example normalizes two FortiGate fields. A field alias alone does not establish full CIM conformance; validate field meaning and the required data-model fields separately for each source.</p>
+
+<h2 id="lookup">3. Enrich events with an asset lookup</h2>
+<p>A lookup can add stable context such as a hostname, asset role, or priority to events. Build an inventory CSV with a key that matches a field in the event. The example file uses <code>ip</code>, <code>hostname</code>, <code>asset_role</code>, and <code>priority</code>:</p>
+<pre class="code"><code class="language-csv">ip,hostname,asset_role,priority
+192.0.2.10,Splunk-Backend,SIEM,Critical
+192.0.2.90,AD-Server,Domain Controller,Critical
+192.0.2.35,Win-Endpoint,Workstation,Medium
+192.0.2.36,Kali-SOC,Offensive/Test,Low
+192.0.2.31,FortiGate-FW,Perimeter Firewall,Critical</code></pre>
+<p>The addresses in this public example use the documentation-only <code>192.0.2.0/24</code> range. Replace them with the correct addresses for your own inventory; these example addresses are not live asset addresses.</p>
+<p>Upload the CSV through <strong>Settings → Lookups → Lookup table files</strong>, then create a file-based lookup definition. The example definition is <code>asset_inventory</code>, backed by <code>lab_assets.csv</code>. Set its sharing and permissions so intended users and apps can run the lookup.</p>
+<figure class="figure"><img src="/assets/images/splunk/03-asset-lookup-definition.png" alt="Splunk lookup table file and asset_inventory lookup definition configuration." loading="lazy"><figcaption>Example lookup definition: <code>asset_inventory</code> references <code>lab_assets.csv</code>.</figcaption></figure>
+<p>Match the event source IP to the CSV's <code>ip</code> column and return the desired context:</p>
+<pre class="code"><code class="language-spl">index=network sourcetype=fortigate_traffic earliest=-24h
+| lookup asset_inventory ip AS srcip OUTPUT hostname, asset_role, priority
+| table _time, src, srcip, dest, hostname, asset_role, priority, action
+| head 10</code></pre>
+<figure class="figure"><img src="/assets/images/splunk/04-asset-enrichment-results.png" alt="FortiGate search results enriched with source and destination fields, hostname, asset role, and priority." loading="lazy"><figcaption>Enrichment results showing normalized fields and asset context from the lookup.</figcaption></figure>
+<p>Keep the inventory current and verify that the lookup key matches the event field exactly. A successful lookup configuration does not guarantee every future event will match; new, missing, or changed asset addresses may have no inventory row.</p>
+
+<h2 id="macros">4. Reuse common searches with macros</h2>
+<p>Search macros centralize repeated base filters so searches can share a consistent source definition. Create them under <strong>Settings → Advanced Search → Search macros</strong>. These example definitions use the source values shown above:</p>
+<div class="table-wrap"><table><thead><tr><th>Macro</th><th>Definition</th><th>Use</th></tr></thead><tbody>
+<tr><td><code>sysmon_data</code></td><td><code>index=wineventlog sourcetype=XmlWinEventLog</code></td><td>Windows Sysmon searches</td></tr>
+<tr><td><code>firewall_traffic</code></td><td><code>index=network sourcetype=fortigate_traffic</code></td><td>FortiGate traffic searches</td></tr>
+</tbody></table></div>
+<p>Macro definitions contain the base search. Call a macro with backticks, then add the analysis commands needed for the task:</p>
+<pre class="code"><code class="language-spl">`sysmon_data`
+| stats count by EventCode
+| head 10</code></pre>
+<figure class="figure"><img src="/assets/images/splunk/05-search-macros.png" alt="Splunk Search Macros settings showing sysmon_data and firewall_traffic definitions." loading="lazy"><figcaption>Example macro definitions for Sysmon and FortiGate traffic.</figcaption></figure>
+<p>The screenshot below validates the Sysmon macro by grouping its events by <code>EventCode</code>:</p>
+<pre class="code"><code class="language-spl">`sysmon_data`
+| stats count by EventCode
+| head 10</code></pre>
+<figure class="figure"><img src="/assets/images/splunk/06-macro-validation.png" alt="Splunk results from the sysmon_data macro grouped by Windows Sysmon EventCode." loading="lazy"><figcaption>Macro validation using a grouped event-code count.</figcaption></figure>
+<p>Macro names and definitions are examples. Keep them focused, document what each expands to, and test changes before relying on them in saved searches or dashboards.</p>
+
+<h2 id="eventtypes">5. Classify events with event types and tags</h2>
+<p>Event types name reusable searches, while tags label the resulting event categories. Define each event type in <strong>Settings → Event types → New Event Type</strong>, then assign tags that describe the category. The examples shown here are:</p>
+<div class="table-wrap"><table><thead><tr><th>Event type</th><th>Search string</th><th>Tags</th></tr></thead><tbody>
+<tr><td><code>Network_Traffic</code></td><td><code>index=network sourcetype=fortigate_traffic</code></td><td><code>network</code>, <code>communicate</code></td></tr>
+<tr><td><code>Windows_Authentication</code></td><td><code>sourcetype=XmlWinEventLog EventCode=4624</code></td><td><code>authentication</code></td></tr>
+</tbody></table></div>
+<p>Event ID 4624 represents a successful Windows logon, so the <code>Windows_Authentication</code> name and <code>authentication</code> tag match its purpose. Adjust the event type search to your own sourcetype and extracted event-code field.</p>
+<figure class="figure"><img src="/assets/images/splunk/07-event-types-configuration.png" alt="Splunk Event Types settings showing Network_Traffic and Windows_Authentication definitions." loading="lazy"><figcaption>Example event types, including the <code>Windows_Authentication</code> filter for EventCode 4624.</figcaption></figure>
+<figure class="figure"><img src="/assets/images/splunk/08-event-type-tags.png" alt="Splunk tag assignments showing the authentication tag mapped to eventtype=Windows_Authentication." loading="lazy"><figcaption>The <code>authentication</code> tag is assigned to <code>eventtype=Windows_Authentication</code>.</figcaption></figure>
+<p>Validate the authentication event type and the network category with searches such as:</p>
+<pre class="code"><code class="language-spl">eventtype=Windows_Authentication
+| stats count by EventCode</code></pre>
+<pre class="code"><code class="language-spl">eventtype=Network_Traffic | stats count by action</code></pre>
+<figure class="figure"><img src="/assets/images/splunk/09-firewall-action-distribution.png" alt="Splunk 24-hour FortiGate Network_Traffic aggregation showing event counts by action." loading="lazy"><figcaption>Network traffic grouped by action through the <code>Network_Traffic</code> event type.</figcaption></figure>
+<p>The screenshot result is a point-in-time view. Counts will change as new events arrive and as the selected time range changes.</p>
+
+<h2 id="results">6. Validate and maintain the knowledge layer</h2>
+<div class="table-wrap"><table><thead><tr><th>Area</th><th>Validation</th></tr></thead><tbody>
+<tr><td>Field aliases</td><td>Confirm expected source and destination fields appear in search results.</td></tr>
+<tr><td>Lookup</td><td>Check that known asset addresses return the expected hostname, role, and priority.</td></tr>
+<tr><td>Macros</td><td>Confirm each macro expands to the intended index and sourcetype filter.</td></tr>
+<tr><td>Event types and tags</td><td>Verify event types return the correct events and tags are attached to the intended categories.</td></tr>
+</tbody></table></div>
+<p>Keep the example values aligned with your deployed add-ons and data. Recheck the sourcetype and field names when inputs or parsing change, review lookup permissions and freshness, and test shared searches after updating a knowledge object.</p>
+<p>These objects make searches easier to reuse and interpret; they do not replace validating field semantics, access controls, data quality, or complete CIM coverage for each source.</p>
+
+<div class="contact-hook">
+<span class="hook-kicker">Discuss Splunk engineering</span>
+<p class="hook-title">Working on Splunk data normalization or search design?</p>
+<p>Connect to discuss practical SIEM engineering, knowledge objects, and detection workflows.</p>
+<div class="contact-links">
+<a href="mailto:as.ga2019@gmail.com?subject=Splunk%20Engineering%20Inquiry"><svg class="contact-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 4h20a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Zm10 8.2L21.2 6H2.8L12 12.2Zm0 2.4L2 8v10h20V8l-10 6.6Z"/></svg>Email me ↗</a>
+<a href="https://www.linkedin.com/in/1elrawy/" target="_blank" rel="noopener noreferrer"><svg class="contact-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.13 1.44-2.13 2.94v5.67H9.35V9h3.42v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.26 2.37 4.26 5.45v6.29ZM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12ZM7.12 20.45H3.56V9h3.56v11.45ZM22.22 0H1.77C.79 0 0 .77 0 1.72v20.56C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.72V1.72C24 .77 23.2 0 22.22 0Z"/></svg>LinkedIn ↗</a>
+</div>
+</div>
+</article>
+</div>
+<footer class="footer"><div class="wrap footerinner"><span>© 2026 Ashraf Gamal · Technical notes</span><a href="/articles.html">Back to the article library ↑</a></div><span class="site-visits" id="site-visits" aria-label="Total site visits"><span class="site-visits-label">SITE VISITS</span><span class="site-visits-widget" id="site-visits-widget" aria-live="polite"><span id="site-visits-counter" class="site-visits-number">—</span></span></span>
+</footer>
+<script src="/assets/js/terminal-design.v2.js?v=b4ab5178cb38"></script>
+</body>
+</html>
