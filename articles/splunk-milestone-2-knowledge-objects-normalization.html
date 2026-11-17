@@ -74,14 +74,15 @@
 <li><strong>Field aliases:</strong> <code>srcip → src</code> and <code>dstip → dest</code></li>
 <li><strong>Overwrite field values:</strong> checked</li>
 </ul>
+<p>Field aliases are configured as Splunk knowledge objects in Splunk Web; there is no SPL command that creates this alias. The object configuration is shown below. The next search verifies that the aliased fields are available at search time.</p>
+<figure class="figure"><img src="/assets/images/splunk/01-cim-field-alias.png" alt="Splunk field alias configuration mapping srcip to src and dstip to dest for fortigate_traffic." loading="lazy"><figcaption>Field alias configuration: <code>srcip → src</code> and <code>dstip → dest</code>.</figcaption></figure>
 <p>The validation search was:</p>
 <pre class="code"><code class="language-spl">index=network sourcetype=fortigate_traffic earliest=-24h
 | table _time, src, dest, action, protocol
 | head 10</code></pre>
+<figure class="figure"><img src="/assets/images/splunk/02-cim-validation-results.png" alt="Splunk search results displaying the CIM-aligned source and destination fields for FortiGate traffic." loading="lazy"><figcaption>CIM validation: the search returns <code>src</code> and <code>dest</code> alongside the traffic action and protocol.</figcaption></figure>
 <p><strong>Recorded result:</strong> 32,399 FortiGate traffic events were reported with the CIM-oriented <code>src</code> and <code>dest</code> fields available.</p>
 <p>This is a targeted normalization step for two FortiGate fields. It demonstrates field aliasing, but it should not be described as full CIM validation or complete CIM data-model mapping across every source.</p>
-<!-- SCREENSHOT PLACEHOLDER: Add the field alias definition and the search result after the screenshots are uploaded. -->
-
 <h2 id="lookup">3. Asset and identity enrichment with a lookup</h2>
 <p>An IP address by itself does not tell an analyst whether the system is a domain controller, workstation, test host, or perimeter device. I created a small CSV inventory and made it available to Splunk searches through a lookup definition.</p>
 <h3>3.1 Build the asset inventory</h3>
@@ -99,6 +100,8 @@
 <li><strong>Destination app:</strong> <code>Search</code></li>
 <li><strong>Sharing:</strong> <code>This app only</code> for both the lookup definition and the CSV file</li>
 </ul>
+<p>The lookup file and its definition are created and permissioned through Splunk Web. There is no SPL command in the milestone notes for creating or sharing the lookup object; the screenshot below records that configuration.</p>
+<figure class="figure"><img src="/assets/images/splunk/03-asset-lookup-definition.png" alt="Splunk lookup table file and asset_inventory lookup definition configuration." loading="lazy"><figcaption>Lookup configuration: <code>asset_inventory</code> references <code>lab_assets.csv</code> in the Search app.</figcaption></figure>
 <h3>3.2 Enrich FortiGate events</h3>
 <p>The lookup matches the event's <code>srcip</code> to the CSV's <code>ip</code> column and returns the asset name, role, and priority:</p>
 <pre class="code"><code class="language-spl">index=network sourcetype=fortigate_traffic earliest=-24h
@@ -106,39 +109,40 @@
     OUTPUT hostname, asset_role, priority
 | table _time, src, hostname, asset_role, priority
 | head 10</code></pre>
+<figure class="figure"><img src="/assets/images/splunk/04-asset-enrichment-results.png" alt="FortiGate search results enriched with hostname, asset role, and priority from asset_inventory." loading="lazy"><figcaption>Asset enrichment: FortiGate source addresses are joined to inventory context.</figcaption></figure>
 <p><strong>Recorded result:</strong> 32,399 FortiGate events were reported as enriched, with a 100% enrichment rate in the milestone summary. The notes give <code>192.168.100.31</code> as an example source address mapped to the FortiGate firewall asset, classified as a perimeter firewall with Critical priority. That address is represented by <code>192.0.2.31</code> in the public CSV example above.</p>
 <p>The reported rate applies to the event set summarized in the implementation notes; it is not a guarantee that future events, new IPs, or other indexes will all match the inventory. The lookup in this milestone was applied to FortiGate source addresses.</p>
-<!-- SCREENSHOT PLACEHOLDER: Add the lookup definition/sharing view and the enriched FortiGate search results after the screenshots are uploaded. -->
-
 <h2 id="macros">4. Search optimization with macros</h2>
 <p>Repeatedly typing index and sourcetype filters makes searches longer and creates room for inconsistent spelling. I created two base search macros so the source constraints could be maintained centrally.</p>
 <div class="table-wrap"><table><thead><tr><th>Macro</th><th>Definition</th><th>Purpose</th></tr></thead><tbody>
 <tr><td><code>sysmon_data</code></td><td><code>index=wineventlog sourcetype=XmlWinEventLog</code></td><td>Windows Sysmon searches</td></tr>
 <tr><td><code>firewall_traffic</code></td><td><code>index=network sourcetype=fortigate_traffic</code></td><td>FortiGate traffic searches</td></tr>
 </tbody></table></div>
-<p>Both were created under <strong>Settings → Advanced Search → Search macros</strong>.</p>
+<p>Both were created under <strong>Settings → Advanced Search → Search macros</strong>. Macro definitions are maintained in Splunk's knowledge-object settings; the strings in the table are the base search definitions, not standalone SPL commands to create the macros.</p>
+<figure class="figure"><img src="/assets/images/splunk/05-search-macros.png" alt="Splunk Search Macros settings showing sysmon_data and firewall_traffic definitions." loading="lazy"><figcaption>Search macro definitions for Sysmon and FortiGate traffic.</figcaption></figure>
 <p>The documented Sysmon usage example was:</p>
 <pre class="code"><code class="language-spl">`sysmon_data`
 | stats count by EventCode
 | head 10</code></pre>
+<figure class="figure"><img src="/assets/images/splunk/06-macro-validation.png" alt="Splunk results from the sysmon_data macro grouped by Windows Sysmon EventCode." loading="lazy"><figcaption>Macro validation: <code>sysmon_data</code> expands to the base Sysmon search and groups results by <code>EventCode</code>.</figcaption></figure>
 <p><strong>Recorded result:</strong> 15,496 Sysmon events were analyzed by <code>EventCode</code>. The technical summary also records 33,419 FortiGate events for the firewall macro. A separate firewall macro query and its time range were not included in the detailed activity notes.</p>
 <p>Centralizing the base searches means an index or sourcetype change can be handled in the macro definition rather than by editing every saved search. The macros in this milestone cover Sysmon and FortiGate; a Kali/Linux macro was not recorded.</p>
-<!-- SCREENSHOT PLACEHOLDER: Add a screenshot of both macro definitions and one validation search result after the screenshots are uploaded. -->
-
 <h2 id="eventtypes">5. Event types and tags</h2>
 <p>The final activity grouped events by function rather than only by the system that generated them. The milestone notes record two event types:</p>
 <div class="table-wrap"><table><thead><tr><th>Event type</th><th>Search string</th><th>Tags</th></tr></thead><tbody>
 <tr><td><code>Network_Traffic</code></td><td><code>sourcetype=fortigate_traffic</code></td><td><code>network</code>, <code>communicate</code></td></tr>
 <tr><td><code>Windows_Privilege_Use</code></td><td><code>sourcetype=XmlWinEventLog EventCode=4624</code></td><td><code>authentication</code></td></tr>
 </tbody></table></div>
-<p>The definitions were created through <strong>Settings → Event types → New Event Type</strong>.</p>
+<p>The definitions were created through <strong>Settings → Event types → New Event Type</strong>. Event types are configured in Splunk Web; the source notes do not provide an SPL command that creates these objects.</p>
+<figure class="figure"><img src="/assets/images/splunk/07-event-types-configuration.png" alt="Splunk Event Types settings showing Network_Traffic and Windows_Privilege_Use definitions." loading="lazy"><figcaption>Event type configuration: <code>Network_Traffic</code> and <code>Windows_Privilege_Use</code>.</figcaption></figure>
+<p>Tags are assigned to the event types through their Splunk Web configuration. The tag assignments recorded in this milestone are shown below; the PDF does not include a separate SPL query validating tag-based retrieval.</p>
+<figure class="figure"><img src="/assets/images/splunk/08-event-type-tags.png" alt="Splunk event type tag assignments for network, communicate, and authentication." loading="lazy"><figcaption>Tag assignments: <code>network</code>, <code>communicate</code>, and <code>authentication</code>.</figcaption></figure>
 <p>The traffic-volume search included in the milestone notes was:</p>
 <pre class="code"><code class="language-spl">index=network sourcetype=fortigate_traffic earliest=-7d
 | stats count by action</code></pre>
+<figure class="figure"><img src="/assets/images/splunk/09-firewall-action-distribution.png" alt="Splunk seven-day FortiGate traffic aggregation showing event counts by action." loading="lazy"><figcaption>FortiGate action distribution over the seven-day search window.</figcaption></figure>
 <p><strong>Recorded result:</strong> 177,942 FortiGate traffic events were reported in the seven-day search, with more than 100,000 allowed events and more than 77,000 blocked events.</p>
 <div class="callout"><strong>Validation boundary</strong><p>The supplied traffic-volume search filters directly on index and sourcetype; it does not invoke <code>eventtype=Network_Traffic</code> or a tag search. The PDF records the event-type definitions and the traffic count, but does not include a separate result proving that the event-type or tag objects were used in a search. The event type named <code>Windows_Privilege_Use</code> is also defined with the exact predicate <code>EventCode=4624</code>; its name and search condition should be reviewed together before this object becomes a detection building block. I have preserved the recorded configuration rather than silently renaming it.</p></div>
-<!-- SCREENSHOT PLACEHOLDER: Add the event type definitions and tag assignments, plus the FortiGate action-count result, after the screenshots are uploaded. -->
-
 <h2 id="results">6. Validation summary and limitations</h2>
 <div class="table-wrap"><table><thead><tr><th>Activity</th><th>Knowledge object</th><th>Recorded validation</th></tr></thead><tbody>
 <tr><td>CIM normalization</td><td>1 field alias</td><td>32,399 FortiGate events</td></tr>
