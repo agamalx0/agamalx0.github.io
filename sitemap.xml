@@ -2,6 +2,7 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://agamalx0.github.io/</loc></url>
   <url><loc>https://agamalx0.github.io/articles.html</loc></url>
+  <url><loc>https://agamalx0.github.io/articles/splunk-milestone-2-knowledge-objects-normalization.html</loc><lastmod>2026-11-17</lastmod></url>
   <url><loc>https://agamalx0.github.io/articles/wazuh-sigma-xml-rule-conversion.html</loc><lastmod>2026-11-03</lastmod></url>
   <url><loc>https://agamalx0.github.io/articles/wazuh-all-in-one-installation.html</loc><lastmod>2026-10-12</lastmod></url>
   <url><loc>https://agamalx0.github.io/articles/connecting-windows-endpoint-to-wazuh.html</loc><lastmod>2026-11-12</lastmod></url>
