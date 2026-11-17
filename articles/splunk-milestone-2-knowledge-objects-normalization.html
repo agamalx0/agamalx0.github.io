@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en" class="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0a0b0d">
+<meta name="description" content="A practical Splunk implementation of CIM field aliases, asset inventory lookups, reusable search macros, and event types for analyst-ready security data.">
+<meta name="keywords" content="Splunk, Splunk Enterprise, CIM, field aliases, lookups, asset enrichment, search macros, event types, tags, SIEM engineering">
+<title>Splunk Milestone 2: Knowledge Objects &amp; Data Normalization | Ashraf Gamal</title>
+<link rel="canonical" href="https://agamalx0.github.io/articles/splunk-milestone-2-knowledge-objects-normalization.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/site.css?v=af31cb7f630b">
+<script defer src="/assets/js/article.v4.js?v=f74850cf0021"></script>
+<script defer src="/assets/js/site-visits.v4.js?v=20261101"></script>
+<!-- BEGIN GENERATED METADATA -->
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Ashraf Gamal | SOC Engineering">
+<meta property="og:locale" content="en_US">
+<meta property="og:title" content="Splunk Milestone 2: Knowledge Objects &amp; Data Normalization | Ashraf Gamal">
+<meta property="og:description" content="A practical Splunk implementation of CIM field aliases, asset inventory lookups, reusable search macros, and event types for analyst-ready security data.">
+<meta property="og:url" content="https://agamalx0.github.io/articles/splunk-milestone-2-knowledge-objects-normalization.html">
+<meta property="og:image" content="https://agamalx0.github.io/ashraf-avatar.jpg">
+<meta property="og:image:alt" content="Ashraf Gamal">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Splunk Milestone 2: Knowledge Objects &amp; Data Normalization | Ashraf Gamal">
+<meta name="twitter:description" content="A practical Splunk implementation of CIM field aliases, asset inventory lookups, reusable search macros, and event types for analyst-ready security data.">
+<meta name="twitter:image" content="https://agamalx0.github.io/ashraf-avatar.jpg">
+<meta name="twitter:image:alt" content="Ashraf Gamal">
+<meta property="article:modified_time" content="2026-11-17">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"Splunk Milestone 2: Knowledge Objects & Data Normalization","description":"A practical Splunk implementation of CIM field aliases, asset inventory lookups, reusable search macros, and event types for analyst-ready security data.","dateModified":"2026-11-17","author":{"@type":"Person","name":"Ashraf Gamal","url":"https://agamalx0.github.io/"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://agamalx0.github.io/articles/splunk-milestone-2-knowledge-objects-normalization.html"},"image":"https://agamalx0.github.io/ashraf-avatar.jpg","inLanguage":"en"}</script>
+<!-- END GENERATED METADATA -->
+</head>
+<body class="article-page">
+<header class="topbar"><nav class="nav wrap"><a class="brand" href="/">AG <span class="gradient">/ Notes</span></a><a class="back" href="/articles.html">← Back to all technical notes</a></nav></header>
+<header class="hero wrap">
+<h1>Splunk SOC Engineering Series<br><span class="gradient">Milestone 2: Knowledge Objects &amp; Data Normalization</span></h1>
+<p class="lede">Moving beyond raw ingestion: standardizing selected fields, adding asset context, simplifying searches, and grouping events into analyst-friendly categories.</p>
+<div class="meta"><span>By Ashraf Gamal</span><span data-article-date>Updated 17 November 2026</span><span class="pill">Splunk · SOC Engineering Series</span><span data-reading-time>Approx. 9 min read</span></div>
+</header>
+<div class="wrap layout">
+<aside class="toc"><strong>In this guide</strong>
+<a href="#scope">1. Milestone scope and lab context</a>
+<a href="#cim">2. CIM field normalization</a>
+<a href="#lookup">3. Asset and identity enrichment</a>
+<a href="#macros">4. Search optimization with macros</a>
+<a href="#eventtypes">5. Event types and tags</a>
+<a href="#results">6. Validation summary and limitations</a>
+<a href="#next">7. Next: detection engineering</a>
+</aside>
+<article class="content">
+<div class="callout"><strong>Milestone 2 completed</strong><p>Milestone 1 established the collection pipeline. In this phase, I added a knowledge layer on top of the ingested data: CIM-oriented field aliases, an asset inventory lookup, reusable search macros, and event types with tags. The goal was to make searches more consistent and give analysts useful context without repeatedly rebuilding the same SPL.</p></div>
+
+<h2 id="scope">1. Milestone scope and lab context</h2>
+<p>This work was completed in a single-node Splunk Enterprise lab. The available telemetry included Windows Sysmon, Kali Linux, and FortiGate firewall events. The Milestone 2 implementation notes focus on FortiGate traffic and Windows Sysmon when defining the knowledge objects; they do not document a Linux-specific lookup, macro, or event type.</p>
+<p>The Splunk product version and add-on versions were not recorded in the milestone notes. For this public example, private lab addresses have been replaced with documentation-only addresses from <code>192.0.2.0/24</code>. The original asset roles and relationships are preserved, but the example IP values are not the live lab addresses.</p>
+<div class="table-wrap"><table><thead><tr><th>Area</th><th>Recorded configuration</th></tr></thead><tbody>
+<tr><td>Windows Sysmon</td><td><code>wineventlog</code> index · <code>XmlWinEventLog</code> sourcetype</td></tr>
+<tr><td>FortiGate traffic</td><td><code>network</code> index · <code>fortigate_traffic</code> sourcetype in the Milestone 2 searches</td></tr>
+<tr><td>Knowledge objects</td><td>One field alias, one lookup definition, two search macros, and two event types</td></tr>
+</tbody></table></div>
+<div class="callout"><strong>FortiGate sourcetype note</strong><p>The Milestone 2 implementation notes use <code>fortigate_traffic</code> in the field alias, lookup, macro, and event-type searches. The existing Milestone 1 FortiGate onboarding article documents the initial input sourcetype as <code>fgt_log</code>. The milestone notes do not record when or how this changed. I have preserved the Milestone 2 search syntax here; the effective input and actual event metadata should be checked before treating the two articles as one unchanged configuration.</p></div>
+
+<h2 id="cim">2. CIM field normalization with field aliases</h2>
+<p>The Fortinet add-on exposed source and destination IP values as <code>srcip</code> and <code>dstip</code>. The Milestone 2 implementation aligned those names with the shorter source and destination fields used by the searches:</p>
+<div class="table-wrap"><table><thead><tr><th>Field alias</th><th>Destination field</th></tr></thead><tbody><tr><td><code>srcip</code></td><td><code>src</code></td></tr><tr><td><code>dstip</code></td><td><code>dest</code></td></tr></tbody></table></div>
+<p>I created the field alias in <strong>Settings → Fields → Field Aliases → New</strong> with these values:</p>
+<ul>
+<li><strong>Name:</strong> <code>fortigate_cim_alias</code></li>
+<li><strong>Apply to sourcetype:</strong> <code>fortigate_traffic</code></li>
+<li><strong>Destination app:</strong> <code>Search</code></li>
+<li><strong>Field aliases:</strong> <code>srcip → src</code> and <code>dstip → dest</code></li>
+<li><strong>Overwrite field values:</strong> checked</li>
+</ul>
+<p>The validation search was:</p>
+<pre class="code"><code class="language-spl">index=network sourcetype=fortigate_traffic earliest=-24h
+| table _time, src, dest, action, protocol
+| head 10</code></pre>
+<p><strong>Recorded result:</strong> 32,399 FortiGate traffic events were reported with the CIM-oriented <code>src</code> and <code>dest</code> fields available.</p>
+<p>This is a targeted normalization step for two FortiGate fields. It demonstrates field aliasing, but it should not be described as full CIM validation or complete CIM data-model mapping across every source.</p>
+<!-- SCREENSHOT PLACEHOLDER: Add the field alias definition and the search result after the screenshots are uploaded. -->
+
+<h2 id="lookup">3. Asset and identity enrichment with a lookup</h2>
+<p>An IP address by itself does not tell an analyst whether the system is a domain controller, workstation, test host, or perimeter device. I created a small CSV inventory and made it available to Splunk searches through a lookup definition.</p>
+<h3>3.1 Build the asset inventory</h3>
+<p>The source CSV used these columns: <code>ip</code>, <code>hostname</code>, <code>asset_role</code>, and <code>priority</code>. The values below use documentation-only IPs in place of the private lab addresses:</p>
+<pre class="code"><code class="language-csv">ip,hostname,asset_role,priority
+192.0.2.10,Splunk-Backend,SIEM,Critical
+192.0.2.90,AD-Server,Domain Controller,Critical
+192.0.2.35,Win-Endpoint,Workstation,Medium
+192.0.2.36,Kali-SOC,Offensive/Test,Low
+192.0.2.31,FortiGate-FW,Perimeter Firewall,Critical</code></pre>
+<p>I uploaded <code>lab_assets.csv</code> through <strong>Settings → Lookups → Lookup table files</strong>, then created a file-based lookup definition:</p>
+<ul>
+<li><strong>Lookup definition:</strong> <code>asset_inventory</code></li>
+<li><strong>Lookup file:</strong> <code>lab_assets.csv</code></li>
+<li><strong>Destination app:</strong> <code>Search</code></li>
+<li><strong>Sharing:</strong> <code>This app only</code> for both the lookup definition and the CSV file</li>
+</ul>
+<h3>3.2 Enrich FortiGate events</h3>
+<p>The lookup matches the event's <code>srcip</code> to the CSV's <code>ip</code> column and returns the asset name, role, and priority:</p>
+<pre class="code"><code class="language-spl">index=network sourcetype=fortigate_traffic earliest=-24h
+| lookup asset_inventory ip AS srcip
+    OUTPUT hostname, asset_role, priority
+| table _time, src, hostname, asset_role, priority
+| head 10</code></pre>
+<p><strong>Recorded result:</strong> 32,399 FortiGate events were reported as enriched, with a 100% enrichment rate in the milestone summary. The notes give <code>192.168.100.31</code> as an example source address mapped to the FortiGate firewall asset, classified as a perimeter firewall with Critical priority. That address is represented by <code>192.0.2.31</code> in the public CSV example above.</p>
+<p>The reported rate applies to the event set summarized in the implementation notes; it is not a guarantee that future events, new IPs, or other indexes will all match the inventory. The lookup in this milestone was applied to FortiGate source addresses.</p>
+<!-- SCREENSHOT PLACEHOLDER: Add the lookup definition/sharing view and the enriched FortiGate search results after the screenshots are uploaded. -->
+
+<h2 id="macros">4. Search optimization with macros</h2>
+<p>Repeatedly typing index and sourcetype filters makes searches longer and creates room for inconsistent spelling. I created two base search macros so the source constraints could be maintained centrally.</p>
+<div class="table-wrap"><table><thead><tr><th>Macro</th><th>Definition</th><th>Purpose</th></tr></thead><tbody>
+<tr><td><code>sysmon_data</code></td><td><code>index=wineventlog sourcetype=XmlWinEventLog</code></td><td>Windows Sysmon searches</td></tr>
+<tr><td><code>firewall_traffic</code></td><td><code>index=network sourcetype=fortigate_traffic</code></td><td>FortiGate traffic searches</td></tr>
+</tbody></table></div>
+<p>Both were created under <strong>Settings → Advanced Search → Search macros</strong>.</p>
+<p>The documented Sysmon usage example was:</p>
+<pre class="code"><code class="language-spl">`sysmon_data`
+| stats count by EventCode
+| head 10</code></pre>
+<p><strong>Recorded result:</strong> 15,496 Sysmon events were analyzed by <code>EventCode</code>. The technical summary also records 33,419 FortiGate events for the firewall macro. A separate firewall macro query and its time range were not included in the detailed activity notes.</p>
+<p>Centralizing the base searches means an index or sourcetype change can be handled in the macro definition rather than by editing every saved search. The macros in this milestone cover Sysmon and FortiGate; a Kali/Linux macro was not recorded.</p>
+<!-- SCREENSHOT PLACEHOLDER: Add a screenshot of both macro definitions and one validation search result after the screenshots are uploaded. -->
+
+<h2 id="eventtypes">5. Event types and tags</h2>
+<p>The final activity grouped events by function rather than only by the system that generated them. The milestone notes record two event types:</p>
+<div class="table-wrap"><table><thead><tr><th>Event type</th><th>Search string</th><th>Tags</th></tr></thead><tbody>
+<tr><td><code>Network_Traffic</code></td><td><code>sourcetype=fortigate_traffic</code></td><td><code>network</code>, <code>communicate</code></td></tr>
+<tr><td><code>Windows_Privilege_Use</code></td><td><code>sourcetype=XmlWinEventLog EventCode=4624</code></td><td><code>authentication</code></td></tr>
+</tbody></table></div>
+<p>The definitions were created through <strong>Settings → Event types → New Event Type</strong>.</p>
+<p>The traffic-volume search included in the milestone notes was:</p>
+<pre class="code"><code class="language-spl">index=network sourcetype=fortigate_traffic earliest=-7d
+| stats count by action</code></pre>
+<p><strong>Recorded result:</strong> 177,942 FortiGate traffic events were reported in the seven-day search, with more than 100,000 allowed events and more than 77,000 blocked events.</p>
+<div class="callout"><strong>Validation boundary</strong><p>The supplied traffic-volume search filters directly on index and sourcetype; it does not invoke <code>eventtype=Network_Traffic</code> or a tag search. The PDF records the event-type definitions and the traffic count, but does not include a separate result proving that the event-type or tag objects were used in a search. The event type named <code>Windows_Privilege_Use</code> is also defined with the exact predicate <code>EventCode=4624</code>; its name and search condition should be reviewed together before this object becomes a detection building block. I have preserved the recorded configuration rather than silently renaming it.</p></div>
+<!-- SCREENSHOT PLACEHOLDER: Add the event type definitions and tag assignments, plus the FortiGate action-count result, after the screenshots are uploaded. -->
+
+<h2 id="results">6. Validation summary and limitations</h2>
+<div class="table-wrap"><table><thead><tr><th>Activity</th><th>Knowledge object</th><th>Recorded validation</th></tr></thead><tbody>
+<tr><td>CIM normalization</td><td>1 field alias</td><td>32,399 FortiGate events</td></tr>
+<tr><td>Asset enrichment</td><td>1 lookup definition</td><td>32,399 events · 100% reported enrichment</td></tr>
+<tr><td>Search optimization</td><td>2 macros</td><td>15,496 Sysmon + 33,419 FortiGate events in the technical summary</td></tr>
+<tr><td>Data categorization</td><td>2 event types</td><td>177,942 FortiGate events in the seven-day action search</td></tr>
+</tbody></table></div>
+<p>The counts above are the values recorded in the Milestone 2 summary. They come from different searches and time ranges, so they should not be added together as a unique-event total or treated as directly comparable measures.</p>
+<p>The source notes also state a potential 40–60% reduction in analyst triage time as an operational benefit. They do not include a before-and-after timing study or other measurement supporting that percentage. I therefore do not present it as a measured outcome of this lab.</p>
+<p>Other boundaries of the documented work:</p>
+<ul>
+<li>The field alias covers two FortiGate fields; full CIM data-model validation is not recorded.</li>
+<li>The asset lookup enriches the FortiGate search using the source IP; no Windows or Linux lookup was documented.</li>
+<li>The two macros cover Sysmon and FortiGate; no Linux macro was documented.</li>
+<li>The event-type notes do not show a Linux authentication event type or a verified cross-source <code>tag=authentication</code> search.</li>
+<li>Splunk and add-on versions, exact macro time windows, and a full set of raw sample events were not included in the milestone summary.</li>
+</ul>
+<p>No external vendor documentation links were recorded in the source implementation notes. This article is a practical record of the lab work and the evidence summarized for this milestone.</p>
+
+<h2 id="next">7. Next: detection engineering</h2>
+<p>Milestone 2 establishes reusable field names, asset context, source-specific base searches, and initial event categories. The next stage is <strong>Milestone 3 — Detection Engineering</strong>: using these knowledge objects as building blocks for SPL detections, validating the logic against observed telemetry, and mapping relevant behaviours to MITRE ATT&amp;CK.</p>
+<p>Related implementation guides from Milestone 1:</p>
+<ul>
+<li><a href="/articles/splunk-windows-endpoints-ad-sysmon.html">Windows endpoints and Active Directory with Sysmon</a></li>
+<li><a href="/articles/splunk-kali-linux-onboarding.html">Kali Linux endpoint onboarding into Splunk</a></li>
+<li><a href="/articles/splunk-fortigate-syslog-onboarding.html">FortiGate firewall Syslog integration with Splunk</a></li>
+</ul>
+<div class="contact-hook">
+<span class="hook-kicker">Discuss Splunk engineering</span>
+<p class="hook-title">Working on Splunk normalization, detection engineering, or SOC data quality?</p>
+<p>Connect to discuss SIEM engineering, search design, and practical detection workflows.</p>
+<div class="contact-links">
+<a href="mailto:as.ga2019@gmail.com?subject=Splunk%20SOC%20Engineering%20Inquiry"><svg class="contact-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 4h20a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Zm10 8.2L21.2 6H2.8L12 12.2Zm0 2.4L2 8v10h20V8l-10 6.6Z"/></svg>Email me ↗</a>
+<a href="https://www.linkedin.com/in/1elrawy/" target="_blank" rel="noopener noreferrer"><svg class="contact-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.13 1.44-2.13 2.94v5.67H9.35V9h3.42v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.26 2.37 4.26 5.45v6.29ZM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12ZM7.12 20.45H3.56V9h3.56v11.45ZM22.22 0H1.77C.79 0 0 .77 0 1.72v20.56C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.72V1.72C24 .77 23.2 0 22.22 0Z"/></svg>LinkedIn ↗</a>
+</div>
+</div>
+</article>
+</div>
+<footer class="footer"><div class="wrap footerinner"><span>© 2026 Ashraf Gamal · Technical notes</span><a href="/articles.html">Back to the article library ↑</a></div><span class="site-visits" id="site-visits" aria-label="Total site visits"><span class="site-visits-label">SITE VISITS</span><span class="site-visits-widget" id="site-visits-widget" aria-live="polite"><span id="site-visits-counter" class="site-visits-number">—</span></span></span>
+</footer>
+<script src="/assets/js/terminal-design.v2.js?v=b4ab5178cb38"></script>
+</body>
+</html>
