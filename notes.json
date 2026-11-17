@@ -1,5 +1,15 @@
 [
   {
+    "title": "Splunk Milestone 2: Knowledge Objects & Data Normalization",
+    "topic": "Splunk",
+    "topicKey": "splunk",
+    "summary": "Document CIM field aliases, asset inventory enrichment, reusable search macros, and event types with validation counts and implementation caveats.",
+    "url": "/articles/splunk-milestone-2-knowledge-objects-normalization.html",
+    "date": "17 November 2026",
+    "dateISO": "2026-11-17",
+    "readingTime": "9 min read"
+  },
+  {
     "title": "Automated SigmaHQ to Wazuh XML Rule Conversion",
     "topic": "Wazuh",
     "topicKey": "wazuh",
