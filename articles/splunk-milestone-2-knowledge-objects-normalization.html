@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#0a0b0d">
-<meta name="description" content="A practical Splunk implementation of CIM field aliases, asset inventory lookups, reusable search macros, and event types for analyst-ready security data.">
+<meta name="description" content="A practical guide to Splunk field normalization, asset lookups, reusable search macros, event types, and tags, with SPL examples and validation screenshots.">
 <meta name="keywords" content="Splunk, Splunk Enterprise, CIM, field aliases, lookups, asset enrichment, search macros, event types, tags, SIEM engineering">
 <title>Splunk Knowledge Objects &amp; Data Normalization | Ashraf Gamal</title>
 <link rel="canonical" href="https://agamalx0.github.io/articles/splunk-milestone-2-knowledge-objects-normalization.html">
@@ -20,163 +20,128 @@
 <meta property="og:site_name" content="Ashraf Gamal | SOC Engineering">
 <meta property="og:locale" content="en_US">
 <meta property="og:title" content="Splunk Knowledge Objects &amp; Data Normalization | Ashraf Gamal">
-<meta property="og:description" content="A practical Splunk implementation of CIM field aliases, asset inventory lookups, reusable search macros, and event types for analyst-ready security data.">
+<meta property="og:description" content="A practical guide to Splunk field normalization, asset lookups, reusable search macros, event types, and tags, with SPL examples and validation screenshots.">
 <meta property="og:url" content="https://agamalx0.github.io/articles/splunk-milestone-2-knowledge-objects-normalization.html">
 <meta property="og:image" content="https://agamalx0.github.io/ashraf-avatar.jpg">
 <meta property="og:image:alt" content="Ashraf Gamal">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Splunk Knowledge Objects &amp; Data Normalization | Ashraf Gamal">
-<meta name="twitter:description" content="A practical Splunk implementation of CIM field aliases, asset inventory lookups, reusable search macros, and event types for analyst-ready security data.">
+<meta name="twitter:description" content="A practical guide to Splunk field normalization, asset lookups, reusable search macros, event types, and tags, with SPL examples and validation screenshots.">
 <meta name="twitter:image" content="https://agamalx0.github.io/ashraf-avatar.jpg">
 <meta name="twitter:image:alt" content="Ashraf Gamal">
 <meta property="article:modified_time" content="2026-11-17">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"Splunk Knowledge Objects & Data Normalization","description":"A practical Splunk implementation of CIM field aliases, asset inventory lookups, reusable search macros, and event types for analyst-ready security data.","dateModified":"2026-11-17","author":{"@type":"Person","name":"Ashraf Gamal","url":"https://agamalx0.github.io/"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://agamalx0.github.io/articles/splunk-milestone-2-knowledge-objects-normalization.html"},"image":"https://agamalx0.github.io/ashraf-avatar.jpg","inLanguage":"en"}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"Splunk Knowledge Objects & Data Normalization","description":"A practical guide to Splunk field normalization, asset lookups, reusable search macros, event types, and tags, with SPL examples and validation screenshots.","dateModified":"2026-11-17","author":{"@type":"Person","name":"Ashraf Gamal","url":"https://agamalx0.github.io/"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://agamalx0.github.io/articles/splunk-milestone-2-knowledge-objects-normalization.html"},"image":"https://agamalx0.github.io/ashraf-avatar.jpg","inLanguage":"en"}</script>
 <!-- END GENERATED METADATA -->
 </head>
 <body class="article-page">
 <header class="topbar"><nav class="nav wrap"><a class="brand" href="/">AG <span class="gradient">/ Notes</span></a><a class="back" href="/articles.html">← Back to all technical notes</a></nav></header>
 <header class="hero wrap">
 <h1>Splunk Knowledge Objects &amp; Data Normalization</h1>
-<p class="lede">Milestone 2 of my Splunk SOC Engineering Series: standardizing selected fields, enriching events with asset context, simplifying searches, and grouping events into analyst-friendly categories.</p>
-<div class="meta"><span>By Ashraf Gamal</span><span data-article-date>Updated 17 November 2026</span><span class="pill">Milestone 2 · Splunk SOC Engineering Series</span><span data-reading-time>Approx. 9 min read</span></div>
+<p class="lede">A reusable workflow for standardizing fields, enriching events with asset context, simplifying searches, and grouping related security data.</p>
+<div class="meta"><span>By Ashraf Gamal</span><span data-article-date>Updated 17 November 2026</span><span class="pill">Splunk · SIEM Engineering</span><span data-reading-time>Approx. 9 min read</span></div>
 </header>
 <div class="wrap layout">
 <aside class="toc"><strong>In this guide</strong>
-<a href="#scope">1. Milestone scope and lab context</a>
-<a href="#cim">2. CIM field normalization</a>
-<a href="#lookup">3. Asset and identity enrichment</a>
-<a href="#macros">4. Search optimization with macros</a>
-<a href="#eventtypes">5. Event types and tags</a>
-<a href="#results">6. Validation summary and limitations</a>
-<a href="#next">7. Next: detection engineering</a>
+<a href="#scope">1. Confirm data and source fields</a>
+<a href="#cim">2. Normalize field names</a>
+<a href="#lookup">3. Enrich events with an asset lookup</a>
+<a href="#macros">4. Reuse searches with macros</a>
+<a href="#eventtypes">5. Classify events with event types and tags</a>
+<a href="#results">6. Validate and maintain the knowledge layer</a>
 </aside>
 <article class="content">
-<div class="callout"><strong>Milestone 2 completed</strong><p>Milestone 1 established the collection pipeline. In this phase, I added a knowledge layer on top of the ingested data: CIM-oriented field aliases, an asset inventory lookup, reusable search macros, and event types with tags. The goal was to make searches more consistent and give analysts useful context without repeatedly rebuilding the same SPL.</p></div>
+<div class="callout"><strong>What you'll build</strong><p>This guide shows how to use Splunk knowledge objects to normalize field names, add asset context, standardize repeated searches, and categorize related events. The steps are reusable; the indexes, sourcetypes, fields, and object names below are examples. Confirm and substitute the values from your own environment.</p></div>
 
-<h2 id="scope">1. Milestone scope and lab context</h2>
-<p>This work was completed in a single-node Splunk Enterprise lab. The available telemetry included Windows Sysmon, Kali Linux, and FortiGate firewall events. The Milestone 2 implementation notes focus on FortiGate traffic and Windows Sysmon when defining the knowledge objects; they do not document a Linux-specific lookup, macro, or event type.</p>
-<p>The Splunk product version and add-on versions were not recorded in the milestone notes. For this public example, private lab addresses have been replaced with documentation-only addresses from <code>192.0.2.0/24</code>. The original asset roles and relationships are preserved, but the example IP values are not the live lab addresses.</p>
-<div class="table-wrap"><table><thead><tr><th>Area</th><th>Recorded configuration</th></tr></thead><tbody>
-<tr><td>Windows Sysmon</td><td><code>wineventlog</code> index · <code>XmlWinEventLog</code> sourcetype</td></tr>
-<tr><td>FortiGate traffic</td><td><code>network</code> index · <code>fortigate_traffic</code> sourcetype in the Milestone 2 searches</td></tr>
-<tr><td>Knowledge objects</td><td>One field alias, one lookup definition, two search macros, and two event types</td></tr>
+<h2 id="scope">1. Confirm data and source fields</h2>
+<p>Before creating knowledge objects, confirm that the expected events are indexed and identify the fields Splunk extracts. The examples in this guide use Windows Sysmon and FortiGate traffic:</p>
+<div class="table-wrap"><table><thead><tr><th>Source</th><th>Example index</th><th>Example sourcetype</th></tr></thead><tbody>
+<tr><td>Windows Sysmon</td><td><code>wineventlog</code></td><td><code>XmlWinEventLog</code></td></tr>
+<tr><td>FortiGate traffic</td><td><code>network</code></td><td><code>fortigate_traffic</code></td></tr>
 </tbody></table></div>
-<div class="callout"><strong>FortiGate sourcetype note</strong><p>The Milestone 2 implementation notes use <code>fortigate_traffic</code> in the field alias, lookup, macro, and event-type searches. The existing Milestone 1 FortiGate onboarding article documents the initial input sourcetype as <code>fgt_log</code>. The milestone notes do not record when or how this changed. I have preserved the Milestone 2 search syntax here; the effective input and actual event metadata should be checked before treating the two articles as one unchanged configuration.</p></div>
+<p>Start with a narrow search and check the field names in representative events. Your environment may use different indexes, sourcetypes, add-ons, or field names, so verify these before copying a search. If no events return, check the time range, ingestion path, permissions, and event metadata first.</p>
+<p>The screenshots show particular runs of a lab dataset. Their event counts and timestamps are examples, not expected values; results will vary with data volume, retention, and the selected time range.</p>
 
-<h2 id="cim">2. CIM field normalization with field aliases</h2>
-<p>The Fortinet add-on exposed source and destination IP values as <code>srcip</code> and <code>dstip</code>. The Milestone 2 implementation aligned those names with the shorter source and destination fields used by the searches:</p>
-<div class="table-wrap"><table><thead><tr><th>Field alias</th><th>Destination field</th></tr></thead><tbody><tr><td><code>srcip</code></td><td><code>src</code></td></tr><tr><td><code>dstip</code></td><td><code>dest</code></td></tr></tbody></table></div>
-<p>I created the field alias in <strong>Settings → Fields → Field Aliases → New</strong> with these values:</p>
-<ul>
-<li><strong>Name:</strong> <code>fortigate_cim_alias</code></li>
-<li><strong>Apply to sourcetype:</strong> <code>fortigate_traffic</code></li>
-<li><strong>Destination app:</strong> <code>Search</code></li>
-<li><strong>Field aliases:</strong> <code>srcip → src</code> and <code>dstip → dest</code></li>
-<li><strong>Overwrite field values:</strong> checked</li>
-</ul>
-<p>Field aliases are configured as Splunk knowledge objects in Splunk Web; there is no SPL command that creates this alias. The object configuration is shown below. The next search verifies that the aliased fields are available at search time.</p>
-<figure class="figure"><img src="/assets/images/splunk/01-cim-field-alias.png" alt="Splunk field alias configuration mapping srcip to src and dstip to dest for fortigate_traffic." loading="lazy"><figcaption>Field alias configuration: <code>srcip → src</code> and <code>dstip → dest</code>.</figcaption></figure>
-<p>I ran the following validation search; the screenshot shows its 24-hour results:</p>
+<h2 id="cim">2. Normalize field names with aliases</h2>
+<p>Source-specific add-ons may expose the same concept under different field names. A field alias can make common fields easier to use consistently in searches. In the FortiGate example, the incoming source and destination fields are <code>srcip</code> and <code>dstip</code>; the aliases map them to <code>src</code> and <code>dest</code>.</p>
+<div class="table-wrap"><table><thead><tr><th>Incoming field</th><th>Alias</th></tr></thead><tbody><tr><td><code>srcip</code></td><td><code>src</code></td></tr><tr><td><code>dstip</code></td><td><code>dest</code></td></tr></tbody></table></div>
+<p>In Splunk Web, open <strong>Settings → Fields → Field Aliases → New</strong>, then scope the alias to the relevant sourcetype and app. The example object is named <code>fortigate_cim_alias</code> and applies to <code>fortigate_traffic</code>. The configuration screenshot shows <strong>Overwrite field values</strong> selected; review existing destination fields in your own data before choosing that option.</p>
+<figure class="figure"><img src="/assets/images/splunk/01-cim-field-alias.png" alt="Splunk field alias configuration mapping srcip to src and dstip to dest for fortigate_traffic." loading="lazy"><figcaption>Example field alias: <code>srcip → src</code> and <code>dstip → dest</code>.</figcaption></figure>
+<p>Validate that the aliases are available at search time:</p>
 <pre class="code"><code class="language-spl">index=network sourcetype=fortigate_traffic earliest=-24h
 | table _time, src, dest, action, protocol
 | head 10</code></pre>
-<figure class="figure"><img src="/assets/images/splunk/02-cim-validation-results.png" alt="Splunk search results displaying the CIM-aligned source and destination fields for FortiGate traffic." loading="lazy"><figcaption>CIM validation: the search returns <code>src</code> and <code>dest</code> alongside the traffic action and protocol.</figcaption></figure>
-<p><strong>Validation results:</strong> The Milestone 2 summary records 32,399 FortiGate events for this normalization step. The screenshot captures a separate 24-hour run with 32,388 events.</p>
-<p>This is a targeted normalization step for two FortiGate fields. It demonstrates field aliasing, but it should not be described as full CIM validation or complete CIM data-model mapping across every source.</p>
-<h2 id="lookup">3. Asset and identity enrichment with a lookup</h2>
-<p>An IP address by itself does not tell an analyst whether the system is a domain controller, workstation, test host, or perimeter device. I created a small CSV inventory and made it available to Splunk searches through a lookup definition.</p>
-<h3>3.1 Build the asset inventory</h3>
-<p>The source CSV used these columns: <code>ip</code>, <code>hostname</code>, <code>asset_role</code>, and <code>priority</code>. The values below use documentation-only IPs in place of the private lab addresses:</p>
+<figure class="figure"><img src="/assets/images/splunk/02-cim-validation-results.png" alt="Splunk search results showing source and destination fields for FortiGate traffic." loading="lazy"><figcaption>Validation search returning the aliased source and destination fields.</figcaption></figure>
+<p>This example normalizes two FortiGate fields. A field alias alone does not establish full CIM conformance; validate field meaning and the required data-model fields separately for each source.</p>
+
+<h2 id="lookup">3. Enrich events with an asset lookup</h2>
+<p>A lookup can add stable context such as a hostname, asset role, or priority to events. Build an inventory CSV with a key that matches a field in the event. The example file uses <code>ip</code>, <code>hostname</code>, <code>asset_role</code>, and <code>priority</code>:</p>
 <pre class="code"><code class="language-csv">ip,hostname,asset_role,priority
 192.0.2.10,Splunk-Backend,SIEM,Critical
 192.0.2.90,AD-Server,Domain Controller,Critical
 192.0.2.35,Win-Endpoint,Workstation,Medium
 192.0.2.36,Kali-SOC,Offensive/Test,Low
 192.0.2.31,FortiGate-FW,Perimeter Firewall,Critical</code></pre>
-<p>I uploaded <code>lab_assets.csv</code> through <strong>Settings → Lookups → Lookup table files</strong>, then created a file-based lookup definition:</p>
-<ul>
-<li><strong>Lookup definition:</strong> <code>asset_inventory</code></li>
-<li><strong>Lookup file:</strong> <code>lab_assets.csv</code></li>
-<li><strong>Destination app:</strong> <code>Search</code></li>
-<li><strong>Sharing:</strong> <code>This app only</code> for both the lookup definition and the CSV file</li>
-</ul>
-<p>The lookup file and its definition are created and permissioned through Splunk Web. There is no SPL command in the milestone notes for creating or sharing the lookup object; the screenshot below records that configuration.</p>
-<figure class="figure"><img src="/assets/images/splunk/03-asset-lookup-definition.png" alt="Splunk lookup table file and asset_inventory lookup definition configuration." loading="lazy"><figcaption>Lookup configuration: <code>asset_inventory</code> references <code>lab_assets.csv</code> in the Search app.</figcaption></figure>
-<h3>3.2 Enrich FortiGate events</h3>
-<p>The lookup matches the event's <code>srcip</code> to the CSV's <code>ip</code> column. I used this search to return the normalized and original source fields, destination, asset context, and action:</p>
+<p>The addresses in this public example use the documentation-only <code>192.0.2.0/24</code> range. Replace them with the correct addresses for your own inventory; these example addresses are not live asset addresses.</p>
+<p>Upload the CSV through <strong>Settings → Lookups → Lookup table files</strong>, then create a file-based lookup definition. The example definition is <code>asset_inventory</code>, backed by <code>lab_assets.csv</code>. Set its sharing and permissions so intended users and apps can run the lookup.</p>
+<figure class="figure"><img src="/assets/images/splunk/03-asset-lookup-definition.png" alt="Splunk lookup table file and asset_inventory lookup definition configuration." loading="lazy"><figcaption>Example lookup definition: <code>asset_inventory</code> references <code>lab_assets.csv</code>.</figcaption></figure>
+<p>Match the event source IP to the CSV's <code>ip</code> column and return the desired context:</p>
 <pre class="code"><code class="language-spl">index=network sourcetype=fortigate_traffic earliest=-24h
-| lookup asset_inventory ip AS srcip
-    OUTPUT hostname, asset_role, priority
+| lookup asset_inventory ip AS srcip OUTPUT hostname, asset_role, priority
 | table _time, src, srcip, dest, hostname, asset_role, priority, action
 | head 10</code></pre>
-<p>The screenshot below shows the search results:</p>
-<figure class="figure"><img src="/assets/images/splunk/04-asset-enrichment-results.png" alt="FortiGate search results enriched with hostname, asset role, and priority from asset_inventory." loading="lazy"><figcaption>Asset enrichment: FortiGate source addresses are joined to inventory context.</figcaption></figure>
-<p><strong>Validation results:</strong> The Milestone 2 summary reports 32,399 enriched FortiGate events and a 100% enrichment rate. The screenshot captures a separate 24-hour search run with 32,382 events. The notes give <code>192.168.100.31</code> as an example source address mapped to the FortiGate firewall asset, classified as a perimeter firewall with Critical priority. That address is represented by <code>192.0.2.31</code> in the public CSV example above.</p>
-<p>The reported rate applies to the event set summarized in the implementation notes; it is not a guarantee that future events, new IPs, or other indexes will all match the inventory. The lookup in this milestone was applied to FortiGate source addresses.</p>
-<h2 id="macros">4. Search optimization with macros</h2>
-<p>Repeatedly typing index and sourcetype filters makes searches longer and creates room for inconsistent spelling. I created two base search macros so the source constraints could be maintained centrally.</p>
-<div class="table-wrap"><table><thead><tr><th>Macro</th><th>Definition</th><th>Purpose</th></tr></thead><tbody>
+<figure class="figure"><img src="/assets/images/splunk/04-asset-enrichment-results.png" alt="FortiGate search results enriched with source and destination fields, hostname, asset role, and priority." loading="lazy"><figcaption>Enrichment results showing normalized fields and asset context from the lookup.</figcaption></figure>
+<p>Keep the inventory current and verify that the lookup key matches the event field exactly. A successful lookup configuration does not guarantee every future event will match; new, missing, or changed asset addresses may have no inventory row.</p>
+
+<h2 id="macros">4. Reuse common searches with macros</h2>
+<p>Search macros centralize repeated base filters so searches can share a consistent source definition. Create them under <strong>Settings → Advanced Search → Search macros</strong>. These example definitions use the source values shown above:</p>
+<div class="table-wrap"><table><thead><tr><th>Macro</th><th>Definition</th><th>Use</th></tr></thead><tbody>
 <tr><td><code>sysmon_data</code></td><td><code>index=wineventlog sourcetype=XmlWinEventLog</code></td><td>Windows Sysmon searches</td></tr>
 <tr><td><code>firewall_traffic</code></td><td><code>index=network sourcetype=fortigate_traffic</code></td><td>FortiGate traffic searches</td></tr>
 </tbody></table></div>
-<p>Both were created under <strong>Settings → Advanced Search → Search macros</strong>. Macro definitions are maintained in Splunk's knowledge-object settings; the strings in the table are the base search definitions, not standalone SPL commands to create the macros.</p>
-<figure class="figure"><img src="/assets/images/splunk/05-search-macros.png" alt="Splunk Search Macros settings showing sysmon_data and firewall_traffic definitions." loading="lazy"><figcaption>Search macro definitions for Sysmon and FortiGate traffic.</figcaption></figure>
-<p>The documented Sysmon usage example was:</p>
+<p>Macro definitions contain the base search. Call a macro with backticks, then add the analysis commands needed for the task:</p>
 <pre class="code"><code class="language-spl">`sysmon_data`
 | stats count by EventCode
 | head 10</code></pre>
-<figure class="figure"><img src="/assets/images/splunk/06-macro-validation.png" alt="Splunk results from the sysmon_data macro grouped by Windows Sysmon EventCode." loading="lazy"><figcaption>Macro validation: <code>sysmon_data</code> expands to the base Sysmon search and groups results by <code>EventCode</code>.</figcaption></figure>
-<p><strong>Validation results:</strong> The screenshot shows 15,453 Sysmon events for its 24-hour run. The Milestone 2 summary separately records 15,496 Sysmon events and 33,419 FortiGate events; these are recorded as separate run totals. A separate firewall macro query and its time range were not included in the detailed activity notes.</p>
-<p>Centralizing the base searches means an index or sourcetype change can be handled in the macro definition rather than by editing every saved search. The macros in this milestone cover Sysmon and FortiGate; a Kali/Linux macro was not recorded.</p>
-<h2 id="eventtypes">5. Event types and tags</h2>
-<p>The final activity grouped events by function rather than only by the system that generated them. The milestone notes record two event types:</p>
+<figure class="figure"><img src="/assets/images/splunk/05-search-macros.png" alt="Splunk Search Macros settings showing sysmon_data and firewall_traffic definitions." loading="lazy"><figcaption>Example macro definitions for Sysmon and FortiGate traffic.</figcaption></figure>
+<p>The screenshot below validates the Sysmon macro by grouping its events by <code>EventCode</code>:</p>
+<pre class="code"><code class="language-spl">`sysmon_data`
+| stats count by EventCode
+| head 10</code></pre>
+<figure class="figure"><img src="/assets/images/splunk/06-macro-validation.png" alt="Splunk results from the sysmon_data macro grouped by Windows Sysmon EventCode." loading="lazy"><figcaption>Macro validation using a grouped event-code count.</figcaption></figure>
+<p>Macro names and definitions are examples. Keep them focused, document what each expands to, and test changes before relying on them in saved searches or dashboards.</p>
+
+<h2 id="eventtypes">5. Classify events with event types and tags</h2>
+<p>Event types name reusable searches, while tags label the resulting event categories. Define each event type in <strong>Settings → Event types → New Event Type</strong>, then assign tags that describe the category. The examples shown here are:</p>
 <div class="table-wrap"><table><thead><tr><th>Event type</th><th>Search string</th><th>Tags</th></tr></thead><tbody>
-<tr><td><code>Network_Traffic</code></td><td><code>sourcetype=fortigate_traffic</code></td><td><code>network</code>, <code>communicate</code></td></tr>
-<tr><td><code>Windows_Privilege_Use</code></td><td><code>sourcetype=XmlWinEventLog EventCode=4624</code></td><td><code>authentication</code></td></tr>
+<tr><td><code>Network_Traffic</code></td><td><code>index=network sourcetype=fortigate_traffic</code></td><td><code>network</code>, <code>communicate</code></td></tr>
+<tr><td><code>Windows_Authentication</code></td><td><code>sourcetype=XmlWinEventLog EventCode=4624</code></td><td><code>authentication</code></td></tr>
 </tbody></table></div>
-<p>The definitions were created through <strong>Settings → Event types → New Event Type</strong>. Event types are configured in Splunk Web; the source notes do not provide an SPL command that creates these objects.</p>
-<figure class="figure"><img src="/assets/images/splunk/07-event-types-configuration.png" alt="Splunk Event Types settings showing Network_Traffic and Windows_Privilege_Use definitions." loading="lazy"><figcaption>Event type configuration: <code>Network_Traffic</code> and <code>Windows_Privilege_Use</code>.</figcaption></figure>
-<p>Tags are assigned to the event types through their Splunk Web configuration. The tag assignments recorded in this milestone are shown below; the source notes do not include a separate SPL query validating tag-based retrieval.</p>
-<p><strong>Configuration caveat:</strong> I named this event type <code>Windows_Privilege_Use</code>, but <code>EventCode=4624</code> represents a successful logon. That is authentication, not privilege use, so <code>Windows_Authentication</code> would describe the filter more accurately. The <code>authentication</code> tag is consistent with the event; I should rename the object or use a privilege-use event before labeling it as privilege use.</p>
-<figure class="figure"><img src="/assets/images/splunk/08-event-type-tags.png" alt="Splunk event type tag assignments for network, communicate, and authentication." loading="lazy"><figcaption>Tag assignments: <code>network</code>, <code>communicate</code>, and <code>authentication</code>.</figcaption></figure>
-<p>I used the <code>Network_Traffic</code> event type to group FortiGate events by action. The screenshot captures the last 24 hours:</p>
+<p>Event ID 4624 represents a successful Windows logon, so the <code>Windows_Authentication</code> name and <code>authentication</code> tag match its purpose. Adjust the event type search to your own sourcetype and extracted event-code field.</p>
+<figure class="figure"><img src="/assets/images/splunk/07-event-types-configuration.png" alt="Splunk Event Types settings showing Network_Traffic and Windows_Authentication definitions." loading="lazy"><figcaption>Example event types, including the <code>Windows_Authentication</code> filter for EventCode 4624.</figcaption></figure>
+<figure class="figure"><img src="/assets/images/splunk/08-event-type-tags.png" alt="Splunk tag assignments showing the authentication tag mapped to eventtype=Windows_Authentication." loading="lazy"><figcaption>The <code>authentication</code> tag is assigned to <code>eventtype=Windows_Authentication</code>.</figcaption></figure>
+<p>Validate the authentication event type and the network category with searches such as:</p>
+<pre class="code"><code class="language-spl">eventtype=Windows_Authentication
+| stats count by EventCode</code></pre>
 <pre class="code"><code class="language-spl">eventtype=Network_Traffic | stats count by action</code></pre>
-<figure class="figure"><img src="/assets/images/splunk/09-firewall-action-distribution.png" alt="Splunk 24-hour FortiGate Network_Traffic aggregation showing event counts by action." loading="lazy"><figcaption>FortiGate <code>Network_Traffic</code> event counts by action for the last 24 hours.</figcaption></figure>
-<p><strong>Screenshot result:</strong> The 24-hour search returned 32,870 events: 19,667 allowed, 13,197 blocked, and 6 teardown. The milestone summary separately reports 177,942 FortiGate events over seven days, including more than 100,000 allowed and more than 77,000 blocked events.</p>
+<figure class="figure"><img src="/assets/images/splunk/09-firewall-action-distribution.png" alt="Splunk 24-hour FortiGate Network_Traffic aggregation showing event counts by action." loading="lazy"><figcaption>Network traffic grouped by action through the <code>Network_Traffic</code> event type.</figcaption></figure>
+<p>The screenshot result is a point-in-time view. Counts will change as new events arrive and as the selected time range changes.</p>
 
-<h2 id="results">6. Validation summary and limitations</h2>
-<div class="table-wrap"><table><thead><tr><th>Activity</th><th>Knowledge object</th><th>Recorded validation</th></tr></thead><tbody>
-<tr><td>CIM normalization</td><td>1 field alias</td><td>32,388 in 24-hour screenshot; 32,399 in summary notes</td></tr>
-<tr><td>Asset enrichment</td><td>1 lookup definition</td><td>32,382 in 24-hour screenshot; 32,399 and 100% in summary notes</td></tr>
-<tr><td>Search optimization</td><td>2 macros</td><td>15,453 Sysmon in screenshot; 15,496 Sysmon + 33,419 FortiGate in summary notes</td></tr>
-<tr><td>Data categorization</td><td>2 event types</td><td>32,870 in 24-hour screenshot; 177,942 in seven-day summary</td></tr>
+<h2 id="results">6. Validate and maintain the knowledge layer</h2>
+<div class="table-wrap"><table><thead><tr><th>Area</th><th>Validation</th></tr></thead><tbody>
+<tr><td>Field aliases</td><td>Confirm expected source and destination fields appear in search results.</td></tr>
+<tr><td>Lookup</td><td>Check that known asset addresses return the expected hostname, role, and priority.</td></tr>
+<tr><td>Macros</td><td>Confirm each macro expands to the intended index and sourcetype filter.</td></tr>
+<tr><td>Event types and tags</td><td>Verify event types return the correct events and tags are attached to the intended categories.</td></tr>
 </tbody></table></div>
-<p>The screenshots and milestone notes capture separate searches and time windows. The summary table labels each count by its source and window; do not add these values together as a unique-event total or treat them as directly comparable measurements.</p>
-<p>The source notes also state a potential 40–60% reduction in analyst triage time as an operational benefit. They do not include a before-and-after timing study or other measurement supporting that percentage. I therefore do not present it as a measured outcome of this lab.</p>
-<p>Other boundaries of the documented work:</p>
-<ul>
-<li>The field alias covers two FortiGate fields; full CIM data-model validation is not recorded.</li>
-<li>The asset lookup enriches the FortiGate search using the source IP; no Windows or Linux lookup was documented.</li>
-<li>The two macros cover Sysmon and FortiGate; no Linux macro was documented.</li>
-<li>The event-type notes do not show a Linux authentication event type or a verified cross-source <code>tag=authentication</code> search.</li>
-<li>Splunk and add-on versions, exact macro time windows, and a full set of raw sample events were not included in the milestone summary.</li>
-</ul>
-<p>No external vendor documentation links were recorded in the source implementation notes. This article is a practical record of the lab work and the evidence summarized for this milestone.</p>
+<p>Keep the example values aligned with your deployed add-ons and data. Recheck the sourcetype and field names when inputs or parsing change, review lookup permissions and freshness, and test shared searches after updating a knowledge object.</p>
+<p>These objects make searches easier to reuse and interpret; they do not replace validating field semantics, access controls, data quality, or complete CIM coverage for each source.</p>
 
-<h2 id="next">7. Next: detection engineering</h2>
-<p>Milestone 2 establishes reusable field names, asset context, source-specific base searches, and initial event categories. The next stage is <strong>Milestone 3 — Detection Engineering</strong>: using these knowledge objects as building blocks for SPL detections, validating the logic against observed telemetry, and mapping relevant behaviours to MITRE ATT&amp;CK.</p>
-<p>Related implementation guides from Milestone 1:</p>
-<ul>
-<li><a href="/articles/splunk-windows-endpoints-ad-sysmon.html">Windows endpoints and Active Directory with Sysmon</a></li>
-<li><a href="/articles/splunk-kali-linux-onboarding.html">Kali Linux endpoint onboarding into Splunk</a></li>
-<li><a href="/articles/splunk-fortigate-syslog-onboarding.html">FortiGate firewall Syslog integration with Splunk</a></li>
-</ul>
 <div class="contact-hook">
 <span class="hook-kicker">Discuss Splunk engineering</span>
-<p class="hook-title">Working on Splunk normalization, detection engineering, or SOC data quality?</p>
-<p>Connect to discuss SIEM engineering, search design, and practical detection workflows.</p>
+<p class="hook-title">Working on Splunk data normalization or search design?</p>
+<p>Connect to discuss practical SIEM engineering, knowledge objects, and detection workflows.</p>
 <div class="contact-links">
-<a href="mailto:as.ga2019@gmail.com?subject=Splunk%20SOC%20Engineering%20Inquiry"><svg class="contact-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 4h20a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Zm10 8.2L21.2 6H2.8L12 12.2Zm0 2.4L2 8v10h20V8l-10 6.6Z"/></svg>Email me ↗</a>
+<a href="mailto:as.ga2019@gmail.com?subject=Splunk%20Engineering%20Inquiry"><svg class="contact-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 4h20a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Zm10 8.2L21.2 6H2.8L12 12.2Zm0 2.4L2 8v10h20V8l-10 6.6Z"/></svg>Email me ↗</a>
 <a href="https://www.linkedin.com/in/1elrawy/" target="_blank" rel="noopener noreferrer"><svg class="contact-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.13 1.44-2.13 2.94v5.67H9.35V9h3.42v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.26 2.37 4.26 5.45v6.29ZM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12ZM7.12 20.45H3.56V9h3.56v11.45ZM22.22 0H1.77C.79 0 0 .77 0 1.72v20.56C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.72V1.72C24 .77 23.2 0 22.22 0Z"/></svg>LinkedIn ↗</a>
 </div>
 </div>
