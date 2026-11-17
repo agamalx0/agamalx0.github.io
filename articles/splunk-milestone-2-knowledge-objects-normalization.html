@@ -138,11 +138,10 @@
 <p>Tags are assigned to the event types through their Splunk Web configuration. The tag assignments recorded in this milestone are shown below; the PDF does not include a separate SPL query validating tag-based retrieval.</p>
 <figure class="figure"><img src="/assets/images/splunk/08-event-type-tags.png" alt="Splunk event type tag assignments for network, communicate, and authentication." loading="lazy"><figcaption>Tag assignments: <code>network</code>, <code>communicate</code>, and <code>authentication</code>.</figcaption></figure>
 <p>The traffic-volume search included in the milestone notes was:</p>
-<pre class="code"><code class="language-spl">index=network sourcetype=fortigate_traffic earliest=-7d
-| stats count by action</code></pre>
+<pre class="code"><code class="language-spl">index=network sourcetype=fortigate_traffic earliest=-7d | stats count by action</code></pre>
 <figure class="figure"><img src="/assets/images/splunk/09-firewall-action-distribution.png" alt="Splunk seven-day FortiGate traffic aggregation showing event counts by action." loading="lazy"><figcaption>FortiGate action distribution over the seven-day search window.</figcaption></figure>
 <p><strong>Recorded result:</strong> 177,942 FortiGate traffic events were reported in the seven-day search, with more than 100,000 allowed events and more than 77,000 blocked events.</p>
-<div class="callout"><strong>Validation boundary</strong><p>The supplied traffic-volume search filters directly on index and sourcetype; it does not invoke <code>eventtype=Network_Traffic</code> or a tag search. The PDF records the event-type definitions and the traffic count, but does not include a separate result proving that the event-type or tag objects were used in a search. The event type named <code>Windows_Privilege_Use</code> is also defined with the exact predicate <code>EventCode=4624</code>; its name and search condition should be reviewed together before this object becomes a detection building block. I have preserved the recorded configuration rather than silently renaming it.</p></div>
+
 <h2 id="results">6. Validation summary and limitations</h2>
 <div class="table-wrap"><table><thead><tr><th>Activity</th><th>Knowledge object</th><th>Recorded validation</th></tr></thead><tbody>
 <tr><td>CIM normalization</td><td>1 field alias</td><td>32,399 FortiGate events</td></tr>
