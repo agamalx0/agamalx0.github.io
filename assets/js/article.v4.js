@@ -249,7 +249,7 @@
     window.addEventListener('scroll', () => { if (!pending) { pending = true; window.requestAnimationFrame(updateProgress); } }, { passive: true });
     window.addEventListener('resize', updateProgress, { passive: true });
     updateProgress();
-    const footerMarkup = '<span>ASHRAF GAMAL · SOC ENGINEER &amp; SOC ANALYST L2</span>' +
+    const footerMarkup = '<span>© 2026 Ashraf Gamal · All rights reserved.</span>' +
       '<a href="#">↑ TOP</a>';
     let footer = document.querySelector('footer');
     if (!footer) { footer = document.createElement('footer'); document.body.appendChild(footer); }
