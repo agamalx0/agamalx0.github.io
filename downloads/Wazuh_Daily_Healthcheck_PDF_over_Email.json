@@ -1,0 +1,484 @@
+{
+  "name": "Wazuh Daily Healthcheck PDF over Email",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "9874d93a-6479-4507-8890-a6727605d485",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c0",
+              "name": "environment_name",
+              "value": "Wazuh - Production",
+              "type": "string"
+            },
+            {
+              "id": "c1",
+              "name": "client_name",
+              "value": "Your Company Name",
+              "type": "string"
+            },
+            {
+              "id": "c2",
+              "name": "brand_name",
+              "value": "YOUR COMPANY",
+              "type": "string"
+            },
+            {
+              "id": "c3",
+              "name": "brand_subtitle",
+              "value": "SECURITY OPERATIONS",
+              "type": "string"
+            },
+            {
+              "id": "c4",
+              "name": "brand_logo_url",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "c5",
+              "name": "email_width",
+              "value": 820,
+              "type": "number"
+            },
+            {
+              "id": "c6",
+              "name": "gotenberg_url",
+              "value": "http://gotenberg:3000",
+              "type": "string"
+            },
+            {
+              "id": "c7",
+              "name": "mail_from",
+              "value": "wazuh-healthcheck-agent <sender@example.com>",
+              "type": "string"
+            },
+            {
+              "id": "c8",
+              "name": "mail_to",
+              "value": "soc-team@example.com",
+              "type": "string"
+            },
+            {
+              "id": "c9",
+              "name": "agents_active_warn_pct",
+              "value": 98,
+              "type": "number"
+            },
+            {
+              "id": "c10",
+              "name": "agents_active_crit_pct",
+              "value": 80,
+              "type": "number"
+            },
+            {
+              "id": "c11",
+              "name": "disk_warn_pct",
+              "value": 80,
+              "type": "number"
+            },
+            {
+              "id": "c12",
+              "name": "disk_crit_pct",
+              "value": 90,
+              "type": "number"
+            },
+            {
+              "id": "c13",
+              "name": "heap_warn_pct",
+              "value": 85,
+              "type": "number"
+            },
+            {
+              "id": "c14",
+              "name": "cpu_warn_pct",
+              "value": 90,
+              "type": "number"
+            },
+            {
+              "id": "c15",
+              "name": "queue_warn_pct",
+              "value": 80,
+              "type": "number"
+            },
+            {
+              "id": "c16",
+              "name": "load_warn_ratio",
+              "value": 1.5,
+              "type": "number"
+            },
+            {
+              "id": "c17",
+              "name": "load_crit_ratio",
+              "value": 3,
+              "type": "number"
+            },
+            {
+              "id": "c18",
+              "name": "mem_warn_avail_pct",
+              "value": 10,
+              "type": "number"
+            },
+            {
+              "id": "c19",
+              "name": "mem_crit_avail_pct",
+              "value": 5,
+              "type": "number"
+            },
+            {
+              "id": "c20",
+              "name": "cert_warn_days",
+              "value": 30,
+              "type": "number"
+            },
+            {
+              "id": "c21",
+              "name": "cert_crit_days",
+              "value": 7,
+              "type": "number"
+            },
+            {
+              "id": "c22",
+              "name": "logs_dir_warn_gb",
+              "value": 20,
+              "type": "number"
+            },
+            {
+              "id": "c23",
+              "name": "dash_err_warn",
+              "value": 20,
+              "type": "number"
+            },
+            {
+              "id": "c24",
+              "name": "agents_ignore",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "c25",
+              "name": "agents_critical",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "c26",
+              "name": "gap_min_avg_per_hour",
+              "value": 20,
+              "type": "number"
+            },
+            {
+              "id": "c27",
+              "name": "alert_lag_warn_min",
+              "value": 15,
+              "type": "number"
+            },
+            {
+              "id": "c28",
+              "name": "archive_lag_warn_min",
+              "value": 15,
+              "type": "number"
+            },
+            {
+              "id": "c29",
+              "name": "archive_lag_crit_min",
+              "value": 60,
+              "type": "number"
+            },
+            {
+              "id": "c30",
+              "name": "alert_file_age_min",
+              "value": 30,
+              "type": "number"
+            },
+            {
+              "id": "c31",
+              "name": "volume_drop_warn_pct",
+              "value": 50,
+              "type": "number"
+            },
+            {
+              "id": "c32",
+              "name": "volume_spike_warn_pct",
+              "value": 300,
+              "type": "number"
+            },
+            {
+              "id": "c33",
+              "name": "noisy_rule_pct",
+              "value": 40,
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "58a2a63b-c7cc-4690-9705-8e582a44b71c",
+      "name": "Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        224,
+        112
+      ]
+    },
+    {
+      "parameters": {
+        "command": "f=$(mktemp)\ncat > \"$f\" <<'WZ_EOF'\nexport LC_ALL=C\nexport PATH=\"$PATH:/usr/sbin:/sbin:/usr/local/bin:/usr/share/filebeat/bin\"\nS=\"\"\nif [ \"$(id -u)\" -ne 0 ] && sudo -n true 2>/dev/null; then S=\"sudo -n\"; fi\nk() { printf 'K|%s|%s\\n' \"$1\" \"$2\"; }\nbs() { printf 'B|%s\\n' \"$1\"; }\nbe() { printf 'E|%s\\n' \"$1\"; }\nhas_unit() { systemctl list-unit-files \"$1.service\" 2>/dev/null | grep -q \"^$1.service\"; }\nP=0\nif [ \"$(id -u)\" -eq 0 ] || [ -n \"$S\" ]; then P=1; fi\n\n# ---------------- system ----------------\nk HOST \"$(hostname)\"\nk USER \"$(id -un)\"\nif [ \"$(id -u)\" -eq 0 ]; then k PRIV root; elif [ -n \"$S\" ]; then k PRIV sudo; else k PRIV none; fi\nk OS \"$(. /etc/os-release 2>/dev/null; echo \"$PRETTY_NAME\")\"\nk UPTIME \"$(uptime -p 2>/dev/null)\"\nk LOAD \"$(cut -d' ' -f1-3 /proc/loadavg)\"\nk CPUS \"$(nproc)\"\nk MEM_MB \"$(free -m | awk '/^Mem:/{print $2\"|\"$3\"|\"$7}')\"\nk SWAP_MB \"$(free -m | awk '/^Swap:/{print $2\"|\"$3}')\"\nk NTP \"$(timedatectl show -p NTPSynchronized --value 2>/dev/null || echo unknown)\"\nk MAXMAP \"$(sysctl -n vm.max_map_count 2>/dev/null)\"\nk FAILED_UNITS \"$(systemctl --failed --no-legend --plain 2>/dev/null | awk '{print $1}' | paste -sd, -)\"\nk OOM24 \"$($S journalctl -k --since '24 hours ago' --no-pager 2>/dev/null | grep -ciE 'out of memory|oom-kill|killed process')\"\nbs DF\ndf -P -k -x tmpfs -x devtmpfs -x squashfs -x overlay 2>/dev/null | tail -n +2 | awk '{print $6\"|\"$5\"|\"$4\"|\"$2}'\nbe DF\nbs DFI\ndf -P -i -x tmpfs -x devtmpfs -x squashfs -x overlay 2>/dev/null | tail -n +2 | awk '{print $6\"|\"$5}'\nbe DFI\nbs PORTS\nss -H -lntu 2>/dev/null | awk '{print $1\"|\"$5}'\nbe PORTS\n\n# ---------------- services ----------------\nfor s in wazuh-manager wazuh-indexer wazuh-dashboard filebeat; do\n  if has_unit \"$s\"; then\n    ts=$(systemctl show -p ActiveEnterTimestamp --value \"$s\" 2>/dev/null)\n    ep=$(date -d \"$ts\" +%s 2>/dev/null)\n    if [ -n \"$ep\" ]; then up=$(( $(date +%s) - ep )); else up=-1; fi\n    printf 'SVC|%s|%s|%s|%s|%s\\n' \"$s\" \"$(systemctl is-active \"$s\" 2>/dev/null)\" \"$(systemctl is-enabled \"$s\" 2>/dev/null)\" \"$up\" \"$(systemctl show -p NRestarts --value \"$s\" 2>/dev/null)\"\n  fi\ndone\n\n# ---------------- certificates ----------------\nbs CERTS\nif [ \"$P\" = 1 ]; then\nfor f in $($S find /etc/wazuh-indexer/certs /etc/wazuh-dashboard/certs /etc/filebeat/certs -maxdepth 1 -name '*.pem' ! -name '*key*' 2>/dev/null); do\n  e=$($S openssl x509 -enddate -noout -in \"$f\" 2>/dev/null | cut -d= -f2)\n  [ -z \"$e\" ] && continue\n  ee=$(date -d \"$e\" +%s 2>/dev/null)\n  [ -z \"$ee\" ] && continue\n  echo \"$f|$e|$(( (ee - $(date +%s)) / 86400 ))\"\ndone\nfi\nbe CERTS\n\n# ---------------- disk consumers ----------------\nif [ \"$P\" = 1 ]; then\n  bs DU\n  for d in /var/lib/wazuh-indexer /var/ossec/logs/archives /var/ossec/logs/alerts /var/ossec/queue /var/ossec/backup /var/log /var/lib/docker /home /opt /root /tmp; do\n    if [ -e \"$d\" ]; then echo \"$d|$($S du -sxm \"$d\" 2>/dev/null | cut -f1)\"; fi\n  done\n  be DU\nfi\n\n# ---------------- wazuh manager ----------------\nif has_unit wazuh-manager || [ -d /var/ossec ]; then\n  k MGR_PRESENT 1\n  if [ \"$P\" = 1 ]; then\n  k MGR_VERSION \"$($S /var/ossec/bin/wazuh-control info 2>/dev/null | sed -n 's/^WAZUH_VERSION=\"\\(.*\\)\"/\\1/p')\"\n  bs MGR_STATUS\n  $S /var/ossec/bin/wazuh-control status 2>&1\n  be MGR_STATUS\n  out=$($S timeout 60 /var/ossec/bin/wazuh-analysisd -t 2>&1); rc=$?\n  bs CONFTEST\n  echo \"$out\" | tail -15 | cut -c1-240\n  be CONFTEST\n  k CONFTEST_RC \"$rc\"\n  bs AGENTS\n  $S /var/ossec/bin/agent_control -l 2>/dev/null | grep -E '^ *ID:'\n  be AGENTS\n  for f in analysisd remoted; do\n    bs STATE_$f\n    $S cat /var/ossec/var/run/wazuh-$f.state 2>/dev/null | grep -E \"^[a-z_0-9]+=\"\n    be STATE_$f\n  done\n  L=/var/ossec/logs/ossec.log\n  k LOG_ERR \"$($S grep -c ' ERROR: ' $L 2>/dev/null)\"\n  k LOG_CRIT \"$($S grep -c ' CRITICAL: ' $L 2>/dev/null)\"\n  bs LOG_LAST\n  $S grep -E ' (ERROR|CRITICAL): ' $L 2>/dev/null | tail -8 | cut -c1-260\n  be LOG_LAST\n  A=/var/ossec/logs/alerts/alerts.json\n  if $S test -f \"$A\"; then\n    m=$($S stat -c %Y \"$A\" 2>/dev/null)\n    [ -n \"$m\" ] && k ALERTS_JSON_AGE \"$(( $(date +%s) - m ))\"\n  fi\n  AR=/var/ossec/logs/archives/archives.json\n  if $S test -f \"$AR\"; then\n    m=$($S stat -c %Y \"$AR\" 2>/dev/null)\n    [ -n \"$m\" ] && k ARCHIVES_FILE_AGE \"$(( $(date +%s) - m ))\"\n    line=$($S tail -n 1 \"$AR\" 2>/dev/null)\n    k ARCHIVES_LAST_TS \"$(echo \"$line\" | grep -o '\"timestamp\":\"[^\"]*\"' | head -1 | cut -d'\"' -f4)\"\n    k ARCHIVES_LAST_AGENT \"$(echo \"$line\" | grep -o '\"agent\":{[^}]*}' | head -1 | grep -o '\"name\":\"[^\"]*\"' | head -1 | cut -d'\"' -f4)\"\n    k ARCHIVES_LAST_LOC \"$(echo \"$line\" | grep -o '\"location\":\"[^\"]*\"' | tail -1 | cut -d'\"' -f4)\"\n  else\n    k ARCHIVES_PRESENT 0\n  fi\n  k LOGS_MB \"$($S du -sm /var/ossec/logs 2>/dev/null | cut -f1)\"\n  k ARCHIVES_MB \"$($S du -sm /var/ossec/logs/archives 2>/dev/null | cut -f1)\"\n  k ESTAB_1514 \"$(ss -Htn state established '( sport = :1514 )' 2>/dev/null | wc -l)\"\n  fi\nfi\n\n# ---------------- filebeat ----------------\nif has_unit filebeat && [ \"$P\" = 1 ]; then\n  out=$($S timeout 25 filebeat test output 2>&1); rc=$?\n  bs FILEBEAT_TEST\n  echo \"$out\" | tail -15 | cut -c1-220\n  be FILEBEAT_TEST\n  k FILEBEAT_TEST_RC \"$rc\"\n  k FILEBEAT_ERR24 \"$($S journalctl -u filebeat --since '24 hours ago' --no-pager 2>/dev/null | grep -cE '\"log.level\":\"error\"| ERROR ')\"\n  bs FILEBEAT_LAST\n  $S journalctl -u filebeat --since '24 hours ago' --no-pager 2>/dev/null | grep -E '\"log.level\":\"error\"| ERROR ' | tail -4 | cut -c1-260\n  be FILEBEAT_LAST\nfi\n\n# ---------------- wazuh indexer ----------------\nif [ -d /etc/wazuh-indexer ]; then\n  k IDX_PRESENT 1\n  if [ \"$P\" = 1 ]; then\n  CERT=/etc/wazuh-indexer/certs\n  IH=$($S grep -E '^network.host' /etc/wazuh-indexer/opensearch.yml 2>/dev/null | head -1 | sed -E \"s/^network.host: *//; s/[\\\"' ]//g\")\n  if [ -z \"$IH\" ] || [ \"$IH\" = \"0.0.0.0\" ]; then\n    IH=$(ss -H -lnt 2>/dev/null | awk '$4 ~ /:9200$/ {print $4; exit}' | sed -E 's/:9200$//; s/^\\[//; s/\\]$//; s/^::ffff://')\n  fi\n  case \"$IH\" in \"\"|\"0.0.0.0\"|\"*\"|\"::\") IH=127.0.0.1;; esac\n  U=\"https://$IH:9200\"\n  k IDX_URL \"$U\"\n  q() { $S curl -sk -m 25 --cert $CERT/admin.pem --key $CERT/admin-key.pem \"$@\"; }\n  J='Content-Type: application/json'\n  k IDX_HTTP \"$(q -o /dev/null -w '%{http_code}' \"$U/\")\"\n  bs IDX_HEALTH\n  q \"$U/_cluster/health\"; echo\n  be IDX_HEALTH\n  bs IDX_NODES\n  q \"$U/_nodes/stats/fs,jvm,os,thread_pool?filter_path=nodes.*.name,nodes.*.fs.total,nodes.*.jvm.mem.heap_used_percent,nodes.*.os.cpu.percent,nodes.*.os.mem.used_percent,nodes.*.thread_pool.write.rejected,nodes.*.thread_pool.search.rejected\"; echo\n  be IDX_NODES\n  bs IDX_UNASSIGNED\n  q \"$U/_cat/shards?h=index,shard,prirep,state,unassigned.reason\" | grep -i unassigned | head -10\n  be IDX_UNASSIGNED\n  bs IDX_BLOCKS\n  q \"$U/wazuh-*/_settings/index.blocks.*?flat_settings=true\"; echo\n  be IDX_BLOCKS\n  bs IDX_INDICES\n  q \"$U/_cat/indices/wazuh-alerts-*?h=index,store.size&bytes=b\" | awk '{s+=$2;n++; if(min==\"\"||$1<min)min=$1; if($1>max)max=$1} END{print n\"|\"min\"|\"max\"|\"s}'\n  be IDX_INDICES\n  bs IDX_TOP\n  q \"$U/_cat/indices?h=index,store.size,docs.count&bytes=b&s=store.size:desc\" | head -8\n  be IDX_TOP\n  bs IDX_ARCH_LATEST\n  q -XPOST -H \"$J\" \"$U/wazuh-archives-*/_search?ignore_unavailable=true&allow_no_indices=true\" -d '{\"size\":1,\"sort\":[{\"timestamp\":{\"order\":\"desc\"}}],\"_source\":[\"timestamp\"]}'; echo\n  be IDX_ARCH_LATEST\n  bs IDX_COUNT24\n  q -XPOST -H \"$J\" \"$U/wazuh-alerts-*/_count\" -d '{\"query\":{\"range\":{\"timestamp\":{\"gte\":\"now-24h\"}}}}'; echo\n  be IDX_COUNT24\n  bs IDX_COUNTPREV\n  q -XPOST -H \"$J\" \"$U/wazuh-alerts-*/_count\" -d '{\"query\":{\"range\":{\"timestamp\":{\"gte\":\"now-48h\",\"lt\":\"now-24h\"}}}}'; echo\n  be IDX_COUNTPREV\n  NOW=$(( $(date +%s) * 1000 ))\n  BODY=$(cat <<JSONEND\n{\"size\":0,\"query\":{\"range\":{\"timestamp\":{\"gte\":\"now-24h\"}}},\"aggs\":{\"per_hour\":{\"date_histogram\":{\"field\":\"timestamp\",\"fixed_interval\":\"1h\",\"min_doc_count\":0,\"extended_bounds\":{\"min\":$((NOW-86400000)),\"max\":$NOW}}},\"top_rules\":{\"terms\":{\"field\":\"rule.id\",\"size\":5},\"aggs\":{\"d\":{\"top_hits\":{\"size\":1,\"_source\":[\"rule.description\"]}}}},\"top_agents\":{\"terms\":{\"field\":\"agent.name\",\"size\":5}},\"high_sev\":{\"filter\":{\"range\":{\"rule.level\":{\"gte\":12}}}}}}\nJSONEND\n)\n  bs IDX_STATS\n  q -XPOST -H \"$J\" \"$U/wazuh-alerts-*/_search\" -d \"$BODY\"; echo\n  be IDX_STATS\n  bs IDX_LATEST\n  q -XPOST -H \"$J\" \"$U/wazuh-alerts-*/_search\" -d '{\"size\":1,\"sort\":[{\"timestamp\":{\"order\":\"desc\"}}],\"_source\":[\"timestamp\"]}'; echo\n  be IDX_LATEST\n  k JVM_OPTS \"$($S grep -hE '^-Xm[sx]' /etc/wazuh-indexer/jvm.options /etc/wazuh-indexer/jvm.options.d/* 2>/dev/null | paste -sd, -)\"\n  IL=/var/log/wazuh-indexer/wazuh-cluster.log\n  k IDX_OOM \"$($S grep -c 'OutOfMemoryError' $IL 2>/dev/null)\"\n  k IDX_LOG_ERR \"$($S grep -c \"^\\[$(date +%Y-%m-%d)T.*\\]\\[ERROR\" $IL 2>/dev/null)\"\n  bs IDX_LOG_LAST\n  $S grep -E \"^\\[$(date +%Y-%m-%d)T.*\\]\\[ERROR\" $IL 2>/dev/null | tail -4 | cut -c1-260\n  be IDX_LOG_LAST\n  fi\nfi\n\n# ---------------- wazuh dashboard ----------------\nif [ -d /etc/wazuh-dashboard ]; then\n  DY=/etc/wazuh-dashboard/opensearch_dashboards.yml\n  DP=$($S grep -E '^server.port' $DY 2>/dev/null | head -1 | sed -E 's/.*: *//; s/[\" ]//g')\n  DH=$($S grep -E '^server.host' $DY 2>/dev/null | head -1 | sed -E \"s/.*: *//; s/[\\\"' ]//g\")\n  if [ -z \"$DP\" ]; then DP=443; fi\n  if [ -z \"$DH\" ] || [ \"$DH\" = \"0.0.0.0\" ]; then DH=127.0.0.1; fi\n  k DASH_PORT \"$DP\"\n  c=$(curl -sk -m 15 -o /dev/null -w '%{http_code}' \"https://$DH:$DP/app/login\" 2>/dev/null)\n  if [ \"$c\" = \"000\" ]; then c=$(curl -s -m 15 -o /dev/null -w '%{http_code}' \"http://$DH:$DP/app/login\" 2>/dev/null); fi\n  k DASH_HTTP \"$c\"\n  k DASH_ERR24 \"$($S journalctl -u wazuh-dashboard --since '24 hours ago' --no-pager 2>/dev/null | grep -ciE '\\berror\\b')\"\n  bs DASH_LAST\n  $S journalctl -u wazuh-dashboard --since '24 hours ago' --no-pager 2>/dev/null | grep -iE '\\berror\\b' | tail -4 | cut -c1-260\n  be DASH_LAST\nfi\nk DONE 1\nWZ_EOF\nbash \"$f\" </dev/null\nrm -f \"$f\"\n"
+      },
+      "id": "5109fcee-7458-4388-9fb2-ed1cf75fc30d",
+      "name": "SSH Wazuh Server",
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [
+        448,
+        112
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "authentication": "privateKey",
+        "command": "f=$(mktemp)\ncat > \"$f\" <<'WZ_EOF'\nexport LC_ALL=C\nexport PATH=\"$PATH:/usr/sbin:/sbin:/usr/local/bin:/usr/share/filebeat/bin\"\nS=\"\"\nif [ \"$(id -u)\" -ne 0 ] && sudo -n true 2>/dev/null; then S=\"sudo -n\"; fi\nk() { printf 'K|%s|%s\\n' \"$1\" \"$2\"; }\nbs() { printf 'B|%s\\n' \"$1\"; }\nbe() { printf 'E|%s\\n' \"$1\"; }\nhas_unit() { systemctl list-unit-files \"$1.service\" 2>/dev/null | grep -q \"^$1.service\"; }\nP=0\nif [ \"$(id -u)\" -eq 0 ] || [ -n \"$S\" ]; then P=1; fi\n\n# ---------------- system ----------------\nk HOST \"$(hostname)\"\nk USER \"$(id -un)\"\nif [ \"$(id -u)\" -eq 0 ]; then k PRIV root; elif [ -n \"$S\" ]; then k PRIV sudo; else k PRIV none; fi\nk OS \"$(. /etc/os-release 2>/dev/null; echo \"$PRETTY_NAME\")\"\nk UPTIME \"$(uptime -p 2>/dev/null)\"\nk LOAD \"$(cut -d' ' -f1-3 /proc/loadavg)\"\nk CPUS \"$(nproc)\"\nk MEM_MB \"$(free -m | awk '/^Mem:/{print $2\"|\"$3\"|\"$7}')\"\nk SWAP_MB \"$(free -m | awk '/^Swap:/{print $2\"|\"$3}')\"\nk NTP \"$(timedatectl show -p NTPSynchronized --value 2>/dev/null || echo unknown)\"\nk MAXMAP \"$(sysctl -n vm.max_map_count 2>/dev/null)\"\nk FAILED_UNITS \"$(systemctl --failed --no-legend --plain 2>/dev/null | awk '{print $1}' | paste -sd, -)\"\nk OOM24 \"$($S journalctl -k --since '24 hours ago' --no-pager 2>/dev/null | grep -ciE 'out of memory|oom-kill|killed process')\"\nbs DF\ndf -P -k -x tmpfs -x devtmpfs -x squashfs -x overlay 2>/dev/null | tail -n +2 | awk '{print $6\"|\"$5\"|\"$4\"|\"$2}'\nbe DF\nbs DFI\ndf -P -i -x tmpfs -x devtmpfs -x squashfs -x overlay 2>/dev/null | tail -n +2 | awk '{print $6\"|\"$5}'\nbe DFI\nbs PORTS\nss -H -lntu 2>/dev/null | awk '{print $1\"|\"$5}'\nbe PORTS\n\n# ---------------- services ----------------\nfor s in wazuh-manager wazuh-indexer wazuh-dashboard filebeat; do\n  if has_unit \"$s\"; then\n    ts=$(systemctl show -p ActiveEnterTimestamp --value \"$s\" 2>/dev/null)\n    ep=$(date -d \"$ts\" +%s 2>/dev/null)\n    if [ -n \"$ep\" ]; then up=$(( $(date +%s) - ep )); else up=-1; fi\n    printf 'SVC|%s|%s|%s|%s|%s\\n' \"$s\" \"$(systemctl is-active \"$s\" 2>/dev/null)\" \"$(systemctl is-enabled \"$s\" 2>/dev/null)\" \"$up\" \"$(systemctl show -p NRestarts --value \"$s\" 2>/dev/null)\"\n  fi\ndone\n\n# ---------------- certificates ----------------\nbs CERTS\nif [ \"$P\" = 1 ]; then\nfor f in $($S find /etc/wazuh-indexer/certs /etc/wazuh-dashboard/certs /etc/filebeat/certs -maxdepth 1 -name '*.pem' ! -name '*key*' 2>/dev/null); do\n  e=$($S openssl x509 -enddate -noout -in \"$f\" 2>/dev/null | cut -d= -f2)\n  [ -z \"$e\" ] && continue\n  ee=$(date -d \"$e\" +%s 2>/dev/null)\n  [ -z \"$ee\" ] && continue\n  echo \"$f|$e|$(( (ee - $(date +%s)) / 86400 ))\"\ndone\nfi\nbe CERTS\n\n# ---------------- disk consumers ----------------\nif [ \"$P\" = 1 ]; then\n  bs DU\n  for d in /var/lib/wazuh-indexer /var/ossec/logs/archives /var/ossec/logs/alerts /var/ossec/queue /var/ossec/backup /var/log /var/lib/docker /home /opt /root /tmp; do\n    if [ -e \"$d\" ]; then echo \"$d|$($S du -sxm \"$d\" 2>/dev/null | cut -f1)\"; fi\n  done\n  be DU\nfi\n\n# ---------------- wazuh manager ----------------\nif has_unit wazuh-manager || [ -d /var/ossec ]; then\n  k MGR_PRESENT 1\n  if [ \"$P\" = 1 ]; then\n  k MGR_VERSION \"$($S /var/ossec/bin/wazuh-control info 2>/dev/null | sed -n 's/^WAZUH_VERSION=\"\\(.*\\)\"/\\1/p')\"\n  bs MGR_STATUS\n  $S /var/ossec/bin/wazuh-control status 2>&1\n  be MGR_STATUS\n  out=$($S timeout 60 /var/ossec/bin/wazuh-analysisd -t 2>&1); rc=$?\n  bs CONFTEST\n  echo \"$out\" | tail -15 | cut -c1-240\n  be CONFTEST\n  k CONFTEST_RC \"$rc\"\n  bs AGENTS\n  $S /var/ossec/bin/agent_control -l 2>/dev/null | grep -E '^ *ID:'\n  be AGENTS\n  for f in analysisd remoted; do\n    bs STATE_$f\n    $S cat /var/ossec/var/run/wazuh-$f.state 2>/dev/null | grep -E \"^[a-z_0-9]+=\"\n    be STATE_$f\n  done\n  L=/var/ossec/logs/ossec.log\n  k LOG_ERR \"$($S grep -c ' ERROR: ' $L 2>/dev/null)\"\n  k LOG_CRIT \"$($S grep -c ' CRITICAL: ' $L 2>/dev/null)\"\n  bs LOG_LAST\n  $S grep -E ' (ERROR|CRITICAL): ' $L 2>/dev/null | tail -8 | cut -c1-260\n  be LOG_LAST\n  A=/var/ossec/logs/alerts/alerts.json\n  if $S test -f \"$A\"; then\n    m=$($S stat -c %Y \"$A\" 2>/dev/null)\n    [ -n \"$m\" ] && k ALERTS_JSON_AGE \"$(( $(date +%s) - m ))\"\n  fi\n  AR=/var/ossec/logs/archives/archives.json\n  if $S test -f \"$AR\"; then\n    m=$($S stat -c %Y \"$AR\" 2>/dev/null)\n    [ -n \"$m\" ] && k ARCHIVES_FILE_AGE \"$(( $(date +%s) - m ))\"\n    line=$($S tail -n 1 \"$AR\" 2>/dev/null)\n    k ARCHIVES_LAST_TS \"$(echo \"$line\" | grep -o '\"timestamp\":\"[^\"]*\"' | head -1 | cut -d'\"' -f4)\"\n    k ARCHIVES_LAST_AGENT \"$(echo \"$line\" | grep -o '\"agent\":{[^}]*}' | head -1 | grep -o '\"name\":\"[^\"]*\"' | head -1 | cut -d'\"' -f4)\"\n    k ARCHIVES_LAST_LOC \"$(echo \"$line\" | grep -o '\"location\":\"[^\"]*\"' | tail -1 | cut -d'\"' -f4)\"\n  else\n    k ARCHIVES_PRESENT 0\n  fi\n  k LOGS_MB \"$($S du -sm /var/ossec/logs 2>/dev/null | cut -f1)\"\n  k ARCHIVES_MB \"$($S du -sm /var/ossec/logs/archives 2>/dev/null | cut -f1)\"\n  k ESTAB_1514 \"$(ss -Htn state established '( sport = :1514 )' 2>/dev/null | wc -l)\"\n  fi\nfi\n\n# ---------------- filebeat ----------------\nif has_unit filebeat && [ \"$P\" = 1 ]; then\n  out=$($S timeout 25 filebeat test output 2>&1); rc=$?\n  bs FILEBEAT_TEST\n  echo \"$out\" | tail -15 | cut -c1-220\n  be FILEBEAT_TEST\n  k FILEBEAT_TEST_RC \"$rc\"\n  k FILEBEAT_ERR24 \"$($S journalctl -u filebeat --since '24 hours ago' --no-pager 2>/dev/null | grep -cE '\"log.level\":\"error\"| ERROR ')\"\n  bs FILEBEAT_LAST\n  $S journalctl -u filebeat --since '24 hours ago' --no-pager 2>/dev/null | grep -E '\"log.level\":\"error\"| ERROR ' | tail -4 | cut -c1-260\n  be FILEBEAT_LAST\nfi\n\n# ---------------- wazuh indexer ----------------\nif [ -d /etc/wazuh-indexer ]; then\n  k IDX_PRESENT 1\n  if [ \"$P\" = 1 ]; then\n  CERT=/etc/wazuh-indexer/certs\n  IH=$($S grep -E '^network.host' /etc/wazuh-indexer/opensearch.yml 2>/dev/null | head -1 | sed -E \"s/^network.host: *//; s/[\\\"' ]//g\")\n  if [ -z \"$IH\" ] || [ \"$IH\" = \"0.0.0.0\" ]; then\n    IH=$(ss -H -lnt 2>/dev/null | awk '$4 ~ /:9200$/ {print $4; exit}' | sed -E 's/:9200$//; s/^\\[//; s/\\]$//; s/^::ffff://')\n  fi\n  case \"$IH\" in \"\"|\"0.0.0.0\"|\"*\"|\"::\") IH=127.0.0.1;; esac\n  U=\"https://$IH:9200\"\n  k IDX_URL \"$U\"\n  q() { $S curl -sk -m 25 --cert $CERT/admin.pem --key $CERT/admin-key.pem \"$@\"; }\n  J='Content-Type: application/json'\n  k IDX_HTTP \"$(q -o /dev/null -w '%{http_code}' \"$U/\")\"\n  bs IDX_HEALTH\n  q \"$U/_cluster/health\"; echo\n  be IDX_HEALTH\n  bs IDX_NODES\n  q \"$U/_nodes/stats/fs,jvm,os,thread_pool?filter_path=nodes.*.name,nodes.*.fs.total,nodes.*.jvm.mem.heap_used_percent,nodes.*.os.cpu.percent,nodes.*.os.mem.used_percent,nodes.*.thread_pool.write.rejected,nodes.*.thread_pool.search.rejected\"; echo\n  be IDX_NODES\n  bs IDX_UNASSIGNED\n  q \"$U/_cat/shards?h=index,shard,prirep,state,unassigned.reason\" | grep -i unassigned | head -10\n  be IDX_UNASSIGNED\n  bs IDX_BLOCKS\n  q \"$U/wazuh-*/_settings/index.blocks.*?flat_settings=true\"; echo\n  be IDX_BLOCKS\n  bs IDX_INDICES\n  q \"$U/_cat/indices/wazuh-alerts-*?h=index,store.size&bytes=b\" | awk '{s+=$2;n++; if(min==\"\"||$1<min)min=$1; if($1>max)max=$1} END{print n\"|\"min\"|\"max\"|\"s}'\n  be IDX_INDICES\n  bs IDX_TOP\n  q \"$U/_cat/indices?h=index,store.size,docs.count&bytes=b&s=store.size:desc\" | head -8\n  be IDX_TOP\n  bs IDX_ARCH_LATEST\n  q -XPOST -H \"$J\" \"$U/wazuh-archives-*/_search?ignore_unavailable=true&allow_no_indices=true\" -d '{\"size\":1,\"sort\":[{\"timestamp\":{\"order\":\"desc\"}}],\"_source\":[\"timestamp\"]}'; echo\n  be IDX_ARCH_LATEST\n  bs IDX_COUNT24\n  q -XPOST -H \"$J\" \"$U/wazuh-alerts-*/_count\" -d '{\"query\":{\"range\":{\"timestamp\":{\"gte\":\"now-24h\"}}}}'; echo\n  be IDX_COUNT24\n  bs IDX_COUNTPREV\n  q -XPOST -H \"$J\" \"$U/wazuh-alerts-*/_count\" -d '{\"query\":{\"range\":{\"timestamp\":{\"gte\":\"now-48h\",\"lt\":\"now-24h\"}}}}'; echo\n  be IDX_COUNTPREV\n  NOW=$(( $(date +%s) * 1000 ))\n  BODY=$(cat <<JSONEND\n{\"size\":0,\"query\":{\"range\":{\"timestamp\":{\"gte\":\"now-24h\"}}},\"aggs\":{\"per_hour\":{\"date_histogram\":{\"field\":\"timestamp\",\"fixed_interval\":\"1h\",\"min_doc_count\":0,\"extended_bounds\":{\"min\":$((NOW-86400000)),\"max\":$NOW}}},\"top_rules\":{\"terms\":{\"field\":\"rule.id\",\"size\":5},\"aggs\":{\"d\":{\"top_hits\":{\"size\":1,\"_source\":[\"rule.description\"]}}}},\"top_agents\":{\"terms\":{\"field\":\"agent.name\",\"size\":5}},\"high_sev\":{\"filter\":{\"range\":{\"rule.level\":{\"gte\":12}}}}}}\nJSONEND\n)\n  bs IDX_STATS\n  q -XPOST -H \"$J\" \"$U/wazuh-alerts-*/_search\" -d \"$BODY\"; echo\n  be IDX_STATS\n  bs IDX_LATEST\n  q -XPOST -H \"$J\" \"$U/wazuh-alerts-*/_search\" -d '{\"size\":1,\"sort\":[{\"timestamp\":{\"order\":\"desc\"}}],\"_source\":[\"timestamp\"]}'; echo\n  be IDX_LATEST\n  k JVM_OPTS \"$($S grep -hE '^-Xm[sx]' /etc/wazuh-indexer/jvm.options /etc/wazuh-indexer/jvm.options.d/* 2>/dev/null | paste -sd, -)\"\n  IL=/var/log/wazuh-indexer/wazuh-cluster.log\n  k IDX_OOM \"$($S grep -c 'OutOfMemoryError' $IL 2>/dev/null)\"\n  k IDX_LOG_ERR \"$($S grep -c \"^\\[$(date +%Y-%m-%d)T.*\\]\\[ERROR\" $IL 2>/dev/null)\"\n  bs IDX_LOG_LAST\n  $S grep -E \"^\\[$(date +%Y-%m-%d)T.*\\]\\[ERROR\" $IL 2>/dev/null | tail -4 | cut -c1-260\n  be IDX_LOG_LAST\n  fi\nfi\n\n# ---------------- wazuh dashboard ----------------\nif [ -d /etc/wazuh-dashboard ]; then\n  DY=/etc/wazuh-dashboard/opensearch_dashboards.yml\n  DP=$($S grep -E '^server.port' $DY 2>/dev/null | head -1 | sed -E 's/.*: *//; s/[\" ]//g')\n  DH=$($S grep -E '^server.host' $DY 2>/dev/null | head -1 | sed -E \"s/.*: *//; s/[\\\"' ]//g\")\n  if [ -z \"$DP\" ]; then DP=443; fi\n  if [ -z \"$DH\" ] || [ \"$DH\" = \"0.0.0.0\" ]; then DH=127.0.0.1; fi\n  k DASH_PORT \"$DP\"\n  c=$(curl -sk -m 15 -o /dev/null -w '%{http_code}' \"https://$DH:$DP/app/login\" 2>/dev/null)\n  if [ \"$c\" = \"000\" ]; then c=$(curl -s -m 15 -o /dev/null -w '%{http_code}' \"http://$DH:$DP/app/login\" 2>/dev/null); fi\n  k DASH_HTTP \"$c\"\n  k DASH_ERR24 \"$($S journalctl -u wazuh-dashboard --since '24 hours ago' --no-pager 2>/dev/null | grep -ciE '\\berror\\b')\"\n  bs DASH_LAST\n  $S journalctl -u wazuh-dashboard --since '24 hours ago' --no-pager 2>/dev/null | grep -iE '\\berror\\b' | tail -4 | cut -c1-260\n  be DASH_LAST\nfi\nk DONE 1\nWZ_EOF\nbash \"$f\" </dev/null\nrm -f \"$f\"\n"
+      },
+      "id": "cfbcc7c2-4a67-46f6-94f2-ad9c855b3f8a",
+      "name": "SSH Indexer Host",
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [
+        672,
+        112
+      ],
+      "disabled": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "authentication": "privateKey",
+        "command": "f=$(mktemp)\ncat > \"$f\" <<'WZ_EOF'\nexport LC_ALL=C\nexport PATH=\"$PATH:/usr/sbin:/sbin:/usr/local/bin:/usr/share/filebeat/bin\"\nS=\"\"\nif [ \"$(id -u)\" -ne 0 ] && sudo -n true 2>/dev/null; then S=\"sudo -n\"; fi\nk() { printf 'K|%s|%s\\n' \"$1\" \"$2\"; }\nbs() { printf 'B|%s\\n' \"$1\"; }\nbe() { printf 'E|%s\\n' \"$1\"; }\nhas_unit() { systemctl list-unit-files \"$1.service\" 2>/dev/null | grep -q \"^$1.service\"; }\nP=0\nif [ \"$(id -u)\" -eq 0 ] || [ -n \"$S\" ]; then P=1; fi\n\n# ---------------- system ----------------\nk HOST \"$(hostname)\"\nk USER \"$(id -un)\"\nif [ \"$(id -u)\" -eq 0 ]; then k PRIV root; elif [ -n \"$S\" ]; then k PRIV sudo; else k PRIV none; fi\nk OS \"$(. /etc/os-release 2>/dev/null; echo \"$PRETTY_NAME\")\"\nk UPTIME \"$(uptime -p 2>/dev/null)\"\nk LOAD \"$(cut -d' ' -f1-3 /proc/loadavg)\"\nk CPUS \"$(nproc)\"\nk MEM_MB \"$(free -m | awk '/^Mem:/{print $2\"|\"$3\"|\"$7}')\"\nk SWAP_MB \"$(free -m | awk '/^Swap:/{print $2\"|\"$3}')\"\nk NTP \"$(timedatectl show -p NTPSynchronized --value 2>/dev/null || echo unknown)\"\nk MAXMAP \"$(sysctl -n vm.max_map_count 2>/dev/null)\"\nk FAILED_UNITS \"$(systemctl --failed --no-legend --plain 2>/dev/null | awk '{print $1}' | paste -sd, -)\"\nk OOM24 \"$($S journalctl -k --since '24 hours ago' --no-pager 2>/dev/null | grep -ciE 'out of memory|oom-kill|killed process')\"\nbs DF\ndf -P -k -x tmpfs -x devtmpfs -x squashfs -x overlay 2>/dev/null | tail -n +2 | awk '{print $6\"|\"$5\"|\"$4\"|\"$2}'\nbe DF\nbs DFI\ndf -P -i -x tmpfs -x devtmpfs -x squashfs -x overlay 2>/dev/null | tail -n +2 | awk '{print $6\"|\"$5}'\nbe DFI\nbs PORTS\nss -H -lntu 2>/dev/null | awk '{print $1\"|\"$5}'\nbe PORTS\n\n# ---------------- services ----------------\nfor s in wazuh-manager wazuh-indexer wazuh-dashboard filebeat; do\n  if has_unit \"$s\"; then\n    ts=$(systemctl show -p ActiveEnterTimestamp --value \"$s\" 2>/dev/null)\n    ep=$(date -d \"$ts\" +%s 2>/dev/null)\n    if [ -n \"$ep\" ]; then up=$(( $(date +%s) - ep )); else up=-1; fi\n    printf 'SVC|%s|%s|%s|%s|%s\\n' \"$s\" \"$(systemctl is-active \"$s\" 2>/dev/null)\" \"$(systemctl is-enabled \"$s\" 2>/dev/null)\" \"$up\" \"$(systemctl show -p NRestarts --value \"$s\" 2>/dev/null)\"\n  fi\ndone\n\n# ---------------- certificates ----------------\nbs CERTS\nif [ \"$P\" = 1 ]; then\nfor f in $($S find /etc/wazuh-indexer/certs /etc/wazuh-dashboard/certs /etc/filebeat/certs -maxdepth 1 -name '*.pem' ! -name '*key*' 2>/dev/null); do\n  e=$($S openssl x509 -enddate -noout -in \"$f\" 2>/dev/null | cut -d= -f2)\n  [ -z \"$e\" ] && continue\n  ee=$(date -d \"$e\" +%s 2>/dev/null)\n  [ -z \"$ee\" ] && continue\n  echo \"$f|$e|$(( (ee - $(date +%s)) / 86400 ))\"\ndone\nfi\nbe CERTS\n\n# ---------------- disk consumers ----------------\nif [ \"$P\" = 1 ]; then\n  bs DU\n  for d in /var/lib/wazuh-indexer /var/ossec/logs/archives /var/ossec/logs/alerts /var/ossec/queue /var/ossec/backup /var/log /var/lib/docker /home /opt /root /tmp; do\n    if [ -e \"$d\" ]; then echo \"$d|$($S du -sxm \"$d\" 2>/dev/null | cut -f1)\"; fi\n  done\n  be DU\nfi\n\n# ---------------- wazuh manager ----------------\nif has_unit wazuh-manager || [ -d /var/ossec ]; then\n  k MGR_PRESENT 1\n  if [ \"$P\" = 1 ]; then\n  k MGR_VERSION \"$($S /var/ossec/bin/wazuh-control info 2>/dev/null | sed -n 's/^WAZUH_VERSION=\"\\(.*\\)\"/\\1/p')\"\n  bs MGR_STATUS\n  $S /var/ossec/bin/wazuh-control status 2>&1\n  be MGR_STATUS\n  out=$($S timeout 60 /var/ossec/bin/wazuh-analysisd -t 2>&1); rc=$?\n  bs CONFTEST\n  echo \"$out\" | tail -15 | cut -c1-240\n  be CONFTEST\n  k CONFTEST_RC \"$rc\"\n  bs AGENTS\n  $S /var/ossec/bin/agent_control -l 2>/dev/null | grep -E '^ *ID:'\n  be AGENTS\n  for f in analysisd remoted; do\n    bs STATE_$f\n    $S cat /var/ossec/var/run/wazuh-$f.state 2>/dev/null | grep -E \"^[a-z_0-9]+=\"\n    be STATE_$f\n  done\n  L=/var/ossec/logs/ossec.log\n  k LOG_ERR \"$($S grep -c ' ERROR: ' $L 2>/dev/null)\"\n  k LOG_CRIT \"$($S grep -c ' CRITICAL: ' $L 2>/dev/null)\"\n  bs LOG_LAST\n  $S grep -E ' (ERROR|CRITICAL): ' $L 2>/dev/null | tail -8 | cut -c1-260\n  be LOG_LAST\n  A=/var/ossec/logs/alerts/alerts.json\n  if $S test -f \"$A\"; then\n    m=$($S stat -c %Y \"$A\" 2>/dev/null)\n    [ -n \"$m\" ] && k ALERTS_JSON_AGE \"$(( $(date +%s) - m ))\"\n  fi\n  AR=/var/ossec/logs/archives/archives.json\n  if $S test -f \"$AR\"; then\n    m=$($S stat -c %Y \"$AR\" 2>/dev/null)\n    [ -n \"$m\" ] && k ARCHIVES_FILE_AGE \"$(( $(date +%s) - m ))\"\n    line=$($S tail -n 1 \"$AR\" 2>/dev/null)\n    k ARCHIVES_LAST_TS \"$(echo \"$line\" | grep -o '\"timestamp\":\"[^\"]*\"' | head -1 | cut -d'\"' -f4)\"\n    k ARCHIVES_LAST_AGENT \"$(echo \"$line\" | grep -o '\"agent\":{[^}]*}' | head -1 | grep -o '\"name\":\"[^\"]*\"' | head -1 | cut -d'\"' -f4)\"\n    k ARCHIVES_LAST_LOC \"$(echo \"$line\" | grep -o '\"location\":\"[^\"]*\"' | tail -1 | cut -d'\"' -f4)\"\n  else\n    k ARCHIVES_PRESENT 0\n  fi\n  k LOGS_MB \"$($S du -sm /var/ossec/logs 2>/dev/null | cut -f1)\"\n  k ARCHIVES_MB \"$($S du -sm /var/ossec/logs/archives 2>/dev/null | cut -f1)\"\n  k ESTAB_1514 \"$(ss -Htn state established '( sport = :1514 )' 2>/dev/null | wc -l)\"\n  fi\nfi\n\n# ---------------- filebeat ----------------\nif has_unit filebeat && [ \"$P\" = 1 ]; then\n  out=$($S timeout 25 filebeat test output 2>&1); rc=$?\n  bs FILEBEAT_TEST\n  echo \"$out\" | tail -15 | cut -c1-220\n  be FILEBEAT_TEST\n  k FILEBEAT_TEST_RC \"$rc\"\n  k FILEBEAT_ERR24 \"$($S journalctl -u filebeat --since '24 hours ago' --no-pager 2>/dev/null | grep -cE '\"log.level\":\"error\"| ERROR ')\"\n  bs FILEBEAT_LAST\n  $S journalctl -u filebeat --since '24 hours ago' --no-pager 2>/dev/null | grep -E '\"log.level\":\"error\"| ERROR ' | tail -4 | cut -c1-260\n  be FILEBEAT_LAST\nfi\n\n# ---------------- wazuh indexer ----------------\nif [ -d /etc/wazuh-indexer ]; then\n  k IDX_PRESENT 1\n  if [ \"$P\" = 1 ]; then\n  CERT=/etc/wazuh-indexer/certs\n  IH=$($S grep -E '^network.host' /etc/wazuh-indexer/opensearch.yml 2>/dev/null | head -1 | sed -E \"s/^network.host: *//; s/[\\\"' ]//g\")\n  if [ -z \"$IH\" ] || [ \"$IH\" = \"0.0.0.0\" ]; then\n    IH=$(ss -H -lnt 2>/dev/null | awk '$4 ~ /:9200$/ {print $4; exit}' | sed -E 's/:9200$//; s/^\\[//; s/\\]$//; s/^::ffff://')\n  fi\n  case \"$IH\" in \"\"|\"0.0.0.0\"|\"*\"|\"::\") IH=127.0.0.1;; esac\n  U=\"https://$IH:9200\"\n  k IDX_URL \"$U\"\n  q() { $S curl -sk -m 25 --cert $CERT/admin.pem --key $CERT/admin-key.pem \"$@\"; }\n  J='Content-Type: application/json'\n  k IDX_HTTP \"$(q -o /dev/null -w '%{http_code}' \"$U/\")\"\n  bs IDX_HEALTH\n  q \"$U/_cluster/health\"; echo\n  be IDX_HEALTH\n  bs IDX_NODES\n  q \"$U/_nodes/stats/fs,jvm,os,thread_pool?filter_path=nodes.*.name,nodes.*.fs.total,nodes.*.jvm.mem.heap_used_percent,nodes.*.os.cpu.percent,nodes.*.os.mem.used_percent,nodes.*.thread_pool.write.rejected,nodes.*.thread_pool.search.rejected\"; echo\n  be IDX_NODES\n  bs IDX_UNASSIGNED\n  q \"$U/_cat/shards?h=index,shard,prirep,state,unassigned.reason\" | grep -i unassigned | head -10\n  be IDX_UNASSIGNED\n  bs IDX_BLOCKS\n  q \"$U/wazuh-*/_settings/index.blocks.*?flat_settings=true\"; echo\n  be IDX_BLOCKS\n  bs IDX_INDICES\n  q \"$U/_cat/indices/wazuh-alerts-*?h=index,store.size&bytes=b\" | awk '{s+=$2;n++; if(min==\"\"||$1<min)min=$1; if($1>max)max=$1} END{print n\"|\"min\"|\"max\"|\"s}'\n  be IDX_INDICES\n  bs IDX_TOP\n  q \"$U/_cat/indices?h=index,store.size,docs.count&bytes=b&s=store.size:desc\" | head -8\n  be IDX_TOP\n  bs IDX_ARCH_LATEST\n  q -XPOST -H \"$J\" \"$U/wazuh-archives-*/_search?ignore_unavailable=true&allow_no_indices=true\" -d '{\"size\":1,\"sort\":[{\"timestamp\":{\"order\":\"desc\"}}],\"_source\":[\"timestamp\"]}'; echo\n  be IDX_ARCH_LATEST\n  bs IDX_COUNT24\n  q -XPOST -H \"$J\" \"$U/wazuh-alerts-*/_count\" -d '{\"query\":{\"range\":{\"timestamp\":{\"gte\":\"now-24h\"}}}}'; echo\n  be IDX_COUNT24\n  bs IDX_COUNTPREV\n  q -XPOST -H \"$J\" \"$U/wazuh-alerts-*/_count\" -d '{\"query\":{\"range\":{\"timestamp\":{\"gte\":\"now-48h\",\"lt\":\"now-24h\"}}}}'; echo\n  be IDX_COUNTPREV\n  NOW=$(( $(date +%s) * 1000 ))\n  BODY=$(cat <<JSONEND\n{\"size\":0,\"query\":{\"range\":{\"timestamp\":{\"gte\":\"now-24h\"}}},\"aggs\":{\"per_hour\":{\"date_histogram\":{\"field\":\"timestamp\",\"fixed_interval\":\"1h\",\"min_doc_count\":0,\"extended_bounds\":{\"min\":$((NOW-86400000)),\"max\":$NOW}}},\"top_rules\":{\"terms\":{\"field\":\"rule.id\",\"size\":5},\"aggs\":{\"d\":{\"top_hits\":{\"size\":1,\"_source\":[\"rule.description\"]}}}},\"top_agents\":{\"terms\":{\"field\":\"agent.name\",\"size\":5}},\"high_sev\":{\"filter\":{\"range\":{\"rule.level\":{\"gte\":12}}}}}}\nJSONEND\n)\n  bs IDX_STATS\n  q -XPOST -H \"$J\" \"$U/wazuh-alerts-*/_search\" -d \"$BODY\"; echo\n  be IDX_STATS\n  bs IDX_LATEST\n  q -XPOST -H \"$J\" \"$U/wazuh-alerts-*/_search\" -d '{\"size\":1,\"sort\":[{\"timestamp\":{\"order\":\"desc\"}}],\"_source\":[\"timestamp\"]}'; echo\n  be IDX_LATEST\n  k JVM_OPTS \"$($S grep -hE '^-Xm[sx]' /etc/wazuh-indexer/jvm.options /etc/wazuh-indexer/jvm.options.d/* 2>/dev/null | paste -sd, -)\"\n  IL=/var/log/wazuh-indexer/wazuh-cluster.log\n  k IDX_OOM \"$($S grep -c 'OutOfMemoryError' $IL 2>/dev/null)\"\n  k IDX_LOG_ERR \"$($S grep -c \"^\\[$(date +%Y-%m-%d)T.*\\]\\[ERROR\" $IL 2>/dev/null)\"\n  bs IDX_LOG_LAST\n  $S grep -E \"^\\[$(date +%Y-%m-%d)T.*\\]\\[ERROR\" $IL 2>/dev/null | tail -4 | cut -c1-260\n  be IDX_LOG_LAST\n  fi\nfi\n\n# ---------------- wazuh dashboard ----------------\nif [ -d /etc/wazuh-dashboard ]; then\n  DY=/etc/wazuh-dashboard/opensearch_dashboards.yml\n  DP=$($S grep -E '^server.port' $DY 2>/dev/null | head -1 | sed -E 's/.*: *//; s/[\" ]//g')\n  DH=$($S grep -E '^server.host' $DY 2>/dev/null | head -1 | sed -E \"s/.*: *//; s/[\\\"' ]//g\")\n  if [ -z \"$DP\" ]; then DP=443; fi\n  if [ -z \"$DH\" ] || [ \"$DH\" = \"0.0.0.0\" ]; then DH=127.0.0.1; fi\n  k DASH_PORT \"$DP\"\n  c=$(curl -sk -m 15 -o /dev/null -w '%{http_code}' \"https://$DH:$DP/app/login\" 2>/dev/null)\n  if [ \"$c\" = \"000\" ]; then c=$(curl -s -m 15 -o /dev/null -w '%{http_code}' \"http://$DH:$DP/app/login\" 2>/dev/null); fi\n  k DASH_HTTP \"$c\"\n  k DASH_ERR24 \"$($S journalctl -u wazuh-dashboard --since '24 hours ago' --no-pager 2>/dev/null | grep -ciE '\\berror\\b')\"\n  bs DASH_LAST\n  $S journalctl -u wazuh-dashboard --since '24 hours ago' --no-pager 2>/dev/null | grep -iE '\\berror\\b' | tail -4 | cut -c1-260\n  be DASH_LAST\nfi\nk DONE 1\nWZ_EOF\nbash \"$f\" </dev/null\nrm -f \"$f\"\n"
+      },
+      "id": "989c8055-5df9-44c9-8947-b753ba7c36b2",
+      "name": "SSH Dashboard Host",
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [
+        880,
+        112
+      ],
+      "disabled": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const cfg = $('Config').first().json;\nconst client = String(cfg.client_name || cfg.environment_name || '');\nconst esc = s => String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');\nconst node = n => { try { return $(n).first().json; } catch (e) { return null; } };\nconst num = v => { const x = parseFloat(String(v ?? '').replace(/'/g, '')); return isNaN(x) ? 0 : x; };\nconst thr = (v, w, c) => (v >= c ? 'CRIT' : v >= w ? 'WARN' : 'OK');\nconst GB = 1073741824;\nconst checks = [];\nconst add = (area, name, status, detail, fix = '') => checks.push({ area, name, status, detail, fix });\nconst jparse = lines => { try { return JSON.parse((lines || []).join('')); } catch (e) { return null; } };\nconst kv = lines => { const o = {}; (lines || []).forEach(l => { const m = l.match(/^([a-z_0-9]+)='?([^']*)'?$/); if (m) o[m[1]] = m[2]; }); return o; };\nconst dur = s => (s >= 172800 ? Math.round(s / 86400) + ' d' : Math.round(s / 3600) + ' h');\n\nfunction parse(out) {\n  const k = {}, b = {}, r = {}; let cur = null;\n  for (const line of String(out).split('\\n')) {\n    if (cur) { if (line === 'E|' + cur) cur = null; else b[cur].push(line); continue; }\n    if (line.startsWith('B|')) { cur = line.slice(2); b[cur] = []; }\n    else if (line.startsWith('K|')) { const i = line.indexOf('|', 2); k[line.slice(2, i)] = line.slice(i + 1); }\n    else if (line.startsWith('SVC|')) (r.SVC = r.SVC || []).push(line.split('|').slice(1));\n  }\n  return { k, b, r };\n}\n\n// ---------- collect SSH results (a disabled SSH node just passes data through, so de-duplicate by host) ----------\nconst SSH_NODES = ['SSH Wazuh Server', 'SSH Indexer Host', 'SSH Dashboard Host'];\nconst hosts = new Map(); const sshFail = new Map();\nfor (const n of SSH_NODES) {\n  const j = node(n); if (!j) continue;\n  if (typeof j.stdout === 'string' && j.stdout.includes('K|HOST|')) { const p = parse(j.stdout); if (!hosts.has(p.k.HOST)) hosts.set(p.k.HOST, p); }\n  else {\n    const msg = String(typeof j.error === 'string' ? j.error : (j.error && j.error.message) || (j.stderr ? j.stderr : 'no output')).slice(0, 160);\n    if (!sshFail.has(msg)) sshFail.set(msg, n);\n  }\n}\n\nconst FIX = {\n  ssh: 'Check SSH reachability from the n8n host (port 22, firewall), the SSH user/key in the n8n credential, and that the account can log in non-interactively.',\n  priv: 'Use root, or a user with passwordless sudo (NOPASSWD) for the SSH credential. Without it most checks cannot read /var/ossec, journals or certificates.',\n  svc: s => `systemctl status ${s} --no-pager -l ; journalctl -u ${s} -n 100 --no-pager ; then systemctl restart ${s}`,\n  daemons: 'Run /var/ossec/bin/wazuh-control status, then systemctl restart wazuh-manager and read /var/ossec/logs/ossec.log for the reason the daemon stopped.',\n  conf: 'Run /var/ossec/bin/wazuh-analysisd -t to see the exact error in ossec.conf, rules or decoders. Fix it BEFORE the next restart or the manager will not start.',\n  queues: 'Analysis queue is near full. Reduce noisy sources, tune noisy rules, check manager CPU/RAM, consider larger queues in internal_options.conf.',\n  dropped: 'The manager dropped events (counter since last restart). Check queue usage, CPU and event rate; scale the manager or filter noisy sources.',\n  remoted: 'Remoted queue filling or discarding messages. Check agent event rate, manager CPU and the network on port 1514.',\n  logs: 'grep -E \" (ERROR|CRITICAL): \" /var/ossec/logs/ossec.log | tail -50 and fix the reported component.',\n  ports: 'Port not listening. Check the owning service (1514 remoted, 1515 authd, 55000 API) with ss -lntup and its log.',\n  alertfile: 'The manager has not written alerts recently. Check that agents are connected, ossec.log for analysisd errors, and that rules are not all disabled.',\n  logsize: 'The raw event archive is large (written when logall/logall_json is on). If you do not need it, set <logall>no</logall> and <logall_json>no</logall_json> in /var/ossec/etc/ossec.conf and restart wazuh-manager. Otherwise cap retention: check how many days are kept with sudo ls /var/ossec/logs/archives/*/ and delete old files (dry run first: sudo find /var/ossec/logs/archives -type f -mtime +30 -print, then add -delete). Wazuh also has a log-retention option (monitord.keep_log_days in internal options) worth checking.',\n  archlag: 'No raw events reached the manager recently. Check agent connectivity and logcollector, syslog sources on 514/5514, and that wazuh-remoted is running. If alerts still arrive but this is stale, confirm archives.json is still being written (logall_json).',\n  archidx: 'Archives are written on disk but the newest indexed archive event is old. Check that the Filebeat archives module is enabled (archives: enabled: true in /etc/filebeat/filebeat.yml), then restart Filebeat.',\n  yellow1: 'Single-node cluster: replica shards can never be assigned, so it stays yellow. Set replicas to 0: sudo curl -sk --cert /etc/wazuh-indexer/certs/admin.pem --key /etc/wazuh-indexer/certs/admin-key.pem -XPUT -H \"Content-Type: application/json\" \"https://INDEXER_IP:9200/_all/_settings?expand_wildcards=all\" -d \\'{\"index\":{\"number_of_replicas\":0}}\\' then re-check _cluster/health.',\n  disc: 'On the endpoint: check the Wazuh agent service, network access to the manager on 1514, and the agent key. Remove decommissioned agents with manage_agents.',\n  never: 'Enrollment never completed. Check port 1515 (authd), the registration password and the agent manager address.',\n  pending: 'Agents are pending, usually just after enrollment or a manager restart. If it persists, restart the agent.',\n  dash: 'On the dashboard host: systemctl status wazuh-dashboard ; journalctl -u wazuh-dashboard -n 100 ; check port 443, the TLS certificate and opensearch.hosts in /etc/wazuh-dashboard/opensearch_dashboards.yml (the indexer must be reachable).',\n  dasherr: 'Review journalctl -u wazuh-dashboard for repeating errors (usually indexer connectivity or certificate problems).',\n  fbtest: 'Filebeat cannot reach the indexer. Run filebeat test output, check output.elasticsearch hosts/credentials/certs in /etc/filebeat/filebeat.yml and the indexer service.',\n  fberr: 'Filebeat logged errors. Run journalctl -u filebeat --since \"24 hours ago\" | grep -E \"error| ERROR \" and fix the cause (certs, credentials, connection).',\n  idx: 'On the indexer host: systemctl status wazuh-indexer, review /var/log/wazuh-indexer/wazuh-cluster.log, check port 9200 and that /etc/wazuh-indexer/certs/admin.pem is readable.',\n  health: 'List problem shards: curl -k --cert admin.pem --key admin-key.pem https://IP:9200/_cluster/allocation/explain?pretty. Often caused by low disk space or a lost node.',\n  disk: 'Free space now: delete old wazuh-alerts-* indices, enforce an ISM retention policy, or extend the disk. At 95% the indexer sets indices read-only.',\n  ro: 'After freeing disk space, clear the block: PUT wazuh-*/_settings {\"index.blocks.read_only_allow_delete\": null}. Until then new alerts cannot be indexed.',\n  heap: 'Raise -Xms/-Xmx in /etc/wazuh-indexer/jvm.options (equal values, max 50% of RAM and about 31 GB), then restart the indexer.',\n  heapcfg: 'Set -Xms and -Xmx to the same value, no more than 50% of RAM, in /etc/wazuh-indexer/jvm.options.',\n  cpu: 'Indexer CPU is saturated. Check ingestion rate and heavy queries; add CPU or nodes.',\n  reject: 'Thread pools rejected requests (since restart): the indexer is overloaded. Review CPU, heap, disk I/O and shard count.',\n  oom: 'The indexer hit OutOfMemoryError. Increase RAM/heap or reduce shard count and retention.',\n  noalerts: 'No alerts were indexed in 24h. Check Filebeat (systemctl status filebeat ; filebeat test output), indexer health and read-only blocks.',\n  lag: 'Alerts are not arriving in the indexer. Check Filebeat (systemctl status filebeat ; filebeat test output) and the indexer disk/read-only state.',\n  gap: 'There were hours with zero alerts. Look for a Filebeat/indexer outage or manager restart in that window, or a silent log source.',\n  volume: 'Alert volume changed sharply vs the previous 24h. Check for a stopped log source/agent group (drop) or a noisy rule/attack (spike).',\n  noisy: 'One rule produces most alerts. Tune or add an exception to cut noise and indexer load.',\n  load: 'High CPU load. Check top/ps for the busy process (analysisd, java, filebeat) and the event rate.',\n  mem: 'Low available memory. Check which process uses it (indexer heap, dashboard) and add RAM or reduce heap.',\n  swap: 'Heavy swap use hurts the indexer. Add RAM and keep swappiness low (vm.swappiness=1).',\n  dsk: 'Free disk space: rotate/delete old logs and indices, or extend the volume.',\n  inode: 'Inodes almost exhausted. Find directories with huge file counts (often old logs) and clean them.',\n  ntp: 'Clock is not synchronised. timedatectl set-ntp true, check chronyc tracking. Time drift breaks alert timestamps and TLS.',\n  oomk: 'The kernel OOM killer terminated processes. Check journalctl -k | grep -i oom, add RAM or reduce service heap.',\n  failed: 'Run systemctl --failed and journalctl -u <unit> to see why these units failed.',\n  maxmap: 'Set vm.max_map_count=262144 persistently (/etc/sysctl.conf) and run sysctl --system. The indexer needs it.',\n  cert: 'Renew the expiring certificate with the Wazuh certificate tool and restart the affected service. An expired cert breaks Filebeat, the dashboard and the indexer.'\n};\n\nlet version = 'n/a', agentSnap = null, disconnected = [], errLines = [], cnt24 = null, cntPrev = null;\nlet buckets = [], topRules = [], topAgents = [], highSev = 0;\nlet archiveAgeMin = null, alertsJsonAgeMin = null, latestAlertAge = null, managerOk = false, indexerOk = false, filebeatOk = null;\nconst serverRows = [];\nconst diskRows = []; let topIdxRows = [];\n\nif (!hosts.size) {\n  const first = [...sshFail.entries()][0];\n  add('System', 'SSH connection', 'CRIT', first ? `Could not run the healthcheck over SSH (${first[1]}: ${first[0]}). No checks were possible.` : 'No SSH output received. No checks were possible.', FIX.ssh);\n}\nif (hosts.size) for (const [msg, n] of sshFail.entries()) add('System', `SSH connection (${n})`, 'ERROR', msg, FIX.ssh);\n\nfor (const [h, p] of hosts) {\n  const k = p.k, b = p.b;\n  const svc = Object.fromEntries((p.r.SVC || []).map(a => [a[0], { active: a[1], enabled: a[2], up: num(a[3]), restarts: num(a[4]) }]));\n  if (k.DONE !== '1') add('System', `Script output (${h})`, 'WARN', 'The healthcheck script output was cut off, so some checks may be missing', FIX.ssh);\n\n  // ---- system ----\n  const noRoot = k.PRIV === 'none';\n  if (noRoot) {\n    const SEE = 'Fix the SSH user privileges (see the Privileges check).';\n    const skipped = [k.MGR_PRESENT && 'Wazuh manager (daemons, config test, queues, logs, agents)', k.IDX_PRESENT && 'indexer queries (health, disk, heap, alerts)', svc.filebeat && 'Filebeat output test', 'TLS certificate expiry'].filter(Boolean);\n    add('System', `Privileges (${h})`, 'ERROR', `SSH user \"${k.USER}\" is not root and has no passwordless sudo, so these checks were skipped: ${skipped.join('; ')}`, FIX.priv);\n    if (k.MGR_PRESENT) { add('Manager', `Manager checks (${h})`, 'ERROR', 'Skipped: needs root/sudo', SEE); add('Agents', 'Agent status', 'ERROR', 'Skipped: needs root/sudo', SEE); }\n    if (k.IDX_PRESENT) { add('Indexer', `Indexer checks (${h})`, 'ERROR', 'Skipped: needs root/sudo', SEE); add('Pipeline', 'Alert ingestion checks', 'ERROR', 'Skipped: needs root/sudo', SEE); }\n  }\n  if (!noRoot && svc['wazuh-manager'] && k.MGR_VERSION === undefined) add('Manager', `Manager checks (${h})`, 'ERROR', 'The script output has no manager section, so daemons, config test, queues and agents were not checked', 'The SSH node probably still holds an older version of the script. Re-import the latest workflow JSON or paste the new command into the SSH node.');\n  if (!noRoot && svc['wazuh-manager'] && k.MGR_VERSION === undefined) add('Agents', 'Agent status', 'ERROR', 'Skipped: no manager section in the script output', 'See the Manager checks issue above.');\n  const ports = new Set(); (b.PORTS || []).forEach(l => { const m = (l.split('|')[1] || '').match(/:(\\d+)$/); if (m) ports.add(+m[1]); });\n  if (svc['wazuh-manager']) {\n    const miss = [[1514, 'agent events (remoted)', 'CRIT'], [55000, 'API', 'CRIT'], [1515, 'enrollment (authd)', 'WARN']].filter(([pt]) => !ports.has(pt));\n    add('Manager', `Listening ports (${h})`, miss.length ? (miss.some(m => m[2] === 'CRIT') ? 'CRIT' : 'WARN') : 'OK', miss.length ? 'Not listening: ' + miss.map(m => `${m[0]} ${m[1]}`).join(', ') : '1514, 1515 and 55000 are listening' + (k.ESTAB_1514 !== undefined ? `; ${num(k.ESTAB_1514)} established agent TCP connection(s)` : ''), miss.length ? FIX.ports : '');\n  }\n  if (svc['wazuh-indexer']) add('Indexer', `Listening port 9200 (${h})`, ports.has(9200) ? 'OK' : 'CRIT', ports.has(9200) ? 'Indexer is listening on 9200' : 'Nothing is listening on 9200', ports.has(9200) ? '' : FIX.idx);\n  const cpus = Math.max(1, num(k.CPUS)), load1 = num((k.LOAD || '').split(' ')[0]);\n  add('System', `CPU load (${h})`, thr(load1 / cpus, cfg.load_warn_ratio, cfg.load_crit_ratio), `Load ${k.LOAD} on ${cpus} CPU(s)`, load1 / cpus >= cfg.load_warn_ratio ? FIX.load : '');\n  const [mt, mu, ma] = (k.MEM_MB || '0|0|0').split('|').map(num);\n  const availPct = mt ? Math.round((ma / mt) * 100) : 100;\n  add('System', `Memory (${h})`, availPct < cfg.mem_crit_avail_pct ? 'CRIT' : availPct < cfg.mem_warn_avail_pct ? 'WARN' : 'OK', `${Math.round(ma)} MB available of ${Math.round(mt)} MB (${availPct}%)`, availPct < cfg.mem_warn_avail_pct ? FIX.mem : '');\n  const [st, su] = (k.SWAP_MB || '0|0').split('|').map(num);\n  if (st > 0) add('System', `Swap (${h})`, su / st > 0.5 ? 'WARN' : 'OK', `${Math.round(su)} MB used of ${Math.round(st)} MB`, su / st > 0.5 ? FIX.swap : '');\n  const dfs = (b.DF || []).map(l => l.split('|')).filter(a => a.length >= 4).map(a => ({ m: a[0], pct: num(a[1]), avail: num(a[2]) / 1048576, size: num(a[3]) / 1048576 }));\n  if (dfs.length) {\n    const w = dfs.slice().sort((x, y) => y.pct - x.pct)[0];\n    const bad = dfs.filter(d => d.pct >= cfg.disk_warn_pct);\n    add('System', `Disk usage (${h})`, thr(w.pct, cfg.disk_warn_pct, cfg.disk_crit_pct), bad.length ? bad.map(d => `${d.m} ${d.pct}% (${d.avail.toFixed(1)} GB free)`).join('; ') : `Highest usage ${w.pct}% on ${w.m} (${w.avail.toFixed(1)} GB free)`, bad.length ? FIX.dsk : '');\n  }\n  const dfi = (b.DFI || []).map(l => l.split('|')).filter(a => a.length >= 2).map(a => ({ m: a[0], pct: num(a[1]) })).sort((x, y) => y.pct - x.pct)[0];\n  if (dfi) add('System', `Inodes (${h})`, thr(dfi.pct, 80, 95), `Highest inode usage ${dfi.pct}% on ${dfi.m}`, dfi.pct >= 80 ? FIX.inode : '');\n  if (k.NTP === 'no') add('System', `Time sync (${h})`, 'WARN', 'System clock is not synchronised (NTP)', FIX.ntp);\n  const oom = num(k.OOM24);\n  add('System', `Kernel OOM kills (${h})`, oom > 0 ? 'CRIT' : 'OK', oom > 0 ? `${oom} out-of-memory kernel message(s) in the last 24h` : 'No OOM kills in the last 24h', oom > 0 ? FIX.oomk : '');\n  if (k.FAILED_UNITS) add('System', `Failed systemd units (${h})`, 'WARN', k.FAILED_UNITS, FIX.failed);\n  if (svc['wazuh-indexer'] && num(k.MAXMAP) && num(k.MAXMAP) < 262144) add('System', `vm.max_map_count (${h})`, 'WARN', `${k.MAXMAP} (indexer needs 262144)`, FIX.maxmap);\n\n  const certs = (b.CERTS || []).map(l => l.split('|')).filter(a => a.length >= 3).map(a => ({ f: a[0], d: num(a[2]) })).sort((x, y) => x.d - y.d);\n  if (certs.length) {\n    const c0 = certs[0];\n    const s = c0.d < 0 || c0.d < cfg.cert_crit_days ? 'CRIT' : c0.d < cfg.cert_warn_days ? 'WARN' : 'OK';\n    const soon = certs.filter(c => c.d < cfg.cert_warn_days);\n    add('System', `TLS certificates (${h})`, s, soon.length ? soon.map(c => `${c.f.split('/').slice(-3).join('/')}: ${c.d < 0 ? 'EXPIRED ' + (-c.d) + ' d ago' : c.d + ' d left'}`).join('; ') : `${certs.length} certificates, next expiry in ${c0.d} days`, s === 'OK' ? '' : FIX.cert);\n  }\n  const mm = Math.max(0, mt - ma);\n  serverRows.push({ h, os: k.OS, up: (k.UPTIME || '').replace(/^up /, ''), load: k.LOAD, mem: `${Math.round(mu)}/${Math.round(mt)} MB`, disk: dfs.length ? Math.max(...dfs.map(d => d.pct)) + '%' : 'n/a', roles: Object.keys(svc).join(', ') });\n\n  (b.DU || []).map(l => l.split('|')).filter(a => a.length >= 2 && a[1] !== '').forEach(a => diskRows.push({ h, p: a[0], mb: num(a[1]) }));\n  if ((b.IDX_TOP || []).length) topIdxRows = b.IDX_TOP.map(l => l.trim().split(/\\s+/)).filter(a => a.length >= 3).map(a => ({ i: a[0], sz: num(a[1]), docs: num(a[2]) }));\n\n  // ---- services ----\n  for (const [s, v] of Object.entries(svc)) {\n    const area = s === 'wazuh-manager' ? 'Manager' : s === 'wazuh-indexer' ? 'Indexer' : s === 'wazuh-dashboard' ? 'Dashboard' : 'Pipeline';\n    let status = v.active === 'active' ? 'OK' : 'CRIT';\n    let det = v.active + (status === 'OK' && v.up >= 0 ? `, up ${dur(v.up)}` : '');\n    if (status === 'OK' && v.restarts > 0) { status = 'WARN'; det += `, auto-restarted ${v.restarts}x by systemd (crash loop?)`; }\n    if (status === 'OK' && v.enabled !== 'enabled') { status = 'WARN'; det += ', not enabled at boot'; }\n    add(area, `Service ${s} (${h})`, status, det, status === 'OK' ? '' : (v.active !== 'active' && s === 'wazuh-dashboard' ? FIX.dash : FIX.svc(s)));\n    if (s === 'filebeat') filebeatOk = v.active === 'active';\n  }\n\n  // ---- manager ----\n  if (k.MGR_VERSION !== undefined) {\n    if (k.MGR_VERSION) version = k.MGR_VERSION;\n    const crit = ['wazuh-analysisd', 'wazuh-remoted', 'wazuh-db', 'wazuh-execd', 'wazuh-modulesd', 'wazuh-monitord', 'wazuh-syscheckd', 'wazuh-logcollector', 'wazuh-apid'];\n    const dm = {}; (b.MGR_STATUS || []).forEach(l => { const m = l.match(/^(wazuh-\\S+)\\s+(is running|not running|inactive)/); if (m) dm[m[1]] = m[2] === 'is running'; });\n    if (Object.keys(dm).length) {\n      const down = crit.filter(x => x in dm && !dm[x]);\n      const opt = Object.keys(dm).filter(x => !crit.includes(x) && !dm[x]);\n      managerOk = down.length === 0;\n      add('Manager', `Core daemons (${h})`, down.length ? 'CRIT' : 'OK', down.length ? 'Not running: ' + down.join(', ') : `All ${crit.length} core daemons running` + (opt.length ? ` (optional stopped: ${opt.join(', ')})` : ''), down.length ? FIX.daemons : '');\n    } else add('Manager', `Core daemons (${h})`, 'ERROR', 'Could not read wazuh-control status (check root/sudo)', FIX.priv);\n\n    const rc = num(k.CONFTEST_RC);\n    const ctLines = (b.CONFTEST || []).filter(l => /ERROR|CRITICAL/.test(l)).slice(0, 2).join(' | ');\n    add('Manager', `Configuration test (${h})`, rc === 0 ? 'OK' : 'CRIT', rc === 0 ? 'wazuh-analysisd -t: configuration, rules and decoders are valid' : `wazuh-analysisd -t failed (exit ${rc}): ${ctLines || (b.CONFTEST || []).slice(-2).join(' | ')}`, rc === 0 ? '' : FIX.conf);\n\n    const an = kv(b.STATE_analysisd), rm = kv(b.STATE_remoted);\n    const qs = Object.entries(an).filter(([x]) => x.endsWith('_queue_usage')).map(([x, v]) => [x, num(v)]).sort((x, y) => y[1] - x[1]);\n    if (qs.length) {\n      const pct = Math.round(qs[0][1] * 100);\n      add('Manager', `Analysis queues (${h})`, thr(pct, cfg.queue_warn_pct, 95), `Highest queue usage ${pct}% (${qs[0][0].replace('_usage', '')})`, pct >= cfg.queue_warn_pct ? FIX.queues : '');\n      const dr = num(an.events_dropped);\n      add('Manager', `Events dropped (${h})`, dr > 0 ? 'WARN' : 'OK', `${dr.toLocaleString('en-US')} dropped, ${num(an.events_received).toLocaleString('en-US')} received, ${num(an.alerts_written).toLocaleString('en-US')} alerts written (since last restart)`, dr > 0 ? FIX.dropped : '');\n    }\n    if (rm.total_queue_size) {\n      const qp = Math.round((num(rm.queue_size) / num(rm.total_queue_size)) * 100), disc = num(rm.discarded_count);\n      add('Manager', `Remoted queue (${h})`, disc > 0 ? 'WARN' : thr(qp, cfg.queue_warn_pct, 95), `Queue ${qp}% full, ${disc} discarded, ${num(rm.tcp_sessions)} TCP sessions`, (disc > 0 || qp >= cfg.queue_warn_pct) ? FIX.remoted : '');\n    }\n\n    const nErr = num(k.LOG_ERR), nCrit = num(k.LOG_CRIT);\n    errLines = (b.LOG_LAST || []).filter(Boolean);\n    add('Manager', `ossec.log errors (${h})`, nCrit > 0 ? 'CRIT' : nErr > 0 ? 'WARN' : 'OK', nCrit + nErr === 0 ? 'No ERROR or CRITICAL lines in today\\'s ossec.log' : `${nCrit} critical and ${nErr} error line(s) in the current ossec.log`, nCrit + nErr > 0 ? FIX.logs : '');\n\n    if (k.ALERTS_JSON_AGE !== undefined) {\n      alertsJsonAgeMin = Math.round(num(k.ALERTS_JSON_AGE) / 60);\n      add('Manager', `Alert generation (${h})`, alertsJsonAgeMin > cfg.alert_file_age_min ? 'WARN' : 'OK', `alerts.json last written ${alertsJsonAgeMin} min ago`, alertsJsonAgeMin > cfg.alert_file_age_min ? FIX.alertfile : '');\n    }\n    if (k.ARCHIVES_PRESENT === '0') add('Pipeline', `Archives last event (${h})`, 'OK', 'Archive log (logall_json) is not enabled or not found, so there is nothing to check');\n    else if (k.ARCHIVES_FILE_AGE !== undefined) {\n      const fileAge = Math.round(num(k.ARCHIVES_FILE_AGE) / 60), ats = k.ARCHIVES_LAST_TS;\n      const tms = ats ? Date.parse(ats.replace(/([+-]\\d{2})(\\d{2})$/, '$1:$2')) : NaN;\n      if (!isNaN(tms)) {\n        const age = Math.max(0, Math.round((Date.now() - tms) / 60000)); archiveAgeMin = age;\n        const s = thr(age, cfg.archive_lag_warn_min, cfg.archive_lag_crit_min);\n        add('Pipeline', `Archives last event (${h})`, s, `Last event received ${age} min ago (${ats})` + (k.ARCHIVES_LAST_AGENT ? `, from ${k.ARCHIVES_LAST_AGENT}` : '') + (k.ARCHIVES_LAST_LOC ? ` via ${k.ARCHIVES_LAST_LOC}` : ''), s === 'OK' ? '' : FIX.archlag);\n      } else if (fileAge < 10) add('Pipeline', `Archives last event (${h})`, 'OK', 'Archive file was just rotated or written; no event line to read yet');\n      else add('Pipeline', `Archives last event (${h})`, 'WARN', `archives.json exists but its last line has no readable timestamp (file last written ${fileAge} min ago)`, FIX.archlag);\n    }\n    if (k.LOGS_MB) {\n      const gb = num(k.LOGS_MB) / 1024;\n      add('Manager', `Wazuh log size (${h})`, gb >= cfg.logs_dir_warn_gb ? 'WARN' : 'OK', `/var/ossec/logs ${gb.toFixed(1)} GB (archives ${(num(k.ARCHIVES_MB) / 1024).toFixed(1)} GB)`, gb >= cfg.logs_dir_warn_gb ? FIX.logsize : '');\n    }\n\n    const agents = (b.AGENTS || []).map(l => { const m = l.match(/ID:\\s*(\\d+),\\s*Name:\\s*(.*?),\\s*IP:\\s*([^,]+),\\s*(.*)$/); return m ? { id: m[1], name: m[2], ip: m[3].trim(), status: m[4].trim() } : null; }).filter(a => a && a.id !== '000');\n    if (agents.length || (b.AGENTS || []).length) {\n      const listOf = v => String(v || '').split(',').map(x => x.trim().toLowerCase()).filter(Boolean);\n      const ign = listOf(cfg.agents_ignore), must = listOf(cfg.agents_critical);\n      const ag = agents.filter(a => !ign.includes(a.name.toLowerCase()));\n      const c = { active: 0, disconnected: 0, never: 0, pending: 0 };\n      ag.forEach(a => { const s = a.status.toLowerCase(); if (s.startsWith('active')) c.active++; else if (s.startsWith('disconnected')) c.disconnected++; else if (s.startsWith('never')) c.never++; else if (s.startsWith('pending')) c.pending++; });\n      const total = ag.length; agentSnap = { active: c.active, total };\n      disconnected = ag.filter(a => a.status.toLowerCase().startsWith('disconnected'));\n      const pct = total ? Math.round((c.active / total) * 1000) / 10 : 0;\n      const s = !total ? 'WARN' : pct < cfg.agents_active_crit_pct ? 'CRIT' : (pct < cfg.agents_active_warn_pct || c.disconnected > 0) ? 'WARN' : 'OK';\n      add('Agents', 'Connectivity', s, `${c.active}/${total} active (${pct}%), ${c.disconnected} disconnected`, s === 'OK' ? '' : FIX.disc);\n      add('Agents', 'Never connected', c.never > 0 ? 'WARN' : 'OK', `${c.never} agent(s) never connected`, c.never > 0 ? FIX.never : '');\n      add('Agents', 'Pending', c.pending > 0 ? 'WARN' : 'OK', `${c.pending} agent(s) pending`, c.pending > 0 ? FIX.pending : '');\n      if (must.length) {\n        const down = must.filter(n => { const a = agents.find(x => x.name.toLowerCase() === n); return !a || !a.status.toLowerCase().startsWith('active'); });\n        add('Agents', 'Critical agents', down.length ? 'CRIT' : 'OK', down.length ? `Not active: ${down.join(', ')}` : `All ${must.length} critical agent(s) are active`, down.length ? FIX.disc : '');\n      }\n      if (ign.length) add('Agents', 'Ignored agents', 'OK', `${ign.length} agent name(s) excluded from the connectivity percentage (agents_ignore)`);\n    } else add('Agents', 'Connectivity', 'ERROR', 'Could not read agent_control -l (check root/sudo)', FIX.priv);\n  }\n\n  // ---- filebeat ----\n  if (k.FILEBEAT_TEST_RC !== undefined) {\n    const rc = num(k.FILEBEAT_TEST_RC), txt = (b.FILEBEAT_TEST || []).join(' ');\n    const bad = rc !== 0 || /ERR|error|fail|refused|x509/i.test(txt.replace(/errors?: ?0/gi, ''));\n    add('Pipeline', `Filebeat output test (${h})`, bad ? 'CRIT' : 'OK', bad ? 'filebeat test output failed: ' + (b.FILEBEAT_TEST || []).filter(l => /ERR|error|fail|refused|x509/i.test(l)).slice(0, 2).join(' | ') : 'Filebeat can connect to the indexer (TLS and auth OK)', bad ? FIX.fbtest : '');\n    const fe = num(k.FILEBEAT_ERR24);\n    add('Pipeline', `Filebeat errors 24h (${h})`, fe > 20 ? 'WARN' : 'OK', fe ? `${fe} error line(s) in the last 24h` : 'No errors in the last 24h', fe > 20 ? FIX.fberr : '');\n  }\n\n  // ---- dashboard ----\n  if (k.DASH_HTTP !== undefined) {\n    const sc = num(k.DASH_HTTP), act = svc['wazuh-dashboard']?.active;\n    let s = 'OK', d = `Dashboard answers on port ${k.DASH_PORT} (HTTP ${sc})`;\n    if (sc === 0) { s = 'CRIT'; d = `Dashboard DOWN: nothing answering on port ${k.DASH_PORT}` + (act ? ` (service state: ${act})` : ''); }\n    else if (sc >= 500) { s = 'CRIT'; d = `Dashboard answers with HTTP ${sc} (failing or not ready)`; }\n    else if (sc >= 400 && sc !== 401 && sc !== 403) { s = 'WARN'; d = `Dashboard answers with HTTP ${sc}`; }\n    add('Dashboard', `Dashboard web (${h})`, s, d, s === 'OK' ? '' : FIX.dash);\n    const de = num(k.DASH_ERR24), dl = b.DASH_LAST || [];\n    const lastMsg = dl.map(l => { const m = l.match(/\"message\":\"(.*?)\"(?:,|\\})/); return m ? m[1] : ''; }).filter(x => x.length > 3).pop();\n    const toIdx = dl.some(l => /Request Timeout|ECONNREFUSED|No Living connections|ResponseError/i.test(l));\n    const dWarn = de >= cfg.dash_err_warn;\n    add('Dashboard', `Dashboard log errors (${h})`, dWarn ? 'WARN' : 'OK', `${de} error line(s) in the last 24h` + (de && lastMsg ? `. Latest: ${lastMsg.slice(0, 140)}` : ''), dWarn ? FIX.dasherr + (toIdx ? ' These look like dashboard-to-indexer timeouts: check indexer health, heap, CPU and disk I/O around the times in the log.' : '') : '');\n  }\n\n  // ---- indexer ----\n  if (k.IDX_HTTP !== undefined) {\n    const hc = jparse(b.IDX_HEALTH), idxHttp = num(k.IDX_HTTP);\n    if (!hc || !hc.status) {\n      const listening = ports.has(9200) && svc['wazuh-indexer']?.active === 'active';\n      add('Indexer', `Indexer API (${h})`, listening ? 'ERROR' : 'CRIT',\n        listening\n          ? `The indexer service is active and port 9200 is listening, but the local query to ${k.IDX_URL || 'port 9200'} failed (HTTP ${idxHttp || 'no response'}). Indexer and alert checks were skipped.`\n          : `Indexer not answering at ${k.IDX_URL || 'port 9200'} (HTTP ${idxHttp || 'no response'}). Indexer and alert checks were skipped.`,\n        listening ? 'Check that /etc/wazuh-indexer/certs/admin.pem and admin-key.pem exist and are valid, and that the indexer bind address matches network.host. Test by hand: sudo curl -k --cert admin.pem --key admin-key.pem https://IP:9200/_cluster/health' : FIX.idx);\n    } else {\n      indexerOk = hc.status === 'green';\n      add('Indexer', `Cluster health (${h})`, hc.status === 'green' ? 'OK' : hc.status === 'yellow' ? 'WARN' : 'CRIT', `${String(hc.status).toUpperCase()}: ${hc.number_of_nodes} node(s), ${hc.active_shards} active shards (${Math.round(hc.active_shards_percent_as_number)}%), ${hc.unassigned_shards} unassigned, ${hc.number_of_pending_tasks} pending tasks` + ((b.IDX_UNASSIGNED || []).filter(Boolean).length ? '. e.g. ' + b.IDX_UNASSIGNED.filter(Boolean)[0].trim().slice(0, 120) : ''), hc.status === 'green' ? '' : (hc.status === 'yellow' && num(hc.number_of_nodes) === 1 ? FIX.yellow1 : FIX.health));\n      const ns = jparse(b.IDX_NODES);\n      if (ns && ns.nodes) for (const n of Object.values(ns.nodes)) {\n        const t = n.fs?.total?.total_in_bytes, a = n.fs?.total?.available_in_bytes;\n        if (t) { const used = Math.round(((t - a) / t) * 1000) / 10; const s = thr(used, cfg.disk_warn_pct, cfg.disk_crit_pct); add('Indexer', `Indexer disk (${n.name})`, s, `${used}% used, ${(a / GB).toFixed(1)} GB free of ${(t / GB).toFixed(1)} GB`, s === 'OK' ? '' : FIX.disk); }\n        const heap = n.jvm?.mem?.heap_used_percent;\n        if (heap !== undefined) add('Indexer', `JVM heap (${n.name})`, thr(heap, cfg.heap_warn_pct, 95), `${heap}% heap used`, heap >= cfg.heap_warn_pct ? FIX.heap : '');\n        const cpu = n.os?.cpu?.percent;\n        if (cpu !== undefined) add('Indexer', `Indexer CPU (${n.name})`, thr(cpu, cfg.cpu_warn_pct, 101), `${cpu}% CPU, ${n.os?.mem?.used_percent ?? '?'}% RAM`, cpu >= cfg.cpu_warn_pct ? FIX.cpu : '');\n        const rej = num(n.thread_pool?.write?.rejected) + num(n.thread_pool?.search?.rejected);\n        add('Indexer', `Rejected requests (${n.name})`, rej > 0 ? 'WARN' : 'OK', `${rej} rejected (since restart)`, rej > 0 ? FIX.reject : '');\n      }\n      const bl = jparse(b.IDX_BLOCKS);\n      if (bl && !bl.error) {\n        const ro = Object.entries(bl).filter(([, v]) => Object.values(v?.settings || {}).some(x => String(x) === 'true')).map(([i]) => i);\n        add('Indexer', 'Read-only indices', ro.length ? 'CRIT' : 'OK', ro.length ? `${ro.length} index/indices locked read-only: ${ro.slice(0, 3).join(', ')}${ro.length > 3 ? '...' : ''}` : 'No wazuh-* index is read-only', ro.length ? FIX.ro : '');\n      }\n      const inv = (b.IDX_INDICES || [])[0];\n      if (inv && inv.includes('|')) { const [n, mn, mx, sz] = inv.split('|'); add('Indexer', 'Alert indices', 'OK', `${n} daily indices, oldest ${String(mn).slice(-10)}, newest ${String(mx).slice(-10)}, ${(num(sz) / GB).toFixed(1)} GB`); }\n      const jo = (k.JVM_OPTS || '').match(/-Xms(\\d+)([gGmM]).*-Xmx(\\d+)([gGmM])/);\n      if (jo) {\n        const toMb = (v, u) => num(v) * (u.toLowerCase() === 'g' ? 1024 : 1);\n        const xms = toMb(jo[1], jo[2]), xmx = toMb(jo[3], jo[4]);\n        const bad = xms !== xmx || (mt && xmx > mt * 0.55);\n        add('Indexer', `JVM heap settings (${h})`, bad ? 'WARN' : 'OK', `Xms ${jo[1]}${jo[2]}, Xmx ${jo[3]}${jo[4]}` + (xms !== xmx ? ' (should be equal)' : '') + (mt && xmx > mt * 0.55 ? ' (more than 50% of RAM)' : ''), bad ? FIX.heapcfg : '');\n      }\n      const io = num(k.IDX_OOM);\n      if (io > 0) add('Indexer', `OutOfMemoryError (${h})`, 'CRIT', `${io} OutOfMemoryError line(s) in wazuh-cluster.log`, FIX.oom);\n\n      const c1 = jparse(b.IDX_COUNT24), c0 = jparse(b.IDX_COUNTPREV);\n      cnt24 = c1 && c1.count !== undefined ? c1.count : null; cntPrev = c0 && c0.count !== undefined ? c0.count : null;\n      if (cnt24 === null) add('Pipeline', 'Alerts (24h)', 'ERROR', 'Could not count alerts in wazuh-alerts-*', FIX.idx);\n      else add('Pipeline', 'Alerts (24h)', cnt24 > 0 ? 'OK' : 'CRIT', `${cnt24.toLocaleString('en-US')} alerts indexed in the last 24h` + (cntPrev !== null ? ` (previous 24h: ${cntPrev.toLocaleString('en-US')})` : ''), cnt24 > 0 ? '' : FIX.noalerts);\n      if (cnt24 && cntPrev) {\n        const chg = Math.round(((cnt24 - cntPrev) / cntPrev) * 100), bad = chg <= -cfg.volume_drop_warn_pct || chg >= cfg.volume_spike_warn_pct;\n        add('Pipeline', 'Alert volume trend', bad ? 'WARN' : 'OK', `${chg > 0 ? '+' : ''}${chg}% versus the previous 24h`, bad ? FIX.volume : '');\n      }\n      const as = jparse(b.IDX_STATS);\n      if (as && as.aggregations) {\n        buckets = as.aggregations.per_hour?.buckets || [];\n        topRules = (as.aggregations.top_rules?.buckets || []).map(x => ({ id: x.key, n: x.doc_count, d: x.d?.hits?.hits?.[0]?._source?.rule?.description || '' }));\n        topAgents = (as.aggregations.top_agents?.buckets || []).map(x => ({ name: x.key, n: x.doc_count }));\n        highSev = num(as.aggregations.high_sev?.doc_count);\n        const zero = buckets.slice(0, -1).filter(x => x.doc_count === 0);\n        if (cnt24 > 0) {\n          const avg = cnt24 / 24, lowVol = avg < cfg.gap_min_avg_per_hour;\n          const hoursTxt = zero.slice(0, 6).map(x => new Date(x.key).toISOString().slice(11, 16) + ' UTC').join(', ');\n          add('Pipeline', 'Ingestion gaps', zero.length && !lowVol ? 'WARN' : 'OK', zero.length ? `${zero.length} hour(s) with zero alerts (${hoursTxt})` + (lowVol ? `. Average is only ${avg.toFixed(1)} alerts/hour, so empty hours are normal` : '') : 'Alerts arrived in every hour of the last 24h', zero.length && !lowVol ? FIX.gap : '');\n        }\n        if (cnt24 > 0 && topRules[0]) { const share = Math.round((topRules[0].n / cnt24) * 100); add('Pipeline', 'Noisy rule', share >= cfg.noisy_rule_pct ? 'WARN' : 'OK', `Top rule ${topRules[0].id} produces ${share}% of alerts`, share >= cfg.noisy_rule_pct ? FIX.noisy : ''); }\n      }\n      const ar = jparse(b.IDX_ARCH_LATEST), arts = ar?.hits?.hits?.[0]?._source?.timestamp;\n      if (arts) {\n        const aage = Math.round((Date.now() - Date.parse(arts.replace(/([+-]\\d{2})(\\d{2})$/, '$1:$2'))) / 60000);\n        if (!isNaN(aage)) {\n          const mismatch = aage > cfg.archive_lag_warn_min && archiveAgeMin !== null && archiveAgeMin <= cfg.archive_lag_warn_min;\n          add('Pipeline', 'Archives indexed (latest)', mismatch ? 'WARN' : 'OK', `Newest indexed archive event is ${aage} min old (${arts})`, mismatch ? FIX.archidx : '');\n        }\n      }\n      const la = jparse(b.IDX_LATEST), ts = la?.hits?.hits?.[0]?._source?.timestamp;\n      if (ts) {\n        const age = Math.round((Date.now() - Date.parse(ts.replace(/([+-]\\d{2})(\\d{2})$/, '$1:$2'))) / 60000);\n        if (!isNaN(age)) {\n          latestAlertAge = age;\n          const lag = age > cfg.alert_lag_warn_min;\n          const hint = lag ? (alertsJsonAgeMin !== null && alertsJsonAgeMin <= cfg.alert_file_age_min ? ' The manager IS writing alerts.json, so the break is between the manager and the indexer: check Filebeat first.' : '') : '';\n          add('Pipeline', 'Latest alert age', lag ? 'WARN' : 'OK', `Newest indexed alert is ${age} min old (${ts})`, lag ? FIX.lag + hint : '');\n        }\n      }\n    }\n  }\n}\n\n// ===================== SUMMARY =====================\nconst rank = { OK: 0, WARN: 1, ERROR: 2, CRIT: 3 };\nconst sortRank = { CRIT: 0, ERROR: 1, WARN: 2 };\nconst label = { CRIT: 'CRITICAL', ERROR: 'CHECK FAILED', WARN: 'WARNING', OK: 'OK', 'N/A': 'N/A' };\nconst color = { OK: '#1a7f37', WARN: '#b7791f', ERROR: '#8250df', CRIT: '#cf222e', 'N/A': '#6e7781' };\nconst keyOf = c => c.area + '|' + c.name;\nconst issues = checks.filter(c => c.status !== 'OK').sort((a, b) => sortRank[a.status] - sortRank[b.status]);\nconst overall = checks.reduce((w, c) => (rank[c.status] > rank[w] ? c.status : w), 'OK');\nconst counts = { OK: 0, WARN: 0, ERROR: 0, CRIT: 0 };\nchecks.forEach(c => counts[c.status]++);\n\nlet sd = null; try { sd = $getWorkflowStaticData('global'); } catch (e) {}\nconst prevKeys = sd && Array.isArray(sd.issueKeys) ? sd.issueKeys : null;\nissues.forEach(i => { i.isNew = prevKeys ? !prevKeys.includes(keyOf(i)) : false; });\nconst curKeys = issues.map(keyOf);\nconst resolved = prevKeys ? prevKeys.filter(x => !curKeys.includes(x)).map(x => x.replace('|', ' - ')) : [];\nlet mode = ''; try { mode = $execution.mode; } catch (e) {}\nif (sd && mode === 'production') sd.issueKeys = curKeys;\n\nconst areas = ['System', 'Manager', 'Agents', 'Dashboard', 'Indexer', 'Pipeline'];\nconst areaStatus = a => { const cs = checks.filter(c => c.area === a); return cs.length ? cs.reduce((w, c) => (rank[c.status] > rank[w] ? c.status : w), 'OK') : 'N/A'; };\nconst when = $now.toFormat('yyyy-LL-dd HH:mm');\nconst nCrit = counts.CRIT, nWarn = counts.WARN + counts.ERROR;\nconst headline = overall === 'CRIT' ? `CRITICAL - ${nCrit} critical, ${nWarn} warning(s)` : overall === 'OK' ? `HEALTHY - all ${checks.length} checks passed` : `WARNINGS - ${nWarn} issue(s) to review`;\nconst subject = `[Wazuh Healthcheck] ${client} - ${overall === 'OK' ? 'HEALTHY' : overall === 'CRIT' ? 'CRITICAL' : 'WARNING'} - ${issues.length} issue(s) - ${when.slice(0, 10)}`;\n\nconst pill = s => `<span class=\"b\" style=\"background:${color[s]}\">${label[s]}</span>`;\nconst issueRows = issues.map(i => `<tr><td>${pill(i.status)}${i.isNew ? '<br><span class=\"new\">NEW</span>' : ''}</td><td>${esc(i.area)}</td><td><b>${esc(i.name)}</b><br>${esc(i.detail)}</td><td class=\"fix\">${esc(i.fix)}</td></tr>`).join('');\nconst compCards = areas.map(a => { const s = areaStatus(a); return `<div class=\"comp\" style=\"border-top:4px solid ${color[s]}\"><div class=\"cn\">${a}</div><div class=\"cs\" style=\"color:${color[s]}\">${label[s]}</div></div>`; }).join('');\nconst snap = [['Manager', version], ['Active agents', agentSnap ? `${agentSnap.active}/${agentSnap.total}` : 'n/a'], ['Alerts 24h', cnt24 === null ? 'n/a' : cnt24.toLocaleString('en-US')], ['High severity (lvl 12+)', cnt24 === null ? 'n/a' : highSev.toLocaleString('en-US')]].map(([x, v]) => `<div class=\"card\"><b>${esc(v)}</b>${x}</div>`).join('');\nconst srvRows = serverRows.map(s => `<tr><td>${esc(s.h)}</td><td>${esc(s.os)}</td><td>${esc(s.up)}</td><td>${esc(s.load)}</td><td>${esc(s.mem)}</td><td>${esc(s.disk)}</td><td>${esc(s.roles)}</td></tr>`).join('');\nconst disRows = disconnected.slice(0, 30).map(a => `<tr><td>${esc(a.id)}</td><td>${esc(a.name)}</td><td>${esc(a.ip)}</td></tr>`).join('');\nconst disMore = disconnected.length - 30;\nconst errRows = errLines.map(l => `<tr><td>${esc(l)}</td></tr>`).join('');\nconst hrs = buckets.slice(-24); const mx = Math.max(1, ...hrs.map(x => x.doc_count));\nconst bars = hrs.map(x => `<div class=\"bar\" style=\"height:${Math.max(2, Math.round((x.doc_count / mx) * 60))}px;background:${x.doc_count === 0 ? '#cf222e' : '#2f81f7'}\"></div>`).join('');\nconst rulesRows = topRules.map(r => `<tr><td>${esc(r.id)}</td><td>${esc(r.d)}</td><td>${r.n.toLocaleString('en-US')}</td></tr>`).join('');\nconst agentRows = topAgents.map(r => `<tr><td>${esc(r.name)}</td><td>${r.n.toLocaleString('en-US')}</td></tr>`).join('');\nconst allRows = checks.map(c => `<tr><td>${esc(c.area)}</td><td>${esc(c.name)}</td><td>${pill(c.status)}</td><td>${esc(c.detail)}</td></tr>`).join('');\n\nconst html = `<!doctype html><html><head><meta charset=\"utf-8\"><style>\n@page { size: A4; margin: 14mm; }\n* { -webkit-print-color-adjust: exact; print-color-adjust: exact; }\nbody { font-family: Arial, Helvetica, sans-serif; color: #1f2328; font-size: 10.5px; }\nh1 { font-size: 20px; margin: 0 0 3px; } h2 { font-size: 13px; margin: 20px 0 6px; border-bottom: 1px solid #d0d7de; padding-bottom: 3px; }\n.meta { width: auto; border: 0; margin: 8px 0 16px; border-left: 4px solid #1e3270; background: #f6f8fa; } .meta td { border: 0; padding: 4px 14px; font-size: 11px; } .meta .k { color: #656d76; text-transform: uppercase; letter-spacing: .6px; font-size: 9.5px; font-weight: bold; white-space: nowrap; padding-right: 28px; } .meta .v { font-weight: bold; font-size: 12px; } .vs { color: #656d76; font-weight: normal; font-size: 10.5px; }\n.banner { padding: 12px 14px; border-radius: 6px; color: #fff; font-size: 14px; font-weight: bold; background: ${color[overall]}; }\n.comps, .cards { display: flex; gap: 8px; margin: 10px 0; }\n.comp { flex: 1; border: 1px solid #d0d7de; border-radius: 6px; padding: 8px; text-align: center; } .cn { color: #656d76; } .cs { font-weight: bold; font-size: 11px; margin-top: 3px; }\n.card { flex: 1; border: 1px solid #d0d7de; border-radius: 6px; padding: 8px; text-align: center; background: #f6f8fa; } .card b { display: block; font-size: 17px; margin-bottom: 2px; }\ntable { width: 100%; border-collapse: collapse; } th { text-align: left; background: #f6f8fa; } th, td { border: 1px solid #d0d7de; padding: 4px 6px; vertical-align: top; } tr { page-break-inside: avoid; }\n.b { color: #fff; padding: 2px 6px; border-radius: 9px; font-size: 9px; font-weight: bold; white-space: nowrap; }\n.new { background: #0969da; color: #fff; padding: 1px 5px; border-radius: 3px; font-size: 8px; font-weight: bold; }\n.fix { color: #0a3069; background: #ddf4ff; }\n.chart { display: flex; align-items: flex-end; gap: 3px; height: 64px; border-bottom: 1px solid #d0d7de; } .bar { flex: 1; min-width: 4px; }\n.cap { display: flex; justify-content: space-between; color: #656d76; font-size: 9px; margin-top: 2px; }\n.ok { padding: 10px; background: #dafbe1; border: 1px solid #1a7f37; border-radius: 6px; color: #1a7f37; font-weight: bold; }\n.note { color: #656d76; font-size: 9px; margin-top: 16px; }\n</style></head><body>\n<h1>Wazuh Healthcheck Report</h1>\n<table class=\"meta\"><tr><td class=\"k\">Client Name</td><td class=\"v\">${esc(client)}</td></tr><tr><td class=\"k\">Generated Time</td><td class=\"v\">${when}</td></tr><tr><td class=\"k\">Total Checks</td><td class=\"v\">${checks.length} <span class=\"vs\">(${counts.OK} passed &middot; ${issues.length} with issues)</span></td></tr></table>\n<div class=\"banner\">${headline}</div>\n<div class=\"comps\">${compCards}</div>\n<div class=\"cards\">${snap}</div>\n<h2>Issues found (${issues.length})</h2>\n${issues.length ? `<table><tr><th style=\"width:60px\">Severity</th><th style=\"width:60px\">Area</th><th>Issue</th><th style=\"width:34%\">Recommended action</th></tr>${issueRows}</table>` : '<div class=\"ok\">No issues found. All checks passed.</div>'}\n${resolved.length ? `<h2>Resolved since the previous run</h2><div class=\"ok\">${resolved.map(esc).join('<br>')}</div>` : ''}\n${srvRows ? `<h2>Servers</h2><table><tr><th>Host</th><th>OS</th><th>Uptime</th><th>Load</th><th>RAM used</th><th>Max disk</th><th>Wazuh services</th></tr>${srvRows}</table>` : ''}\n${diskRows.length || topIdxRows.length ? `<h2>Where the disk space goes</h2>${diskRows.length ? `<table><tr><th>Directory</th><th>Size</th></tr>${diskRows.slice().sort((x, y) => y.mb - x.mb).map(d => `<tr><td>${esc(d.p)}</td><td>${d.mb >= 1024 ? (d.mb / 1024).toFixed(1) + ' GB' : d.mb + ' MB'}</td></tr>`).join('')}</table>` : ''}${topIdxRows.length ? `<br><table><tr><th>Largest indices</th><th>Size</th><th>Documents</th></tr>${topIdxRows.map(i => `<tr><td>${esc(i.i)}</td><td>${(i.sz / GB).toFixed(1)} GB</td><td>${i.docs.toLocaleString('en-US')}</td></tr>`).join('')}</table>` : ''}` : ''}\n${disRows ? `<h2>Disconnected agents (${disconnected.length})</h2><table><tr><th>ID</th><th>Name</th><th>IP</th></tr>${disRows}</table>${disMore > 0 ? `<div class=\"note\">+ ${disMore} more not shown</div>` : ''}` : ''}\n${errRows ? `<h2>Latest manager errors (ossec.log)</h2><table>${errRows}</table>` : ''}\n${hrs.length ? `<h2>Alerts per hour (last 24h)</h2><div class=\"chart\">${bars}</div><div class=\"cap\"><span>24h ago</span><span>now</span></div>` : ''}\n${rulesRows ? `<h2>Top rules and agents (24h)</h2><table><tr><th>Rule</th><th>Description</th><th>Alerts</th></tr>${rulesRows}</table><br><table><tr><th>Agent</th><th>Alerts</th></tr>${agentRows}</table>` : ''}\n<h2>All check results</h2><table><tr><th>Area</th><th>Check</th><th>Status</th><th>Details</th></tr>${allRows}</table>\n<div class=\"note\">Counters marked \"since last restart\" reset when the service restarts. Issues marked NEW did not appear in the previous scheduled run. Components on hosts without an enabled SSH node show N/A.</div>\n</body></html>`;\n\nconst sc = { OK: '#16a34a', WARN: '#d97706', ERROR: '#7c3aed', CRIT: '#dc2626', 'N/A': '#9ca3af' };\nconst eFont = \"-apple-system,'Segoe UI',Helvetica,Arial,sans-serif\";\nconst cut = (s, n) => { s = String(s || ''); return s.length > n ? s.slice(0, n).replace(/\\s+\\S*$/, '') + ' ... (full steps in the PDF)' : s; };\nconst cap = t => `<div style=\"font-family:${eFont};font-size:11px;font-weight:600;letter-spacing:1.5px;color:#9ca3af;text-transform:uppercase;\">${t}</div>`;\nconst dot = col => `<span style=\"color:${col};font-size:13px;\">&#9679;</span>`;\nconst brand = esc(cfg.brand_name || 'YOUR COMPANY'), brandSub = esc(cfg.brand_subtitle || 'SECURITY OPERATIONS');\nconst brandLine = cfg.brand_logo_url ? `<img src=\"${esc(cfg.brand_logo_url)}\" alt=\"${brand}\" height=\"24\" style=\"display:block;border:0;height:24px;\">`\n  : `<div style=\"font-family:${eFont};font-size:11px;font-weight:700;letter-spacing:2px;color:#111827;\">${brand} <span style=\"color:#9ca3af;font-weight:500;\">&nbsp;${brandSub}</span></div>`;\nconst topCol = sc[overall];\nconst statusWord = overall === 'OK' ? 'Healthy' : overall === 'CRIT' ? 'Critical' : 'Warning';\nconst statusText = issues.length ? `${nCrit ? nCrit + ' critical' : ''}${nCrit && nWarn ? ', ' : ''}${nWarn ? nWarn + ' warning' + (nWarn > 1 ? 's' : '') : ''} &middot; ${checks.length} checks` : `All ${checks.length} checks passed`;\nconst comps = areas.map(a => `<span style=\"white-space:nowrap;margin-right:16px;\">${dot(sc[areaStatus(a)])} <span style=\"color:#374151;\">${a}</span></span>`).join(' ');\nconst maxDisk = serverRows.length ? serverRows.map(s => esc(s.disk)).join(' / ') : 'n/a';\nconst stats = [[agentSnap ? `${agentSnap.active}/${agentSnap.total}` : 'n/a', 'Active agents'], [cnt24 === null ? 'n/a' : cnt24.toLocaleString('en-US'), 'Alerts 24h'], [cnt24 === null ? 'n/a' : highSev.toLocaleString('en-US'), 'High severity'], [maxDisk, 'Disk used']]\n  .map(([v, l]) => `<td class=\"stat\" width=\"25%\" valign=\"top\" style=\"font-family:${eFont};\"><div style=\"font-size:20px;font-weight:700;color:#111827;\">${esc(v)}</div><div style=\"font-size:11px;color:#9ca3af;margin-top:2px;\">${l}</div></td>`).join('');\nconst shown = issues.slice(0, 8);\nconst eRows = shown.map((i, n) => `<tr><td style=\"padding:14px 0;${n ? 'border-top:1px solid #eef0f3;' : ''}font-family:${eFont};\">\n<div style=\"font-size:14px;font-weight:600;color:#111827;\">${dot(sc[i.status])}&nbsp; ${esc(i.name)}${i.isNew ? ' <span style=\"font-size:10px;font-weight:700;color:#2563eb;letter-spacing:.5px;\">NEW</span>' : ''} <span style=\"font-size:12px;font-weight:400;color:#9ca3af;\">&nbsp;${esc(i.area)} &middot; ${label[i.status].toLowerCase()}</span></div>\n<div style=\"font-size:13px;line-height:1.55;color:#4b5563;margin:5px 0 0 22px;\">${esc(i.detail)}</div>\n${i.fix ? `<div style=\"font-size:12.5px;line-height:1.55;color:#6b7280;margin:6px 0 0 22px;\"><span style=\"color:#111827;font-weight:600;\">Action:</span> ${esc(cut(i.fix, 220))}</div>` : ''}\n</td></tr>`).join('');\nconst moreIssues = issues.length > shown.length ? `<tr><td style=\"padding:10px 0 0;border-top:1px solid #eef0f3;font-family:${eFont};font-size:12px;color:#9ca3af;\">+ ${issues.length - shown.length} more in the attached PDF</td></tr>` : '';\nconst issuesBlock = issues.length ? `<table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\">${eRows}${moreIssues}</table>` : `<div style=\"font-family:${eFont};font-size:14px;color:#374151;padding:6px 0;\">${dot(sc.OK)}&nbsp; No issues found.</div>`;\nconst resolvedLine = resolved.length ? `<tr><td style=\"padding:4px 36px 0;font-family:${eFont};font-size:12.5px;line-height:1.6;color:#16a34a;\">Resolved since last run: ${resolved.map(esc).join(', ')}</td></tr>` : '';\nconst EW = Math.max(480, Math.min(1100, num(cfg.email_width) || 820));\nconst emailHtml = `<!doctype html><html><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><style>@media only screen and (max-width:600px){.px{padding-left:18px!important;padding-right:18px!important}.stat{display:block!important;width:50%!important;float:left;padding-bottom:12px}}</style></head>\n<body style=\"margin:0;padding:0;background:#f5f6f8;\"><table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"background:#f5f6f8;\"><tr><td align=\"center\" style=\"padding:32px 12px;\">\n<!--[if mso]><table role=\"presentation\" width=\"${EW}\" align=\"center\" cellpadding=\"0\" cellspacing=\"0\"><tr><td><![endif]-->\n<table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width:100%;max-width:${EW}px;background:#ffffff;border:1px solid #e6e8ec;border-top:4px solid ${topCol};border-radius:8px;\">\n<tr><td class=\"px\" style=\"padding:28px 36px 0;\">${brandLine}\n<div style=\"font-family:${eFont};font-size:26px;font-weight:700;color:#111827;margin-top:18px;\">Wazuh Healthcheck</div>\n<div style=\"font-family:${eFont};font-size:13px;color:#9ca3af;margin-top:4px;\">${esc(client)} &middot; ${when}${version !== 'n/a' ? ' &middot; ' + esc(version) : ''}</div></td></tr>\n<tr><td class=\"px\" style=\"padding:20px 36px 0;font-family:${eFont};\"><span style=\"font-size:16px;font-weight:700;color:${topCol};\">${dot(topCol)}&nbsp; ${statusWord}</span><span style=\"font-size:14px;color:#6b7280;\">&nbsp;&nbsp;${statusText}</span></td></tr>\n<tr><td class=\"px\" style=\"padding:12px 36px 0;font-family:${eFont};font-size:12.5px;line-height:2;\">${comps}</td></tr>\n<tr><td class=\"px\" style=\"padding:24px 36px 0;\"><table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"border-top:1px solid #eef0f3;border-bottom:1px solid #eef0f3;\"><tr><td style=\"padding:16px 0;\"><table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\"><tr>${stats}</tr></table></td></tr></table></td></tr>\n<tr><td class=\"px\" style=\"padding:24px 36px 6px;\">${cap(issues.length ? 'Issues (' + issues.length + ')' : 'Issues')}</td></tr>\n<tr><td class=\"px\" style=\"padding:0 36px;\">${issuesBlock}</td></tr>\n${resolvedLine}\n<tr><td class=\"px\" style=\"padding:26px 36px 28px;font-family:${eFont};font-size:11.5px;color:#9ca3af;\">Full report attached as PDF.<!--PDFNOTE--></td></tr>\n</table>\n<!--[if mso]></td></tr></table><![endif]-->\n</td></tr></table></body></html>`;\n\nconst bin = await this.helpers.prepareBinaryData(Buffer.from(html, 'utf8'), 'index.html', 'text/html');\nreturn [{ json: { overall, counts, when, subject, emailHtml, issueCount: issues.length, headline }, binary: { data: bin } }];"
+      },
+      "id": "46773e8f-657d-49da-9d3c-835369368569",
+      "name": "Build Report",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1104,
+        112
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{$env.GOTENBERG_URL}}/forms/chromium/convert/html",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Gotenberg-Output-Filename",
+              "value": "=wazuh-healthcheck-{{ String($('Config').first().json.client_name || 'report').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') }}-{{ $now.toFormat('yyyy-LL-dd') }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "parameterType": "formBinaryData",
+              "name": "files",
+              "inputDataFieldName": "data"
+            },
+            {
+              "name": "printBackground",
+              "value": "true"
+            },
+            {
+              "name": "preferCssPageSize",
+              "value": "true"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          },
+          "timeout": 60000
+        }
+      },
+      "id": "d9b35bff-fe46-434a-828e-7467fface6f3",
+      "name": "HTML to PDF (Gotenberg)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1328,
+        112
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "fromEmail": "={{ $('Config').first().json.mail_from }}",
+        "toEmail": "={{ $('Config').first().json.mail_to }}",
+        "subject": "={{ $('Build Report').first().json.subject }}",
+        "html": "={{ $('Build Report').first().json.emailHtml.replace('<!--PDFNOTE-->', $binary.data ? '' : '<div style=\"color:#f87171;font-size:12px;margin-top:8px;\"><b>PDF generation failed (check Gotenberg). The issues above are still valid.</b></div>') }}",
+        "options": {
+          "attachments": "={{ $binary.data ? 'data' : '' }}"
+        }
+      },
+      "id": "317f1ca5-bb7c-49fa-aa69-8b0bc6c57849",
+      "name": "Send Email",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        1552,
+        112
+      ]
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 0 * * *"
+            }
+          ]
+        }
+      },
+      "id": "aa72c82d-2661-496e-8b4e-198b68802221",
+      "name": "Daily 12:00 AM",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        208
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "SSH Wazuh Server",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SSH Wazuh Server": {
+      "main": [
+        [
+          {
+            "node": "SSH Indexer Host",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SSH Indexer Host": {
+      "main": [
+        [
+          {
+            "node": "SSH Dashboard Host",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SSH Dashboard Host": {
+      "main": [
+        [
+          {
+            "node": "Build Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Report": {
+      "main": [
+        [
+          {
+            "node": "HTML to PDF (Gotenberg)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTML to PDF (Gotenberg)": {
+      "main": [
+        [
+          {
+            "node": "Send Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Daily 12:00 AM": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "meta": {},
+  "tags": []
+}
