@@ -18,6 +18,11 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/assets/css/site.css?v=af31cb7f630b">
+<style>
+.workflow-download-link{margin:0 0 18px;font-size:13px}
+.workflow-download-link a{font-weight:600;text-decoration:none}
+.article-page .content .workflow-download-button{color:var(--bg)!important;text-decoration:none!important}
+</style>
 <script defer src="/assets/js/article.v4.js?v=284dc7f68532"></script>
 <script defer src="/assets/js/site-visits.v4.js?v=20261101"></script>
 <!-- BEGIN GENERATED METADATA -->
@@ -35,8 +40,8 @@
 <meta name="twitter:description" content="Build a daily Wazuh SIEM health-check report with n8n, SSH checks, HTML report generation, Gotenberg PDF conversion, and automated email delivery.">
 <meta name="twitter:image" content="https://agamalx0.github.io/ashraf-avatar.jpg">
 <meta name="twitter:image:alt" content="Ashraf Gamal">
-<meta property="article:modified_time" content="2026-10-28">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"Automated Wazuh Daily Healthcheck with n8n","description":"Build a daily Wazuh SIEM health-check report with n8n, SSH checks, HTML report generation, Gotenberg PDF conversion, and automated email delivery.","dateModified":"2026-10-28","author":{"@type":"Person","name":"Ashraf Gamal","url":"https://agamalx0.github.io/"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://agamalx0.github.io/articles/wazuh-daily-healthcheck-n8n-email-report.html"},"image":"https://agamalx0.github.io/ashraf-avatar.jpg","inLanguage":"en"}</script>
+<meta property="article:modified_time" content="2026-11-22">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"Automated Wazuh Daily Healthcheck with n8n","description":"Build a daily Wazuh SIEM health-check report with n8n, SSH checks, HTML report generation, Gotenberg PDF conversion, and automated email delivery.","dateModified":"2026-11-22","author":{"@type":"Person","name":"Ashraf Gamal","url":"https://agamalx0.github.io/"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://agamalx0.github.io/articles/wazuh-daily-healthcheck-n8n-email-report.html"},"image":"https://agamalx0.github.io/ashraf-avatar.jpg","inLanguage":"en"}</script>
 <!-- END GENERATED METADATA -->
 </head>
 <body class="article-page">
@@ -44,20 +49,21 @@
 <header class="hero wrap">
 <h1>Automated Wazuh<br><span class="gradient">daily healthcheck</span></h1>
 <p class="lede">A field note on turning repeatable Wazuh operational checks into an HTML report, a PDF attachment, and a scheduled email—so the SOC starts the day with a consistent view of platform health and issues that need attention.</p>
-<div class="meta"><span>By Ashraf Gamal</span><span>Updated 28 October 2026</span><span class="pill">Wazuh · n8n · Gotenberg</span><span>Approx. 8 min read</span></div>
+<p class="workflow-download-link"><a href="/downloads/Wazuh_Daily_Healthcheck_PDF_over_Email.json" download="Wazuh_Daily_Healthcheck_PDF_over_Email.json">↓ Download workflow (JSON)</a></p>
+<div class="meta"><span>By Ashraf Gamal</span><span>Updated 22 November 2026</span><span class="pill">Wazuh · n8n · Gotenberg</span><span>Approx. 8 min read</span></div>
 </header>
 <figure class="article-cover-figure">
 <a href="/assets/images/articles/wazuh-daily-healthcheck/Dialy%20Wazuh%20Healthcheck.png" target="_blank" rel="noopener noreferrer"><img src="/assets/images/articles/wazuh-daily-healthcheck/Dialy%20Wazuh%20Healthcheck.png" alt="Cover artwork for Automated Wazuh Daily Healthcheck with n8n, showing the workflow stages, Wazuh report dashboard, PDF generation, and email delivery" width="1648" height="912" decoding="async" fetchpriority="high"></a>
 <figcaption>Automated Wazuh Daily Healthcheck with n8n — workflow overview and report-generation concept.</figcaption>
 </figure>
 <div class="wrap layout">
-<aside class="toc"><strong>In this guide</strong><a href="#overview">Overview</a><a href="#architecture">Workflow at a glance</a><a href="#report">What the report shows</a><a href="#setup">Configuration checklist</a><a href="#validate">Testing and validation</a><a href="#security">Security and privacy</a><a href="#sharing">Sharing the workflow</a><a href="#troubleshooting">Troubleshooting</a><a href="#references">References</a></aside>
+<aside class="toc"><strong>In this guide</strong><a href="#overview">Overview</a><a href="#architecture">Workflow at a glance</a><a href="#report">What the report shows</a><a href="#setup">Configuration checklist</a><a href="#validate">Testing and validation</a><a href="#security">Security and privacy</a><a href="#workflow">Workflow</a><a href="#troubleshooting">Troubleshooting</a><a href="#references">References</a></aside>
 <article class="content">
 <p class="note"><strong>Scope:</strong> This article documents the workflow shown in my n8n execution and the accompanying healthcheck report. Node settings, remote commands, and host topology are deployment-specific; adapt and validate them in a test environment before use.</p>
 <h2 id="overview">1. Overview</h2>
 <p>A SIEM can remain online while accumulating operational issues: disconnected agents, growing archives, storage pressure, service interruptions, or pipeline delays. A daily healthcheck makes these conditions easier to review consistently instead of relying only on occasional manual checks.</p>
 <p>The workflow described here is called <strong>Wazuh Daily Healthcheck PDF over Email</strong>. It supports a manual execution for testing and a daily schedule. It gathers host and service information over SSH, builds a structured HTML report, converts that report to PDF with Gotenberg, and sends the PDF by email.</p>
-<div class="callout"><strong>Example from the report</strong><p>The captured run contained <strong>43 checks: 41 passed and 2 warnings</strong>. The warnings were an oversized Wazuh log/archive directory and two disconnected agents. These are example snapshot values—not universal thresholds or expected results for every deployment.</p></div>
+<div class="callout"><strong>Latest report snapshot</strong><p>The latest run contained <strong>43 checks: 37 passed and 6 with issues</strong> (3 critical and 3 warning). It reported <strong>10 of 13 agents active</strong>, 3 disconnected agents, and <strong>91% disk usage</strong>. These are dated example results, not expected values for every deployment.</p></div>
 <h2 id="architecture">2. Workflow at a glance</h2>
 <p>The screenshot below is the actual n8n canvas used for this workflow. It shows both the manual test trigger and the daily schedule, followed by configuration, SSH collection, report generation, HTML-to-PDF conversion, and email delivery.</p>
 <figure class="article-figure">
@@ -80,41 +86,95 @@
 <p>The example report is designed to answer three questions quickly: is the monitoring stack responding, what needs attention, and where should the operator start investigating?</p>
 <figure class="article-figure">
 <a href="/assets/images/articles/wazuh-daily-healthcheck/Wazuh%20Healthcheck%20Email.png" target="_blank" rel="noopener noreferrer"><img src="/assets/images/articles/wazuh-daily-healthcheck/Wazuh%20Healthcheck%20Email.png" alt="Original Wazuh Healthcheck email screenshot showing warning status, component indicators, health metrics, and recommended actions" loading="lazy" width="1031" height="896" decoding="async"></a>
-<figcaption><strong>Figure 2 — Email delivery and report summary.</strong> The original email screenshot shows how the daily PDF report is delivered, including the overall status, key health metrics, and warning details. Review the image for organization-specific or internal details before sharing the repository publicly.</figcaption>
+<figcaption><strong>Figure 2 — Email delivery and report summary.</strong> Earlier report snapshot from 28 October 2026, showing the report email, overall status, key health metrics, and issue details.</figcaption>
 </figure>
-<p>The following three images show additional pages from the actual generated healthcheck PDF. Each opens at its original resolution when selected.</p>
+<p>The following three images are from the earlier 28 October 2026 report snapshot. They show additional pages from the generated PDF; each opens at its original resolution.</p>
 <div class="report-gallery" aria-label="Actual Wazuh healthcheck report pages">
 <figure class="article-figure">
 <a href="/assets/images/articles/wazuh-daily-healthcheck/wazuh-healthcheck-securenas-hq-2026-10-28-1.png" target="_blank" rel="noopener noreferrer"><img src="/assets/images/articles/wazuh-daily-healthcheck/wazuh-healthcheck-securenas-hq-2026-10-28-1.png" alt="Page 1 of the Wazuh daily healthcheck report, screenshot supplied for this article" loading="lazy" width="1653" height="2339" decoding="async"></a>
-<figcaption><strong>Figure 3 — Healthcheck report, page 1.</strong> Actual report screenshot from the 28 October 2026 run.</figcaption>
+<figcaption><strong>Figure 3 — Healthcheck report, page 1.</strong> Earlier report snapshot from 28 October 2026.</figcaption>
 </figure>
 <figure class="article-figure">
 <a href="/assets/images/articles/wazuh-daily-healthcheck/wazuh-healthcheck-securenas-hq-2026-10-28-2.png" target="_blank" rel="noopener noreferrer"><img src="/assets/images/articles/wazuh-daily-healthcheck/wazuh-healthcheck-securenas-hq-2026-10-28-2.png" alt="Page 2 of the Wazuh daily healthcheck report, screenshot supplied for this article" loading="lazy" width="1653" height="2339" decoding="async"></a>
-<figcaption><strong>Figure 4 — Healthcheck report, page 2.</strong> Actual report screenshot from the 28 October 2026 run.</figcaption>
+<figcaption><strong>Figure 4 — Healthcheck report, page 2.</strong> Earlier report snapshot from 28 October 2026.</figcaption>
 </figure>
 <figure class="article-figure">
 <a href="/assets/images/articles/wazuh-daily-healthcheck/wazuh-healthcheck-securenas-hq-2026-10-28-3.png" target="_blank" rel="noopener noreferrer"><img src="/assets/images/articles/wazuh-daily-healthcheck/wazuh-healthcheck-securenas-hq-2026-10-28-3.png" alt="Page 3 of the Wazuh daily healthcheck report, screenshot supplied for this article" loading="lazy" width="1653" height="2339" decoding="async"></a>
-<figcaption><strong>Figure 5 — Healthcheck report, page 3.</strong> Actual report screenshot from the 28 October 2026 run.</figcaption>
+<figcaption><strong>Figure 5 — Healthcheck report, page 3.</strong> Earlier report snapshot from 28 October 2026.</figcaption>
 </figure>
 </div>
-<ul><li><strong>Summary:</strong> total checks, passed checks, warnings, manager version, active agents, alert count, high-severity count, and disk utilization.</li><li><strong>Component status:</strong> System, Manager, Agents, Dashboard, Indexer, and Pipeline.</li><li><strong>Issues and actions:</strong> an issue description, severity/area, evidence, and a recommended next step.</li><li><strong>Capacity detail:</strong> server resources, the largest disk-consuming directories, and the largest indices.</li><li><strong>Activity:</strong> alerts over the previous 24 hours, top agents, top rules, and disconnected agents.</li><li><strong>Check results:</strong> service state, listening ports, queues, event ingestion, Filebeat output, indexer cluster/disk/heap, and selected log/error checks.</li></ul>
-<p>In the captured run, the report showed 10 of 12 agents active, 200 alerts in 24 hours, 26 high-severity alerts, and 76% highest filesystem usage. The manager log path was 116.3 GB, including 115.5 GB of archives; the indexer disk check showed 76.5% used with 161.4 GB free. Treat these figures as a dated snapshot, not a sizing recommendation.</p>
-<h3>Example issue: archive growth</h3>
+<ul><li><strong>Summary:</strong> total checks, passed checks, warnings, manager version, active agents, alert count, high-severity count, and disk utilization.</li><li><strong>Component status:</strong> System, Manager, Agents, Dashboard, Indexer, and Pipeline.</li><li><strong>Issues and actions:</strong> each issue includes its severity, area, evidence, and recommended next step. A <strong>NEW</strong> tag marks issues absent from the previous run.</li><li><strong>Capacity detail:</strong> server resources, the largest disk-consuming directories, and the largest indices.</li><li><strong>Activity:</strong> alerts over the previous 24 hours, top agents, top rules, and disconnected agents.</li><li><strong>Check results:</strong> service state, listening ports, queues, event ingestion, Filebeat output, indexer cluster/disk/heap, and selected log/error checks.</li></ul>
+<p>In the latest snapshot, 10 of 13 agents were active, 3 were disconnected, and the highest disk usage was 91%. Older values visible in Figures 3–5 belong to the dated 28 October snapshot.</p>
+<p><strong>Run-to-run changes:</strong> issues absent from the previous run carry a <strong>NEW</strong> tag. When a previously reported issue no longer appears, the report adds a <strong>Resolved since the previous run</strong> section to call out that change.</p>
+<h3>Example issue: disk pressure and disconnected agents</h3>
 <p>The report flags a large raw event archive. Before changing <code>logall</code>, <code>logall_json</code>, or archive retention, check retention obligations, forensic requirements, compliance policy, and whether raw event archives are used by downstream searches. Do not automate deletion of archived logs as a default remediation.</p>
 <h3>Example issue: disconnected agents</h3>
-<p>The report identifies two disconnected agents and recommends checking the endpoint agent service, manager reachability (including TCP 1514 where appropriate), and the agent key. Confirm whether an endpoint was intentionally decommissioned before removing it from agent management.</p>
+<p>The latest snapshot identifies three disconnected agents. Check each endpoint agent service, manager reachability (including TCP 1514 where appropriate), and the agent key. Confirm whether an endpoint was intentionally decommissioned before removing it from agent management. The 91% disk value exceeds the sample critical threshold of 90%; investigate filesystem and indexer usage before changing retention or cleanup.</p>
 <h2 id="setup">4. Configuration checklist</h2>
 <p>The exact settings depend on the environment. Review these items before enabling a scheduled run:</p>
 <ol><li><strong>n8n runtime:</strong> use a supported, maintained n8n deployment and restrict access to the editor.</li><li><strong>Timezone and schedule:</strong> confirm when the daily trigger should run in the intended local timezone.</li><li><strong>SSH credentials:</strong> configure a dedicated credential for each target host in n8n. Do not place passwords or private keys in node code.</li><li><strong>Command access:</strong> test each command interactively with the intended account. If a command requires privilege elevation, explicitly configure and audit the permitted command path instead of granting broad unrestricted sudo access.</li><li><strong>Host topology:</strong> configure only the SSH nodes that correspond to real roles in your deployment. A single-host, all-in-one environment differs from a distributed Wazuh architecture.</li><li><strong>Report configuration:</strong> confirm client label, host labels, thresholds, check output parsing, date/time formatting, and the meaning of each “OK”, “WARNING”, or “N/A” state.</li><li><strong>Gotenberg:</strong> configure the reachable base URL and the HTML-to-PDF route. Keep the service on a trusted network and do not expose it publicly without a strong reason and appropriate controls.</li><li><strong>Email delivery:</strong> set SMTP/provider credentials in n8n, test the recipient list, and verify the message subject, report name, attachment, and delivery result.</li></ol>
+<h3>Config node reference</h3>
+<p>The defaults below are safe-to-edit examples, not universal operational targets. Adjust them for your deployment and test each boundary. The workflow's Gotenberg HTTP node reads the <code>GOTENBERG_URL</code> environment variable; set that variable in n8n even though a generic service URL is also shown in Config.</p>
+<div class="table-wrap" id="config-fields"><table><thead><tr><th>Config field</th><th>Default</th><th>What it controls</th></tr></thead><tbody>
+<tr><td><code>environment_name</code></td><td><code>Wazuh - Production</code></td><td>Fallback environment label used in the report when no client name is set.</td></tr>
+<tr><td><code>client_name</code></td><td><code>Your Company Name</code></td><td>Client or organization label printed in the report.</td></tr>
+<tr><td><code>brand_name</code></td><td><code>YOUR COMPANY</code></td><td>Primary report brand heading.</td></tr>
+<tr><td><code>brand_subtitle</code></td><td><code>SECURITY OPERATIONS</code></td><td>Secondary text below the report brand.</td></tr>
+<tr><td><code>brand_logo_url</code></td><td><code>(blank)</code></td><td>Optional logo URL used in report branding.</td></tr>
+<tr><td><code>email_width</code></td><td><code>820</code></td><td>Email report content width in pixels.</td></tr>
+<tr><td><code>gotenberg_url</code></td><td><code>http://gotenberg:3000</code></td><td>Generic Compose service URL in the Config defaults. The HTTP node reads GOTENBERG_URL from n8n's environment.</td></tr>
+<tr><td><code>mail_from</code></td><td><code>wazuh-healthcheck-agent &lt;sender@example.com&gt;</code></td><td>Sender label/address used for the report email; replace with an approved sender.</td></tr>
+<tr><td><code>mail_to</code></td><td><code>soc-team@example.com</code></td><td>Recipient list for the report email; replace with intended recipients.</td></tr>
+<tr><td><code>agents_active_warn_pct</code></td><td><code>98</code></td><td>Warning threshold when the active-agent percentage falls below 98% or any agent is disconnected.</td></tr>
+<tr><td><code>agents_active_crit_pct</code></td><td><code>80</code></td><td>Critical threshold when the active-agent percentage falls below 80%.</td></tr>
+<tr><td><code>agents_ignore</code></td><td><code>(blank)</code></td><td>Comma-separated agent names excluded from the active percentage.</td></tr>
+<tr><td><code>agents_critical</code></td><td><code>(blank)</code></td><td>Comma-separated agent names that must stay active; an inactive listed agent is critical.</td></tr>
+<tr><td><code>disk_warn_pct</code></td><td><code>80</code></td><td>Warning threshold for filesystem or indexer disk usage.</td></tr>
+<tr><td><code>disk_crit_pct</code></td><td><code>90</code></td><td>Critical disk-usage threshold.</td></tr>
+<tr><td><code>heap_warn_pct</code></td><td><code>85</code></td><td>Warning threshold for indexer JVM heap; critical at 95% (fixed in the report logic).</td></tr>
+<tr><td><code>cpu_warn_pct</code></td><td><code>90</code></td><td>Warning threshold for indexer CPU; critical boundary is fixed at 101%; CPU readings up to 100% therefore produce warning severity only.</td></tr>
+<tr><td><code>queue_warn_pct</code></td><td><code>80</code></td><td>Warning threshold for manager queue usage; critical at 95% (fixed in the report logic).</td></tr>
+<tr><td><code>load_warn_ratio</code></td><td><code>1.5</code></td><td>Warning threshold for 1-minute load divided by CPU count.</td></tr>
+<tr><td><code>load_crit_ratio</code></td><td><code>3</code></td><td>Critical threshold for load per CPU.</td></tr>
+<tr><td><code>mem_warn_avail_pct</code></td><td><code>10</code></td><td>Warning when available system memory is below 10%.</td></tr>
+<tr><td><code>mem_crit_avail_pct</code></td><td><code>5</code></td><td>Critical when available system memory is below 5%.</td></tr>
+<tr><td><code>cert_warn_days</code></td><td><code>30</code></td><td>Warning when a checked certificate expires in fewer than 30 days.</td></tr>
+<tr><td><code>cert_crit_days</code></td><td><code>7</code></td><td>Critical when a checked certificate expires in fewer than 7 days.</td></tr>
+<tr><td><code>logs_dir_warn_gb</code></td><td><code>20</code></td><td>Warning only when /var/ossec/logs reaches 20 GB; no critical threshold is configured.</td></tr>
+<tr><td><code>dash_err_warn</code></td><td><code>20</code></td><td>Warning only at 20 dashboard error log lines in the last 24 hours; no critical threshold is configured.</td></tr>
+<tr><td><code>gap_min_avg_per_hour</code></td><td><code>20</code></td><td>Below this average alert rate, empty hourly buckets are treated as low-volume context rather than an ingestion-gap warning.</td></tr>
+<tr><td><code>alert_lag_warn_min</code></td><td><code>15</code></td><td>Warning only when the newest indexed alert is older than 15 minutes; no critical threshold is configured.</td></tr>
+<tr><td><code>alert_file_age_min</code></td><td><code>30</code></td><td>Warning when alerts.json has not been written for more than 30 minutes.</td></tr>
+<tr><td><code>archive_lag_warn_min</code></td><td><code>15</code></td><td>Warning after 15 minutes; critical after 60 minutes for the newest archive event.</td></tr>
+<tr><td><code>archive_lag_crit_min</code></td><td><code>60</code></td><td>Critical when the newest archive event is older than 60 minutes.</td></tr>
+<tr><td><code>volume_drop_warn_pct</code></td><td><code>50</code></td><td>Warning only when alert volume drops by 50% or more from the previous 24-hour period; no critical threshold is configured.</td></tr>
+<tr><td><code>volume_spike_warn_pct</code></td><td><code>300</code></td><td>Warning only when alert volume rises by 300% or more from the previous 24-hour period; no critical threshold is configured.</td></tr>
+<tr><td><code>noisy_rule_pct</code></td><td><code>40</code></td><td>Warning only when the top rule accounts for 40% or more of alerts; no critical threshold is configured.</td></tr>
+</tbody></table></div>
 <h2 id="validate">5. Test before scheduling</h2>
 <ol><li>Run the workflow manually against a test or non-critical environment first.</li><li>Open the execution and inspect each node’s input and output. Confirm SSH commands returned valid evidence and that command failures are surfaced as failures or warnings.</li><li>Review the HTML output for escaped text, readable tables, missing values, accurate timestamps, and sensible page breaks.</li><li>Check that the PDF opens and contains the same metrics and issue details as the HTML report.</li><li>Verify email delivery and confirm the attachment is the expected PDF—not an HTML error page or empty binary.</li><li>Simulate or safely reproduce at least one warning to ensure warning status and remediation text appear correctly.</li><li>Only after the manual run passes review, enable the daily schedule and monitor its first scheduled executions.</li></ol>
 <div class="info"><strong>Success criteria</strong><p style="margin:6px 0 0">A green n8n execution by itself is not sufficient. The final check is that the report accurately reflects its collected data, converts to a readable PDF, and is delivered to the intended recipients.</p></div>
 <h2 id="security">6. Security and privacy before publishing or operating</h2>
-<ul><li>Use dedicated SSH identities with least privilege and restrict network reachability to the required systems.</li><li>Keep credentials in n8n’s credential store. Never commit passwords, tokens, private keys, SMTP secrets, or real credential IDs/names intended only for your instance.</li><li>Sanitize workflow exports, screenshots, execution logs, generated HTML/PDF files, hostnames, internal IP addresses, email addresses, usernames, and agent identifiers before publishing.</li><li>Review SSH command output and email recipients: reports may reveal service versions, host inventory, alert volume, internal paths, and operational weaknesses.</li><li>Store reports according to your organization’s retention and data-classification requirements. Restrict the mailbox and any archive where PDFs are kept.</li><li>Use read-only collection by default. Keep destructive cleanup, configuration changes, and service restarts out of an automated healthcheck unless separately approved and change-controlled.</li></ul>
-<h2 id="sharing">7. Sharing a reusable workflow export</h2>
-<p>n8n workflows can be exported and imported as JSON. A screenshot or this article is not an importable workflow by itself. Before publishing a companion JSON export, remove instance-specific settings, sanitize hostnames and recipient addresses, and check node parameters, credential references, expressions, and any embedded code for sensitive data.</p>
-<p>To import a workflow export, download the JSON file, choose <strong>Import from File</strong> in n8n, configure credentials and environment-specific values, and test manually. Review every node and email recipient before activating the workflow. Credentials usually need to be configured in the target n8n instance rather than expected to transfer with an export.</p>
-<p>Decide and state a license for the workflow file before inviting public reuse. Making a file public does not by itself establish permission to redistribute or adapt it.</p>
+<ul><li>Use dedicated SSH identities with least privilege and restrict network reachability to the required systems.</li><li>Keep credentials in n8n’s credential store. Never commit passwords, tokens, private keys, SMTP secrets, or real credential IDs/names intended only for your instance.</li><li>Before publishing screenshots, execution logs, or generated reports from your own deployment, remove internal hostnames, IP addresses, email addresses, usernames, and agent identifiers.</li><li>Review SSH command output and email recipients: reports may reveal service versions, host inventory, alert volume, internal paths, and operational weaknesses.</li><li>Store reports according to your organization’s retention and data-classification requirements. Restrict the mailbox and any archive where PDFs are kept.</li><li>Use read-only collection by default. Keep destructive cleanup, configuration changes, and service restarts out of an automated healthcheck unless separately approved and change-controlled.</li></ul>
+<h2 id="workflow">7. Download the workflow</h2>
+<p>The export is sanitized and ships inactive. It contains no credentials, deployment-specific hostnames, or real workflow email addresses. The sender and recipient use <code>example.com</code> placeholders. The default <code>http://gotenberg:3000</code> value is a generic Docker Compose service alias, not a deployment-specific hostname. The workflow is licensed under the MIT License.</p>
+<p><a class="btn p workflow-download-button" href="/downloads/Wazuh_Daily_Healthcheck_PDF_over_Email.json" download="Wazuh_Daily_Healthcheck_PDF_over_Email.json">Download workflow (JSON)</a></p>
+<h3>Quick start</h3>
+<ol><li>Download the JSON export using the button above.</li><li>In n8n, choose <strong>Import from File</strong> and select the downloaded file.</li><li>Set the SSH credential on <strong>SSH Wazuh Server</strong>.</li><li>Set the SMTP credential on <strong>Send Email</strong>.</li><li>Edit the <strong>Config</strong> node for your report labels, recipients, and thresholds.</li><li>Set the <code>GOTENBERG_URL</code> environment variable in n8n to the reachable Gotenberg base URL, for example <code>http://gotenberg:3000</code> when both services share a Compose network.</li><li>Run the workflow manually and verify the report, PDF, and email.</li><li>Activate the workflow only after the manual run passes review.</li></ol>
+<h3>Requirements</h3>
+<ul><li>n8n with permission to import and activate workflows.</li><li>A Gotenberg service reachable from n8n.</li><li>SSH access to the Wazuh server with root privileges or passwordless sudo for the required read-only checks.</li><li>An SMTP service and credentials configured in n8n.</li></ul>
+<h3>Gotenberg with Docker Compose</h3>
+<p>When n8n shares the Compose network, set <code>GOTENBERG_URL</code> to <code>http://gotenberg:3000</code>. Keep the service on a trusted network rather than exposing it publicly.</p>
+<div class="code-block"><div class="code-toolbar"><span>docker-compose.yml</span></div><pre><code>services:
+  gotenberg:
+    image: gotenberg/gotenberg:8
+    restart: unless-stopped
+    ports:
+      - "3000:3000"</code></pre></div>
+<h3>Verify the download</h3>
+<p>Run <code>sha256sum Wazuh_Daily_Healthcheck_PDF_over_Email.json</code> after downloading. The expected SHA-256 is:</p>
+<pre><code>f7cf3b9121d674f19c919d1f0ebfe043fa1734ecc0eeaf61d173ceda297c8d61</code></pre>
+<p><strong>License:</strong> MIT.</p>
 <h2 id="troubleshooting">8. Troubleshooting notes</h2>
 <div class="table-wrap"><table><thead><tr><th>Symptom</th><th>First things to inspect</th></tr></thead><tbody>
 <tr><td>SSH node fails</td><td>Credential type, target hostname, TCP reachability, host key verification, account permissions, command path, and command exit status.</td></tr>
