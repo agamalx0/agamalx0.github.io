@@ -63,7 +63,7 @@
 <h2 id="overview">1. Overview</h2>
 <p>A SIEM can remain online while accumulating operational issues: disconnected agents, growing archives, storage pressure, service interruptions, or pipeline delays. A daily healthcheck makes these conditions easier to review consistently instead of relying only on occasional manual checks.</p>
 <p>The workflow described here is called <strong>Wazuh Daily Healthcheck PDF over Email</strong>. It supports a manual execution for testing and a daily schedule. It gathers host and service information over SSH, builds a structured HTML report, converts that report to PDF with Gotenberg, and sends the PDF by email.</p>
-<div class="callout"><strong>Latest report snapshot</strong><p>The latest run contained <strong>43 checks: 37 passed and 6 with issues</strong> (3 critical and 3 warning). It reported <strong>10 of 13 agents active</strong>, 3 disconnected agents, and <strong>91% disk usage</strong>. These are dated example results, not expected values for every deployment.</p></div>
+<div class="callout"><strong>Latest report snapshot</strong><p>The latest run contained <strong>43 checks: 37 passed and 6 with issues</strong> (3 critical and 3 warnings). It reported <strong>10 of 13 agents active</strong>, 3 disconnected agents, and <strong>91% disk usage</strong>. These are dated example results, not expected values for every deployment.</p></div>
 <h2 id="architecture">2. Workflow at a glance</h2>
 <p>The screenshot below is the actual n8n canvas used for this workflow. It shows both the manual test trigger and the daily schedule, followed by configuration, SSH collection, report generation, HTML-to-PDF conversion, and email delivery.</p>
 <figure class="article-figure">
@@ -107,7 +107,7 @@
 <p>In the latest snapshot, 10 of 13 agents were active, 3 were disconnected, and the highest disk usage was 91%. Older values visible in Figures 3–5 belong to the dated 28 October snapshot.</p>
 <p><strong>Run-to-run changes:</strong> issues absent from the previous run carry a <strong>NEW</strong> tag. When a previously reported issue no longer appears, the report adds a <strong>Resolved since the previous run</strong> section to call out that change.</p>
 <h3>Example issue: disk pressure and disconnected agents</h3>
-<p>The report flags a large raw event archive. Before changing <code>logall</code>, <code>logall_json</code>, or archive retention, check retention obligations, forensic requirements, compliance policy, and whether raw event archives are used by downstream searches. Do not automate deletion of archived logs as a default remediation.</p>
+<p>If a run flags a large raw event archive, check retention obligations, forensic requirements, compliance policy, and downstream search dependencies before changing <code>logall</code>, <code>logall_json</code>, or archive retention. Do not automate deletion of archived logs as a default remediation.</p>
 <h3>Example issue: disconnected agents</h3>
 <p>The latest snapshot identifies three disconnected agents. Check each endpoint agent service, manager reachability (including TCP 1514 where appropriate), and the agent key. Confirm whether an endpoint was intentionally decommissioned before removing it from agent management. The 91% disk value exceeds the sample critical threshold of 90%; investigate filesystem and indexer usage before changing retention or cleanup.</p>
 <h2 id="setup">4. Configuration checklist</h2>
