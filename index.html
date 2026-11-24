@@ -52,246 +52,248 @@
     <div class="hero-actions"><a href="#notes" class="btn p">READ TECHNICAL NOTES →</a><a href="https://www.linkedin.com/in/1elrawy/" class="btn p" target="_blank" rel="noopener noreferrer"><svg class="contact-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.13 1.44-2.13 2.94v5.67H9.35V9h3.42v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.26 2.37 4.26 5.45v6.29ZM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12ZM7.12 20.45H3.56V9h3.56v11.45ZM22.22 0H1.77C.79 0 0 .77 0 1.72v20.56C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.72V1.72C24 .77 23.2 0 22.22 0Z"/></svg>LINKEDIN ↗</a><a href="https://github.com/agamalx0" class="btn p" target="_blank" rel="noopener noreferrer"><svg class="contact-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 .7a12 12 0 0 0-3.79 23.39c.6.11.82-.26.82-.58v-2.24c-3.34.73-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.09-.75.08-.74.08-.74 1.2.09 1.83 1.23 1.83 1.23 1.07 1.83 2.8 1.3 3.49.99.11-.77.42-1.3.76-1.6-2.67-.3-5.47-1.34-5.47-5.95 0-1.31.47-2.38 1.23-3.22-.12-.3-.53-1.52.12-3.17 0 0 1-.32 3.3 1.23a11.45 11.45 0 0 1 6 0c2.29-1.55 3.29-1.23 3.29-1.23.66 1.65.25 2.87.13 3.17.76.84 1.22 1.91 1.22 3.22 0 4.62-2.8 5.64-5.48 5.94.43.37.81 1.1.81 2.22v3.29c0 .32.22.7.83.58A12 12 0 0 0 12 .7Z"/></svg>GITHUB ↗</a></div>
   </div>
   <div>
-<div id="soc-sim" class="soc-sim">
+<div id="sp-siem" class="sp-wrap" role="group" aria-label="Simulated SIEM pipeline: six log sources feed a SIEM, which raises alerts that are triaged, hunted and responded to">
+  <div class="sp-phases sp-top" id="sp-top"><span>BUILD</span><span>DETECT</span><span>AUTOMATE</span></div>
+  <svg id="sp-svg" viewBox="0 0 600 470" role="img" aria-label="Log sources sending events to the SIEM"></svg>
+  <div class="sp-phases" id="sp-phases"><span>TRIAGE</span><span>HUNT</span><span>RESPOND</span></div>
+  <div class="sp-card" id="sp-card">
+    <div class="sp-head">
+      <span class="sp-dot"></span><span class="sp-sev" id="sp-sev">HIGH</span>
+      <span class="sp-title" id="sp-title">Brute force</span>
+      <span class="sp-mitre" id="sp-mitre">MITRE T1110</span>
+    </div>
+    <div class="sp-rule" id="sp-rule"></div>
+    <div class="sp-step"><span id="sp-step"></span><i class="sp-caret"></i></div>
+    <div class="sp-ctl">
+      <span class="sp-dots" id="sp-dots"></span>
+      <button type="button" class="sp-pause" id="sp-pause" aria-pressed="false">❚❚ Pause</button>
+    </div>
+  </div>
+  <div class="sp-sr" id="sp-sr" aria-live="polite"></div>
+
 <style>
-  .soc-sim{width:100%;max-width:600px;margin:0 auto;font-family:"JetBrains Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace}
-  .soc-sim svg{display:block;width:100%;height:auto;overflow:visible}
-  .soc-sim .spin{transform-box:fill-box;transform-origin:center;animation:socspin 28s linear infinite}
-  .soc-sim .spin.rev{animation-duration:40s;animation-direction:reverse}
-  .soc-sim .w{fill:#5d6577;transition:fill .3s}
-  .soc-sim .w.on{fill:#f2f4fa}
-  .soc-sim .dot{fill:#5d6577;font-size:11px}
-  .soc-sim .stage{font-size:11px;letter-spacing:.12em}
-  .soc-sim .lbl{font-size:10px;fill:#8b93a7}
-  .soc-sim .node circle{transition:stroke .2s}
-  .soc-sim .node.hot circle{stroke:#ff3b5c;animation:socblink .45s infinite alternate}
-  .soc-sim .card{opacity:0;transform:translateY(10px);transition:opacity .35s,transform .35s}
-  .soc-sim .card.on{opacity:1;transform:none}
-  .soc-sim .pd{fill:#2a3040;transition:fill .25s}
-  .soc-sim .pd.on{fill:#ffb454}
-  @keyframes socspin{to{transform:rotate(360deg)}}
-  @keyframes socblink{to{stroke-width:3.4}}
+.sp-wrap{--hi:#ff3a5c;--md:#ffb02e;--lo:#3d9bff;max-width:560px;margin:0 auto;font-family:'JetBrains Mono',ui-monospace,monospace;color:#D9DFEA;position:relative}
+.sp-wrap *{box-sizing:border-box}
+.sp-cap,.sp-phases{text-align:center;font-size:12px;letter-spacing:.2em;color:#6f7a8c}
+.sp-phases{display:flex;width:max-content;max-width:100%;margin:6px auto 16px;padding:4px;border:1px solid #1d222d;border-radius:999px;background:rgba(255,255,255,.02);font-size:11px;letter-spacing:.14em}
+.sp-top{margin:0 auto 4px}.sp-top span{color:#9AA4B6}
+.sp-phases span{padding:6px 16px;border-radius:999px;transition:color .3s,background .3s,box-shadow .3s}
+.sp-phases span.on{color:#fff;background:rgba(110,168,255,.16);box-shadow:0 0 20px -6px #6EA8FF}
+#sp-svg{width:100%;height:auto;display:block;overflow:visible}
+.sp-node{transition:filter .3s}.sp-node .sp-l{transition:fill .2s}.sp-node:hover .sp-l{fill:#fff}.sp-i{transform-box:fill-box;transform-origin:center;transition:transform .25s}.sp-node:hover .sp-i{transform:scale(1.1)}
+.sp-node circle.sp-c{transition:stroke .3s,fill .3s}
+.sp-node.hot{filter:drop-shadow(0 0 10px var(--sc))}
+.sp-node.hot circle.sp-c{fill:var(--sc);fill-opacity:.18}
+.sp-ring{fill:none;stroke-width:1.5;opacity:0;transform-box:fill-box;transform-origin:center}
+.sp-ring.ping{animation:sp-ping .9s ease-out}
+.sp-ripple{fill:none;stroke-width:2;opacity:0;transform-box:fill-box;transform-origin:center}
+.sp-ripple.go{animation:sp-rip 1.4s ease-out}
+.sp-arc{fill:none;stroke-linecap:round;transform-origin:300px 250px}
+.sp-a1{animation:sp-spin 9s linear infinite}
+.sp-a2{animation:sp-spin 14s linear infinite reverse}
+.sp-a3{animation:sp-spin 21s linear infinite}
+.sp-core{transition:filter .4s}
+.sp-core.alert{filter:drop-shadow(0 0 14px var(--sc))}
+.sp-card{background:linear-gradient(180deg,rgba(21,26,36,.85),rgba(14,17,24,.85));border:1px solid rgba(255,255,255,.07);box-shadow:inset 3px 0 0 var(--sc,#ff3a5c),0 18px 44px -24px var(--sc,#ff3a5c);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border-radius:16px;padding:18px 22px;transition:box-shadow .4s,opacity .25s,transform .25s;min-height:132px}
+.sp-card.out{opacity:0;transform:translateY(8px)}
+.sp-head{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;font-size:13px}
+.sp-dot{width:9px;height:9px;border-radius:50%;background:var(--sc,#ff3a5c);box-shadow:0 0 10px var(--sc,#ff3a5c);animation:sp-blink 1.6s ease-in-out infinite}
+.sp-sev{color:var(--sc,#ff3a5c);font-weight:700;letter-spacing:.06em}
+.sp-title{color:#fff;font-weight:700;font-size:14px}
+.sp-mitre{margin-left:auto;color:#8D96A8;font-size:12px;letter-spacing:.04em}
+.sp-rule{margin:8px 0 10px;font-size:12.5px;color:#9AA4B6;line-height:1.6;min-height:20px}
+.sp-step{font-size:13px;color:#ffc766;min-height:22px}
+.sp-step:before{content:"▸ ";color:#ffb02e}
+.sp-caret{display:inline-block;width:7px;height:14px;background:#ffc766;margin-left:2px;vertical-align:-2px;animation:sp-blink 1s steps(1) infinite}
+.sp-ctl{display:flex;justify-content:flex-end;align-items:center;gap:14px;margin-top:10px}
+.sp-dots{display:flex;gap:8px}
+.sp-dots i{width:10px;height:10px;border-radius:50%;background:#2a3040;transition:background .3s,transform .3s}.sp-dots i.on{background:#ffb02e;transform:scale(1.15)}
+.sp-dots button{width:10px;height:10px;padding:0;border-radius:50%;border:0;background:#2a3040;cursor:pointer;transition:background .2s,transform .2s}
+.sp-dots button.on{background:#ffb02e;transform:scale(1.2)}
+.sp-dots button:focus-visible,.sp-pause:focus-visible{outline:2px solid #8DB8FF;outline-offset:3px}
+.sp-pause{background:none;border:1px solid #2a3040;border-radius:999px;color:#9AA4B6;font:inherit;font-size:11px;padding:3px 12px;cursor:pointer}
+.sp-pause:hover{color:#fff;border-color:#6EA8FF}
+.sp-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+@keyframes sp-spin{to{transform:rotate(360deg)}}
+@keyframes sp-ping{from{opacity:.8;transform:scale(1)}to{opacity:0;transform:scale(1.8)}}
+@keyframes sp-rip{from{opacity:.9;transform:scale(1)}to{opacity:0;transform:scale(2.3)}}
+@keyframes sp-blink{50%{opacity:.35}}
+@media (prefers-reduced-motion:reduce){.sp-a1,.sp-a2,.sp-a3,.sp-dot,.sp-caret{animation:none}.sp-pause{display:none}}
 </style>
-
-<svg viewBox="0 0 600 650" role="img" aria-label="Animated simulation: logs from firewall, endpoint, cloud, directory, web proxy and network IDS sources flow into a SIEM, which raises an alert and triggers a SOAR playbook">
-  <defs>
-    <linearGradient id="socG1" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#c04ad0"/><stop offset=".55" stop-color="#ff3b6b"/><stop offset="1" stop-color="#ff9f2e"/>
-    </linearGradient>
-    <linearGradient id="socG2" x1="0" y1="1" x2="1" y2="0">
-      <stop offset="0" stop-color="#2ee59d"/><stop offset="1" stop-color="#2bc4d9"/>
-    </linearGradient>
-    <filter id="socGlow" x="-50%" y="-50%" width="200%" height="200%">
-      <feGaussianBlur stdDeviation="2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
-    </filter>
-  </defs>
-
-  <!-- stage words: lit one by one as the simulation moves through them -->
-  <text x="300" y="16" text-anchor="middle" class="stage">
-    <tspan class="w" data-w="BUILD">BUILD</tspan><tspan class="dot"> · </tspan><tspan class="w" data-w="DETECT">DETECT</tspan><tspan class="dot"> · </tspan><tspan class="w" data-w="AUTOMATE">AUTOMATE</tspan>
-  </text>
-  <text x="300" y="522" text-anchor="middle" class="stage">
-    <tspan class="w" data-w="TRIAGE">TRIAGE</tspan><tspan class="dot"> · </tspan><tspan class="w" data-w="HUNT">HUNT</tspan><tspan class="dot"> · </tspan><tspan class="w" data-w="RESPOND">RESPOND</tspan>
-  </text>
-
-  <g id="socLinks"></g>
-  <g id="socParts" filter="url(#socGlow)"></g>
-  <g id="socNodes"></g>
-
-  <!-- SIEM core -->
-  <circle class="spin" cx="300" cy="270" r="84" fill="none" stroke="url(#socG1)" stroke-width="2.5" stroke-dasharray="150 60 90 40" stroke-linecap="round"/>
-  <circle class="spin rev" cx="300" cy="270" r="74" fill="none" stroke="url(#socG2)" stroke-width="2" stroke-dasharray="100 50 140 40" stroke-linecap="round"/>
-  <circle id="socPulse" cx="300" cy="270" r="68" fill="none" stroke="#2bc4d9" stroke-width="2" opacity="0"/>
-  <circle cx="300" cy="270" r="64" fill="#111520" stroke="#2a3040"/>
-  <text x="300" y="262" text-anchor="middle" fill="#f2f4fa" font-size="18" font-weight="700" letter-spacing="3">SIEM</text>
-  <text id="socEv" x="300" y="284" text-anchor="middle" fill="#8b93a7" font-size="10">0 events</text>
-  <text id="socAl" x="300" y="300" text-anchor="middle" fill="#ff9f2e" font-size="10">0 alerts</text>
-
-  <!-- alert card -->
-  <g id="socCard" class="card">
-    <rect x="40" y="548" width="520" height="96" rx="10" fill="#11141c" stroke="#3a2530"/>
-    <rect x="40" y="548" width="4" height="96" rx="2" fill="#ff3b5c"/>
-    <circle cx="66" cy="572" r="4" fill="#ff3b5c"/>
-    <text x="78" y="576" fill="#ff3b5c" font-size="11" font-weight="700" letter-spacing="1">HIGH</text>
-    <text id="socTitle" x="124" y="576" fill="#e6e9f2" font-size="13" font-weight="600"></text>
-    <text id="socMitre" x="544" y="576" text-anchor="end" fill="#8b93a7" font-size="11"></text>
-    <text id="socDetail" x="62" y="598" fill="#8b93a7" font-size="11"></text>
-    <text id="socStep" x="62" y="626" fill="#ffb454" font-size="12"></text>
-    <circle class="pd" cx="496" cy="622" r="3.5"/><circle class="pd" cx="512" cy="622" r="3.5"/>
-    <circle class="pd" cx="528" cy="622" r="3.5"/><circle class="pd" cx="544" cy="622" r="3.5"/>
-  </g>
-</svg>
 
 <script>
 (function () {
-  var root = document.getElementById('soc-sim');
-  if (!root) return;
-  var NS = 'http://www.w3.org/2000/svg', CX = 300, CY = 270, R = 190, CORE = 64, NODE = 22;
-  var $ = function (id) { return root.querySelector(id); };
-
-  // log sources: abbreviation, label, colour, angle on the ring
+  var root = document.getElementById('sp-siem'); if (!root) return;
+  var svg = document.getElementById('sp-svg'), NS = 'http://www.w3.org/2000/svg';
+  var CX = 300, CY = 250, CORE = 68, NODE = 27;
+  var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var SEV = { HIGH: '#ff3a5c', MEDIUM: '#ffb02e', LOW: '#3d9bff' };
   var SRC = [
-    { k: 'FW',  n: 'Firewall',    c: '#ff9f2e', a: -60 },
-    { k: 'EDR', n: 'Endpoint',    c: '#2ee59d', a: 0 },
-    { k: 'CLD', n: 'Cloud',       c: '#2bc4d9', a: 60 },
-    { k: 'AD',  n: 'Directory',   c: '#6d7dff', a: 120 },
-    { k: 'WEB', n: 'Web / Proxy', c: '#c04ad0', a: 180 },
-    { k: 'IDS', n: 'Network IDS', c: '#ff6b8a', a: 240 }
+    { id: 'ids', ab: 'IDS', nm: 'Network IDS', col: '#ff6b86', x: 215, y: 103, ly: 62,  w: 1 },
+    { id: 'fw',  ab: 'FW',  nm: 'Firewall',    col: '#ffb02e', x: 385, y: 103, ly: 62,  w: 1.3 },
+    { id: 'web', ab: 'WEB', nm: 'Web / Proxy', col: '#b45cff', x: 130, y: 250, ly: 296, w: 1.1 },
+    { id: 'edr', ab: 'EDR', nm: 'Endpoint',    col: '#2dff8f', x: 470, y: 250, ly: 296, w: 1.2 },
+    { id: 'ad',  ab: 'AD',  nm: 'Directory',   col: '#6b7bff', x: 215, y: 397, ly: 440, w: .8 },
+    { id: 'cld', ab: 'CLD', nm: 'Cloud',       col: '#22d3ee', x: 385, y: 397, ly: 440, w: 1 }
   ];
-  // what each source can raise (rule, MITRE technique, evidence)
   var SC = [
-    ['Port scan', 'T1046', '1 source touched 240 ports in 30s'],
-    ['Suspicious PowerShell', 'T1059.001', 'encoded command spawned by winword.exe'],
-    ['Impossible travel', 'T1078', 'sign-ins from two countries within 8 min'],
-    ['Brute force', 'T1110', '14 failed logons in 60s for one service account'],
-    ['SQL injection', 'T1190', 'UNION SELECT payload sent to /login'],
-    ['C2 beaconing', 'T1071', 'periodic 60s DNS queries to a rare domain']
+    { src: 'ad',  sev: 'HIGH',   t: 'Brute force',        m: 'T1110',     r: 'Rule matched: 14 failed logons in 60s for one service account',
+      s: ['Triage: severity High, asset critical', 'Hunt: 2 related hosts found', 'Playbook: block IP, open ticket', 'Contained: analyst notified'] },
+    { src: 'edr', sev: 'HIGH',   t: 'Encoded PowerShell', m: 'T1059.001', r: 'Rule matched: powershell.exe -enc spawned by an Office process',
+      s: ['Triage: severity High, Office spawning PowerShell', 'Hunt: 3 hosts share the same chain', 'Playbook: isolate host, open ticket', 'Contained: analyst notified'] },
+    { src: 'cld', sev: 'MEDIUM', t: 'Impossible travel',  m: 'T1078',     r: 'Rule matched: sign-ins from two countries 11 minutes apart',
+      s: ['Triage: severity Medium, verify VPN use', 'Hunt: 1 other risky sign-in found', 'Playbook: force reset, open ticket', 'Contained: user verified'] },
+    { src: 'fw',  sev: 'LOW',    t: 'External port scan', m: 'T1046',     r: 'Rule matched: 240 denied connections from one IP in 30s',
+      s: ['Triage: severity Low, internet scanning', 'Hunt: no follow-up traffic found', 'Playbook: block IP, tune threshold', 'Contained: rule tuned'] }
   ];
-  var STEPS = [
-    ['TRIAGE', 'Triage: severity High, asset critical'],
-    ['HUNT', 'Hunt: 2 related hosts found'],
-    ['AUTOMATE', 'Playbook: block IP, open ticket'],
-    ['RESPOND', 'Contained: analyst notified']
-  ];
-  var ORDER = [3, 1, 0, 5, 2, 4];
 
-  function el(name, attrs, parent) {
-    var e = document.createElementNS(NS, name);
+  function el(tag, attrs, parent) {
+    var e = document.createElementNS(NS, tag);
     for (var k in attrs) e.setAttribute(k, attrs[k]);
-    if (parent) parent.appendChild(e);
-    return e;
+    if (parent) parent.appendChild(e); return e;
   }
+  function toward(a, b, d) { var dx = b.x - a.x, dy = b.y - a.y, L = Math.sqrt(dx * dx + dy * dy); return { x: a.x + dx / L * d, y: a.y + dy / L * d }; }
 
-  // build links and source nodes
-  var nodes = [];
-  SRC.forEach(function (s, i) {
-    var r = s.a * Math.PI / 180, dx = Math.cos(r), dy = Math.sin(r);
-    s.x = CX + R * dx; s.y = CY + R * dy;
-    s.sx = s.x - dx * NODE; s.sy = s.y - dy * NODE;      // leaves the node edge
-    s.ex = CX + dx * CORE;  s.ey = CY + dy * CORE;       // lands on the core edge
-    el('line', { x1: s.sx, y1: s.sy, x2: s.ex, y2: s.ey, stroke: '#1f2533', 'stroke-width': 1, 'stroke-dasharray': '3 5' }, $('#socLinks'));
-    var g = el('g', { 'class': 'node' }, $('#socNodes'));
-    el('circle', { cx: s.x, cy: s.y, r: NODE, fill: '#0f121a', stroke: s.c, 'stroke-width': 1.6 }, g);
-    var t = el('text', { x: s.x, y: s.y + 4, 'text-anchor': 'middle', fill: s.c, 'font-size': 11, 'font-weight': 700 }, g);
-    t.textContent = s.k;
-    var l = el('text', { x: s.x, y: s.y + (dy < -0.1 ? -32 : 42), 'text-anchor': 'middle', 'class': 'lbl' }, g);
-    l.textContent = s.n;
-    nodes.push(g);
+  /* ---------- static scene ---------- */
+  var defs = el('defs', {}, svg);
+  var rg = el('radialGradient', { id: 'sp-halo' }, defs);
+  el('stop', { offset: '0', 'stop-color': '#3d9bff', 'stop-opacity': '.22' }, rg);
+  el('stop', { offset: '1', 'stop-color': '#3d9bff', 'stop-opacity': '0' }, rg);
+  var gSpokes = el('g', {}, svg), gPart = el('g', {}, svg);
+  SRC.forEach(function (s) {
+    var a = toward(s, { x: CX, y: CY }, NODE + 3), b = toward({ x: CX, y: CY }, s, CORE);
+    var lg = el('linearGradient', { id: 'sp-g-' + s.id, gradientUnits: 'userSpaceOnUse', x1: a.x, y1: a.y, x2: b.x, y2: b.y }, defs);
+    el('stop', { offset: '0', 'stop-color': s.col, 'stop-opacity': '.55' }, lg);
+    el('stop', { offset: '1', 'stop-color': '#6EA8FF', 'stop-opacity': '.06' }, lg);
+    el('line', { x1: a.x, y1: a.y, x2: b.x, y2: b.y, stroke: 'url(#sp-g-' + s.id + ')', 'stroke-width': '1.4', 'stroke-linecap': 'round' }, gSpokes);
+    s.a = a; s.b = b;
   });
+  var core = el('g', { 'class': 'sp-core' }, svg);
+  el('circle', { cx: CX, cy: CY, r: 120, fill: 'url(#sp-halo)' }, core);
+  el('circle', { cx: CX, cy: CY, r: 80, 'class': 'sp-arc sp-a1', stroke: '#2dff8f', 'stroke-width': 2, 'stroke-linecap': 'round', 'stroke-dasharray': '150 352' }, core);
+  el('circle', { cx: CX, cy: CY, r: 90, 'class': 'sp-arc sp-a2', stroke: '#ff3a8c', 'stroke-width': 2, 'stroke-linecap': 'round', 'stroke-dasharray': '190 375' }, core);
+  el('circle', { cx: CX, cy: CY, r: 100, 'class': 'sp-arc sp-a3', stroke: '#ffb02e', 'stroke-width': 2, 'stroke-linecap': 'round', 'stroke-dasharray': '120 508' }, core);
+  var ripple = el('circle', { cx: CX, cy: CY, r: CORE, 'class': 'sp-ripple', stroke: '#ff3a5c' }, core);
+  el('circle', { cx: CX, cy: CY, r: CORE, fill: '#0f131b', stroke: 'rgba(255,255,255,.09)', 'stroke-width': 1.2 }, core);
+  var tx = function (y, size, fill, extra) { var t = el('text', { x: CX, y: y, 'text-anchor': 'middle', 'font-family': 'JetBrains Mono, monospace', 'font-size': size, fill: fill }, core); for (var k in extra) t.setAttribute(k, extra[k]); return t; };
+  tx(CY - 6, 22, '#E8ECF4', { 'font-weight': 600, 'letter-spacing': 5 }).textContent = 'SIEM';
+  var evT = tx(CY + 16, 11, '#9AA4B6', {}), alT = tx(CY + 33, 11, '#ffb02e', {});
+  var ICON = {
+    ids: '<path d="M12 3l7 3v5.2c0 4.4-2.9 7.7-7 9.8-4.1-2.1-7-5.4-7-9.8V6z"/><path d="M7.8 12.2h2.2l1.4-3 2.2 6 1.4-3h1.4"/>',
+    fw: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 9.7h18M3 14.3h18M9 5v4.7M15 9.7v4.6M9 14.3V19"/>',
+    web: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3.2 3.2 3.2 14.8 0 18M12 3c-3.2 3.2-3.2 14.8 0 18"/>',
+    edr: '<rect x="4" y="5" width="16" height="11" rx="1.8"/><path d="M2.5 19.5h19M9.5 16v3.5M14.5 16v3.5"/><path d="M12 7.8l3 1.2v2c0 1.5-1.1 2.6-3 3.3-1.9-.7-3-1.8-3-3.3v-2z"/>',
+    ad: '<circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><circle cx="17" cy="9" r="2.4"/><path d="M16.2 14.2c2.8.3 4.8 2.5 4.8 5.3"/>',
+    cld: '<path d="M7 18a4.5 4.5 0 01-.6-8.96A6 6 0 0118 10.5 3.75 3.75 0 0117.25 18z"/>'
+  };
+  SRC.forEach(function (s) {
+    var g = el('g', { 'class': 'sp-node', id: 'sp-n-' + s.id }, svg); s.g = g;
+    g.style.setProperty('--sc', s.col);
+    el('circle', { cx: s.x, cy: s.y, r: NODE + 9, fill: s.col, 'fill-opacity': '.06' }, g);
+    s.ring = el('circle', { cx: s.x, cy: s.y, r: NODE, 'class': 'sp-ring', stroke: s.col }, g);
+    el('circle', { cx: s.x, cy: s.y, r: NODE, 'class': 'sp-c', fill: '#0d1118', stroke: s.col, 'stroke-opacity': '.85', 'stroke-width': 1.3 }, g);
+    var ic = el('g', { transform: 'translate(' + (s.x - 12) + ' ' + (s.y - 12) + ')' }, g);
+    var ig = el('g', { 'class': 'sp-i', fill: 'none', stroke: s.col, 'stroke-width': 1.6, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }, ic);
+    ig.innerHTML = ICON[s.id];
+    var l = el('text', { x: s.x, y: s.ly, 'class': 'sp-l', 'text-anchor': 'middle', 'font-family': 'JetBrains Mono, monospace', 'font-size': 10.5, 'letter-spacing': '.02em', fill: '#8f9ab0' }, g); l.textContent = s.nm;
+  });
+  function byId(id) { return SRC.filter(function (s) { return s.id === id; })[0]; }
 
-  var words = root.querySelectorAll('.w');
-  function setWord(name) {
-    for (var i = 0; i < words.length; i++) words[i].classList.toggle('on', words[i].getAttribute('data-w') === name);
+  /* ---------- state ---------- */
+  var T = 0, last = null, paused = false, visible = true, timers = [], parts = [], typer = null;
+  var events = 12551, alerts = 0, cur = 0, idle = 300, evShown = events;
+  var topEls = document.querySelectorAll('#sp-top span'), topK = -1;
+  function setTop(k) { topK = k; topEls.forEach(function (e, i) { e.classList.toggle('on', i === k); }); }
+  var card = document.getElementById('sp-card'), phases = document.querySelectorAll('#sp-phases span');
+  var $ = function (id) { return document.getElementById(id); };
+  function after(ms, fn) { timers.push({ at: T + ms, fn: fn }); }
+  function fmt(n) { return Math.round(n).toLocaleString('en-US'); }
+  function paint() { evT.textContent = fmt(evShown) + ' events'; alT.textContent = alerts + (alerts === 1 ? ' alert' : ' alerts'); }
+
+  /* ---------- particles ---------- */
+  function spawn(s, col, big) {
+    var dur = big ? 650 + Math.random() * 150 : 1500 + Math.random() * 900;
+    var els = [0, 1, 2, 3, 4].map(function (i) { return el('circle', { r: (big ? 4 : 3) - i * .5, fill: col || s.col, opacity: [1, .6, .38, .2, .09][i] }, gPart); });
+    parts.push({ s: s, t: 0, dur: dur, els: els, n: big ? 25 : 4 + Math.floor(Math.random() * 14) });
+    s.ring.classList.remove('ping'); void s.ring.getBoundingClientRect(); s.ring.classList.add('ping');
   }
-
-  var card = $('#socCard'), dots = root.querySelectorAll('.pd');
-  var pulseEl = $('#socPulse'), evEl = $('#socEv'), alEl = $('#socAl'), stepEl = $('#socStep');
-  function fillCard(sc) {
-    $('#socTitle').textContent = sc[0];
-    $('#socMitre').textContent = 'MITRE ' + sc[1];
-    $('#socDetail').textContent = 'Rule matched: ' + sc[2];
-  }
-  function setDots(n) { for (var i = 0; i < dots.length; i++) dots[i].classList.toggle('on', i < n); }
-
-  // reduced motion: one static, finished frame
-  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    fillCard(SC[3]); stepEl.textContent = '\u25B8 ' + STEPS[3][1];
-    setDots(4); card.classList.add('on'); setWord('RESPOND');
-    evEl.textContent = '12,480 events'; alEl.textContent = '1 alert';
-    return;
-  }
-
-  var clock = 0, last = 0, running = false, raf = 0, acc = 0, parts = [], tasks = [];
-  var pulse = 0, flash = 0, events = 12480, alerts = 0, ai = 0, typing = null, shown = -1;
-
-  function after(d, f) { tasks.push({ at: clock + d, f: f }); }
-
-  function spawn(i, alert) {
-    var s = SRC[i];
-    var c = el('circle', { r: alert ? 4.6 : 2.8, fill: alert ? '#ff3b5c' : s.c, opacity: 0 }, $('#socParts'));
-    parts.push({ e: c, s: s, t: 0, d: alert ? 0.9 : 1.0 + Math.random() * 0.7, alert: alert });
-  }
-
-  function runAlert() {
-    var si = ORDER[ai++ % ORDER.length], sc = SC[si], node = nodes[si];
-    setWord('DETECT');
-    node.classList.add('hot');
-    for (var k = 0; k < 9; k++) after(k * 0.12, function () { spawn(si, true); });
-
-    var T0 = 1.9, GAP = 1.5;
-    after(T0, function () {
-      alerts++; alEl.textContent = alerts + (alerts === 1 ? ' alert' : ' alerts');
-      fillCard(sc); setDots(0); stepEl.textContent = '';
-      card.classList.add('on');
-    });
-    STEPS.forEach(function (st, i) {
-      after(T0 + 0.2 + i * GAP, function () {
-        setWord(st[0]); setDots(i + 1);
-        typing = { txt: '\u25B8 ' + st[1], at: clock };
-      });
-    });
-    var end = T0 + 0.2 + STEPS.length * GAP + 0.8;
-    after(end, function () {
-      card.classList.remove('on'); node.classList.remove('hot');
-      setWord('BUILD'); typing = null;
-    });
-    after(end + 3.5, runAlert);
-  }
-
-  function frame(ts) {
-    if (!running) return;
-    var dt = Math.min(0.05, (ts - last) / 1000); last = ts; clock += dt;
-
-    var due = tasks.filter(function (t) { return t.at <= clock; });
-    tasks = tasks.filter(function (t) { return t.at > clock; });
-    due.forEach(function (t) { t.f(); });
-
-    acc += dt;
-    while (acc > 0.13) { acc -= 0.13; spawn(Math.floor(Math.random() * SRC.length), false); }
-
+  function stepParts(dt) {
     for (var i = parts.length - 1; i >= 0; i--) {
-      var p = parts[i];
-      p.t += dt / p.d;
-      if (p.t >= 1) {
-        p.e.parentNode.removeChild(p.e); parts.splice(i, 1);
-        pulse = Math.min(1, pulse + 0.35);
-        if (p.alert) flash = 1;
-        events += 1 + Math.floor(Math.random() * 3);
-        continue;
-      }
-      var k = p.t < 0.5 ? 2 * p.t * p.t : 1 - Math.pow(-2 * p.t + 2, 2) / 2; // ease in-out
-      p.e.setAttribute('cx', p.s.sx + (p.s.ex - p.s.sx) * k);
-      p.e.setAttribute('cy', p.s.sy + (p.s.ey - p.s.sy) * k);
-      p.e.setAttribute('opacity', Math.min(1, p.t * 8, (1 - p.t) * 8));
+      var p = parts[i]; p.t += dt / p.dur;
+      p.els.forEach(function (e, k) {
+        var u = Math.max(0, Math.min(1, p.t - k * .04)), v = (1 - Math.cos(Math.PI * u)) / 2 * .45 + u * .55;
+        e.setAttribute('cx', p.s.a.x + (p.s.b.x - p.s.a.x) * v); e.setAttribute('cy', p.s.a.y + (p.s.b.y - p.s.a.y) * v);
+        e.style.display = p.t - k * .04 <= 0 ? 'none' : '';
+      });
+      if (p.t >= 1.12) { p.els.forEach(function (e) { e.remove(); }); parts.splice(i, 1); events += p.n; }
     }
-
-    pulse = Math.max(0, pulse - dt * 3);
-    flash = Math.max(0, flash - dt * 1.1);
-    pulseEl.setAttribute('stroke', flash > 0.02 ? '#ff3b5c' : '#2bc4d9');
-    pulseEl.setAttribute('opacity', Math.max(pulse * 0.45, flash));
-    evEl.textContent = events.toLocaleString('en-US') + ' events';
-
-    if (typing) {
-      var n = Math.min(typing.txt.length, Math.floor((clock - typing.at) * 50));
-      if (n !== shown) { stepEl.textContent = typing.txt.slice(0, n); shown = n; }
-    }
-    raf = requestAnimationFrame(frame);
   }
 
-  function start() { if (running) return; running = true; last = performance.now(); raf = requestAnimationFrame(frame); }
-  function stop() { running = false; cancelAnimationFrame(raf); }
+  /* ---------- scenario ---------- */
+  /* one cycle = BUILD > DETECT > TRIAGE > HUNT > AUTOMATE > RESPOND, one word lit at a time across both bars */
+  var botEls = document.querySelectorAll('#sp-phases span');
+  var OFF = [0, 1500, 3400, 4700, 6300, 7800], CYCLE = 10000;
+  function light(kind, i) {
+    topEls.forEach(function (e, k) { e.classList.toggle('on', kind === 'top' && k === i); });
+    botEls.forEach(function (e, k) { e.classList.toggle('on', kind === 'bot' && k === i); });
+  }
+  function type(text) { typer = { text: text, start: T }; }
+  function dots(n) { var d = $('sp-dots'); d.innerHTML = ''; for (var i = 0; i < 4; i++) { var b = document.createElement('i'); if (i < n) b.className = 'on'; d.appendChild(b); } }
+  function fill(s) {
+    $('sp-sev').textContent = s.sev; $('sp-title').textContent = s.t; $('sp-mitre').textContent = 'MITRE ' + s.m; $('sp-rule').textContent = s.r; $('sp-step').textContent = '';
+  }
+  function run(i) {
+    cur = i; timers = []; typer = null;
+    var s = SC[i], src = byId(s.src), col = SEV[s.sev];
+    SRC.forEach(function (n) { n.g.classList.remove('hot'); n.g.style.setProperty('--sc', n.col); });
+    core.classList.remove('alert');
+    light('top', 0); dots(0); card.classList.add('out'); alerts = 0; paint();
+    after(OFF[1], function () {
+      light('top', 1); fill(s);
+      card.style.setProperty('--sc', col); core.style.setProperty('--sc', col); alT.setAttribute('fill', col); ripple.setAttribute('stroke', col);
+      src.g.style.setProperty('--sc', col); src.g.classList.add('hot');
+      for (var k = 0; k < 9; k++) (function (k) { after(k * 120, function () { spawn(src, col, true); }); })(k);
+    });
+    after(OFF[2], function () {
+      light('bot', 0); card.classList.remove('out'); alerts = 1; paint(); dots(1); type(s.s[0]);
+      ripple.classList.remove('go'); void ripple.getBoundingClientRect(); ripple.classList.add('go'); core.classList.add('alert');
+      $('sp-sr').textContent = s.sev + ' alert: ' + s.t + ', MITRE ' + s.m;
+    });
+    after(OFF[3], function () { light('bot', 1); dots(2); type(s.s[1]); });
+    after(OFF[4], function () { light('top', 2); dots(3); type(s.s[2]); });
+    after(OFF[5], function () {
+      light('bot', 2); dots(4); type(s.s[3]);
+      after(700, function () { src.g.classList.remove('hot'); src.g.style.setProperty('--sc', src.col); core.classList.remove('alert'); });
+    });
+    after(CYCLE, function () { run((i + 1) % SC.length); });
+  }
 
-  setWord('BUILD');
-  after(3, runAlert);
+  /* ---------- loop ---------- */
+  function frame(now) {
+    if (last === null) last = now; var dt = Math.min(50, now - last); last = now;
+    if (!paused && visible) {
+      T += dt;
+      for (var i = timers.length - 1; i >= 0; i--) if (timers[i].at <= T) { var f = timers.splice(i, 1)[0].fn; f(); }
+      idle -= dt;
+      if (idle <= 0) { var tot = 0, r; SRC.forEach(function (s) { tot += s.w; }); r = Math.random() * tot; for (var j = 0; j < SRC.length; j++) { r -= SRC[j].w; if (r <= 0) { spawn(SRC[j]); break; } } idle = 260 + Math.random() * 520; }
+      stepParts(dt);
+      if (typer) { var n = Math.min(typer.text.length, Math.floor((T - typer.start) / 24)); $('sp-step').textContent = typer.text.slice(0, n); }
+      evShown += (events - evShown) * Math.min(1, dt / 160); paint();
+    }
+    requestAnimationFrame(frame);
+  }
 
-  // only animate while visible
-  if ('IntersectionObserver' in window) {
-    new IntersectionObserver(function (en) { en[0].isIntersecting ? start() : stop(); }, { threshold: 0.1 }).observe(root);
-  } else { start(); }
-  document.addEventListener('visibilitychange', function () { document.hidden ? stop() : start(); });
+  var pb = $('sp-pause');
+  pb.onclick = function () { paused = !paused; pb.setAttribute('aria-pressed', paused); pb.textContent = paused ? '▶ Play' : '❚❚ Pause'; };
+  if ('IntersectionObserver' in window) new IntersectionObserver(function (e) { visible = e[0].isIntersecting; }).observe(root);
+
+  paint();
+  if (reduce) {
+    var s0 = SC[0]; card.style.setProperty('--sc', SEV[s0.sev]); alerts = 1; paint(); fill(s0);
+    $('sp-step').textContent = s0.s[0]; light('bot', 0); dots(1);
+  } else { run(0); requestAnimationFrame(frame); }
 })();
 </script>
-</div>
   </div>
 </section>
 
